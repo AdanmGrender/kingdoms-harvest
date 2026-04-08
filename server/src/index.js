@@ -43,12 +43,15 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "https://telegram.org"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
       connectSrc: ["'self'", "wss:", "https:"],
       frameSrc: ["'none'"],
+      workerSrc: ["'self'", "blob:"],
     },
   } : false,
   hsts: isProduction ? { maxAge: 31536000, includeSubDomains: true } : false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginEmbedderPolicy: false,
 }));
 
 app.use(cors({
@@ -88,6 +91,14 @@ app.use('/api/commerce', commerceRoutes);
 app.use('/api/tokens', tokenRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/referral', referralRoutes);
+
+// SPA fallback: serve index.html for non-API routes
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/socket.io/')) return next();
+    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+  });
+}
 
 // Función para validar initData de Telegram en WebSocket
 function validateTelegramInitData(initData) {

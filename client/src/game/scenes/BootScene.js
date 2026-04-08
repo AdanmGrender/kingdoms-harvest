@@ -49,10 +49,18 @@ export default class BootScene extends Phaser.Scene {
       percentText.destroy();
     });
 
+    // Log any file load errors
+    this.load.on('loaderror', (file) => {
+      console.error('[BootScene] Failed to load:', file.key, file.url);
+    });
+
     // ─── Load tilesets ───
     this.load.image('terrain', '/assets/game/tilesets/terrain.png');
     this.load.image('farm_tiles', '/assets/game/tilesets/farm_tiles.png');
-    this.load.image('buildings', '/assets/game/tilesets/buildings.png');
+    this.load.spritesheet('buildings', '/assets/game/tilesets/buildings.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
 
     // ─── Load characters ───
     this.load.spritesheet('player', '/assets/game/characters/player.png', {
