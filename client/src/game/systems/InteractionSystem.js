@@ -69,8 +69,8 @@ export default class InteractionSystem {
 
   positionInteractButton() {
     const { width, height } = this.scene.cameras.main;
-    const btnX = width - 70;
-    const btnY = height - 80;
+    const btnX = width * 0.75;
+    const btnY = height - 50;
     this.interactBtn.setPosition(btnX, btnY);
     this.interactBtnText.setPosition(btnX, btnY);
   }

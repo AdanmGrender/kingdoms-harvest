@@ -33,8 +33,8 @@ export default class MovementSystem {
 
   createJoystick() {
     const { width, height } = this.scene.cameras.main;
-    const baseX = 80;
-    const baseY = height - 80;
+    const baseX = width * 0.25;
+    const baseY = height - 50;
 
     // Semi-transparent base circle
     this.joystickBase = this.scene.add.graphics();
@@ -167,8 +167,8 @@ export default class MovementSystem {
 
   resize(width, height) {
     // Reposition joystick on screen resize
-    const baseX = 80;
-    const baseY = height - 80;
+    const baseX = width * 0.25;
+    const baseY = height - 50;
     this.joystickBase.setPosition(baseX, baseY);
     this.joystickThumb.setPosition(baseX, baseY);
     this.joystickOrigin = { x: baseX, y: baseY };
