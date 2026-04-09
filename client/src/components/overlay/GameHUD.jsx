@@ -1,8 +1,9 @@
 /**
  * GameHUD: Top overlay showing player resources, level, XP bar.
  */
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import EventBridge from '../../game/EventBridge';
 
 const RESOURCE_ICONS = {
   gold: '🪙',
@@ -10,13 +11,21 @@ const RESOURCE_ICONS = {
   wood: '🪵',
   stone: '🪨',
   iron: '⛏️',
-  water: '💧',
+  bread: '🍞',
 };
 
 export default function GameHUD() {
   const player = useGameStore((s) => s.player);
   const resources = useGameStore((s) => s.resources);
   const tokenInfo = useGameStore((s) => s.tokenInfo);
+
+  const [timeInfo, setTimeInfo] = useState({ icon: '☀️', period: 'morning', dayCount: 1 });
+
+  useEffect(() => {
+    const handler = (data) => setTimeInfo(data);
+    EventBridge.on('time:updated', handler);
+    return () => EventBridge.off('time:updated', handler);
+  }, []);
 
   const xpPercent = useMemo(() => {
     if (!player?.xp_for_next) return 0;
@@ -63,6 +72,12 @@ export default function GameHUD() {
               style={{ width: `${xpPercent}%` }}
             />
           </div>
+        </div>
+
+        {/* Day/Night indicator */}
+        <div className="flex items-center gap-1 text-[10px] text-gray-300 pointer-events-auto">
+          <span>{timeInfo.icon}</span>
+          <span className="text-yellow-300">Dia {timeInfo.dayCount}</span>
         </div>
 
         {/* Resources */}

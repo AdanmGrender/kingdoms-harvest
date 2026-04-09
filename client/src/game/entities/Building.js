@@ -1,10 +1,10 @@
 /**
  * Building entity: Visual building sprite placed on the world map.
+ * Supports ghost mode for placement preview and construction animation.
  */
 import Phaser from 'phaser';
 
 const BUILDING_SIZE = 64;
-const TILESET_COLS = 8;
 
 export default class Building extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, buildingData) {
@@ -35,7 +35,6 @@ export default class Building extends Phaser.GameObjects.Sprite {
         fontSize: '16px',
       }).setDepth(20).setOrigin(0.5);
 
-      // Hammer animation
       scene.tweens.add({
         targets: this.constructionText,
         angle: { from: -15, to: 15 },

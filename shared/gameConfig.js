@@ -177,6 +177,9 @@ const BUILDINGS = {
     buildTime: 5 * 60 * 1000, // 5 min
     buildTimeMultiplier: 1.3,
     effect: 'Permite plantar cultivos',
+    tileWidth: 2,
+    tileHeight: 2,
+    produces: { wheat: 5 }, // per hour when worked by villager
   },
   barn: {
     id: 'barn',
@@ -190,6 +193,8 @@ const BUILDINGS = {
     buildTimeMultiplier: 1.4,
     effect: 'Almacena recursos (+500 capacidad por nivel)',
     storagePerLevel: 500,
+    tileWidth: 2,
+    tileHeight: 2,
   },
   mill: {
     id: 'mill',
@@ -202,6 +207,9 @@ const BUILDINGS = {
     buildTime: 30 * 60 * 1000,
     buildTimeMultiplier: 1.5,
     effect: 'Convierte trigo en harina y pan',
+    tileWidth: 2,
+    tileHeight: 2,
+    produces: { bread: 3 },
   },
   sawmill: {
     id: 'sawmill',
@@ -213,7 +221,10 @@ const BUILDINGS = {
     costMultiplier: 1.8,
     buildTime: 30 * 60 * 1000,
     buildTimeMultiplier: 1.5,
-    effect: 'Convierte madera en tablas',
+    effect: 'Produce madera',
+    tileWidth: 2,
+    tileHeight: 2,
+    produces: { wood: 10 },
   },
   smithy: {
     id: 'smithy',
@@ -225,7 +236,10 @@ const BUILDINGS = {
     costMultiplier: 2.0,
     buildTime: 45 * 60 * 1000,
     buildTimeMultiplier: 1.5,
-    effect: 'Convierte hierro en lingotes, forja armas',
+    effect: 'Produce lingotes de hierro',
+    tileWidth: 2,
+    tileHeight: 2,
+    produces: { iron: 6 },
   },
   stable: {
     id: 'stable',
@@ -239,6 +253,38 @@ const BUILDINGS = {
     buildTimeMultiplier: 1.4,
     effect: 'Aloja animales (+2 espacios por nivel)',
     slotsPerLevel: 2,
+    tileWidth: 2,
+    tileHeight: 2,
+  },
+  house: {
+    id: 'house',
+    name: 'Casa',
+    icon: '🏠',
+    zone: 'agricultural',
+    maxLevel: 5,
+    baseCost: { wood: 20, stone: 10 },
+    costMultiplier: 1.4,
+    buildTime: 10 * 60 * 1000,
+    buildTimeMultiplier: 1.3,
+    effect: 'Aloja aldeanos (+2 por nivel)',
+    villagersPerLevel: 2,
+    tileWidth: 2,
+    tileHeight: 2,
+  },
+  mine: {
+    id: 'mine',
+    name: 'Mina',
+    icon: '⛏️',
+    zone: 'agricultural',
+    maxLevel: 5,
+    baseCost: { wood: 30, stone: 40 },
+    costMultiplier: 1.7,
+    buildTime: 25 * 60 * 1000,
+    buildTimeMultiplier: 1.4,
+    effect: 'Produce piedra y hierro',
+    tileWidth: 2,
+    tileHeight: 2,
+    produces: { stone: 8, iron: 4 },
   },
 
   // Zona Defensiva
@@ -254,6 +300,8 @@ const BUILDINGS = {
     buildTimeMultiplier: 1.4,
     effect: 'Aumenta defensa del castillo (+100 HP por nivel)',
     hpPerLevel: 100,
+    tileWidth: 2,
+    tileHeight: 2,
   },
   tower: {
     id: 'tower',
@@ -267,6 +315,8 @@ const BUILDINGS = {
     buildTimeMultiplier: 1.5,
     effect: 'Daño a atacantes (+15 ATK por nivel)',
     atkPerLevel: 15,
+    tileWidth: 2,
+    tileHeight: 2,
   },
   barracks: {
     id: 'barracks',
@@ -280,6 +330,8 @@ const BUILDINGS = {
     buildTimeMultiplier: 1.4,
     effect: 'Entrena tropas (+5 capacidad por nivel)',
     troopCapPerLevel: 5,
+    tileWidth: 3,
+    tileHeight: 3,
   },
   trap: {
     id: 'trap',
@@ -293,6 +345,8 @@ const BUILDINGS = {
     buildTimeMultiplier: 1.3,
     effect: 'Daño al inicio del combate defensivo',
     trapDamage: 25,
+    tileWidth: 1,
+    tileHeight: 1,
   },
 
   // Zona Social
@@ -308,6 +362,9 @@ const BUILDINGS = {
     buildTimeMultiplier: 1.5,
     effect: 'Desbloquea misiones de venta (+1 misión por nivel)',
     missionsPerLevel: 1,
+    tileWidth: 2,
+    tileHeight: 2,
+    produces: { gold: 5 },
   },
   market: {
     id: 'market',
@@ -320,6 +377,9 @@ const BUILDINGS = {
     buildTime: 25 * 60 * 1000,
     buildTimeMultiplier: 1.5,
     effect: 'Desbloquea comercio con caravanas y rutas',
+    tileWidth: 3,
+    tileHeight: 2,
+    produces: { gold: 10 },
   },
   embassy: {
     id: 'embassy',
@@ -332,6 +392,8 @@ const BUILDINGS = {
     buildTime: 120 * 60 * 1000,
     buildTimeMultiplier: 2.0,
     effect: 'Permite unirse a facciones y alianzas',
+    tileWidth: 3,
+    tileHeight: 3,
   },
 
   // Zona Noble
@@ -346,6 +408,8 @@ const BUILDINGS = {
     buildTime: 60 * 60 * 1000,
     buildTimeMultiplier: 1.8,
     effect: 'Nivel del castillo, desbloquea todo lo demás',
+    tileWidth: 4,
+    tileHeight: 4,
   },
   library: {
     id: 'library',
@@ -358,6 +422,8 @@ const BUILDINGS = {
     buildTime: 45 * 60 * 1000,
     buildTimeMultiplier: 1.6,
     effect: 'Investigación y tech tree',
+    tileWidth: 2,
+    tileHeight: 2,
   },
 };
 
@@ -532,6 +598,84 @@ const STARTER_RESOURCES = {
   water: 50,
 };
 
+// ---- ALDEANOS (Villager AI) ----
+const VILLAGER_ROLES = {
+  farmer: { id: 'farmer', name: 'Granjero', icon: '🧑‍🌾', workBuildings: ['farm_plot', 'stable'] },
+  woodcutter: { id: 'woodcutter', name: 'Leñador', icon: '🪓', workBuildings: ['sawmill'] },
+  miner: { id: 'miner', name: 'Minero', icon: '⛏️', workBuildings: ['mine', 'smithy'] },
+  soldier: { id: 'soldier', name: 'Soldado', icon: '⚔️', workBuildings: ['barracks', 'tower', 'wall'] },
+  merchant: { id: 'merchant', name: 'Comerciante', icon: '💰', workBuildings: ['market', 'tavern'] },
+  builder: { id: 'builder', name: 'Constructor', icon: '🔨', workBuildings: [] }, // builds any building
+};
+
+const VILLAGER_NAMES = [
+  'Aldric', 'Brynn', 'Cedric', 'Dara', 'Elwin', 'Fiona',
+  'Gareth', 'Helena', 'Igor', 'Josefa', 'Karl', 'Lucia',
+  'Magnus', 'Nora', 'Otto', 'Petra', 'Rolf', 'Sonia',
+  'Tomas', 'Ursula', 'Viktor', 'Wanda', 'Xander', 'Yara',
+];
+
+// Day cycle: 10 real minutes = 1 game day
+const DAY_CYCLE = {
+  dayDurationMs: 10 * 60 * 1000,
+  periods: {
+    dawn:    { start: 0.00, end: 0.15 },
+    morning: { start: 0.15, end: 0.35 },
+    midday:  { start: 0.35, end: 0.55 },
+    evening: { start: 0.55, end: 0.70 },
+    night:   { start: 0.70, end: 1.00 },
+  },
+};
+
+// ---- SIEGE ABILITIES ----
+const SIEGE_ABILITIES = {
+  arrow_rain: {
+    id: 'arrow_rain',
+    name: 'Lluvia de Flechas',
+    icon: '🏹',
+    description: 'Reduce defensa enemiga un 20% por 1 turno',
+    cooldown: 120000, // 2 min
+    effect: { type: 'debuff_defense', value: 0.20 },
+    requires: { archer: 5 },
+  },
+  battering_ram: {
+    id: 'battering_ram',
+    name: 'Ariete',
+    icon: '🪵',
+    description: 'Inflige daño masivo a murallas',
+    cooldown: 180000,
+    effect: { type: 'wall_damage', value: 100 },
+    requires: { siege_ram: 1 },
+  },
+  rally: {
+    id: 'rally',
+    name: 'Reagrupar',
+    icon: '📯',
+    description: 'Aumenta ataque de tropas un 15% por 1 turno',
+    cooldown: 150000,
+    effect: { type: 'buff_attack', value: 0.15 },
+    requires: {},
+  },
+  shield_wall: {
+    id: 'shield_wall',
+    name: 'Muro de Escudos',
+    icon: '🛡️',
+    description: 'Aumenta defensa un 25% por 1 turno',
+    cooldown: 150000,
+    effect: { type: 'buff_defense', value: 0.25 },
+    requires: { spearman: 3 },
+  },
+};
+
+// ---- SIEGE CONFIG ----
+const SIEGE_CONFIG = {
+  marchSpeedPerTile: 2000, // 2 sec per tile distance
+  baseMarchTime: 60000, // minimum 1 min march
+  maxMarchTime: 300000, // max 5 min march
+  lootRate: 0.15, // steal 15% of defender's resources
+  resourceShield: 50, // can't steal below this per resource
+};
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -545,4 +689,9 @@ module.exports = {
   LEVEL_XP_TABLE,
   QUALITY,
   STARTER_RESOURCES,
+  VILLAGER_ROLES,
+  VILLAGER_NAMES,
+  DAY_CYCLE,
+  SIEGE_ABILITIES,
+  SIEGE_CONFIG,
 };

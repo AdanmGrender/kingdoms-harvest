@@ -63,11 +63,6 @@ export default class BootScene extends Phaser.Scene {
     });
 
     // ─── Load characters ───
-    this.load.spritesheet('player', '/assets/game/characters/player.png', {
-      frameWidth: 32,
-      frameHeight: 48,
-    });
-
     // NPCs
     const npcNames = ['farmer', 'baker', 'princess', 'wizard', 'knight', 'merchant', 'ranger'];
     for (const name of npcNames) {
@@ -105,41 +100,15 @@ export default class BootScene extends Phaser.Scene {
 
     // ─── Load UI ───
     this.load.image('dialog_frame', '/assets/game/ui/dialog_frame.png');
-    this.load.image('joystick_base', '/assets/game/ui/joystick.png');
-    this.load.image('interact_btn', '/assets/game/ui/interact_btn.png');
   }
 
   create() {
     // ─── Create animations ───
-    this.createPlayerAnimations();
     this.createNPCAnimations();
     this.createAnimalAnimations();
 
     // Transition to world
     this.scene.start('WorldScene');
-  }
-
-  createPlayerAnimations() {
-    // Player: 4 rows x 4 cols (down, left, right, up)
-    const dirs = ['down', 'left', 'right', 'up'];
-    dirs.forEach((dir, row) => {
-      this.anims.create({
-        key: `player_walk_${dir}`,
-        frames: this.anims.generateFrameNumbers('player', {
-          start: row * 4,
-          end: row * 4 + 3,
-        }),
-        frameRate: 8,
-        repeat: -1,
-      });
-
-      this.anims.create({
-        key: `player_idle_${dir}`,
-        frames: [{ key: 'player', frame: row * 4 }],
-        frameRate: 1,
-        repeat: 0,
-      });
-    });
   }
 
   createNPCAnimations() {

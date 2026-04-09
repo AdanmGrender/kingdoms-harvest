@@ -27,11 +27,15 @@ const buildingService = {
   },
 
   /**
-   * Construir un edificio nuevo
+   * Construir un edificio nuevo en posición específica del mapa
    */
-  async buildNew(playerId, buildingId, posX = 0, posY = 0) {
+  async buildNew(playerId, buildingId, posX, posY) {
     const building = BUILDINGS[buildingId];
     if (!building) throw new Error('Edificio no válido');
+
+    if (posX == null || posY == null) {
+      throw new Error('Se requiere posición (posX, posY) para colocar el edificio');
+    }
 
     // Verificar nivel del castillo (throne_room) para desbloqueos
     const throneRoom = await db('player_buildings')
@@ -40,7 +44,6 @@ const buildingService = {
 
     const castleLevel = throneRoom ? throneRoom.level : 0;
 
-    // Requisitos de nivel de castillo por zona
     const zoneRequirements = {
       agricultural: 1,
       defensive: 2,
@@ -54,14 +57,10 @@ const buildingService = {
       );
     }
 
-    // Verificar que no esté ya en construcción
-    const inProgress = await db('player_buildings')
-      .where({ player_id: playerId, is_building: true })
-      .first();
-
-    if (inProgress) {
-      throw new Error('Ya tenés un edificio en construcción. Esperá a que termine.');
-    }
+    // Validate no overlap with existing buildings
+    const tileW = building.tileWidth || 2;
+    const tileH = building.tileHeight || 2;
+    await this.validatePlacement(playerId, posX, posY, tileW, tileH);
 
     // Calcular y cobrar costes
     const { cost, buildTime } = this.calculateCost(buildingId, 1);
@@ -83,10 +82,37 @@ const buildingService = {
     return {
       success: true,
       buildingId,
+      posX,
+      posY,
       buildTime,
       completeAt: completeAt.toISOString(),
       message: `Construyendo ${building.icon} ${building.name}... Listo en ${Math.round(buildTime / 60000)} minutos.`,
     };
+  },
+
+  /**
+   * Validate that a building can be placed at (posX, posY) without overlapping others
+   */
+  async validatePlacement(playerId, posX, posY, tileW, tileH) {
+    const existingBuildings = await db('player_buildings').where('player_id', playerId);
+
+    for (const existing of existingBuildings) {
+      const existingConfig = BUILDINGS[existing.building_id];
+      const ew = existingConfig?.tileWidth || 2;
+      const eh = existingConfig?.tileHeight || 2;
+      const ex = existing.position_x;
+      const ey = existing.position_y;
+
+      // AABB overlap check
+      if (
+        posX < ex + ew &&
+        posX + tileW > ex &&
+        posY < ey + eh &&
+        posY + tileH > ey
+      ) {
+        throw new Error('No se puede construir aquí, hay otro edificio en esa posición');
+      }
+    }
   },
 
   /**

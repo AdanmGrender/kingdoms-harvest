@@ -7,6 +7,7 @@ const useGameStore = create((set, get) => ({
   resources: {},
   buildings: [],
   troops: [],
+  sieges: [],
   animals: [],
   plots: [],
   missions: [],
@@ -23,22 +24,18 @@ const useGameStore = create((set, get) => ({
   referralLink: null,
   withdrawalHistory: [],
 
-  // View mode: 'classic' (card UI) or 'world' (Phaser game)
-  viewMode: 'world',
-
-  // Overlay state for World mode
+  // Overlay state for RTS mode
   overlayState: null, // { type: string, data: object } or null
-  interactionTarget: null,
+  selectedEntity: null, // currently selected entity info
 
   // Notificaciones del juego
   notifications: [],
 
-  setViewMode: (mode) => set({ viewMode: mode }),
   setActiveTab: (tab) => set({ activeTab: tab }),
 
   setOverlay: (type, data) => set({ overlayState: { type, data } }),
   clearOverlay: () => set({ overlayState: null }),
-  setInteractionTarget: (target) => set({ interactionTarget: target }),
+  setSelectedEntity: (entity) => set({ selectedEntity: entity }),
 
   addNotification: (message, type = 'info') => {
     const id = Date.now();
@@ -174,14 +171,16 @@ const useGameStore = create((set, get) => ({
     }
   },
 
-  buildNew: async (buildingId) => {
+  buildNew: async (buildingId, posX, posY) => {
     try {
-      const { data } = await api.post('/buildings/build', { buildingId });
+      const { data } = await api.post('/buildings/build', { buildingId, posX, posY });
       get().addNotification(data.message, 'success');
       get().loadBuildings();
       get().refreshResources();
+      return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error', 'error');
+      return null;
     }
   },
 
@@ -242,6 +241,7 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.post('/combat/train', { troopId, quantity });
       get().addNotification(data.message, 'success');
+      get().loadTroops();
       get().refreshResources();
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error', 'error');
@@ -256,6 +256,51 @@ const useGameStore = create((set, get) => ({
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error', 'error');
+    }
+  },
+
+  loadTroops: async () => {
+    try {
+      const { data } = await api.get('/combat/troops');
+      set({ troops: data });
+    } catch (error) {
+      console.error('Error loading troops:', error);
+    }
+  },
+
+  // ---- Asedios ----
+  loadSieges: async () => {
+    try {
+      const { data } = await api.get('/sieges');
+      set({ sieges: data });
+    } catch (error) {
+      console.error('Error loading sieges:', error);
+    }
+  },
+
+  declareWar: async (defenderId, army) => {
+    try {
+      const { data } = await api.post('/sieges/declare', { defenderId, army });
+      get().addNotification(data.message, 'success');
+      get().loadSieges();
+      get().loadTroops();
+      get().refreshResources();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al declarar guerra', 'error');
+      return null;
+    }
+  },
+
+  useSiegeAbility: async (siegeId, abilityId) => {
+    try {
+      const { data } = await api.post('/sieges/ability', { siegeId, abilityId });
+      get().addNotification(data.message, 'success');
+      get().loadSieges();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al usar habilidad', 'error');
+      return null;
     }
   },
 

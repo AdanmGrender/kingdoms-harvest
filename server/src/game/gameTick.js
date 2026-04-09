@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const db = require('../config/database');
 const dailyTaskService = require('../services/dailyTaskService');
+const { BUILDINGS, DAY_CYCLE } = require('../../../shared/gameConfig');
 
 let ioRef = null;
 
@@ -60,6 +61,67 @@ async function processTick() {
     console.error('[Tick] Error procesando construcciones:', error.message);
   }
 
+  // 2b. Building resource production (per hour, processed per minute)
+  try {
+    const allBuildings = await db('player_buildings')
+      .where('is_building', false);
+
+    // Group by player
+    const playerBuildings = {};
+    for (const b of allBuildings) {
+      if (!playerBuildings[b.player_id]) playerBuildings[b.player_id] = [];
+      playerBuildings[b.player_id].push(b);
+    }
+
+    for (const [playerId, buildings] of Object.entries(playerBuildings)) {
+      const totalProduction = {};
+
+      for (const b of buildings) {
+        const config = BUILDINGS[b.building_id];
+        if (!config?.produces) continue;
+
+        // Production rate is per hour, tick runs every minute
+        // Scale by building level
+        const levelMultiplier = 1 + (b.level - 1) * 0.25;
+        for (const [resource, ratePerHour] of Object.entries(config.produces)) {
+          const perMinute = (ratePerHour * levelMultiplier) / 60;
+          totalProduction[resource] = (totalProduction[resource] || 0) + perMinute;
+        }
+      }
+
+      // Add resources to player (integer amounts, accumulate fractional)
+      for (const [resource, amount] of Object.entries(totalProduction)) {
+        const intAmount = Math.floor(amount);
+        if (intAmount > 0) {
+          try {
+            await db('player_resources')
+              .where({ player_id: playerId, resource_id: resource })
+              .increment('amount', intAmount);
+          } catch (e) {
+            // Resource row may not exist, insert it
+            try {
+              await db('player_resources').insert({
+                player_id: playerId,
+                resource_id: resource,
+                amount: intAmount,
+                capacity: 1000,
+              });
+            } catch (e2) {
+              // Already exists race condition, ignore
+            }
+          }
+        }
+      }
+
+      // Notify player of resource update
+      if (ioRef && Object.keys(totalProduction).length > 0) {
+        ioRef.to(`player_${playerId}`).emit('resources_updated', totalProduction);
+      }
+    }
+  } catch (error) {
+    console.error('[Tick] Error procesando producción de edificios:', error.message);
+  }
+
   // 3. Producción de animales
   try {
     const readyAnimals = await db('player_animals')
@@ -107,6 +169,55 @@ async function processTick() {
     }
   } catch (error) {
     console.error('[Tick] Error procesando tropas:', error.message);
+  }
+
+  // 4b. Process arrived sieges
+  try {
+    const siegeService = require('../services/siegeService');
+    await siegeService.processArrivedSieges(ioRef);
+  } catch (error) {
+    console.error('[Tick] Error procesando asedios:', error.message);
+  }
+
+  // 4c. Villager simulation
+  try {
+    const villagerService = require('../services/villagerService');
+    // Get all unique player IDs that have villagers
+    const villagerPlayers = await db('villagers').select('player_id').groupBy('player_id');
+    for (const { player_id } of villagerPlayers) {
+      await villagerService.simulateTick(player_id);
+    }
+  } catch (error) {
+    console.error('[Tick] Error simulando aldeanos:', error.message);
+  }
+
+  // 4c. Advance world time for all players
+  try {
+    // Each tick is 1 minute; day duration is DAY_CYCLE.dayDurationMs (default 10 min)
+    const timeIncrement = 60000 / DAY_CYCLE.dayDurationMs; // fraction of a day per tick
+    const allPlayers = await db('players').select('id', 'world_time', 'world_day');
+    for (const player of allPlayers) {
+      let newTime = (player.world_time || 0) + timeIncrement;
+      let newDay = player.world_day || 1;
+      if (newTime >= 1.0) {
+        newTime -= 1.0;
+        newDay++;
+        // New day — process aging and families
+        try {
+          const villagerService = require('../services/villagerService');
+          await villagerService.processAging(player.id);
+          await villagerService.processRelationships(player.id);
+        } catch (ageErr) {
+          console.error(`[Tick] Error aging/families for player ${player.id}:`, ageErr.message);
+        }
+      }
+      await db('players').where('id', player.id).update({
+        world_time: newTime,
+        world_day: newDay,
+      });
+    }
+  } catch (error) {
+    console.error('[Tick] Error avanzando tiempo del mundo:', error.message);
   }
 
   // 5. Misiones expiradas

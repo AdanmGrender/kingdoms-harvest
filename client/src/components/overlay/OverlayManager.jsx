@@ -6,6 +6,9 @@ import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import DialogPanel from './DialogPanel';
 import CropSelectMenu from './CropSelectMenu';
+import VillagerPanel from './VillagerPanel';
+import WarPanel from './WarPanel';
+import TroopManagementPanel from './TroopManagementPanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -29,16 +32,15 @@ export default function OverlayManager() {
     };
   }, []);
 
-  // Listen for player interactions
+  // Listen for entity selection (RTS tap-to-select)
   useEffect(() => {
-    const handleInteraction = ({ type, data }) => {
+    const handleSelection = ({ type, data }) => {
       switch (type) {
         case 'npc':
           useGameStore.getState().setOverlay('dialog', data);
           break;
         case 'farm_plot':
           if (data.state === 'ready') {
-            // Harvest directly (could also show confirm overlay)
             useGameStore.getState().setOverlay('harvest', data);
           } else {
             useGameStore.getState().setOverlay('cropSelect', data);
@@ -50,6 +52,9 @@ export default function OverlayManager() {
         case 'animal':
           useGameStore.getState().setOverlay('animal', data);
           break;
+        case 'villager':
+          useGameStore.getState().setOverlay('villager', data);
+          break;
         case 'war_gate':
           useGameStore.getState().setOverlay('combat', data);
           break;
@@ -58,8 +63,16 @@ export default function OverlayManager() {
       }
     };
 
-    EventBridge.on('player:interact', handleInteraction);
-    return () => EventBridge.off('player:interact', handleInteraction);
+    const handleDeselection = () => {
+      useGameStore.getState().clearOverlay();
+    };
+
+    EventBridge.on('entity:selected', handleSelection);
+    EventBridge.on('entity:deselected', handleDeselection);
+    return () => {
+      EventBridge.off('entity:selected', handleSelection);
+      EventBridge.off('entity:deselected', handleDeselection);
+    };
   }, []);
 
   const handleClose = useCallback(() => {
@@ -93,10 +106,14 @@ function renderPanel(overlayState, onClose) {
       return <CropSelectMenu data={overlayState.data} onClose={onClose} />;
     case 'building':
       return <BuildingInfoPanel data={overlayState.data} onClose={onClose} />;
+    case 'villager':
+      return <VillagerPanel data={overlayState.data} onClose={onClose} />;
     case 'animal':
       return <AnimalPanel data={overlayState.data} onClose={onClose} />;
     case 'combat':
-      return <CombatQuickPanel data={overlayState.data} onClose={onClose} />;
+      return <WarPanel data={overlayState.data} onClose={onClose} />;
+    case 'troops':
+      return <TroopManagementPanel data={overlayState.data} onClose={onClose} />;
     case 'harvest':
       return <HarvestPanel data={overlayState.data} onClose={onClose} />;
     default:
@@ -142,15 +159,6 @@ function AnimalPanel({ data, onClose }) {
         <button className="btn-gold text-xs px-3 py-1 rounded">Alimentar</button>
         <button className="btn-primary text-xs px-3 py-1 rounded">Recolectar</button>
       </div>
-    </GenericPanel>
-  );
-}
-
-function CombatQuickPanel({ data, onClose }) {
-  return (
-    <GenericPanel title="⚔️ Zona de Combate" onClose={onClose}>
-      <p className="text-gray-300 text-sm">Accede al combate completo en Modo Clásico</p>
-      <p className="text-gray-400 text-xs mt-1">Combate visual llegará pronto</p>
     </GenericPanel>
   );
 }

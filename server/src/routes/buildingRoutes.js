@@ -18,8 +18,8 @@ router.get('/', telegramAuth, async (req, res) => {
 // Construir nuevo edificio
 router.post('/build', telegramAuth, validate({
   buildingId: { type: 'string', required: true, maxLength: 50, pattern: /^[a-z_]+$/ },
-  posX: { type: 'number', required: false, min: 0, max: 100 },
-  posY: { type: 'number', required: false, min: 0, max: 100 },
+  posX: { type: 'number', required: true, min: 0, max: 200 },
+  posY: { type: 'number', required: true, min: 0, max: 200 },
 }), async (req, res) => {
   try {
     const { buildingId, posX, posY } = req.body;
