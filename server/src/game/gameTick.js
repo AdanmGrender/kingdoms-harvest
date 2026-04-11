@@ -205,7 +205,7 @@ async function processTick() {
   try {
     // Each tick is 1 minute; day duration is DAY_CYCLE.dayDurationMs (default 10 min)
     const timeIncrement = 60000 / DAY_CYCLE.dayDurationMs; // fraction of a day per tick
-    const allPlayers = await db('players').select('id', 'world_time', 'world_day');
+    const allPlayers = await db('players').select('telegram_id', 'world_time', 'world_day');
     for (const player of allPlayers) {
       let newTime = (player.world_time || 0) + timeIncrement;
       let newDay = player.world_day || 1;
@@ -215,13 +215,13 @@ async function processTick() {
         // New day — process aging and families
         try {
           const villagerService = require('../services/villagerService');
-          await villagerService.processAging(player.id);
-          await villagerService.processRelationships(player.id);
+          await villagerService.processAging(player.telegram_id);
+          await villagerService.processRelationships(player.telegram_id);
         } catch (ageErr) {
-          console.error(`[Tick] Error aging/families for player ${player.id}:`, ageErr.message);
+          console.error(`[Tick] Error aging/families for player ${player.telegram_id}:`, ageErr.message);
         }
       }
-      await db('players').where('id', player.id).update({
+      await db('players').where('telegram_id', player.telegram_id).update({
         world_time: newTime,
         world_day: newDay,
       });
