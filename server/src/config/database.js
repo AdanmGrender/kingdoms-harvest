@@ -99,6 +99,23 @@ class QueryBuilder {
     return this;
   }
 
+  orWhereIn(col, values) {
+    const safeName = sanitizeIdentifier(col);
+    if (values.length === 0) {
+      this._wheres.push('OR 0 = 1');
+    } else {
+      const placeholders = values.map(() => '?').join(', ');
+      this._wheres.push(`OR "${safeName}" IN (${placeholders})`);
+      this._whereParams.push(...values);
+    }
+    return this;
+  }
+
+  groupBy(...cols) {
+    this._groupBys = cols.map(c => `"${sanitizeIdentifier(c)}"`);
+    return this;
+  }
+
   select(...cols) {
     this._selects = cols;
     return this;
@@ -151,6 +168,9 @@ class QueryBuilder {
       const { sql: whereSQL, params } = this._buildWhereClause();
       let sql = `SELECT ${selectCols} FROM "${this._table}"${whereSQL}`;
 
+      if (this._groupBys && this._groupBys.length > 0) {
+        sql += ' GROUP BY ' + this._groupBys.join(', ');
+      }
       if (this._orderBys.length > 0) {
         sql += ' ORDER BY ' + this._orderBys.join(', ');
       }

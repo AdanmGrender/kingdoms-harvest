@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { CROPS, ANIMALS, QUALITY } = require('../../../shared/gameConfig');
+const { CROPS, ANIMALS, QUALITY, SEASON_DURATION_MS, DAY_CYCLE } = require('../../../shared/gameConfig');
 const { sanitizeDisplayText } = require('../utils/sanitize');
 const playerService = require('./playerService');
 const tokenService = require('./tokenService');
@@ -30,7 +30,18 @@ const farmService = {
     if (!plot) throw new Error('Parcela no encontrada');
     if (plot.state !== 'empty') throw new Error('La parcela no está vacía');
 
-    // TODO: Verificar estación actual
+    // Verificar estación actual
+    const player = await db('players').where('telegram_id', playerId).first();
+    const daysSinceStart = (player?.world_day || 1);
+    const seasonLengthDays = Math.floor(SEASON_DURATION_MS / DAY_CYCLE.dayDurationMs);
+    const seasonIndex = Math.floor((daysSinceStart - 1) / seasonLengthDays) % 4;
+    const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
+    const currentSeason = SEASON_ORDER[seasonIndex];
+
+    if (!crop.season.includes(currentSeason)) {
+      const seasonNames = { spring: 'Primavera', summer: 'Verano', autumn: 'Otoño', winter: 'Invierno' };
+      throw new Error(`${crop.name} no crece en ${seasonNames[currentSeason] || currentSeason}`);
+    }
 
     const now = new Date();
     const readyAt = new Date(now.getTime() + crop.growthTime);

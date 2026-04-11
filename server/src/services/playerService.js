@@ -40,11 +40,12 @@ const playerService = {
       }
 
       // Dar edificios iniciales: Salón del Trono lvl 1 + 2 Parcelas + 1 Granero
+      // Positions are in tile coordinates, centered around spawn area (80,62)
       const starterBuildings = [
-        { building_id: 'throne_room', level: 1 },
-        { building_id: 'farm_plot', level: 1 },
-        { building_id: 'farm_plot', level: 1 },
-        { building_id: 'barn', level: 1 },
+        { building_id: 'throne_room', level: 1, position_x: 78, position_y: 60 },
+        { building_id: 'farm_plot', level: 1, position_x: 74, position_y: 64 },
+        { building_id: 'farm_plot', level: 1, position_x: 77, position_y: 64 },
+        { building_id: 'barn', level: 1, position_x: 82, position_y: 60 },
       ];
 
       for (const b of starterBuildings) {
@@ -53,6 +54,8 @@ const playerService = {
           building_id: b.building_id,
           level: b.level,
           is_building: false,
+          position_x: b.position_x,
+          position_y: b.position_y,
         });
 
         // Crear farm plots para las parcelas

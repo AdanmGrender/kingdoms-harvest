@@ -39,19 +39,31 @@ export default function OverlayManager() {
         case 'npc':
           useGameStore.getState().setOverlay('dialog', data);
           break;
-        case 'farm_plot':
-          if (data.state === 'ready') {
-            useGameStore.getState().setOverlay('harvest', data);
+        case 'farm_plot': {
+          // Match visual plot index to DB plot record
+          const plots = useGameStore.getState().plots;
+          const dbPlot = plots[data.plotIndex] || plots.find(p => p.id === data.plotId);
+          const plotData = { ...data, plotId: dbPlot?.id, state: dbPlot?.state || data.state };
+          if (plotData.state === 'ready') {
+            useGameStore.getState().setOverlay('harvest', plotData);
+          } else if (plotData.state === 'empty') {
+            useGameStore.getState().setOverlay('cropSelect', plotData);
           } else {
-            useGameStore.getState().setOverlay('cropSelect', data);
+            useGameStore.getState().setOverlay('cropSelect', plotData);
           }
           break;
+        }
         case 'building':
           useGameStore.getState().setOverlay('building', data);
           break;
-        case 'animal':
-          useGameStore.getState().setOverlay('animal', data);
+        case 'animal': {
+          // Match visual animal to DB record
+          const animals = useGameStore.getState().animals;
+          const dbAnimal = animals.find(a => a.animal_id === data.animalType) || animals[0];
+          const animalData = { ...data, animalId: dbAnimal?.id, name: dbAnimal?.name };
+          useGameStore.getState().setOverlay('animal', animalData);
           break;
+        }
         case 'villager':
           useGameStore.getState().setOverlay('villager', data);
           break;
@@ -152,24 +164,40 @@ function BuildingInfoPanel({ data, onClose }) {
 }
 
 function AnimalPanel({ data, onClose }) {
+  const handleFeed = async () => {
+    await useGameStore.getState().feedAnimal(data.animalId);
+    onClose();
+  };
+  const handleCollect = async () => {
+    await useGameStore.getState().collectAnimalProduct(data.animalId);
+    onClose();
+  };
+
   return (
     <GenericPanel title={`🐾 ${data.animalType}`} onClose={onClose}>
       <p className="text-gray-300 text-sm">Animal: {data.animalType}</p>
+      <p className="text-gray-400 text-xs mt-1">{data.name || data.animalType}</p>
       <div className="flex gap-2 mt-3">
-        <button className="btn-gold text-xs px-3 py-1 rounded">Alimentar</button>
-        <button className="btn-primary text-xs px-3 py-1 rounded">Recolectar</button>
+        <button onClick={handleFeed} className="btn-gold text-xs px-3 py-1 rounded">Alimentar</button>
+        <button onClick={handleCollect} className="btn-primary text-xs px-3 py-1 rounded">Recolectar</button>
       </div>
     </GenericPanel>
   );
 }
 
 function HarvestPanel({ data, onClose }) {
+  const handleHarvest = async () => {
+    const plotId = data.plotId || data.plotIndex;
+    await useGameStore.getState().harvestCrop(plotId);
+    onClose();
+  };
+
   return (
     <GenericPanel title="🌾 Cosecha lista!" onClose={onClose}>
-      <p className="text-gray-300 text-sm">Parcela #{data.plotIndex + 1}</p>
+      <p className="text-gray-300 text-sm">Parcela #{(data.plotIndex ?? 0) + 1}</p>
       <button
         className="mt-2 bg-green-600 hover:bg-green-500 text-white text-sm px-4 py-2 rounded w-full"
-        onClick={onClose}
+        onClick={handleHarvest}
       >
         Cosechar
       </button>

@@ -65,8 +65,9 @@ const useGameStore = create((set, get) => ({
         missions: data.activeMissions || [],
         isLoading: false,
       });
-      // Cargar parcelas
+      // Cargar parcelas y animales
       get().loadPlots();
+      get().loadAnimals();
     } catch (error) {
       console.error('Error init:', error);
       set({ error: 'Error al iniciar el juego', isLoading: false });

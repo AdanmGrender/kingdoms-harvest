@@ -5,6 +5,11 @@ const { BUILDINGS, DAY_CYCLE } = require('../../../shared/gameConfig');
 
 let ioRef = null;
 
+// Fractional production accumulator — tracks sub-integer resource amounts
+// between ticks so buildings producing < 60/hour still generate resources.
+// Resets on server restart (acceptable; no data loss beyond partial fractions).
+const productionAccumulators = {};
+
 /**
  * Game Tick: se ejecuta cada minuto.
  * Procesa cultivos listos, producción de animales,
@@ -89,14 +94,19 @@ async function processTick() {
         }
       }
 
-      // Add resources to player (integer amounts, accumulate fractional)
+      // Accumulate fractional production and award integer portions
       for (const [resource, amount] of Object.entries(totalProduction)) {
-        const intAmount = Math.floor(amount);
+        const key = `${playerId}:${resource}`;
+        productionAccumulators[key] = (productionAccumulators[key] || 0) + amount;
+        const intAmount = Math.floor(productionAccumulators[key]);
         if (intAmount > 0) {
+          productionAccumulators[key] -= intAmount;
           try {
-            await db('player_resources')
-              .where({ player_id: playerId, resource_id: resource })
-              .increment('amount', intAmount);
+            // Cap at capacity to prevent overflow
+            db.raw(
+              'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
+              [intAmount, playerId, resource]
+            );
           } catch (e) {
             // Resource row may not exist, insert it
             try {
