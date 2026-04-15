@@ -1,0 +1,63 @@
+2026-04-11 00:49:59 +00:00: Unexpected error: Error: No tenés suficientes recursos. No tenés suficiente wood
+2026-04-11 00:49:59 +00:00:     at Object.payResources (/home/kingdoms/app/server/src/services/buildingService.js:190:13)
+2026-04-11 00:49:59 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-11 00:49:59 +00:00:     at async Object.buildNew (/home/kingdoms/app/server/src/services/buildingService.js:67:5)
+2026-04-11 00:49:59 +00:00:     at async /home/kingdoms/app/server/src/routes/buildingRoutes.js:26:20
+2026-04-11 00:50:06 +00:00: Unexpected error: Error: No tenés suficientes recursos. No tenés suficiente wood
+2026-04-11 00:50:06 +00:00:     at Object.payResources (/home/kingdoms/app/server/src/services/buildingService.js:190:13)
+2026-04-11 00:50:06 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-11 00:50:06 +00:00:     at async Object.buildNew (/home/kingdoms/app/server/src/services/buildingService.js:67:5)
+2026-04-11 00:50:06 +00:00:     at async /home/kingdoms/app/server/src/routes/buildingRoutes.js:26:20
+2026-04-11 01:07:08 +00:00: Unexpected error: Error: La parcela no está vacía
+2026-04-11 01:07:08 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:31:39)
+2026-04-11 01:07:08 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-11 01:07:08 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20
+2026-04-12 02:41:38 +00:00: Unexpected error: Error: No tenés suficientes recursos. No tenés suficiente wood
+2026-04-12 02:41:38 +00:00:     at Object.payResources (/home/kingdoms/app/server/src/services/buildingService.js:190:13)
+2026-04-12 02:41:38 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-12 02:41:38 +00:00:     at async Object.buildNew (/home/kingdoms/app/server/src/services/buildingService.js:67:5)
+2026-04-12 02:41:38 +00:00:     at async /home/kingdoms/app/server/src/routes/buildingRoutes.js:26:20
+2026-04-12 02:41:49 +00:00: Unexpected error: Error: No tenés suficientes recursos. No tenés suficiente wood
+2026-04-12 02:41:49 +00:00:     at Object.payResources (/home/kingdoms/app/server/src/services/buildingService.js:190:13)
+2026-04-12 02:41:49 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-12 02:41:49 +00:00:     at async Object.buildNew (/home/kingdoms/app/server/src/services/buildingService.js:67:5)
+2026-04-12 02:41:49 +00:00:     at async /home/kingdoms/app/server/src/routes/buildingRoutes.js:26:20
+2026-04-13 07:27:51 +00:00: error: [polling_error] {"code":"EFATAL","message":"EFATAL: Error: read ETIMEDOUT"}
+2026-04-13 16:45:08 +00:00: Unexpected error: Error: No tenés suficientes recursos. No tenés suficiente wood
+2026-04-13 16:45:08 +00:00:     at Object.payResources (/home/kingdoms/app/server/src/services/buildingService.js:190:13)
+2026-04-13 16:45:08 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-13 16:45:08 +00:00:     at async Object.buildNew (/home/kingdoms/app/server/src/services/buildingService.js:67:5)
+2026-04-13 16:45:08 +00:00:     at async /home/kingdoms/app/server/src/routes/buildingRoutes.js:26:20
+2026-04-13 16:54:19 +00:00: Unexpected error: Error: Parcela no encontrada
+2026-04-13 16:54:19 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:30:22)
+2026-04-13 16:54:19 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-13 16:54:19 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20
+2026-04-13 16:54:20 +00:00: Unexpected error: Error: Parcela no encontrada
+2026-04-13 16:54:20 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:30:22)
+2026-04-13 16:54:20 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-13 16:54:20 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20
+2026-04-13 16:54:21 +00:00: Unexpected error: Error: Parcela no encontrada
+2026-04-13 16:54:21 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:30:22)
+2026-04-13 16:54:21 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-13 16:54:21 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20
+2026-04-15 00:30:32 +00:00: error: [polling_error] {"code":"ETELEGRAM","message":"ETELEGRAM: 409 Conflict: terminated by setWebhook request"}
+2026-04-15 02:24:57 +00:00: Unexpected error: Error: Parcela no encontrada
+2026-04-15 02:24:57 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:30:22)
+2026-04-15 02:24:57 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-15 02:24:57 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20
+2026-04-15 02:24:57 +00:00: Unexpected error: Error: Parcela no encontrada
+2026-04-15 02:24:57 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:30:22)
+2026-04-15 02:24:57 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-15 02:24:57 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20
+2026-04-15 02:24:58 +00:00: Unexpected error: Error: Parcela no encontrada
+2026-04-15 02:24:58 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:30:22)
+2026-04-15 02:24:58 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-15 02:24:58 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20
+2026-04-15 02:24:58 +00:00: Unexpected error: Error: Parcela no encontrada
+2026-04-15 02:24:58 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:30:22)
+2026-04-15 02:24:58 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-15 02:24:58 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20
+2026-04-15 02:24:59 +00:00: Unexpected error: Error: Parcela no encontrada
+2026-04-15 02:24:59 +00:00:     at Object.plantCrop (/home/kingdoms/app/server/src/services/farmService.js:30:22)
+2026-04-15 02:24:59 +00:00:     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-04-15 02:24:59 +00:00:     at async /home/kingdoms/app/server/src/routes/farmRoutes.js:25:20

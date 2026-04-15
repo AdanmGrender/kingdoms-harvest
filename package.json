@@ -1,0 +1,22 @@
+{
+  "name": "kingdoms-harvest",
+  "version": "1.0.0",
+  "description": "Telegram Mini App - Juego de castillos, granjas y facciones",
+  "private": true,
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build:client": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "db:migrate": "cd server && npx knex migrate:latest",
+    "db:seed": "cd server && npx knex seed:run"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "pngjs": "^7.0.0"
+  },
+  "dependencies": {
+    "ssh2": "^1.17.0"
+  }
+}

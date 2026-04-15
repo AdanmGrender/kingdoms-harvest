@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar estilizado */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #16213e;
+}
+::-webkit-scrollbar-thumb {
+  background: #e94560;
+  border-radius: 2px;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes grow {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-grow {
+  animation: grow 0.3s ease-out;
+}
+
+/* Cards del juego */
+.game-card {
+  @apply bg-kingdom-card rounded-xl p-4 border border-kingdom-blue/50;
+  transition: all 0.2s ease;
+}
+
+.game-card:active {
+  transform: scale(0.98);
+}
+
+/* Botones */
+.btn-primary {
+  @apply bg-kingdom-accent text-white font-bold py-2 px-4 rounded-lg;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
+}
+
+.btn-gold {
+  @apply bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold py-2 px-4 rounded-lg;
+  transition: all 0.2s ease;
+}
+
+/* Progress bar */
+.progress-bar {
+  @apply h-2 rounded-full bg-kingdom-blue overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full rounded-full transition-all duration-500;
+}
+
+/* Timer */
+.timer-badge {
+  @apply bg-kingdom-blue text-xs px-2 py-1 rounded-full text-yellow-300;
+}
+
+/* Sprite icons — crisp pixel art rendering */
+.sprite-icon {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  user-select: none;
+}
