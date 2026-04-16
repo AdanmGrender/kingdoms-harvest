@@ -130,7 +130,7 @@ const combatService = {
       const troop = TROOPS[troopId];
       if (!troop) continue;
 
-      let def = (troop.def + troop.atk * 0.5) * qty;
+      let def = (troop.def + troop.atk * 0.3) * qty;
       defensePower += def;
       battleLog.push(`Defensor: ${troop.icon} x${qty} aporta ${Math.floor(def)} DEF`);
     }
@@ -150,6 +150,9 @@ const combatService = {
     }
 
     attackPower = Math.max(attackPower, 0);
+
+    // Attacker first-strike initiative: +10% to attack power
+    attackPower *= 1.1;
 
     // Resultado: ratio de poder
     const totalPower = attackPower + defensePower;
@@ -245,8 +248,9 @@ const combatService = {
       }
 
       // Dar KH Tokens + trackear tarea diaria
-      await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVE_WIN, 'pve');
+      const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVE_WIN, 'pve');
       await dailyTaskService.trackProgress(playerId, 'battle_win');
+      loot.tokensAwarded = tokenResult.awarded;
     }
 
     // Guardar batalla
@@ -262,9 +266,13 @@ const combatService = {
       resolved_at: new Date().toISOString(),
     });
 
+    const tokensAwarded = loot.tokensAwarded || 0;
+    delete loot.tokensAwarded;
+
     return {
       ...result,
       loot,
+      tokensAwarded,
       message: result.winner === 'attacker'
         ? `Victoria! Botín: ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
         : 'Derrota... tus tropas se retiran.',

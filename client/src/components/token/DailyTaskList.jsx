@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import CaptchaPanel from './CaptchaPanel';
 
 const TASK_SPRITES = {
   harvest_5: 'sunflower',
@@ -8,10 +9,12 @@ const TASK_SPRITES = {
   battle_win_1: 'castle_flag',
   mission_1: 'scroll',
   login: 'medal',
+  captcha_daily: 'scroll',
 };
 
 function DailyTaskList({ tasks }) {
   const { claimDailyTask } = useGameStore();
+  const [captchaOpen, setCaptchaOpen] = useState(false);
 
   if (!tasks || tasks.length === 0) {
     return (
@@ -52,6 +55,13 @@ function DailyTaskList({ tasks }) {
                 >
                   Reclamar
                 </button>
+              ) : task.task_id === 'captcha_daily' ? (
+                <button
+                  onClick={() => setCaptchaOpen((v) => !v)}
+                  className="text-xs text-purple-400 hover:text-purple-300 px-3 py-1 border border-purple-800 rounded transition-colors"
+                >
+                  {captchaOpen ? 'Cerrar' : 'Resolver 🧩'}
+                </button>
               ) : null}
             </div>
 
@@ -61,6 +71,11 @@ function DailyTaskList({ tasks }) {
                 style={{ width: `${pct}%` }}
               />
             </div>
+
+            {/* Inline captcha panel for the captcha_daily task */}
+            {task.task_id === 'captcha_daily' && captchaOpen && !isClaimed && !isComplete && (
+              <CaptchaPanel />
+            )}
           </div>
         );
       })}
