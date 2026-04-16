@@ -410,7 +410,7 @@ describe('BuildingService', () => {
       .where({ player_id: TEST_PLAYER_ID, is_building: true })
       .update({ is_building: false, build_complete_at: null });
 
-    const result = await buildingService.buildNew(TEST_PLAYER_ID, 'stable');
+    const result = await buildingService.buildNew(TEST_PLAYER_ID, 'stable', 50, 50);
     expect(result.success).toBe(true);
     expect(result.buildingId).toBe('stable');
 
@@ -437,10 +437,10 @@ describe('BuildingService', () => {
       .where({ player_id: TEST_PLAYER_ID, is_building: true })
       .update({ is_building: false, build_complete_at: null });
 
-    await buildingService.buildNew(TEST_PLAYER_ID, 'stable');
+    await buildingService.buildNew(TEST_PLAYER_ID, 'stable', 50, 50);
 
     await expect(
-      buildingService.buildNew(TEST_PLAYER_ID, 'sawmill')
+      buildingService.buildNew(TEST_PLAYER_ID, 'sawmill', 60, 60)
     ).rejects.toThrow(/en construcción/i);
 
     // Cleanup

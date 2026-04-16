@@ -343,6 +343,16 @@ export default class WorldScene extends Phaser.Scene {
     EventBridge.on('game:animalsUpdated', (animals) => {
       this.updateAnimals(animals);
     });
+
+    // Token earned: float "+X KH" text in game world
+    EventBridge.on('token:earned', ({ amount, x, y }) => {
+      if (!this.particleSystem || amount <= 0) return;
+      const cam = this.cameras.main;
+      // Use provided world coords, or default to visible center of world
+      const wx = (x != null) ? x : cam.scrollX + cam.width / 2;
+      const wy = (y != null) ? y : cam.scrollY + cam.height / 3;
+      this.particleSystem.emitTokenGain(wx, wy, amount);
+    });
   }
 
   /**

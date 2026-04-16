@@ -1,7 +1,8 @@
 /**
  * GameHUD: Top overlay showing player resources, level, XP bar.
+ * Shows a brief pulse animation on the KH token balance when tokens are earned.
  */
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
@@ -20,11 +21,26 @@ export default function GameHUD() {
   const tokenInfo = useGameStore((s) => s.tokenInfo);
 
   const [timeInfo, setTimeInfo] = useState({ icon: '☀️', period: 'morning', dayCount: 1 });
+  const [tokenPulse, setTokenPulse] = useState(false);
+  const pulseTimer = useRef(null);
 
   useEffect(() => {
     const handler = (data) => setTimeInfo(data);
     EventBridge.on('time:updated', handler);
     return () => EventBridge.off('time:updated', handler);
+  }, []);
+
+  useEffect(() => {
+    const handler = () => {
+      setTokenPulse(true);
+      if (pulseTimer.current) clearTimeout(pulseTimer.current);
+      pulseTimer.current = setTimeout(() => setTokenPulse(false), 1000);
+    };
+    EventBridge.on('token:earned', handler);
+    return () => {
+      EventBridge.off('token:earned', handler);
+      if (pulseTimer.current) clearTimeout(pulseTimer.current);
+    };
   }, []);
 
   const xpPercent = useMemo(() => {
@@ -89,7 +105,11 @@ export default function GameHUD() {
             </div>
           ))}
           {tokenInfo && (
-            <div className="flex items-center gap-0.5 text-[10px] text-yellow-300 whitespace-nowrap">
+            <div
+              className={`flex items-center gap-0.5 text-[10px] whitespace-nowrap transition-all duration-200 ${
+                tokenPulse ? 'text-purple-300 scale-125' : 'text-yellow-300'
+              }`}
+            >
               <span>💎</span>
               <span>{tokenInfo.balance || 0} KH</span>
             </div>

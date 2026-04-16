@@ -52,6 +52,7 @@ const TOKEN_CONFIG = {
     { id: 'battle_win_1', desc: 'Gana 1 batalla', icon: '⚔️', action: 'battle_win', target: 1, reward: 12 },
     { id: 'mission_1', desc: 'Completa 1 mision', icon: '📋', action: 'mission_complete', target: 1, reward: 10 },
     { id: 'login', desc: 'Inicia sesion', icon: '👋', action: 'login', target: 1, reward: 3 },
+    { id: 'captcha_daily', desc: 'Resuelve el desafio del dia', icon: '🧩', action: 'captcha', target: 1, reward: 5 },
   ],
 
   // -- Social Tasks (one-time) --

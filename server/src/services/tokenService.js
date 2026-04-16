@@ -86,7 +86,9 @@ const tokenService = {
     });
 
     // Pay referral commission (async, don't block)
-    this.payReferralCommission(playerId, awarded).catch(() => {});
+    this.payReferralCommission(playerId, awarded).catch((err) => {
+      console.error('[Token] Referral commission error:', err.message);
+    });
 
     return {
       awarded,
@@ -401,26 +403,34 @@ const tokenService = {
   },
 
   /**
-   * Leaderboard de tokens
+   * Leaderboard de tokens — uses a batch JOIN to avoid N+1 queries
    */
   async getTokenLeaderboard() {
     const tokens = await db('player_tokens')
       .orderBy('total_earned', 'desc')
       .limit(50);
 
-    const result = [];
-    for (const t of tokens) {
-      const player = await db('players').where('telegram_id', t.player_id).first();
-      if (player) {
-        result.push({
+    if (tokens.length === 0) return [];
+
+    // Fetch all players in a single query instead of N individual lookups
+    const playerIds = tokens.map((t) => t.player_id);
+    const players = await db('players').whereIn('telegram_id', playerIds);
+    const playerMap = {};
+    for (const p of players) {
+      playerMap[p.telegram_id] = p;
+    }
+
+    return tokens
+      .filter((t) => playerMap[t.player_id])
+      .map((t) => {
+        const player = playerMap[t.player_id];
+        return {
           displayName: player.display_name,
           level: player.level,
           totalEarned: t.total_earned,
           balance: t.balance,
-        });
-      }
-    }
-    return result;
+        };
+      });
   },
 };
 

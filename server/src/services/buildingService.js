@@ -57,6 +57,14 @@ const buildingService = {
       );
     }
 
+    // Verificar que no hay otra construcción en progreso (solo 1 construcción simultánea)
+    const inProgress = await db('player_buildings')
+      .where({ player_id: playerId, is_building: true })
+      .first();
+    if (inProgress) {
+      throw new Error('Ya tenés un edificio en construcción. Esperá que termine antes de construir otro.');
+    }
+
     // Validate no overlap with existing buildings
     const tileW = building.tileWidth || 2;
     const tileH = building.tileHeight || 2;

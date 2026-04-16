@@ -2,11 +2,10 @@ const combatService = require('../src/services/combatService');
 const { TROOPS } = require('../../shared/gameConfig');
 
 describe('Combat Balance Tests', () => {
-  test('equal armies: defender has structural advantage (BALANCE ISSUE)', () => {
-    // NOTE: The combat engine gives defenders a built-in advantage because
-    // defensePower = (def + atk*0.5) * qty, while attackPower = atk * qty.
-    // For militia (atk:10, def:8): attacker=200, defender=260 for 20 troops.
-    // This means equal armies will ALWAYS favor the defender.
+  test('equal armies: balanced outcome with attacker initiative bonus (FIXED)', () => {
+    // FIXED: Changed defender formula from (def + atk*0.5) to (def + atk*0.3),
+    // plus added a 10% attacker first-strike initiative bonus.
+    // Equal armies should now produce roughly 40-55% attacker win rate.
     let attackerWins = 0;
     const totalBattles = 1000;
 
@@ -19,11 +18,11 @@ describe('Combat Balance Tests', () => {
     }
 
     const winRate = attackerWins / totalBattles;
-    console.log(`  [BALANCE] Equal armies attacker win rate: ${(winRate * 100).toFixed(1)}% (defender-biased by design)`);
+    console.log(`  [BALANCE] Equal armies attacker win rate: ${(winRate * 100).toFixed(1)}% (balanced after fix)`);
 
-    // Attacker needs ~30% more troops to have even odds
-    // This is a known imbalance — documenting, not asserting 50%
-    expect(winRate).toBeLessThan(0.15); // attacker rarely wins equal fights
+    // After fix: attacker should win roughly 40-60% of equal fights
+    expect(winRate).toBeGreaterThan(0.30);
+    expect(winRate).toBeLessThan(0.70);
   });
 
   test('cavalry vs militia: cavalry wins >55% (strongVs advantage)', () => {
