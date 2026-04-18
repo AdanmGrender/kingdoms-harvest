@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import TechTreePanel from './TechTreePanel';
 
 const BUILDING_DATA = {
   // Agricola
@@ -67,11 +68,52 @@ function BuildingCard({ building }) {
   );
 }
 
+const ANIMAL_ICONS = { chicken: '🐔', cow: '🐄', sheep: '🐑' };
+const ANIMAL_PRODUCTS = { chicken: '🥚 Huevo', cow: '🥛 Leche', sheep: '🧶 Lana' };
+
+function AnimalCard({ animal }) {
+  const { feedAnimal, collectAnimalProduct } = useGameStore();
+  const now = new Date();
+  const isReady = animal.is_fed && animal.next_production_at && new Date(animal.next_production_at) <= now;
+  const isFeeding = animal.is_fed && !isReady;
+
+  return (
+    <div className="game-card flex items-center gap-3">
+      <span className="text-3xl">{ANIMAL_ICONS[animal.animal_id] || '🐾'}</span>
+      <div className="flex-1">
+        <p className="font-bold text-sm">{animal.name}</p>
+        <p className="text-xs text-gray-400">{ANIMAL_PRODUCTS[animal.animal_id] || 'Producto'}</p>
+        {isFeeding && (
+          <p className="text-[10px] text-yellow-300 animate-pulse">Produciendo...</p>
+        )}
+        {isReady && (
+          <p className="text-[10px] text-green-400">¡Listo para recolectar!</p>
+        )}
+      </div>
+      <div className="shrink-0">
+        {isReady ? (
+          <button onClick={() => collectAnimalProduct(animal.id)} className="btn-primary text-xs">
+            Recolectar
+          </button>
+        ) : !animal.is_fed ? (
+          <button onClick={() => feedAnimal(animal.id)} className="bg-green-700 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-lg transition-all">
+            Alimentar
+          </button>
+        ) : (
+          <span className="text-yellow-400 text-xs">⏳</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function CastleView() {
-  const { buildings, loadBuildings, buildNew } = useGameStore();
+  const { buildings, animals, loadBuildings, loadAnimals, buildNew } = useGameStore();
   const [showBuildMenu, setShowBuildMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState('buildings');
 
   useEffect(() => {
+    loadAnimals();
     loadBuildings();
   }, []);
 
@@ -95,13 +137,52 @@ function CastleView() {
         <h2 className="font-medieval text-lg text-kingdom-gold flex items-center gap-2">
           <SpriteIcon name="castle_flag" size={24} /> Tu Castillo
         </h2>
-        <button
-          onClick={() => setShowBuildMenu(!showBuildMenu)}
-          className="btn-primary text-xs"
-        >
-          + Construir
-        </button>
+        {activeTab === 'buildings' && (
+          <button onClick={() => setShowBuildMenu(!showBuildMenu)} className="btn-primary text-xs">
+            + Construir
+          </button>
+        )}
       </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 mb-4">
+        {[
+          { id: 'buildings', label: '🏰 Edificios' },
+          { id: 'animals',   label: '🐄 Animales' },
+          { id: 'tech',      label: '🔬 Tecnología' },
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+              activeTab === t.id
+                ? 'bg-kingdom-accent text-white'
+                : 'bg-kingdom-blue/50 text-gray-400'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Animals tab */}
+      {activeTab === 'animals' && (
+        <div className="space-y-2">
+          {animals.length === 0 ? (
+            <p className="text-gray-400 text-sm text-center py-6">
+              No tenés animales. Construí un Establo y comprá animales.
+            </p>
+          ) : (
+            animals.map((a) => <AnimalCard key={a.id} animal={a} />)
+          )}
+        </div>
+      )}
+
+      {/* Tech tab */}
+      {activeTab === 'tech' && <TechTreePanel />}
+
+      {/* Buildings tab */}
+      {activeTab === 'buildings' && <>
 
       {/* Menu de construccion */}
       {showBuildMenu && (
@@ -146,6 +227,8 @@ function CastleView() {
       {buildings.length === 0 && (
         <p className="text-gray-400 text-center py-8">Cargando edificios...</p>
       )}
+
+      </> /* end buildings tab */}
     </div>
   );
 }

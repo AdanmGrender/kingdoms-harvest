@@ -9,6 +9,7 @@ import GameHUD from './components/overlay/GameHUD';
 import OverlayManager from './components/overlay/OverlayManager';
 import BuildingToolbar from './components/overlay/BuildingToolbar';
 import TutorialOverlay from './components/overlay/TutorialOverlay';
+import StreakBanner from './components/overlay/StreakBanner';
 
 function App() {
   const { initGame, isLoading, error } = useGameStore();
@@ -43,8 +44,17 @@ function App() {
       }
     };
 
+    // Bridge socket/Phaser game:notification events into the toast system
+    const handleGameNotification = ({ text, type = 'info' }) => {
+      useGameStore.getState().addNotification(text, type);
+    };
+    EventBridge.on('game:notification', handleGameNotification);
+
     EventBridge.on('building:placed', handleBuildingPlaced);
-    return () => EventBridge.off('building:placed', handleBuildingPlaced);
+    return () => {
+      EventBridge.off('building:placed', handleBuildingPlaced);
+      EventBridge.off('game:notification', handleGameNotification);
+    };
   }, []);
 
   if (isLoading) return <LoadingScreen />;
@@ -70,6 +80,7 @@ function App() {
       <GameHUD />
       <OverlayManager />
       <BuildingToolbar />
+      <StreakBanner />
       <NotificationToast />
       <TutorialOverlay />
     </div>

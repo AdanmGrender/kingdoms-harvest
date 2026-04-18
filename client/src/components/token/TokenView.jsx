@@ -6,6 +6,7 @@ import SocialTaskList from './SocialTaskList';
 import BurnPanel from './BurnPanel';
 import WalletPanel from './WalletPanel';
 import ReferralPanel from './ReferralPanel';
+import LeaderboardPanel from './LeaderboardPanel';
 
 function TokenView() {
   const {
@@ -26,11 +27,12 @@ function TokenView() {
   }, []);
 
   const sections = [
-    { id: 'tasks', label: 'Tareas', sprite: 'scroll' },
-    { id: 'social', label: 'Social', sprite: 'castle_flag' },
-    { id: 'burn', label: 'Quemar', sprite: 'reward_bag' },
-    { id: 'wallet', label: 'Wallet', sprite: 'backpack' },
-    { id: 'referral', label: 'Referidos', sprite: 'farmer' },
+    { id: 'tasks',       label: 'Tareas',    sprite: 'scroll' },
+    { id: 'social',      label: 'Social',    sprite: 'castle_flag' },
+    { id: 'leaderboard', label: 'Ranking',   sprite: 'medal' },
+    { id: 'burn',        label: 'Quemar',    sprite: 'reward_bag' },
+    { id: 'wallet',      label: 'Wallet',    sprite: 'backpack' },
+    { id: 'referral',    label: 'Referidos', sprite: 'farmer' },
   ];
 
   return (
@@ -108,13 +110,12 @@ function TokenView() {
       </div>
 
       {/* Active section */}
-      {activeSection === 'tasks' && <DailyTaskList tasks={dailyTasks} />}
-      {activeSection === 'social' && <SocialTaskList tasks={socialTasks} />}
-      {activeSection === 'burn' && <BurnPanel tokenInfo={tokenInfo} />}
-      {activeSection === 'wallet' && <WalletPanel tokenInfo={tokenInfo} />}
-      {activeSection === 'referral' && (
-        <ReferralPanel stats={referralStats} link={referralLink} />
-      )}
+      {activeSection === 'tasks'       && <DailyTaskList tasks={dailyTasks} />}
+      {activeSection === 'social'      && <SocialTaskList tasks={socialTasks} />}
+      {activeSection === 'leaderboard' && <LeaderboardPanel />}
+      {activeSection === 'burn'        && <BurnPanel tokenInfo={tokenInfo} />}
+      {activeSection === 'wallet'      && <WalletPanel tokenInfo={tokenInfo} />}
+      {activeSection === 'referral'    && <ReferralPanel stats={referralStats} link={referralLink} />}
     </div>
   );
 }
