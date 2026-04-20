@@ -1,13 +1,22 @@
 /**
- * IsoMapGenerator — procedural per-player isometric map.
+ * Map generator — procedural per-player top-down map using Kenney medieval-rts.
  *
- * Uses Kenney medieval-rts tileset (58 terrain tiles, 21 environment sprites,
- * 23 structure sprites). Output is pure data — no Phaser coupling.
+ * Kenney medieval-rts is TOP-DOWN 2D (not isometric), 64×64 tiles. Biome tile
+ * IDs were verified by reading each PNG:
  *
- * Tile IDs verified against Preview.png:
- *   1-2  = grass   3-4 = sand   5-6 = dirt   7-8 = stone   9-10 = snow
- *   11-58 = path connectors through biomes (reserved for future road system)
- * Kenney medieval-rts has no water tiles — lakes omitted.
+ *   1, 2   = plain sand (pale beige)
+ *   3-7    = grass + dirt path connectors  (road segments on grass)
+ *   8-12   = sand + dirt path connectors   (road segments on sand)
+ *   13, 14 = plain dirt (brown)
+ *   15, 16 = plain ice  (pale blue)
+ *   17-20, 31 = more grass + path variants
+ *   25-26, 38 = more sand + path variants
+ *   29, 30 = plain snow (white)
+ *   44, 45, 50, 55 = pre-decorated (trees / crops / wood) — skip for base terrain
+ *   57, 58 = plain grass
+ *
+ * Kenney medieval-rts has no dedicated "plain stone" tile — rocky terrain is
+ * expressed by rock/boulder decorations placed on dirt tiles.
  */
 import { rngFromSeed, pick, randInt } from '../lib/prng.js';
 
@@ -16,23 +25,42 @@ export const BIOMES = {
   FOREST: 'forest',
   DIRT: 'dirt',
   SAND: 'sand',
-  STONE: 'stone',
+  ICE: 'ice',
   SNOW: 'snow',
   ROAD: 'road',
 };
 
-/** Kenney terrain tile IDs per biome (verified against pack Preview). */
+/** Plain biome tile IDs (no paths / decorations baked in). */
 export const TILE_POOLS = {
-  [BIOMES.GRASS]:  [1, 2],
-  [BIOMES.FOREST]: [1, 2],
-  [BIOMES.DIRT]:   [5, 6],
-  [BIOMES.SAND]:   [3, 4],
-  [BIOMES.STONE]:  [7, 8],
-  [BIOMES.SNOW]:   [9, 10],
-  [BIOMES.ROAD]:   [5, 6],
+  [BIOMES.GRASS]:  [57, 58],
+  [BIOMES.FOREST]: [57, 58],  // forest = grass + tree decor
+  [BIOMES.DIRT]:   [13, 14],
+  [BIOMES.SAND]:   [1, 2],
+  [BIOMES.ICE]:    [15, 16],
+  [BIOMES.SNOW]:   [29, 30],
+  [BIOMES.ROAD]:   [13, 14],  // placeholder — pickRoadTile() picks real connector
 };
 
-/** Environment sprite IDs (1..21) — trees, rocks, bushes, flowers. */
+/** Path-connector tiles by neighbor bitmask N=1, E=2, S=4, W=8.
+ *  Picked heuristically by visual inspection of Kenney preview. Fallback = plain dirt. */
+export const ROAD_CONNECTORS = {
+  ON_GRASS: {
+    0b0011: 3,   // N + E
+    0b0110: 4,   // E + S
+    0b1100: 6,   // S + W
+    0b1001: 7,   // W + N
+    0b0101: 17,  // N + S straight
+    0b1010: 18,  // E + W straight
+    0b0111: 19,  // N + E + S
+    0b1110: 20,  // E + S + W
+    0b1101: 31,  // S + W + N
+    0b1011: 5,   // W + N + E
+    0b1111: 5,   // 4-way
+    '*':    13,  // plain dirt as fallback
+  },
+};
+
+/** Environment sprite pools (21 tiles total). */
 export const DECOR_POOLS = {
   TREE:        [9, 10, 11, 12, 17, 18, 19],
   TREE_SPARSE: [9, 10, 11],
@@ -41,7 +69,7 @@ export const DECOR_POOLS = {
   FLOWER:      [1, 5],
 };
 
-/** Kenney Structure sprite IDs (1..23) — buildings, ruins, landmarks. */
+/** Structure sprite pools (23 tiles). */
 export const STRUCT_POOLS = {
   WINDMILL:    [11, 12],
   WATCHTOWER:  [5, 13],
@@ -51,10 +79,6 @@ export const STRUCT_POOLS = {
   BARN:        [2, 10],
 };
 
-/**
- * Gatherable resource nodes — tagged with type + amount for future gameplay.
- * tileId refers to an Environment sprite (reusing DECOR_POOLS visuals).
- */
 export const RESOURCE_TYPES = {
   WOOD:  'wood',
   STONE: 'stone',
@@ -64,75 +88,101 @@ export const RESOURCE_TYPES = {
 
 const DECOR_RULES = {
   [BIOMES.GRASS]: [
-    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.10 },
+    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.08 },
     { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.05 },
     { type: 'flower', pool: DECOR_POOLS.FLOWER,      chance: 0.06 },
   ],
   [BIOMES.FOREST]: [
-    { type: 'tree',   pool: DECOR_POOLS.TREE,        chance: 0.55 },
+    { type: 'tree',   pool: DECOR_POOLS.TREE,        chance: 0.50 },
     { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.10 },
   ],
   [BIOMES.DIRT]: [
-    { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.06 },
-  ],
-  [BIOMES.STONE]: [
-    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.28 },
-    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.05 },
+    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.18 },
+    { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.04 },
   ],
   [BIOMES.SAND]: [
-    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.04 },
+    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.03 },
   ],
+  [BIOMES.ICE]: [],
   [BIOMES.SNOW]: [
-    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.08 },
-    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.06 },
+    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.04 },
+    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.05 },
   ],
   [BIOMES.ROAD]: [],
 };
 
-function biomesForLatitude(yFraction) {
-  if (yFraction < 0.18) return [BIOMES.SNOW, BIOMES.SNOW, BIOMES.STONE];
-  if (yFraction < 0.35) return [BIOMES.STONE, BIOMES.GRASS, BIOMES.FOREST];
-  if (yFraction < 0.65) return [BIOMES.GRASS, BIOMES.GRASS, BIOMES.FOREST, BIOMES.DIRT];
-  if (yFraction < 0.82) return [BIOMES.GRASS, BIOMES.DIRT, BIOMES.SAND];
-  return [BIOMES.SAND, BIOMES.SAND, BIOMES.DIRT];
+// ────────────────────────────────────────────────────────────────
+//  Climate zoning — latitude drives the primary biome.
+//  Returns the *dominant* biome for a given north-south fraction.
+// ────────────────────────────────────────────────────────────────
+function climateBand(yFrac) {
+  if (yFrac < 0.10) return BIOMES.SNOW;   // polar
+  if (yFrac < 0.22) return BIOMES.DIRT;   // tundra (rocky)
+  if (yFrac < 0.40) return BIOMES.GRASS;  // cool grass
+  if (yFrac < 0.70) return BIOMES.GRASS;  // temperate (grass + forest clumps)
+  if (yFrac < 0.85) return BIOMES.DIRT;   // dry scrubland
+  return BIOMES.SAND;                      // desert
 }
+
+// Forbidden neighbor pairs — replaced with a buffer biome.
+const FORBIDDEN = new Map([
+  [`${BIOMES.SAND}|${BIOMES.SNOW}`, BIOMES.GRASS],
+  [`${BIOMES.SNOW}|${BIOMES.SAND}`, BIOMES.GRASS],
+  [`${BIOMES.SAND}|${BIOMES.ICE}`,  BIOMES.DIRT],
+  [`${BIOMES.ICE}|${BIOMES.SAND}`,  BIOMES.DIRT],
+  [`${BIOMES.SAND}|${BIOMES.GRASS}`, BIOMES.DIRT],   // sand-grass needs dirt buffer
+  [`${BIOMES.GRASS}|${BIOMES.SAND}`, BIOMES.DIRT],
+]);
 
 /**
  * Generate a deterministic map for a given seed.
  */
-export function generateMap({ seed, width = 28, height = 28, regionCount = 9 }) {
+export function generateMap({ seed, width = 28, height = 28 } = {}) {
   const rng = rngFromSeed(seed);
 
-  // 1) Voronoi seeds with climate-aware biome picks.
-  const regions = [];
-  for (let i = 0; i < regionCount; i++) {
-    const cx = randInt(rng, 0, width - 1);
-    const cy = randInt(rng, 0, height - 1);
-    const biome = pick(rng, biomesForLatitude(cy / height));
-    regions.push({ cx, cy, biome });
-  }
-
-  // 2) Assign each tile to its nearest region.
+  // 1) Latitude-driven base climate for every tile (wiggle boundaries with noise).
   let terrain = Array.from({ length: height }, () => Array(width).fill(BIOMES.GRASS));
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      let best = regions[0], bestD = Infinity;
-      for (const r of regions) {
-        const d = (x - r.cx) ** 2 + (y - r.cy) ** 2;
-        if (d < bestD) { bestD = d; best = r; }
-      }
-      terrain[y][x] = best.biome;
+      // Wobble the latitude so bands aren't straight horizontal lines.
+      const wobble = (Math.sin(x * 0.35 + seed) + Math.cos(y * 0.42 - seed)) * 0.05;
+      terrain[y][x] = climateBand(y / height + wobble);
     }
   }
 
-  // 3) Smoothing — two passes of 3x3 majority vote.
-  terrain = smoothBiomes(terrain, width, height);
-  terrain = smoothBiomes(terrain, width, height);
+  // 2) Forest blobs (3–5) inside the temperate grass band.
+  const forestCount = randInt(rng, 3, 5);
+  for (let i = 0; i < forestCount; i++) {
+    const cx = randInt(rng, 3, width - 4);
+    const cy = randInt(rng, Math.floor(height * 0.35), Math.floor(height * 0.70));
+    const r = randInt(rng, 2, 4);
+    stampBlob(terrain, cx, cy, r, BIOMES.FOREST, rng, [BIOMES.GRASS]);
+  }
 
-  // 4) Biome compatibility — buffer sand↔snow adjacencies.
-  bufferIncompatibleEdges(terrain, width, height);
+  // 3) Ice lakes — 1–2 small patches inside the snow band.
+  const iceCount = randInt(rng, 1, 2);
+  for (let i = 0; i < iceCount; i++) {
+    const cx = randInt(rng, 2, width - 3);
+    const cy = randInt(rng, 1, Math.floor(height * 0.15));
+    const r = randInt(rng, 1, 2);
+    stampBlob(terrain, cx, cy, r, BIOMES.ICE, rng, [BIOMES.SNOW, BIOMES.GRASS]);
+  }
 
-  // 5) Pick spawn (nearest grass/dirt/forest to center) + clear 3x3 pad.
+  // 4) Dirt pockets — scattered rocky patches within grass zones (future stone areas).
+  const dirtCount = randInt(rng, 2, 4);
+  for (let i = 0; i < dirtCount; i++) {
+    const cx = randInt(rng, 2, width - 3);
+    const cy = randInt(rng, Math.floor(height * 0.25), Math.floor(height * 0.75));
+    stampBlob(terrain, cx, cy, randInt(rng, 1, 2), BIOMES.DIRT, rng, [BIOMES.GRASS, BIOMES.FOREST]);
+  }
+
+  // 5) Strong smoothing — 4 passes of 3×3 majority vote.
+  for (let p = 0; p < 4; p++) terrain = smoothBiomes(terrain, width, height);
+
+  // 6) Enforce forbidden adjacencies by inserting buffer biome.
+  terrain = bufferIncompatible(terrain, width, height);
+
+  // 7) Spawn near map center on walkable biome, with 3×3 grass pad.
   const cx = Math.floor(width / 2);
   const cy = Math.floor(height / 2);
   const spawn = findSpawn(terrain, cx, cy, width, height);
@@ -143,10 +193,10 @@ export function generateMap({ seed, width = 28, height = 28, regionCount = 9 }) 
     }
   }
 
-  // 6) Carve roads — 1-2 meandering dirt paths from random edge to spawn.
+  // 8) Carve 1–2 meandering roads from a random edge to spawn.
   const roads = carveRoads(terrain, width, height, spawn, rng);
 
-  // 7) Roll tile variants from biome pools.
+  // 9) Roll tile variants from each biome's plain pool.
   const tileVariants = Array.from({ length: height }, () => Array(width).fill(0));
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -154,16 +204,15 @@ export function generateMap({ seed, width = 28, height = 28, regionCount = 9 }) 
     }
   }
 
-  // 8) Structure POIs (windmill, church, watchtower, ruins).
+  // 10) POI structures (church, windmill, watchtower, ruins).
   const structures = placeStructures(terrain, width, height, spawn, rng);
 
-  // 9) Resource clusters (wood in forest, stone/iron in stone, wheat near spawn).
-  //    Tracks occupied tiles to avoid overlap with structures.
-  const occupied = new Set(structures.map((s) => `${s.x},${s.y}`));
+  // 11) Resource clusters.
+  const occupied = new Set(structures.map(s => `${s.x},${s.y}`));
   const resources = placeResources(terrain, width, height, spawn, rng, occupied);
   for (const r of resources) occupied.add(`${r.x},${r.y}`);
 
-  // 10) Decorations (respect spawn radius + occupied tiles).
+  // 12) Decorations (trees on grass/forest, rocks on dirt, etc.).
   const CLEAR_R = 3;
   const decorations = [];
   for (let y = 0; y < height; y++) {
@@ -173,27 +222,22 @@ export function generateMap({ seed, width = 28, height = 28, regionCount = 9 }) 
       if (dx * dx + dy * dy < CLEAR_R * CLEAR_R) continue;
       const rules = DECOR_RULES[terrain[y][x]];
       if (!rules || rules.length === 0) continue;
-
       const roll = rng();
       let acc = 0;
       for (const rule of rules) {
         acc += rule.chance;
         if (roll < acc) {
-          decorations.push({
-            x, y,
-            type: rule.type,
-            tileId: pick(rng, rule.pool),
-          });
+          decorations.push({ x, y, type: rule.type, tileId: pick(rng, rule.pool) });
           break;
         }
       }
     }
   }
 
-  // 11) Fog of war — visible within radius around spawn and along roads.
+  // 13) Fog of war — radius around spawn + road tiles.
   const visibility = computeVisibility(width, height, spawn, roads, 9);
 
-  // 12) Buildable plots ring around spawn (radius 3, skip stone/snow).
+  // 14) Buildable plots ring around spawn (skip snow/ice).
   const buildablePlots = [];
   for (let dy = -3; dy <= 3; dy++) {
     for (let dx = -3; dx <= 3; dx++) {
@@ -201,31 +245,36 @@ export function generateMap({ seed, width = 28, height = 28, regionCount = 9 }) 
       const nx = spawn.x + dx, ny = spawn.y + dy;
       if (!inBounds(nx, ny, width, height)) continue;
       const b = terrain[ny][nx];
-      if (b === BIOMES.STONE || b === BIOMES.SNOW) continue;
+      if (b === BIOMES.SNOW || b === BIOMES.ICE) continue;
       buildablePlots.push({ x: nx, y: ny });
     }
   }
 
   return {
-    width,
-    height,
-    terrain,
-    tileVariants,
-    decorations,
-    structures,
-    resources,
-    roads,
-    visibility,
-    spawn,
-    buildablePlots,
-    seed,
+    width, height, terrain, tileVariants, decorations, structures, resources,
+    roads, visibility, spawn, buildablePlots, seed,
     biomes: summarizeBiomes(terrain),
   };
 }
 
-// ————————————————————————————————————————————————————————————————————
-//  Pipeline steps
-// ————————————————————————————————————————————————————————————————————
+// ────────────────────────────────────────────────────────────────
+//  Helpers
+// ────────────────────────────────────────────────────────────────
+
+/** Paint a rough circular blob of `biome` at (cx,cy), only over `onTop` biomes. */
+function stampBlob(terrain, cx, cy, radius, biome, rng, onTop) {
+  for (let dy = -radius - 1; dy <= radius + 1; dy++) {
+    for (let dx = -radius - 1; dx <= radius + 1; dx++) {
+      const x = cx + dx, y = cy + dy;
+      if (y < 0 || y >= terrain.length || x < 0 || x >= terrain[0].length) continue;
+      const d2 = dx * dx + dy * dy;
+      const jitter = rng() * 1.3;
+      if (d2 <= radius * radius + jitter) {
+        if (!onTop || onTop.includes(terrain[y][x])) terrain[y][x] = biome;
+      }
+    }
+  }
+}
 
 function smoothBiomes(terrain, width, height) {
   const next = Array.from({ length: height }, (_, y) => terrain[y].slice());
@@ -248,35 +297,36 @@ function smoothBiomes(terrain, width, height) {
   return next;
 }
 
-function bufferIncompatibleEdges(terrain, width, height) {
-  const bad = new Set([
-    `${BIOMES.SAND}|${BIOMES.SNOW}`,
-    `${BIOMES.SNOW}|${BIOMES.SAND}`,
-  ]);
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const a = terrain[y][x];
-      for (const [dx, dy] of [[1, 0], [0, 1]]) {
-        const nx = x + dx, ny = y + dy;
-        if (!inBounds(nx, ny, width, height)) continue;
-        const b = terrain[ny][nx];
-        if (bad.has(`${a}|${b}`)) {
-          if (a === BIOMES.SAND) terrain[y][x] = BIOMES.GRASS;
-          else terrain[ny][nx] = BIOMES.GRASS;
+/** Replace forbidden adjacencies with a buffer biome. Runs until stable. */
+function bufferIncompatible(terrain, width, height) {
+  const copy = terrain.map(r => r.slice());
+  for (let pass = 0; pass < 3; pass++) {
+    let changed = false;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const a = copy[y][x];
+        for (const [dx, dy] of [[1, 0], [0, 1]]) {
+          const nx = x + dx, ny = y + dy;
+          if (!inBounds(nx, ny, width, height)) continue;
+          const b = copy[ny][nx];
+          const bufferTo = FORBIDDEN.get(`${a}|${b}`);
+          if (bufferTo) {
+            // Insert buffer on whichever side is "weaker" (the less-connected neighbor).
+            // Simple heuristic: convert the second cell to the buffer biome.
+            copy[ny][nx] = bufferTo;
+            changed = true;
+          }
         }
       }
     }
+    if (!changed) break;
   }
+  return copy;
 }
 
-/**
- * Carve meandering dirt roads (drunkard's walk toward spawn).
- * Changes terrain to ROAD along the path.
- */
 function carveRoads(terrain, width, height, spawn, rng) {
   const roads = [];
   const roadCount = randInt(rng, 1, 2);
-
   for (let i = 0; i < roadCount; i++) {
     const edge = randInt(rng, 0, 3);
     let x, y;
@@ -290,16 +340,12 @@ function carveRoads(terrain, width, height, spawn, rng) {
     const maxSteps = width * height;
     while ((x !== spawn.x || y !== spawn.y) && steps < maxSteps) {
       if (inBounds(x, y, width, height)) {
-        // Don't flatten water-like or stone (keeps stone biomes impassable pockets).
-        if (terrain[y][x] !== BIOMES.STONE) {
-          terrain[y][x] = BIOMES.ROAD;
-          path.push({ x, y });
-        }
+        terrain[y][x] = BIOMES.ROAD;
+        path.push({ x, y });
       }
-      // Greedy-with-jitter: 70% toward spawn, 30% random drift.
       const dx = Math.sign(spawn.x - x);
       const dy = Math.sign(spawn.y - y);
-      if (rng() < 0.7) {
+      if (rng() < 0.72) {
         if (rng() < 0.5 && dx !== 0) x += dx;
         else if (dy !== 0) y += dy;
         else x += dx;
@@ -317,22 +363,16 @@ function carveRoads(terrain, width, height, spawn, rng) {
   return roads;
 }
 
-/**
- * Place distinct landmark structures on biome-appropriate tiles.
- * Each structure type tries up to 30 candidates; respects min-distance rules.
- */
 function placeStructures(terrain, width, height, spawn, rng) {
   const MIN_FROM_SPAWN = 6;
   const MIN_FROM_OTHER = 4;
   const placed = [];
-
   const plans = [
     { type: 'church',     pool: STRUCT_POOLS.CHURCH,     biomes: [BIOMES.GRASS],              count: 1, chance: 0.6 },
     { type: 'windmill',   pool: STRUCT_POOLS.WINDMILL,   biomes: [BIOMES.GRASS, BIOMES.DIRT], count: 1, chance: 0.8 },
-    { type: 'watchtower', pool: STRUCT_POOLS.WATCHTOWER, biomes: [BIOMES.STONE, BIOMES.GRASS], count: 1, chance: 0.8 },
-    { type: 'ruins',      pool: STRUCT_POOLS.RUINS,      biomes: [BIOMES.SAND, BIOMES.DIRT, BIOMES.STONE], count: 2, chance: 1.0 },
+    { type: 'watchtower', pool: STRUCT_POOLS.WATCHTOWER, biomes: [BIOMES.DIRT, BIOMES.GRASS], count: 1, chance: 0.8 },
+    { type: 'ruins',      pool: STRUCT_POOLS.RUINS,      biomes: [BIOMES.SAND, BIOMES.DIRT],  count: 2, chance: 1.0 },
   ];
-
   for (const plan of plans) {
     if (rng() > plan.chance) continue;
     for (let n = 0; n < plan.count; n++) {
@@ -349,11 +389,7 @@ function placeStructures(terrain, width, height, spawn, rng) {
           if (d < MIN_FROM_OTHER * MIN_FROM_OTHER) { tooClose = true; break; }
         }
         if (tooClose) continue;
-        placed.push({
-          x, y,
-          type: plan.type,
-          tileId: pick(rng, plan.pool),
-        });
+        placed.push({ x, y, type: plan.type, tileId: pick(rng, plan.pool) });
         break;
       }
     }
@@ -361,23 +397,14 @@ function placeStructures(terrain, width, height, spawn, rng) {
   return placed;
 }
 
-/**
- * Place gatherable resource clusters.
- * Each resource type finds its biome, scatters N clusters of M nodes.
- */
 function placeResources(terrain, width, height, spawn, rng, occupied) {
   const resources = [];
-
   const push = (type, tileId, x, y) => {
     const key = `${x},${y}`;
     if (occupied.has(key)) return;
-    resources.push({
-      x, y, type, tileId,
-      amount: randInt(rng, 50, 200),
-    });
+    resources.push({ x, y, type, tileId, amount: randInt(rng, 50, 200) });
     occupied.add(key);
   };
-
   const placeClusters = (type, pool, biomes, clusters, clusterSize) => {
     const candidates = [];
     for (let y = 0; y < height; y++) {
@@ -400,26 +427,21 @@ function placeResources(terrain, width, height, spawn, rng, occupied) {
       }
     }
   };
-
-  placeClusters(RESOURCE_TYPES.WOOD,  DECOR_POOLS.TREE, [BIOMES.FOREST],                 3, 5);
-  placeClusters(RESOURCE_TYPES.STONE, DECOR_POOLS.ROCK, [BIOMES.STONE],                  2, 4);
-  placeClusters(RESOURCE_TYPES.IRON,  DECOR_POOLS.ROCK, [BIOMES.STONE],                  1, 2);
-
-  // Wheat: spawn-adjacent dirt tiles (the player's starter fields).
+  placeClusters(RESOURCE_TYPES.WOOD,  DECOR_POOLS.TREE, [BIOMES.FOREST], 3, 5);
+  placeClusters(RESOURCE_TYPES.STONE, DECOR_POOLS.ROCK, [BIOMES.DIRT],   2, 4);
+  placeClusters(RESOURCE_TYPES.IRON,  DECOR_POOLS.ROCK, [BIOMES.DIRT],   1, 2);
   for (let dy = -2; dy <= 2; dy++) {
     for (let dx = -2; dx <= 2; dx++) {
       const nx = spawn.x + dx, ny = spawn.y + dy;
       if (!inBounds(nx, ny, width, height)) continue;
-      if (terrain[ny][nx] !== BIOMES.DIRT) continue;
+      if (terrain[ny][nx] !== BIOMES.DIRT && terrain[ny][nx] !== BIOMES.GRASS) continue;
       if (Math.abs(dx) + Math.abs(dy) < 2) continue;
-      push(RESOURCE_TYPES.WHEAT, pick(rng, DECOR_POOLS.FLOWER), nx, ny);
+      if (rng() < 0.35) push(RESOURCE_TYPES.WHEAT, pick(rng, DECOR_POOLS.FLOWER), nx, ny);
     }
   }
-
   return resources;
 }
 
-/** BFS-ish fog reveal from spawn, plus all road tiles. */
 function computeVisibility(width, height, spawn, roads, radius) {
   const vis = Array.from({ length: height }, () => Array(width).fill(0));
   for (let y = 0; y < height; y++) {
@@ -429,20 +451,13 @@ function computeVisibility(width, height, spawn, roads, radius) {
     }
   }
   for (const path of roads) {
-    for (const p of path) {
-      if (inBounds(p.x, p.y, width, height)) vis[p.y][p.x] = 1;
-    }
+    for (const p of path) if (inBounds(p.x, p.y, width, height)) vis[p.y][p.x] = 1;
   }
   return vis;
 }
 
-// ————————————————————————————————————————————————————————————————————
-//  Helpers
-// ————————————————————————————————————————————————————————————————————
-
 function findSpawn(terrain, cx, cy, width, height) {
-  const walkable = (b) =>
-    b === BIOMES.GRASS || b === BIOMES.DIRT || b === BIOMES.FOREST;
+  const walkable = b => b === BIOMES.GRASS || b === BIOMES.DIRT || b === BIOMES.FOREST;
   if (walkable(terrain[cy][cx])) return { x: cx, y: cy };
   for (let r = 1; r < Math.max(width, height); r++) {
     for (let dy = -r; dy <= r; dy++) {

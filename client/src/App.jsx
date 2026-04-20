@@ -17,6 +17,10 @@ import BuildingToolbar from './components/overlay/BuildingToolbar';
 import TutorialOverlay from './components/overlay/TutorialOverlay';
 import StreakBanner from './components/overlay/StreakBanner';
 
+// Browser preview: ?iso=1 renders the Phaser iso scene without requiring
+// Telegram auth (IsoScene falls back to a random seed when no player is loaded).
+const ISO_PREVIEW = new URLSearchParams(window.location.search).get('iso') === '1';
+
 function App() {
   const { initGame, isLoading, error } = useGameStore();
 
@@ -45,7 +49,7 @@ function App() {
     const urlRef = new URLSearchParams(window.location.search).get('ref');
     const referralCode = startParam || urlRef || null;
 
-    initGame(referralCode);
+    if (!ISO_PREVIEW) initGame(referralCode);
 
     // Listen for building placement from Phaser scene
     const handleBuildingPlaced = async ({ buildingId, posX, posY }) => {
@@ -76,6 +80,17 @@ function App() {
       document.removeEventListener('gesturestart', blockGesture);
     };
   }, []);
+
+  if (ISO_PREVIEW) {
+    return (
+      <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
+        <PhaserGame />
+        <div className="absolute top-2 left-2 z-50 px-2 py-1 rounded bg-black/70 text-yellow-300 text-xs font-mono pointer-events-none">
+          ISO PREVIEW · no auth · drag to pan · wheel to zoom
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) return <LoadingScreen />;
 

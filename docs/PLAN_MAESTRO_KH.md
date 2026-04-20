@@ -1,7 +1,7 @@
 # 🏰 KINGDOMS HARVEST — Plan Maestro de Desarrollo
 ## Objetivo: City-Builder Medieval Mobile de Calidad Profesional
 
-> **Referencia visual:** Whiteout Survival / Last War / Age of Empires Mobile
+> **Referencia visual:** Whiteout Survival / Last War / Age of Empires Mobile / Rimworld
 > **Plataforma:** Telegram Mini App (mobile-first)
 > **Stack actual:** React + Phaser 3 + Node.js/Express + SQLite
 

@@ -1,5 +1,9 @@
 /**
- * IsoScene — renders a per-player procedural isometric map using Kenney medieval-rts.
+ * IsoScene — renders a per-player procedural TOP-DOWN map using Kenney medieval-rts.
+ *
+ * Despite the name, Kenney medieval-rts is a TOP-DOWN 2D tileset (64×64, not iso).
+ * Scene key kept as 'IsoScene' for backward compatibility; rendering is grid-aligned.
+ *
  * Map is generated from player.telegram_id so each player sees the same world on reload.
  * Activate via URL param ?iso=1 or scene.start('IsoScene').
  */
@@ -7,13 +11,14 @@ import Phaser from 'phaser';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../EventBridge';
 import { generateMap, BIOMES, RESOURCE_TYPES } from '../maps/IsoMapGenerator';
+import { ROAD_CONNECTORS } from '../maps/IsoMapGenerator';
 
-// Visual tile footprint (Kenney default-size tiles render 132x99px, 2:1 iso diamond).
-const TILE_W = 132;
-const TILE_H = 66;
+// Kenney medieval-rts tiles are 64×64 top-down squares.
+const TILE_W = 64;
+const TILE_H = 64;
 
-const MAP_W = 28;
-const MAP_H = 28;
+const MAP_W = 32;
+const MAP_H = 32;
 
 const FOG_TINT = 0x202040;
 const FOG_ALPHA = 0.55;
@@ -28,26 +33,6 @@ const RESOURCE_BADGE_COLORS = {
   [RESOURCE_TYPES.STONE]: 0xaaaaaa,
   [RESOURCE_TYPES.IRON]:  0x6ec1ff,
   [RESOURCE_TYPES.WHEAT]: 0xf5d742,
-};
-
-/**
- * Road tile lookup by neighbor bitmask (N=1, E=2, S=4, W=8).
- * Kenney tile IDs for path variants — educated guesses, refine after visual test.
- * Fallback `*` handles isolated tiles or unmatched bitmasks (plain dirt).
- */
-const ROAD_TILES = {
-  0b0011: 11, // N + E  → NE elbow
-  0b0110: 13, // E + S  → SE elbow
-  0b1100: 15, // S + W  → SW elbow
-  0b1001: 17, // W + N  → NW elbow
-  0b0101: 19, // N + S  → vertical straight
-  0b1010: 21, // E + W  → horizontal straight
-  0b0111: 23, // N + E + S → T-junction (west closed)
-  0b1110: 25, // E + S + W → T-junction (north closed)
-  0b1101: 27, // S + W + N → T-junction (east closed)
-  0b1011: 29, // W + N + E → T-junction (south closed)
-  0b1111: 31, // 4-way cross
-  '*':    5,  // 0/1-neighbor or unmapped → plain dirt
 };
 
 const pad2 = (n) => String(n).padStart(2, '0');
@@ -112,11 +97,11 @@ export default class IsoScene extends Phaser.Scene {
     });
   }
 
-  /** Grid (gx, gy) → screen pixel coords for iso diamond. */
+  /** Grid (gx, gy) → screen pixel coords (top-down square grid). */
   isoToScreen(gx, gy) {
     return {
-      x: this.originX + (gx - gy) * (TILE_W / 2),
-      y: this.originY + (gx + gy) * (TILE_H / 2),
+      x: this.originX + gx * TILE_W,
+      y: this.originY + gy * TILE_H,
     };
   }
 
@@ -139,7 +124,7 @@ export default class IsoScene extends Phaser.Scene {
     }
   }
 
-  /** Pick a Kenney path tile ID by checking which cardinal neighbors are road. */
+  /** Pick a Kenney grass+path connector by checking cardinal road neighbors. */
   pickRoadTile(x, y) {
     const { terrain, width, height } = this.mapData;
     const isRoad = (nx, ny) =>
@@ -150,7 +135,8 @@ export default class IsoScene extends Phaser.Scene {
       (isRoad(x + 1, y) ? 0b0010 : 0) | // E
       (isRoad(x, y + 1) ? 0b0100 : 0) | // S
       (isRoad(x - 1, y) ? 0b1000 : 0);  // W
-    return ROAD_TILES[mask] ?? ROAD_TILES['*'];
+    const pool = ROAD_CONNECTORS.ON_GRASS;
+    return pool[mask] ?? pool['*'];
   }
 
   drawStructures() {
@@ -158,8 +144,8 @@ export default class IsoScene extends Phaser.Scene {
     for (const s of this.mapData.structures) {
       const { x: sx, y: sy } = this.isoToScreen(s.x, s.y);
       const sprite = this.add.image(sx, sy, `iso_struct_${s.tileId}`);
-      sprite.setOrigin(0.5, 0.9);
-      sprite.setDepth(s.y * 100 + s.x + 10);
+      sprite.setOrigin(0.5, 0.5);
+      sprite.setDepth(10000 + s.y * 100 + s.x);
       sprite.setData('gridX', s.x);
       sprite.setData('gridY', s.y);
       sprite.setInteractive({ useHandCursor: true });
@@ -181,8 +167,8 @@ export default class IsoScene extends Phaser.Scene {
     for (const d of this.mapData.decorations) {
       const { x: sx, y: sy } = this.isoToScreen(d.x, d.y);
       const sprite = this.add.image(sx, sy, `iso_env_${d.tileId}`);
-      sprite.setOrigin(0.5, 0.85);
-      sprite.setDepth(d.y * 100 + d.x + 5);
+      sprite.setOrigin(0.5, 0.5);
+      sprite.setDepth(5000 + d.y * 100 + d.x);
       sprite.setData('gridX', d.x);
       sprite.setData('gridY', d.y);
       this.decorSprites.push(sprite);
@@ -195,13 +181,13 @@ export default class IsoScene extends Phaser.Scene {
     for (const r of this.mapData.resources) {
       const { x: sx, y: sy } = this.isoToScreen(r.x, r.y);
       const sprite = this.add.image(sx, sy, `iso_env_${r.tileId}`);
-      sprite.setOrigin(0.5, 0.85);
-      sprite.setDepth(r.y * 100 + r.x + 6);
+      sprite.setOrigin(0.5, 0.5);
+      sprite.setDepth(6000 + r.y * 100 + r.x);
 
       const badgeColor = RESOURCE_BADGE_COLORS[r.type] || 0xffffff;
-      const badge = this.add.circle(sx, sy - 32, 5, badgeColor);
+      const badge = this.add.circle(sx, sy - 22, 5, badgeColor);
       badge.setStrokeStyle(1, 0x1a1408);
-      badge.setDepth(r.y * 100 + r.x + 7);
+      badge.setDepth(6001 + r.y * 100 + r.x);
 
       sprite.setData('gridX', r.x);
       sprite.setData('gridY', r.y);
@@ -341,10 +327,10 @@ export default class IsoScene extends Phaser.Scene {
     const { x: sx, y: sy } = this.isoToScreen(this.mapData.spawn.x, this.mapData.spawn.y);
     const ring = this.add.graphics();
     ring.lineStyle(3, 0xffd750, 0.9);
-    ring.strokeCircle(sx, sy - 6, 30);
-    ring.fillStyle(0xffd750, 0.15);
-    ring.fillCircle(sx, sy - 6, 30);
-    ring.setDepth(this.mapData.spawn.y * 100 + this.mapData.spawn.x + 90);
+    ring.strokeCircle(sx, sy, 26);
+    ring.fillStyle(0xffd750, 0.12);
+    ring.fillCircle(sx, sy, 26);
+    ring.setDepth(4000);
 
     this.tweens.add({
       targets: ring,
