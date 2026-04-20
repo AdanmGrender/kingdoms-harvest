@@ -17,9 +17,12 @@ import BuildingToolbar from './components/overlay/BuildingToolbar';
 import TutorialOverlay from './components/overlay/TutorialOverlay';
 import StreakBanner from './components/overlay/StreakBanner';
 
-// Browser preview: ?iso=1 renders the Phaser iso scene without requiring
-// Telegram auth (IsoScene falls back to a random seed when no player is loaded).
-const ISO_PREVIEW = new URLSearchParams(window.location.search).get('iso') === '1';
+// Browser preview modes (skip Telegram auth):
+//   ?iso=1         → IsoScene
+//   ?preview=world → WorldScene (the authenticated game, auth-bypassed)
+const URL_PARAMS = new URLSearchParams(window.location.search);
+const ISO_PREVIEW =
+  URL_PARAMS.get('iso') === '1' || URL_PARAMS.get('preview') === 'world';
 
 function App() {
   const { initGame, isLoading, error } = useGameStore();

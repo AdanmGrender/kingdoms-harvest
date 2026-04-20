@@ -119,14 +119,67 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
+    // ─── Chroma-key: old spritesheets have solid white backgrounds that must
+    // be punched out to transparent before use. Terrain/Kenney tiles already
+    // have alpha and are skipped.
+    const chromaKeyTargets = [
+      'buildings', 'farm_tiles', 'troops', 'effects',
+      'npc_farmer', 'npc_baker', 'npc_princess', 'npc_wizard',
+      'npc_knight', 'npc_merchant', 'npc_ranger',
+      'chicken', 'cow', 'sheep',
+    ];
+    for (const key of chromaKeyTargets) this.makeWhiteTransparent(key);
+
     // ─── Create animations ───
     this.createNPCAnimations();
     this.createAnimalAnimations();
 
-    // URL-param switch: ?iso=1 → jump to isometric POC scene
+    // URL-param switch: ?iso=1 → IsoScene, otherwise WorldScene
     const params = new URLSearchParams(window.location.search);
     const target = params.get('iso') === '1' ? 'IsoScene' : 'WorldScene';
     this.scene.start(target);
+  }
+
+  /**
+   * Replace any near-white pixel in a texture with transparent. Needed because
+   * the old asset batch was exported over solid white instead of alpha.
+   * Threshold 240 covers faint JPEG-y edge fringing without eating legit cream
+   * tones in sprites.
+   */
+  makeWhiteTransparent(key, threshold = 240) {
+    const texture = this.textures.get(key);
+    if (!texture || texture.key === '__MISSING') return;
+    const src = texture.getSourceImage();
+    if (!src || !src.width) return;
+
+    // Capture spritesheet frame dims before we destroy the texture. Frame 0
+    // holds the natural frame size; a plain image has a single frame that
+    // covers the whole source.
+    const frame0 = texture.frames[0] || texture.frames['__BASE'];
+    const isSheet = frame0 && frame0.width > 0 && frame0.width < src.width;
+    const frameWidth = frame0?.width || src.width;
+    const frameHeight = frame0?.height || src.height;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = src.width;
+    canvas.height = src.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(src, 0, 0);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const px = imgData.data;
+    for (let i = 0; i < px.length; i += 4) {
+      if (px[i] >= threshold && px[i + 1] >= threshold && px[i + 2] >= threshold) {
+        px[i + 3] = 0;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    this.textures.remove(key);
+    if (isSheet) {
+      this.textures.addSpriteSheet(key, canvas, { frameWidth, frameHeight });
+    } else {
+      this.textures.addCanvas(key, canvas);
+    }
   }
 
   createNPCAnimations() {
