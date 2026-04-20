@@ -62,14 +62,15 @@ app.use(cors({
   methods: ['GET', 'POST'],
 }));
 
-// Rate limiting global
-app.use(rateLimit({
+// Rate limiting — solo rutas API (los assets estáticos no cuentan para el quota)
+const apiRateLimit = rateLimit({
   windowMs: 60 * 1000, // 1 minuto
   max: 100, // 100 requests por minuto por IP
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Demasiadas peticiones, intentá de nuevo en un momento' },
-}));
+});
+app.use('/api', apiRateLimit);
 
 // Body parser con límite de tamaño
 app.use(express.json({ limit: '16kb' }));
