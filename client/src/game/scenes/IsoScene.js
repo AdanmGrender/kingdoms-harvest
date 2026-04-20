@@ -11,8 +11,8 @@ import { generateMap } from '../maps/IsoMapGenerator';
 const TILE_W = 132;
 const TILE_H = 66;
 
-const MAP_W = 24;
-const MAP_H = 24;
+const MAP_W = 28;
+const MAP_H = 28;
 
 const pad2 = (n) => String(n).padStart(2, '0');
 
@@ -130,14 +130,22 @@ export default class IsoScene extends Phaser.Scene {
   }
 
   drawHUD(seed) {
-    const txt = `ISO MAP — seed:${String(seed).slice(0, 14)} — ${MAP_W}x${MAP_H} — drag/wheel`;
+    const mix = Object.entries(this.mapData.biomes || {})
+      .sort((a, b) => b[1] - a[1])
+      .map(([b, n]) => `${b[0].toUpperCase()}${b.slice(1, 3)}:${n}`)
+      .join(' ');
+    const lines = [
+      `ISO MAP — seed:${String(seed).slice(0, 14)} — ${MAP_W}x${MAP_H}`,
+      `biomes: ${mix}`,
+      `drag to pan · wheel to zoom`,
+    ];
     this.add
-      .text(12, 12, txt, {
+      .text(12, 12, lines.join('\n'), {
         fontFamily: 'monospace',
-        fontSize: '13px',
+        fontSize: '12px',
         color: '#ffd750',
         backgroundColor: '#000000aa',
-        padding: { x: 6, y: 3 },
+        padding: { x: 6, y: 4 },
       })
       .setScrollFactor(0)
       .setDepth(99999);
