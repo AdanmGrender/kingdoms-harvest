@@ -5,7 +5,8 @@
  */
 import Phaser from 'phaser';
 import useGameStore from '../../store/gameStore';
-import { generateMap, RESOURCE_TYPES } from '../maps/IsoMapGenerator';
+import EventBridge from '../EventBridge';
+import { generateMap, BIOMES, RESOURCE_TYPES } from '../maps/IsoMapGenerator';
 
 // Visual tile footprint (Kenney default-size tiles render 132x99px, 2:1 iso diamond).
 const TILE_W = 132;
@@ -17,11 +18,36 @@ const MAP_H = 28;
 const FOG_TINT = 0x202040;
 const FOG_ALPHA = 0.55;
 
+// Click-vs-drag threshold — pointer moved more than this (in screen px²) = pan, not tap.
+const CLICK_DRIFT_SQ = 100;
+
+const HARVEST_PER_TAP = 10;
+
 const RESOURCE_BADGE_COLORS = {
   [RESOURCE_TYPES.WOOD]:  0x8b5a2b,
   [RESOURCE_TYPES.STONE]: 0xaaaaaa,
   [RESOURCE_TYPES.IRON]:  0x6ec1ff,
   [RESOURCE_TYPES.WHEAT]: 0xf5d742,
+};
+
+/**
+ * Road tile lookup by neighbor bitmask (N=1, E=2, S=4, W=8).
+ * Kenney tile IDs for path variants — educated guesses, refine after visual test.
+ * Fallback `*` handles isolated tiles or unmatched bitmasks (plain dirt).
+ */
+const ROAD_TILES = {
+  0b0011: 11, // N + E  → NE elbow
+  0b0110: 13, // E + S  → SE elbow
+  0b1100: 15, // S + W  → SW elbow
+  0b1001: 17, // W + N  → NW elbow
+  0b0101: 19, // N + S  → vertical straight
+  0b1010: 21, // E + W  → horizontal straight
+  0b0111: 23, // N + E + S → T-junction (west closed)
+  0b1110: 25, // E + S + W → T-junction (north closed)
+  0b1101: 27, // S + W + N → T-junction (east closed)
+  0b1011: 29, // W + N + E → T-junction (south closed)
+  0b1111: 31, // 4-way cross
+  '*':    5,  // 0/1-neighbor or unmapped → plain dirt
 };
 
 const pad2 = (n) => String(n).padStart(2, '0');
@@ -72,6 +98,18 @@ export default class IsoScene extends Phaser.Scene {
     this.markSpawn();
     this.setupCamera();
     this.drawHUD(seed);
+
+    // Outside world can shout "show this spot" (e.g. villager walked there).
+    this.handleMapReveal = ({ x, y, radius = 5 } = {}) => {
+      if (typeof x === 'number' && typeof y === 'number') this.reveal(x, y, radius);
+    };
+    EventBridge.on('map:reveal', this.handleMapReveal);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      EventBridge.off('map:reveal', this.handleMapReveal);
+    });
+    this.events.once(Phaser.Scenes.Events.DESTROY, () => {
+      EventBridge.off('map:reveal', this.handleMapReveal);
+    });
   }
 
   /** Grid (gx, gy) → screen pixel coords for iso diamond. */
@@ -85,16 +123,34 @@ export default class IsoScene extends Phaser.Scene {
   /** Stores each terrain sprite by key "x,y" so fog can tint them in one pass. */
   drawTerrain() {
     this.terrainSprites = new Map();
-    const { tileVariants, width, height } = this.mapData;
+    const { tileVariants, terrain, width, height } = this.mapData;
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const { x: sx, y: sy } = this.isoToScreen(x, y);
-        const tile = this.add.image(sx, sy, `iso_tile_${tileVariants[y][x]}`);
+        const tileId =
+          terrain[y][x] === BIOMES.ROAD
+            ? this.pickRoadTile(x, y)
+            : tileVariants[y][x];
+        const tile = this.add.image(sx, sy, `iso_tile_${tileId}`);
         tile.setOrigin(0.5, 0.5);
         tile.setDepth(y * 100 + x);
         this.terrainSprites.set(`${x},${y}`, tile);
       }
     }
+  }
+
+  /** Pick a Kenney path tile ID by checking which cardinal neighbors are road. */
+  pickRoadTile(x, y) {
+    const { terrain, width, height } = this.mapData;
+    const isRoad = (nx, ny) =>
+      nx >= 0 && ny >= 0 && nx < width && ny < height && terrain[ny][nx] === BIOMES.ROAD;
+
+    const mask =
+      (isRoad(x, y - 1) ? 0b0001 : 0) | // N
+      (isRoad(x + 1, y) ? 0b0010 : 0) | // E
+      (isRoad(x, y + 1) ? 0b0100 : 0) | // S
+      (isRoad(x - 1, y) ? 0b1000 : 0);  // W
+    return ROAD_TILES[mask] ?? ROAD_TILES['*'];
   }
 
   drawStructures() {
@@ -106,6 +162,16 @@ export default class IsoScene extends Phaser.Scene {
       sprite.setDepth(s.y * 100 + s.x + 10);
       sprite.setData('gridX', s.x);
       sprite.setData('gridY', s.y);
+      sprite.setInteractive({ useHandCursor: true });
+      this.wireTap(sprite, () => {
+        EventBridge.emit('structure:selected', {
+          type: s.type,
+          x: s.x,
+          y: s.y,
+          tileId: s.tileId,
+        });
+        this.reveal(s.x, s.y, 3);
+      });
       this.structureSprites.push(sprite);
     }
   }
@@ -132,7 +198,8 @@ export default class IsoScene extends Phaser.Scene {
       sprite.setOrigin(0.5, 0.85);
       sprite.setDepth(r.y * 100 + r.x + 6);
 
-      const badge = this.add.circle(sx, sy - 32, 5, RESOURCE_BADGE_COLORS[r.type] || 0xffffff);
+      const badgeColor = RESOURCE_BADGE_COLORS[r.type] || 0xffffff;
+      const badge = this.add.circle(sx, sy - 32, 5, badgeColor);
       badge.setStrokeStyle(1, 0x1a1408);
       badge.setDepth(r.y * 100 + r.x + 7);
 
@@ -141,35 +208,133 @@ export default class IsoScene extends Phaser.Scene {
       badge.setData('gridX', r.x);
       badge.setData('gridY', r.y);
 
+      sprite.setInteractive({ useHandCursor: true });
+      this.wireTap(sprite, () => this.harvestResource(r, sprite, badge));
+
       this.resourceSprites.push(sprite, badge);
     }
   }
 
+  /** Harvest one tap: decrement amount, spawn float-text, destroy if depleted. */
+  harvestResource(r, sprite, badge) {
+    const gained = Math.min(HARVEST_PER_TAP, r.amount);
+    r.amount -= gained;
+
+    this.spawnFloatText(sprite.x, sprite.y - 40, `+${gained} ${r.type}`,
+      RESOURCE_BADGE_COLORS[r.type] || 0xffd750);
+
+    EventBridge.emit('resource:harvest', {
+      type: r.type,
+      amount: gained,
+      x: r.x,
+      y: r.y,
+      remaining: r.amount,
+    });
+
+    if (r.amount <= 0) {
+      sprite.destroy();
+      badge.destroy();
+    } else {
+      this.tweens.add({
+        targets: [sprite, badge],
+        scaleX: { from: 1.15, to: 1 },
+        scaleY: { from: 1.15, to: 1 },
+        duration: 150,
+      });
+    }
+  }
+
+  spawnFloatText(x, y, text, color) {
+    const hex = '#' + color.toString(16).padStart(6, '0');
+    const label = this.add
+      .text(x, y, text, {
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        fontStyle: 'bold',
+        color: hex,
+        stroke: '#000',
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5)
+      .setDepth(100000);
+    this.tweens.add({
+      targets: label,
+      y: y - 40,
+      alpha: { from: 1, to: 0 },
+      duration: 900,
+      onComplete: () => label.destroy(),
+    });
+  }
+
+  /**
+   * Attach a tap handler that only fires when pointer didn't drift (= real click,
+   * not a pan gesture starting on this sprite).
+   */
+  wireTap(sprite, onTap) {
+    let downX = 0, downY = 0;
+    sprite.on('pointerdown', (p) => {
+      downX = p.x;
+      downY = p.y;
+    });
+    sprite.on('pointerup', (p) => {
+      const dx = p.x - downX;
+      const dy = p.y - downY;
+      if (dx * dx + dy * dy > CLICK_DRIFT_SQ) return;
+      onTap();
+    });
+  }
+
   /** Dim tiles + props that fall outside visibility. */
   applyFog() {
-    const { visibility } = this.mapData;
-    const isHidden = (x, y) => !(visibility?.[y]?.[x]);
-
-    for (const [key, sprite] of this.terrainSprites) {
-      const [x, y] = key.split(',').map(Number);
-      if (isHidden(x, y)) {
-        sprite.setTint(FOG_TINT);
-        sprite.setAlpha(FOG_ALPHA);
+    const { visibility, width, height } = this.mapData;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (!visibility[y][x]) this.setFogAt(x, y, true);
       }
     }
-    const dimProps = (arr) => {
+  }
+
+  /** Toggle fog for a single tile and all props on it. */
+  setFogAt(x, y, hidden) {
+    const tile = this.terrainSprites.get(`${x},${y}`);
+    if (tile) {
+      if (hidden) { tile.setTint(FOG_TINT); tile.setAlpha(FOG_ALPHA); }
+      else { tile.clearTint(); tile.setAlpha(1); }
+    }
+    const toggleProps = (arr, propAlpha) => {
       for (const s of arr) {
-        const gx = s.getData('gridX');
-        const gy = s.getData('gridY');
-        if (isHidden(gx, gy)) {
+        if (s.getData('gridX') !== x || s.getData('gridY') !== y) continue;
+        if (hidden) {
           if (s.setTint) s.setTint(FOG_TINT);
-          s.setAlpha(FOG_ALPHA * 0.5);
+          s.setAlpha(propAlpha);
+        } else {
+          if (s.clearTint) s.clearTint();
+          s.setAlpha(1);
         }
       }
     };
-    dimProps(this.structureSprites);
-    dimProps(this.decorSprites);
-    dimProps(this.resourceSprites);
+    toggleProps(this.structureSprites, FOG_ALPHA * 0.5);
+    toggleProps(this.decorSprites,     FOG_ALPHA * 0.5);
+    toggleProps(this.resourceSprites,  FOG_ALPHA * 0.5);
+  }
+
+  /**
+   * Reveal a circular area — called on structure click, spawn, or via
+   * EventBridge 'map:reveal' event (payload: { x, y, radius }).
+   */
+  reveal(gx, gy, radius = 5) {
+    const { visibility, width, height } = this.mapData;
+    const r2 = radius * radius;
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        if (dx * dx + dy * dy > r2) continue;
+        const x = gx + dx, y = gy + dy;
+        if (x < 0 || y < 0 || x >= width || y >= height) continue;
+        if (visibility[y][x]) continue;
+        visibility[y][x] = 1;
+        this.setFogAt(x, y, false);
+      }
+    }
   }
 
   markSpawn() {
