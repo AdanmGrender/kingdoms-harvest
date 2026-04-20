@@ -65,6 +65,19 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 64,
     });
 
+    // ─── Kenney medieval-rts top-down tileset (used by WorldScene + IsoScene) ───
+    const pad2 = (n) => String(n).padStart(2, '0');
+    const medievalBase = '/assets/kenney-medieval/PNG/Default size';
+    for (let i = 1; i <= 58; i++) {
+      this.load.image(`iso_tile_${i}`, `${medievalBase}/Tile/medievalTile_${pad2(i)}.png`);
+    }
+    for (let i = 1; i <= 21; i++) {
+      this.load.image(`iso_env_${i}`, `${medievalBase}/Environment/medievalEnvironment_${pad2(i)}.png`);
+    }
+    for (let i = 1; i <= 23; i++) {
+      this.load.image(`iso_struct_${i}`, `${medievalBase}/Structure/medievalStructure_${pad2(i)}.png`);
+    }
+
     // ─── Load characters ───
     // NPCs
     const npcNames = ['farmer', 'baker', 'princess', 'wizard', 'knight', 'merchant', 'ranger'];

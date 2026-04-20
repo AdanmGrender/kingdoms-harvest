@@ -4,7 +4,6 @@
  * Uses NPC spritesheets loaded in BootScene for rendering.
  */
 import Phaser from 'phaser';
-import { TILE_SIZE } from '../maps/MapGenerator';
 
 const VILLAGER_SPEED = 40; // pixels per second
 

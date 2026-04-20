@@ -4,7 +4,7 @@
  * and taps to confirm placement. Validates against collision and existing buildings.
  */
 import Phaser from 'phaser';
-import { TILE_SIZE } from '../maps/MapGenerator';
+import { TILE_SIZE } from '../maps/tileConfig';
 import Building from '../entities/Building';
 import EventBridge from '../EventBridge';
 
