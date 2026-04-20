@@ -25,6 +25,7 @@ const taskRoutes = require('./routes/taskRoutes');
 const referralRoutes = require('./routes/referralRoutes');
 const villagerRoutes = require('./routes/villagerRoutes');
 const siegeRoutes = require('./routes/siegeRoutes');
+const techRoutes = require('./routes/techRoutes');
 
 const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
@@ -95,6 +96,7 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/referral', referralRoutes);
 app.use('/api/villagers', villagerRoutes);
 app.use('/api/sieges', siegeRoutes);
+app.use('/api/tech', techRoutes);
 
 // SPA fallback: serve index.html for non-API routes
 if (process.env.NODE_ENV === 'production') {

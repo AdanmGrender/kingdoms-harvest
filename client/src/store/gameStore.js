@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '../services/api';
 import EventBridge from '../game/EventBridge';
+import { connectSocket } from '../services/socketService';
 
 const useGameStore = create((set, get) => ({
   // Estado del jugador
@@ -72,6 +73,10 @@ const useGameStore = create((set, get) => ({
       // Cargar parcelas y animales
       get().loadPlots();
       get().loadAnimals();
+
+      // Conectar socket para notificaciones en tiempo real
+      const initData = window.Telegram?.WebApp?.initData || '';
+      connectSocket(initData);
     } catch (error) {
       console.error('Error init:', error);
       set({ error: 'Error al iniciar el juego', isLoading: false });
@@ -259,9 +264,9 @@ const useGameStore = create((set, get) => ({
     }
   },
 
-  attackPVE: async (army, territoryId) => {
+  attackPVE: async (army, territoryId, abilityId = null) => {
     try {
-      const { data } = await api.post('/combat/attack/pve', { army, territoryId });
+      const { data } = await api.post('/combat/attack/pve', { army, territoryId, abilityId });
       get().addNotification(data.message, data.winner === 'attacker' ? 'success' : 'error');
       if (data.winner === 'attacker' && data.tokensAwarded > 0) {
         EventBridge.emit('token:earned', { amount: data.tokensAwarded });
@@ -465,6 +470,66 @@ const useGameStore = create((set, get) => ({
       set({ referralLink: data.link });
     } catch (error) {
       console.error('Error loading referral link:', error);
+    }
+  },
+
+  // ---- Tech Tree ----
+  techResearch: null,
+  loadTechResearch: async () => {
+    try {
+      const { data } = await api.get('/tech');
+      set({ techResearch: data });
+    } catch (error) {
+      console.error('Error loading tech research:', error);
+    }
+  },
+  startResearch: async (branchId, techId) => {
+    try {
+      const { data } = await api.post('/tech/research', { branchId, techId });
+      get().addNotification(data.message, 'success');
+      get().loadTechResearch();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al investigar', 'error');
+      return null;
+    }
+  },
+
+  // ---- Leaderboard ----
+  leaderboard: [],
+  loadLeaderboard: async () => {
+    try {
+      const { data } = await api.get('/tokens/leaderboard');
+      set({ leaderboard: data });
+    } catch (error) {
+      console.error('Error loading leaderboard:', error);
+    }
+  },
+
+  // ---- PvP ----
+  pvpPlayers: [],
+  loadPvpPlayers: async () => {
+    try {
+      const { data } = await api.get('/combat/players');
+      set({ pvpPlayers: data });
+    } catch (error) {
+      console.error('Error loading PvP players:', error);
+    }
+  },
+  attackPVP: async (army, defenderId, abilityId = null) => {
+    try {
+      const { data } = await api.post('/combat/attack/pvp', { army, defenderId, abilityId });
+      if (data.winner === 'attacker') {
+        get().addNotification(`¡Victoria PvP! +${data.tokensAwarded || 0} KH`, 'success');
+        EventBridge.emit('token:earned', { amount: data.tokensAwarded || 0 });
+      } else {
+        get().addNotification('Derrota en PvP...', 'error');
+      }
+      get().refreshResources();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error en ataque PvP', 'error');
+      return null;
     }
   },
 }));

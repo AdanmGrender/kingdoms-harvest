@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { CROPS, ANIMALS, QUALITY, SEASON_DURATION_MS, DAY_CYCLE } = require('../../../shared/gameConfig');
+const { CROPS, ANIMALS, QUALITY, SEASON_DURATION_MS, DAY_CYCLE, FACTIONS } = require('../../../shared/gameConfig');
 const { sanitizeDisplayText } = require('../utils/sanitize');
 const playerService = require('./playerService');
 const tokenService = require('./tokenService');
@@ -89,7 +89,10 @@ const farmService = {
     const baseYield = Math.floor(
       secureRandom() * (crop.yield.max - crop.yield.min + 1) + crop.yield.min
     );
-    const finalYield = Math.floor(baseYield * quality.multiplier);
+    // Faction bonus: green_wardens +15% farming yield
+    const player = await db('players').where('telegram_id', playerId).first();
+    const factionBonus = FACTIONS[player?.faction_id]?.bonus?.farming || 0;
+    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus));
 
     // Dar recursos al jugador
     await playerService.modifyResource(playerId, plot.crop_id, finalYield);

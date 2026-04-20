@@ -2,6 +2,14 @@ const cron = require('node-cron');
 const db = require('../config/database');
 const dailyTaskService = require('../services/dailyTaskService');
 const { BUILDINGS, DAY_CYCLE } = require('../../../shared/gameConfig');
+const { getBot } = require('../bot/telegramBot');
+
+function sendBotNotification(playerId, message) {
+  try {
+    const bot = getBot();
+    if (bot) bot.sendMessage(playerId, message).catch(() => {});
+  } catch {}
+}
 
 let ioRef = null;
 
@@ -20,13 +28,26 @@ async function processTick() {
 
   // 1. Cultivos listos para cosechar
   try {
-    const readyCrops = await db('farm_plots')
+    const justReady = await db('farm_plots')
       .where('state', 'growing')
-      .where('ready_at', '<=', now)
-      .update({ state: 'ready' });
+      .where('ready_at', '<=', now);
 
-    if (readyCrops > 0) {
-      console.log(`[Tick] ${readyCrops} cultivos listos para cosechar`);
+    if (justReady.length > 0) {
+      await db('farm_plots')
+        .where('state', 'growing')
+        .where('ready_at', '<=', now)
+        .update({ state: 'ready' });
+
+      // Notify each player how many crops are ready
+      const perPlayer = {};
+      for (const plot of justReady) {
+        perPlayer[plot.player_id] = (perPlayer[plot.player_id] || 0) + 1;
+      }
+      for (const [playerId, count] of Object.entries(perPlayer)) {
+        if (ioRef) ioRef.to(`player_${playerId}`).emit('crop_ready', { count });
+        sendBotNotification(playerId, `🌾 ¡${count} cultivo${count > 1 ? 's' : ''} listo${count > 1 ? 's' : ''} para cosechar! Volvé al juego.`);
+      }
+      console.log(`[Tick] ${justReady.length} cultivos listos para cosechar`);
     }
   } catch (error) {
     console.error('[Tick] Error procesando cultivos:', error.message);
@@ -58,6 +79,7 @@ async function processTick() {
             buildingType: building.building_id,
           });
         }
+        sendBotNotification(building.player_id, `🏗️ ¡Tu ${building.building_id} ha terminado de construirse! Volvé al juego para continuar.`);
       } catch (err) {
         console.error(`[Tick] Error completando edificio ${building.id}:`, err.message);
       }
@@ -176,6 +198,7 @@ async function processTick() {
             quantity: troop.training_quantity,
           });
         }
+        sendBotNotification(troop.player_id, `⚔️ ¡${troop.training_quantity}x ${troop.troop_id} están listos para la batalla!`);
       } catch (err) {
         console.error(`[Tick] Error completando tropa ${troop.id}:`, err.message);
       }

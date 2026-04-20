@@ -32,14 +32,30 @@ router.post('/train', telegramAuth, validate({
 // Atacar aldea NPC (PvE)
 router.post('/attack/pve', telegramAuth, validate({
   army: { type: 'object', required: true, maxKeys: 20 },
-  territoryId: { type: 'number', required: true, min: 1 },
+  territoryId: { type: 'number', required: false, min: 1 },
+  abilityId: { type: 'string', required: false, maxLength: 30, pattern: /^[a-z_]*$/ },
 }), async (req, res) => {
   try {
-    const { army, territoryId } = req.body;
-    const result = await combatService.attackPVE(req.playerId, army, territoryId);
+    const { army, territoryId, abilityId } = req.body;
+    const result = await combatService.attackPVE(req.playerId, army, territoryId, abilityId);
     res.json(result);
   } catch (error) {
     res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Listar jugadores atacables para PvP
+router.get('/players', telegramAuth, async (req, res) => {
+  try {
+    const db = require('../config/database');
+    const targets = await db('players')
+      .select('telegram_id as id', 'display_name', 'level', 'faction_id')
+      .whereNot('telegram_id', req.playerId)
+      .orderBy('level', 'desc')
+      .limit(20);
+    res.json(targets);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener jugadores' });
   }
 });
 
@@ -47,10 +63,11 @@ router.post('/attack/pve', telegramAuth, validate({
 router.post('/attack/pvp', telegramAuth, validate({
   army: { type: 'object', required: true, maxKeys: 20 },
   defenderId: { type: 'number', required: true, min: 1 },
+  abilityId: { type: 'string', required: false, maxLength: 30, pattern: /^[a-z_]*$/ },
 }), async (req, res) => {
   try {
-    const { army, defenderId } = req.body;
-    const result = await combatService.attackPVP(req.playerId, army, defenderId);
+    const { army, defenderId, abilityId } = req.body;
+    const result = await combatService.attackPVP(req.playerId, army, defenderId, abilityId);
     res.json(result);
   } catch (error) {
     res.status(400).json({ error: safeErrorMessage(error) });

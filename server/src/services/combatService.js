@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { TROOPS, BUILDINGS } = require('../../../shared/gameConfig');
+const { TROOPS, BUILDINGS, FACTIONS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const buildingService = require('./buildingService');
 const tokenService = require('./tokenService');
@@ -98,10 +98,26 @@ const combatService = {
   /**
    * Motor de combate: calcula el resultado de una batalla
    */
-  calculateBattle(attackerArmy, defenderArmy, defenderBuildings = []) {
+  calculateBattle(attackerArmy, defenderArmy, defenderBuildings = [], opts = {}) {
+    const { attackBonus = 0, defenseBonus = 0, abilityId = null, attackerArmy: rawArmy = attackerArmy } = opts;
     let attackPower = 0;
     let defensePower = 0;
     const battleLog = [];
+
+    // Siege ability effects applied before main calculation
+    let abilityAtkMult = 1;
+    let abilityDefMult = 1;
+    let abilityDefDebuff = 0;
+    if (abilityId === 'rally') {
+      abilityAtkMult = 1.15;
+      battleLog.push('📯 Reagrupar: +15% ATK');
+    } else if (abilityId === 'shield_wall') {
+      abilityDefMult = 1.25;
+      battleLog.push('🛡️ Muro de Escudos: +25% DEF');
+    } else if (abilityId === 'arrow_rain') {
+      abilityDefDebuff = 0.20;
+      battleLog.push('🏹 Lluvia de Flechas: -20% DEF enemiga');
+    }
 
     // Calcular poder de ataque
     for (const [troopId, qty] of Object.entries(attackerArmy)) {
@@ -109,21 +125,23 @@ const combatService = {
       if (!troop) continue;
 
       let atk = troop.atk * qty;
-      let def = troop.def * qty;
 
       // Bonus contra tipos específicos
-      for (const [defTroopId, defQty] of Object.entries(defenderArmy)) {
+      for (const defTroopId of Object.keys(defenderArmy)) {
         if (troop.strongVs.includes(defTroopId)) {
-          atk *= 1.3; // +30% vs tipo débil
+          atk *= 1.3;
         }
         if (troop.weakVs.includes(defTroopId)) {
-          atk *= 0.7; // -30% vs tipo fuerte
+          atk *= 0.7;
         }
       }
 
       attackPower += atk;
       battleLog.push(`${troop.icon} x${qty} aporta ${Math.floor(atk)} ATK`);
     }
+
+    // Apply faction atk bonus + ability multiplier
+    attackPower *= (1 + attackBonus) * abilityAtkMult;
 
     // Calcular poder de defensa
     for (const [troopId, qty] of Object.entries(defenderArmy)) {
@@ -135,6 +153,9 @@ const combatService = {
       battleLog.push(`Defensor: ${troop.icon} x${qty} aporta ${Math.floor(def)} DEF`);
     }
 
+    // Apply faction def bonus + ability multiplier, then arrow_rain debuff on enemy
+    defensePower *= (1 + defenseBonus) * abilityDefMult * (1 - abilityDefDebuff);
+
     // Bonus de edificios defensivos
     for (const building of defenderBuildings) {
       if (building.building_id === 'wall') {
@@ -144,7 +165,6 @@ const combatService = {
         defensePower += building.level * BUILDINGS.tower.atkPerLevel;
       }
       if (building.building_id === 'trap') {
-        // Daño inicial de trampas
         attackPower -= building.level * BUILDINGS.trap.trapDamage;
       }
     }
@@ -194,9 +214,14 @@ const combatService = {
   /**
    * Ataque PvE contra territorio neutral
    */
-  async attackPVE(playerId, army, territoryId) {
+  async attackPVE(playerId, army, territoryId, abilityId = null) {
     army = this.sanitizeArmy(army);
     await this.validateArmy(playerId, army);
+
+    // Apply faction atk/def bonus to army power via modified army copy
+    const player = await db('players').where('telegram_id', playerId).first();
+    const factionAtkBonus = FACTIONS[player?.faction_id]?.bonus?.atk || 0;
+    const factionDefBonus = FACTIONS[player?.faction_id]?.bonus?.def || 0;
 
     // Generar ejército NPC basado en territorio
     const territory = territoryId
@@ -206,8 +231,13 @@ const combatService = {
     const npcStrength = territory ? territory.defense_strength : 50;
     const npcArmy = this.generateNPCArmy(npcStrength);
 
-    // Calcular batalla
-    const result = this.calculateBattle(army, npcArmy);
+    // Calcular batalla con bonuses de facción y habilidad de asedio
+    const result = this.calculateBattle(army, npcArmy, [], {
+      attackBonus: factionAtkBonus,
+      defenseBonus: factionDefBonus,
+      abilityId,
+      attackerArmy: army,
+    });
 
     // Aplicar pérdidas al atacante (clamped para evitar negativos)
     for (const [troopId, losses] of Object.entries(result.attackerLosses)) {
@@ -282,7 +312,7 @@ const combatService = {
   /**
    * Ataque PvP contra otro jugador
    */
-  async attackPVP(playerId, army, defenderId) {
+  async attackPVP(playerId, army, defenderId, abilityId = null) {
     if (playerId === defenderId) throw new Error('No podés atacarte a vos mismo');
 
     // Cooldown: no atacar al mismo jugador dentro de 30 minutos
@@ -314,7 +344,16 @@ const combatService = {
       if (t.quantity > 0) defenderArmy[t.troop_id] = t.quantity;
     });
 
-    const result = this.calculateBattle(army, defenderArmy, defenderBuildings);
+    const attacker = await db('players').where('telegram_id', playerId).first();
+    const defender = await db('players').where('telegram_id', defenderId).first();
+    const attackerFactionAtk = FACTIONS[attacker?.faction_id]?.bonus?.atk || 0;
+    const defenderFactionDef = FACTIONS[defender?.faction_id]?.bonus?.def || 0;
+
+    const result = this.calculateBattle(army, defenderArmy, defenderBuildings, {
+      attackBonus: attackerFactionAtk,
+      defenseBonus: defenderFactionDef,
+      abilityId,
+    });
 
     // Aplicar pérdidas a ambos (clamped para evitar negativos)
     for (const [troopId, losses] of Object.entries(result.attackerLosses)) {
