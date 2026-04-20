@@ -56,7 +56,10 @@ export default class BootScene extends Phaser.Scene {
 
     // ─── Load tilesets ───
     this.load.image('terrain', '/assets/game/tilesets/terrain.png');
-    this.load.image('farm_tiles', '/assets/game/tilesets/farm_tiles.png');
+    this.load.spritesheet('farm_tiles', '/assets/game/tilesets/farm_tiles.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
     this.load.spritesheet('buildings', '/assets/game/tilesets/buildings.png', {
       frameWidth: 64,
       frameHeight: 64,
@@ -107,8 +110,10 @@ export default class BootScene extends Phaser.Scene {
     this.createNPCAnimations();
     this.createAnimalAnimations();
 
-    // Transition to world
-    this.scene.start('WorldScene');
+    // URL-param switch: ?iso=1 → jump to isometric POC scene
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get('iso') === '1' ? 'IsoScene' : 'WorldScene';
+    this.scene.start(target);
   }
 
   createNPCAnimations() {

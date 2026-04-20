@@ -226,6 +226,15 @@ export function generateWorldMap(seed = 42) {
 
   // ─── CASTLE ZONE (north-center, y: 10-30) ───
   fillArea(ground, 60, 10, 40, 22, T.COBBLESTONE);
+  // Edge trim: stone border around castle courtyard
+  for (let x = 60; x < 100; x++) {
+    ground[10][x] = T.STONE;
+    ground[31][x] = T.STONE;
+  }
+  for (let y = 10; y < 32; y++) {
+    ground[y][60] = T.STONE;
+    ground[y][99] = T.STONE;
+  }
 
   // ─── FARM ZONE (center, y: 45-80, x: 40-110) ───
   for (let x = 40; x < 111; x++) {
@@ -236,7 +245,24 @@ export function generateWorldMap(seed = 42) {
     decoration[y][40] = T.FENCE_V;
     decoration[y][110] = T.FENCE_V;
   }
-  fillArea(ground, 41, 46, 69, 34, T.GRASS_DARK);
+  // Farm zone: mix of dark grass with scattered dirt patches and details
+  for (let y = 46; y < 80; y++) {
+    for (let x = 41; x < 110; x++) {
+      const n = terrainNoise[y][x];
+      if (n < 0.25) ground[y][x] = T.GRASS_DARK;
+      else if (n < 0.35) ground[y][x] = T.GRASS_DIRT;
+      else if (n < 0.65) ground[y][x] = T.GRASS_DARK;
+      else if (n < 0.75) ground[y][x] = T.GRASS1;
+      else ground[y][x] = T.GRASS_DARK;
+      // Scatter some farm-zone details
+      if (decoration[y][x] === -1 && ground[y][x] === T.GRASS_DARK) {
+        const r = rand();
+        if (r < 0.01) decoration[y][x] = T.FLOWER_RED;
+        else if (r < 0.02) decoration[y][x] = T.FLOWER_BLUE;
+        else if (r < 0.035) decoration[y][x] = T.TALL_GRASS;
+      }
+    }
+  }
 
   // ─── MARKET ZONE (east, x: 115-145) ───
   fillArea(ground, 115, 45, 30, 30, T.COBBLESTONE);
@@ -359,13 +385,13 @@ export function generateWorldMap(seed = 42) {
   objects.push({ type: 'building', buildingId: 'wall', x: 14, y: 62, tileIndex: B.WALL });
   objects.push({ type: 'building', buildingId: 'tower', x: 24, y: 50, tileIndex: B.TOWER });
 
-  // ─── Farm Plots (4x4 grid) ───
+  // ─── Farm Plots (4x4 grid) — 3 tile spacing both axes for clean separation ───
   for (let r = 0; r < 4; r++) {
     for (let c = 0; c < 4; c++) {
       objects.push({
         type: 'farm_plot',
-        x: 55 + c * 7,
-        y: 52 + r * 6,
+        x: 54 + c * 3,
+        y: 54 + r * 3,
         plotIndex: r * 4 + c,
       });
     }

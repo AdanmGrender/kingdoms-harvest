@@ -1,11 +1,17 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import useGameStore from './store/gameStore';
 import EventBridge from './game/EventBridge';
 import NotificationToast from './components/ui/NotificationToast';
 import LoadingScreen from './components/ui/LoadingScreen';
 import SpriteIcon from './components/ui/SpriteIcon';
 import PhaserGame from './game/PhaserGame';
-import GameHUD from './components/overlay/GameHUD';
+import TopResourceBar from './components/hud/TopResourceBar';
+import BottomNavBar from './components/hud/BottomNavBar';
+import BuildingInfoPopup from './components/hud/BuildingInfoPopup';
+import ConstructionTimer from './components/hud/ConstructionTimer';
+import QuickActionsSidebar from './components/hud/QuickActionsSidebar';
+import EventSidebar from './components/hud/EventSidebar';
+import SocialSidebar from './components/hud/SocialSidebar';
 import OverlayManager from './components/overlay/OverlayManager';
 import BuildingToolbar from './components/overlay/BuildingToolbar';
 import TutorialOverlay from './components/overlay/TutorialOverlay';
@@ -20,7 +26,19 @@ function App() {
       tg.expand();
       tg.setHeaderColor('#1a1a2e');
       tg.setBackgroundColor('#1a1a2e');
+      // Disable vertical swipes that would minimize the mini app while panning
+      if (typeof tg.disableVerticalSwipes === 'function') {
+        tg.disableVerticalSwipes();
+      }
     }
+
+    // Block multi-touch browser gestures (page zoom) — single-finger drag still works
+    const blockMultiTouch = (e) => {
+      if (e.touches && e.touches.length > 1) e.preventDefault();
+    };
+    const blockGesture = (e) => e.preventDefault();
+    document.addEventListener('touchmove', blockMultiTouch, { passive: false });
+    document.addEventListener('gesturestart', blockGesture);
 
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     const urlRef = new URLSearchParams(window.location.search).get('ref');
@@ -44,7 +62,11 @@ function App() {
     };
 
     EventBridge.on('building:placed', handleBuildingPlaced);
-    return () => EventBridge.off('building:placed', handleBuildingPlaced);
+    return () => {
+      EventBridge.off('building:placed', handleBuildingPlaced);
+      document.removeEventListener('touchmove', blockMultiTouch);
+      document.removeEventListener('gesturestart', blockGesture);
+    };
   }, []);
 
   if (isLoading) return <LoadingScreen />;
@@ -67,9 +89,15 @@ function App() {
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
       <PhaserGame />
-      <GameHUD />
+      <TopResourceBar />
+      <QuickActionsSidebar />
+      <EventSidebar />
+      <SocialSidebar />
+      <ConstructionTimer />
+      <BuildingInfoPopup />
       <OverlayManager />
       <BuildingToolbar />
+      <BottomNavBar />
       <NotificationToast />
       <TutorialOverlay />
     </div>
