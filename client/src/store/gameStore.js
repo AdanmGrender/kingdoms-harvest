@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import api from '../services/api';
+import EventBridge from '../game/EventBridge';
 
 const useGameStore = create((set, get) => ({
   // Estado del jugador
@@ -23,6 +24,9 @@ const useGameStore = create((set, get) => ({
   referralStats: null,
   referralLink: null,
   withdrawalHistory: [],
+
+  // Captcha challenge
+  captchaChallenge: null,
 
   // Overlay state for RTS mode
   overlayState: null, // { type: string, data: object } or null
@@ -110,6 +114,9 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.post('/farm/harvest', { plotId });
       get().addNotification(data.message, 'success');
+      if (data.tokensAwarded > 0) {
+        EventBridge.emit('token:earned', { amount: data.tokensAwarded });
+      }
       get().loadPlots();
       get().refreshResources();
       return data;
@@ -230,6 +237,9 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.post('/missions/complete', { missionId });
       get().addNotification(data.message, 'success');
+      if (data.tokensAwarded > 0) {
+        EventBridge.emit('token:earned', { amount: data.tokensAwarded });
+      }
       get().loadMissions();
       get().refreshResources();
     } catch (error) {
@@ -253,6 +263,9 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.post('/combat/attack/pve', { army, territoryId });
       get().addNotification(data.message, data.winner === 'attacker' ? 'success' : 'error');
+      if (data.winner === 'attacker' && data.tokensAwarded > 0) {
+        EventBridge.emit('token:earned', { amount: data.tokensAwarded });
+      }
       get().refreshResources();
       return data;
     } catch (error) {
@@ -328,6 +341,9 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.post('/tasks/daily/claim', { taskId });
       get().addNotification(data.message, 'success');
+      if (data.tokensAwarded > 0) {
+        EventBridge.emit('token:earned', { amount: data.tokensAwarded });
+      }
       get().loadDailyTasks();
       get().loadTokenInfo();
     } catch (error) {
@@ -402,6 +418,35 @@ const useGameStore = create((set, get) => ({
       set({ withdrawalHistory: data });
     } catch (error) {
       console.error('Error loading withdrawals:', error);
+    }
+  },
+
+  // ---- Captcha ----
+  loadCaptchaChallenge: async () => {
+    try {
+      const { data } = await api.get('/tasks/captcha/challenge');
+      set({ captchaChallenge: data });
+    } catch (error) {
+      console.error('Error loading captcha:', error);
+    }
+  },
+
+  solveCaptcha: async (answer) => {
+    try {
+      const { data } = await api.post('/tasks/captcha/solve', { answer });
+      if (data.correct) {
+        get().addNotification('¡Correcto! +5 KH Tokens', 'success');
+        EventBridge.emit('token:earned', { amount: 5 });
+        get().loadDailyTasks();
+        get().loadTokenInfo();
+        set({ captchaChallenge: null });
+      } else {
+        get().addNotification(data.message, 'error');
+      }
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al resolver', 'error');
+      return null;
     }
   },
 

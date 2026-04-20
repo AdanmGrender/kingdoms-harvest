@@ -9,6 +9,7 @@
  * - 'game:input'     { enabled: boolean }               Enable/disable game input
  * - 'game:notification' { text, type }                  Show floating text
  * - 'scene:change'   { scene: string, data: object }    Change Phaser scene
+ * - 'token:earned'   { amount: number, x?: number, y?: number }  KH tokens earned — triggers floating text in game world
  */
 import EventEmitter from 'eventemitter3';
 

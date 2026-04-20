@@ -50,6 +50,29 @@ export default class ParticleSystem {
   }
 
   /**
+   * Floating "+X KH" token gain text at a world position.
+   * Floats upward and fades out over 1.8 seconds.
+   */
+  emitTokenGain(x, y, amount) {
+    const text = this.scene.add.text(x, y - 20, `+${amount} KH`, {
+      fontFamily: 'MedievalSharp, serif',
+      fontSize: '14px',
+      color: '#c084fc',      // purple-400, matches token UI
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setDepth(25).setOrigin(0.5);
+
+    this.scene.tweens.add({
+      targets: text,
+      y: y - 80,
+      alpha: { from: 1, to: 0 },
+      duration: 1800,
+      ease: 'Power2',
+      onComplete: () => text.destroy(),
+    });
+  }
+
+  /**
    * Sparkle effect (for resource collection, level up, etc.)
    */
   emitSparkle(x, y) {

@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const db = require('../config/database');
 const { VILLAGER_ROLES, VILLAGER_NAMES } = require('../../../shared/gameConfig');
 
@@ -11,7 +12,7 @@ const villagerService = {
     if (!roleConfig) throw new Error('Rol de aldeano no válido');
 
     // Pick a random name
-    const name = VILLAGER_NAMES[Math.floor(Math.random() * VILLAGER_NAMES.length)];
+    const name = VILLAGER_NAMES[Math.floor(crypto.randomInt(0, VILLAGER_NAMES.length))];
 
     const now = new Date().toISOString();
     await db('villagers').insert({
@@ -21,7 +22,7 @@ const villagerService = {
       state: 'idle',
       hunger: 100,
       happiness: 100,
-      age: 18 + Math.floor(Math.random() * 20),
+      age: 18 + crypto.randomInt(0, 20),
       born_at: now,
       created_at: now,
     });
@@ -110,7 +111,7 @@ const villagerService = {
       if (newAge >= 70) {
         // Old age death (probability increases with age)
         const deathChance = (newAge - 70) * 0.05;
-        if (Math.random() < deathChance) {
+        if (crypto.randomInt(0, 10000) / 10000 < deathChance) {
           await db('villagers').where('id', v.id).delete();
           continue;
         }
@@ -141,7 +142,7 @@ const villagerService = {
     // Pair them up if there are at least 2 and happiness is decent
     if (singles.length >= 2) {
       const happySingles = singles.filter(v => v.happiness >= 60);
-      if (happySingles.length >= 2 && Math.random() < 0.1) {
+      if (happySingles.length >= 2 && crypto.randomInt(0, 10000) / 10000 < 0.1) {
         const a = happySingles[0];
         const b = happySingles[1];
         await db('villager_families').insert({
@@ -170,9 +171,9 @@ const villagerService = {
       if (villagers.length >= capacity) continue;
 
       // 5% chance per tick of having a child
-      if (Math.random() < 0.05) {
+      if (crypto.randomInt(0, 10000) / 10000 < 0.05) {
         const roles = ['farmer', 'builder', 'woodcutter', 'miner'];
-        const role = roles[Math.floor(Math.random() * roles.length)];
+        const role = roles[crypto.randomInt(0, roles.length)];
         await this.spawnVillager(playerId, role);
         // Set child's age to 0 — they'll grow up via aging
         const child = await db('villagers').where('player_id', playerId).orderBy('id', 'desc').first();
