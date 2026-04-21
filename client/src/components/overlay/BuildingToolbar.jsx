@@ -177,7 +177,7 @@ export default function BuildingToolbar() {
                   key={buildingId}
                   onClick={() => handleSelectBuilding(buildingId)}
                   disabled={!affordable}
-                  className={`flex-shrink-0 w-20 p-2 rounded-lg text-center transition-all ${
+                  className={`flex-shrink-0 w-[84px] p-2 rounded-lg text-center transition-all ${
                     affordable
                       ? 'hover:bg-yellow-900/30 active:scale-95'
                       : 'opacity-40'
@@ -185,7 +185,10 @@ export default function BuildingToolbar() {
                   style={{ border: '1px solid rgba(255, 215, 0, 0.15)' }}
                 >
                   <div className="text-2xl mb-1">{info.icon}</div>
-                  <div className="text-[10px] text-gray-200 font-bold truncate">{info.name}</div>
+                  <div className="text-[10px] text-gray-200 font-bold leading-tight"
+                    style={{ wordBreak: 'break-word', hyphens: 'auto' }}>
+                    {info.name}
+                  </div>
                   <div className="text-[9px] text-gray-400 mt-0.5">
                     {Object.entries(info.cost).map(([res, amt]) => (
                       <span key={res} className="mr-1">
