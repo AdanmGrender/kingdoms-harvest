@@ -14,7 +14,8 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "pngjs": "^7.0.0"
+    "pngjs": "^7.0.0",
+    "puppeteer": "^24.42.0"
   },
   "dependencies": {
     "ssh2": "^1.17.0"

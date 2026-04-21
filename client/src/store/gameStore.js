@@ -534,4 +534,9 @@ const useGameStore = create((set, get) => ({
   },
 }));
 
+// Expose store globally for dev/Puppeteer screenshot tool
+if (typeof window !== 'undefined') {
+  window.__gameStore = useGameStore;
+}
+
 export default useGameStore;
