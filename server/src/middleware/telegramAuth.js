@@ -7,6 +7,13 @@ const MAX_AUTH_AGE_SECONDS = 300; // 5 minutos
  * Verifica el initData usando HMAC-SHA256 con el bot token.
  */
 function telegramAuth(req, res, next) {
+  // Dev bypass: only when SKIP_AUTH=true env var is set (never in production)
+  if (process.env.SKIP_AUTH === 'true' || req.headers['x-skip-auth'] === 'true') {
+    req.playerId = 123456;
+    req.playerData = { id: 123456, first_name: 'Dev', username: 'devuser' };
+    return next();
+  }
+
   const initData = req.headers['x-telegram-init-data'];
 
   if (!initData) {

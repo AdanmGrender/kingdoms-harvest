@@ -5,14 +5,15 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
 
-const RESOURCE_ICONS = {
-  gold: '🪙',
-  wheat: '🌾',
-  wood: '🪵',
-  stone: '🪨',
-  iron: '⛏️',
-  bread: '🍞',
+const RESOURCE_SPRITES = {
+  gold:  'gold',
+  wheat: 'wheat',
+  wood:  'wood',
+  stone: 'stone',
+  iron:  'iron',
+  bread: 'bread',
 };
 
 export default function GameHUD() {
@@ -58,14 +59,14 @@ export default function GameHUD() {
 
   const mainResources = useMemo(() => {
     if (!resources) return [];
-    return Object.entries(RESOURCE_ICONS)
-      .map(([key, icon]) => {
+    return Object.entries(RESOURCE_SPRITES)
+      .map(([key, sprite]) => {
         const res = resources[key] || resources[Object.keys(resources).find(k =>
           k === key || resources[k]?.resource_id === key
         )];
         return {
           key,
-          icon,
+          sprite,
           amount: typeof res === 'object' ? res?.amount ?? 0 : res ?? 0,
         };
       })
@@ -123,9 +124,9 @@ export default function GameHUD() {
         {/* Resources — right section */}
         <div className="flex items-center gap-1.5 overflow-x-auto pointer-events-auto">
           {mainResources.map(r => (
-            <div key={r.key} className="flex items-center gap-0.5 px-1 py-0.5 rounded"
+            <div key={r.key} className="flex items-center gap-0.5 px-1 py-0.5 rounded whitespace-nowrap"
               style={{ background: 'rgba(255,255,255,0.06)' }}>
-              <span className="text-[10px]">{r.icon}</span>
+              <SpriteIcon name={r.sprite} size={14} fallback="?" />
               <span className="text-white text-[10px] font-medium tabular-nums">
                 {r.amount >= 1000 ? `${(r.amount / 1000).toFixed(1)}k` : r.amount}
               </span>
@@ -138,8 +139,8 @@ export default function GameHUD() {
               }`}
               style={{ background: 'rgba(255, 215, 0, 0.1)' }}
             >
-              <span>💎</span>
-              <span>{tokenInfo.balance || 0} KH</span>
+              <SpriteIcon name="kh_token" size={14} fallback="💎" />
+              <span>{tokenInfo.balance || 0}</span>
             </div>
           )}
         </div>

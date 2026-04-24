@@ -144,7 +144,8 @@ export default function VillagerPanel({ data, onClose }) {
 function StatBar({ label, value, color, icon }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs w-4">{icon}</span>
+      <span className="text-xs">{icon}</span>
+      <span className="text-gray-400 text-[10px] w-16 shrink-0">{label}</span>
       <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
         <div
           className={`h-full ${color} rounded-full transition-all`}

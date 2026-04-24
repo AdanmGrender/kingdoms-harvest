@@ -2,6 +2,7 @@
  * DialogPanel: NPC conversation overlay with mission interaction.
  */
 import useGameStore from '../../store/gameStore';
+import { CharacterSprite } from '../ui/SpriteIcon';
 
 const NPC_GREETINGS = {
   farmer: '¡Hola, aventurero! ¿Buscas trabajo en los campos?',
@@ -26,13 +27,16 @@ export default function DialogPanel({ data, onClose }) {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">👤</span>
+        <div className="flex items-center gap-3">
+          <div className="rounded-lg overflow-hidden"
+            style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,215,0,0.2)', padding: '2px' }}>
+            <CharacterSprite name={`npc_${data.npcId}` || 'farmer'} height={44} fallback="👤" />
+          </div>
           <div>
             <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
               {data.name}
             </h3>
-            <p className="text-gray-400 text-[10px]">NPC</p>
+            <p className="text-gray-400 text-[10px] capitalize">{data.npcId || 'NPC'}</p>
           </div>
         </div>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
@@ -64,7 +68,9 @@ export default function DialogPanel({ data, onClose }) {
                 </div>
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-yellow-300 text-[10px]">
-                    Recompensa: {JSON.stringify(mission.rewards)}
+                    Recompensa: {Array.isArray(mission.rewards)
+                      ? mission.rewards.map(r => `${r.amount} ${r.resource_id}`).join(', ')
+                      : '—'}
                   </span>
                   <button className="bg-yellow-600 hover:bg-yellow-500 text-white text-[10px] px-2 py-1 rounded">
                     {mission.status === 'accepted' ? 'Entregar' : 'Aceptar'}
