@@ -86,27 +86,30 @@ export const RESOURCE_TYPES = {
   WHEAT: 'wheat',
 };
 
+// Chances are independent per-tile rolls. Total "non-empty" chance for a biome
+// should stay well below 0.25 or the map turns into visual noise. FOREST is the
+// exception — it's meant to look dense.
 const DECOR_RULES = {
   [BIOMES.GRASS]: [
-    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.08 },
-    { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.05 },
-    { type: 'flower', pool: DECOR_POOLS.FLOWER,      chance: 0.06 },
+    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.05 },
+    { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.04 },
+    { type: 'flower', pool: DECOR_POOLS.FLOWER,      chance: 0.03 },
   ],
   [BIOMES.FOREST]: [
-    { type: 'tree',   pool: DECOR_POOLS.TREE,        chance: 0.50 },
-    { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.10 },
+    { type: 'tree',   pool: DECOR_POOLS.TREE,        chance: 0.45 },
+    { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.08 },
   ],
   [BIOMES.DIRT]: [
-    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.18 },
-    { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.04 },
+    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.08 },
+    { type: 'bush',   pool: DECOR_POOLS.BUSH,        chance: 0.03 },
   ],
   [BIOMES.SAND]: [
-    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.03 },
+    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.02 },
   ],
   [BIOMES.ICE]: [],
   [BIOMES.SNOW]: [
-    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.04 },
-    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.05 },
+    { type: 'tree',   pool: DECOR_POOLS.TREE_SPARSE, chance: 0.03 },
+    { type: 'rock',   pool: DECOR_POOLS.ROCK,        chance: 0.03 },
   ],
   [BIOMES.ROAD]: [],
 };

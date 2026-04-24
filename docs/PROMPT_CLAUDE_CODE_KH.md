@@ -1,6 +1,6 @@
 # 🏰 Kingdoms Harvest — Prompt de Continuación para Claude Code (Opus 4.6)
 
-> **Modelo:** `claude-opus-4-6`
+> **Modelo:** `claude-opus-4-7`
 > **Proyecto:** `C:\Users\manes\Desktop\kingdoms-harvest`
 > **Stack:** Node.js/Express + React/Vite + Phaser 3 | SQLite (sql.js) | Telegram Mini App + TON
 

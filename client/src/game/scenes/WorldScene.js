@@ -235,14 +235,16 @@ export default class WorldScene extends Phaser.Scene {
       name: 'pasture',
     });
 
-    // NPCs scattered (check in-bounds)
+    // NPCs scattered — offsets chosen to AVOID occupying the same tile as any
+    // starter building above. Each NPC stands one tile adjacent to their
+    // home/work building, never on it.
     const npcSpots = [
-      { npcId: 'farmer',   dx:  0, dy:  5, name: 'Granjero' },
-      { npcId: 'baker',    dx:  2, dy: -1, name: 'Panadero' },
-      { npcId: 'merchant', dx: -5, dy: -1, name: 'Comerciante' },
-      { npcId: 'knight',   dx: -6, dy:  4, name: 'Capitán' },
-      { npcId: 'princess', dx:  0, dy: -3, name: 'Princesa' },
-      { npcId: 'wizard',   dx:  5, dy: -2, name: 'Mago' },
+      { npcId: 'farmer',   dx:  2, dy:  5, name: 'Granjero' },     // east of farm_plots
+      { npcId: 'baker',    dx:  4, dy:  0, name: 'Panadero' },     // NE of mill
+      { npcId: 'merchant', dx: -4, dy: -1, name: 'Comerciante' },  // east of market
+      { npcId: 'knight',   dx: -5, dy:  4, name: 'Capitán' },      // east of barracks
+      { npcId: 'princess', dx:  2, dy: -2, name: 'Princesa' },     // east of throne_room
+      { npcId: 'wizard',   dx:  6, dy:  0, name: 'Mago' },         // SE of tavern
     ];
     for (const n of npcSpots) {
       const x = spawn.x + n.dx, y = spawn.y + n.dy;
