@@ -123,12 +123,16 @@ export default class BootScene extends Phaser.Scene {
     // be punched out to transparent before use. Terrain/Kenney tiles already
     // have alpha and are skipped.
     const chromaKeyTargets = [
-      'buildings', 'farm_tiles', 'troops', 'effects',
+      'farm_tiles', 'troops', 'effects',
       'npc_farmer', 'npc_baker', 'npc_princess', 'npc_wizard',
       'npc_knight', 'npc_merchant', 'npc_ranger',
       'chicken', 'cow', 'sheep',
     ];
     for (const key of chromaKeyTargets) this.makeWhiteTransparent(key);
+    // buildings.png has generous white padding around each sprite but the buildings
+    // themselves contain near-white highlights — need a stricter threshold (250) so
+    // only the true background is removed and the sprite body survives.
+    this.makeWhiteTransparent('buildings', 252);
 
     // ─── Create animations ───
     this.createNPCAnimations();

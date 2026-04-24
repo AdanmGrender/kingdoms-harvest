@@ -12,6 +12,7 @@ import useGameStore from '../../store/gameStore';
 import EventBridge from '../EventBridge';
 import { generateMap, BIOMES, RESOURCE_TYPES } from '../maps/IsoMapGenerator';
 import { ROAD_CONNECTORS } from '../maps/IsoMapGenerator';
+import { addStaticShadow } from '../systems/ShadowSystem';
 
 // Kenney medieval-rts tiles are 64×64 top-down squares.
 const TILE_W = 64;
@@ -143,6 +144,9 @@ export default class IsoScene extends Phaser.Scene {
     this.structureSprites = [];
     for (const s of this.mapData.structures) {
       const { x: sx, y: sy } = this.isoToScreen(s.x, s.y);
+      addStaticShadow(this, sx, sy, {
+        width: 24, height: 8, alpha: 0.35, depth: 3500, offsetY: 6,
+      });
       const sprite = this.add.image(sx, sy, `iso_struct_${s.tileId}`);
       sprite.setOrigin(0.5, 0.5);
       sprite.setDepth(10000 + s.y * 100 + s.x);
@@ -164,8 +168,16 @@ export default class IsoScene extends Phaser.Scene {
 
   drawDecorations() {
     this.decorSprites = [];
+    const SHADOW_PROFILE = {
+      tree: { width: 26, height: 8, alpha: 0.35, offsetY: 12 },
+      bush: { width: 16, height: 5, alpha: 0.3,  offsetY: 8 },
+    };
     for (const d of this.mapData.decorations) {
       const { x: sx, y: sy } = this.isoToScreen(d.x, d.y);
+      const profile = SHADOW_PROFILE[d.type];
+      if (profile) {
+        addStaticShadow(this, sx, sy, { ...profile, depth: 3500 });
+      }
       const sprite = this.add.image(sx, sy, `iso_env_${d.tileId}`);
       sprite.setOrigin(0.5, 0.5);
       sprite.setDepth(5000 + d.y * 100 + d.x);

@@ -24,6 +24,7 @@ import SelectionSystem from '../systems/SelectionSystem';
 import BuildingPlacementSystem from '../systems/BuildingPlacementSystem';
 import DayNightSystem from '../systems/DayNightSystem';
 import ParticleSystem from '../systems/ParticleSystem';
+import { addStaticShadow, addTrackedShadow } from '../systems/ShadowSystem';
 import EventBridge from '../EventBridge';
 
 const FOG_TINT = 0x202040;
@@ -124,8 +125,17 @@ export default class WorldScene extends Phaser.Scene {
 
   drawDecorations() {
     const { decorations } = this.mapData;
+    // Shadow profile per decoration type — rocks/flowers are too flat to cast shadows
+    const SHADOW_PROFILE = {
+      tree: { width: 26, height: 8, alpha: 0.35, offsetY: 12 },
+      bush: { width: 16, height: 5, alpha: 0.3,  offsetY: 8 },
+    };
     for (const d of decorations) {
       const { px, py } = this.tileToPx(d.x, d.y);
+      const profile = SHADOW_PROFILE[d.type];
+      if (profile) {
+        addStaticShadow(this, px, py, { ...profile, depth: 1 });
+      }
       const sprite = this.add.image(px, py, `iso_env_${d.tileId}`);
       sprite.setOrigin(0.5, 0.7);
       sprite.setDepth(50 + d.y * 10 + d.x); // below buildings (buildings start at y*100)
@@ -155,6 +165,9 @@ export default class WorldScene extends Phaser.Scene {
     for (const s of this.mapData.structures) {
       // Skip slots we'll re-use for player buildings (starter buildings override these)
       const { px, py } = this.tileToPx(s.x, s.y);
+      addStaticShadow(this, px, py, {
+        width: 24, height: 8, alpha: 0.35, depth: 1, offsetY: 6,
+      });
       const sprite = this.add.image(px, py, `iso_struct_${s.tileId}`);
       sprite.setOrigin(0.5, 0.7);
       sprite.setDepth(60 + s.y * 10 + s.x);
@@ -251,6 +264,9 @@ export default class WorldScene extends Phaser.Scene {
     const buildingObjects = this.mapData.objects.filter(o => o.type === 'building');
     for (const obj of buildingObjects) {
       const { px, py } = this.tileToPx(obj.x, obj.y);
+      addStaticShadow(this, px, py, {
+        width: 60, height: 20, alpha: 0.45, depth: 1, offsetY: 20,
+      });
       const building = new Building(this, px, py, {
         buildingId: obj.buildingId,
         tileIndex: obj.tileIndex,
@@ -266,6 +282,9 @@ export default class WorldScene extends Phaser.Scene {
     const npcObjects = this.mapData.objects.filter(o => o.type === 'npc');
     for (const obj of npcObjects) {
       const { px, py } = this.tileToPx(obj.x, obj.y);
+      addStaticShadow(this, px, py, {
+        width: 20, height: 7, alpha: 0.35, depth: 1, offsetY: 16,
+      });
       const npc = new NPC(this, px, py, obj.npcId, obj.name);
       npc.setDepth(200 + obj.y * 10 + obj.x);
       this.npcs.push(npc);
@@ -302,6 +321,9 @@ export default class WorldScene extends Phaser.Scene {
       const py = bounds.y + Phaser.Math.Between(16, Math.max(16, bounds.height - 16));
       const animal = new Animal(this, px, py, type, bounds);
       animal.setDepth(150 + Math.floor(py / TILE_SIZE) * 10);
+      animal._shadow = addTrackedShadow(this, animal, {
+        width: 18, height: 7, alpha: 0.35, offsetY: 10, depth: 1,
+      });
       this.animals.push(animal);
     }
   }
@@ -416,6 +438,9 @@ export default class WorldScene extends Phaser.Scene {
 
   addBuilding(buildingData) {
     const { px, py } = this.tileToPx(buildingData.posX, buildingData.posY);
+    addStaticShadow(this, px, py, {
+      width: 60, height: 20, alpha: 0.45, depth: 1, offsetY: 20,
+    });
     const building = new Building(this, px, py, buildingData);
     building.setDepth(100 + buildingData.posY * 10 + buildingData.posX);
     this.buildings.push(building);
@@ -457,6 +482,13 @@ export default class WorldScene extends Phaser.Scene {
     for (const animal of this.animals) {
       const visible = this.isOnScreen(animal);
       animal.setVisible(visible);
+      if (animal._shadow) {
+        animal._shadow.setVisible(visible);
+        if (visible) {
+          animal._shadow.x = animal.x;
+          animal._shadow.y = animal.y + animal._shadow._shadowOffsetY;
+        }
+      }
       if (visible) animal.update(delta);
     }
     for (const villager of this.villagers) {

@@ -4,6 +4,7 @@
  * Uses NPC spritesheets loaded in BootScene for rendering.
  */
 import Phaser from 'phaser';
+import { addContainerShadow } from '../systems/ShadowSystem';
 
 const VILLAGER_SPEED = 40; // pixels per second
 
@@ -77,6 +78,9 @@ export default class Villager extends Phaser.GameObjects.Container {
       fontSize: '8px',
     }).setOrigin(0.5);
     this.add(this.statusIcon);
+
+    // Drop-shadow ellipse beneath sprite — inserted at index 0 so it draws first
+    addContainerShadow(this, { width: 16, height: 6, alpha: 0.35, offsetY: 14 });
 
     this.setDepth(9);
     scene.add.existing(this);
