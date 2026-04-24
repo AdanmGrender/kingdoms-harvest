@@ -129,10 +129,10 @@ export default class BootScene extends Phaser.Scene {
       'chicken', 'cow', 'sheep',
     ];
     for (const key of chromaKeyTargets) this.makeWhiteTransparent(key);
-    // buildings.png has generous white padding around each sprite but the buildings
-    // themselves contain near-white highlights — need a stricter threshold (250) so
-    // only the true background is removed and the sprite body survives.
-    this.makeWhiteTransparent('buildings', 252);
+    // buildings.png has light-colored highlights inside each sprite body — a flat
+    // threshold nukes them along with the background. Use flood-fill from frame
+    // edges instead so only the outer white ring is removed.
+    this.makeWhiteTransparent('buildings', { threshold: 240, floodFill: true });
 
     // ─── Create animations ───
     this.createNPCAnimations();
@@ -145,20 +145,26 @@ export default class BootScene extends Phaser.Scene {
   }
 
   /**
-   * Replace any near-white pixel in a texture with transparent. Needed because
-   * the old asset batch was exported over solid white instead of alpha.
+   * Replace near-white pixels in a texture with transparent. Needed because the
+   * old asset batch was exported over solid white instead of alpha.
+   *
    * Threshold 240 covers faint JPEG-y edge fringing without eating legit cream
-   * tones in sprites.
+   * tones in small sprites. For sprites with lots of light-colored body pixels
+   * (roofs, walls, highlights) the flood-fill mode is safer: only the contiguous
+   * white region touching the frame edges is removed, so interior highlights
+   * survive.
+   *
+   * @param {string} key      texture key
+   * @param {object} opts     { threshold, floodFill, frameWidth, frameHeight }
    */
-  makeWhiteTransparent(key, threshold = 240) {
+  makeWhiteTransparent(key, opts = {}) {
+    const { threshold = 240, floodFill = false } = typeof opts === 'number' ? { threshold: opts } : opts;
     const texture = this.textures.get(key);
     if (!texture || texture.key === '__MISSING') return;
     const src = texture.getSourceImage();
     if (!src || !src.width) return;
 
-    // Capture spritesheet frame dims before we destroy the texture. Frame 0
-    // holds the natural frame size; a plain image has a single frame that
-    // covers the whole source.
+    // Capture spritesheet frame dims before we destroy the texture.
     const frame0 = texture.frames[0] || texture.frames['__BASE'];
     const isSheet = frame0 && frame0.width > 0 && frame0.width < src.width;
     const frameWidth = frame0?.width || src.width;
@@ -171,9 +177,29 @@ export default class BootScene extends Phaser.Scene {
     ctx.drawImage(src, 0, 0);
     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const px = imgData.data;
-    for (let i = 0; i < px.length; i += 4) {
-      if (px[i] >= threshold && px[i + 1] >= threshold && px[i + 2] >= threshold) {
-        px[i + 3] = 0;
+
+    if (floodFill && isSheet) {
+      // Per-frame flood fill: treat each (frameWidth × frameHeight) cell independently
+      // so we only remove the background touching that frame's edges, not interior
+      // bright pixels. This preserves light-colored body art (like castle highlights).
+      const cols = Math.floor(src.width / frameWidth);
+      const rows = Math.floor(src.height / frameHeight);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          this._floodFillFrameWhite(
+            px, src.width,
+            c * frameWidth, r * frameHeight,
+            frameWidth, frameHeight,
+            threshold,
+          );
+        }
+      }
+    } else {
+      // Simple pixel threshold: every near-white pixel becomes transparent.
+      for (let i = 0; i < px.length; i += 4) {
+        if (px[i] >= threshold && px[i + 1] >= threshold && px[i + 2] >= threshold) {
+          px[i + 3] = 0;
+        }
       }
     }
     ctx.putImageData(imgData, 0, 0);
@@ -183,6 +209,35 @@ export default class BootScene extends Phaser.Scene {
       this.textures.addSpriteSheet(key, canvas, { frameWidth, frameHeight });
     } else {
       this.textures.addCanvas(key, canvas);
+    }
+  }
+
+  /**
+   * Flood-fill from each frame edge inward, turning near-white pixels transparent.
+   * Stops at non-white pixels, leaving interior light tones intact.
+   */
+  _floodFillFrameWhite(px, stride, x0, y0, fw, fh, threshold) {
+    const visited = new Uint8Array(fw * fh);
+    const stack = [];
+    // Seed from all four frame edges
+    for (let i = 0; i < fw; i++) {
+      stack.push([i, 0]);
+      stack.push([i, fh - 1]);
+    }
+    for (let j = 0; j < fh; j++) {
+      stack.push([0, j]);
+      stack.push([fw - 1, j]);
+    }
+    while (stack.length) {
+      const [lx, ly] = stack.pop();
+      if (lx < 0 || ly < 0 || lx >= fw || ly >= fh) continue;
+      const localIdx = ly * fw + lx;
+      if (visited[localIdx]) continue;
+      const p = ((y0 + ly) * stride + (x0 + lx)) * 4;
+      if (px[p] < threshold || px[p + 1] < threshold || px[p + 2] < threshold) continue;
+      visited[localIdx] = 1;
+      px[p + 3] = 0;
+      stack.push([lx + 1, ly], [lx - 1, ly], [lx, ly + 1], [lx, ly - 1]);
     }
   }
 
