@@ -60,10 +60,8 @@ export default class BootScene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
-    this.load.spritesheet('buildings', '/assets/game/tilesets/buildings.png', {
-      frameWidth: 64,
-      frameHeight: 64,
-    });
+    // buildings.png is superseded by Kenney's iso_struct_N PNGs (loaded below).
+    // Player buildings now pick a structure tile via config/buildingSprites.js.
 
     // ─── Kenney medieval-rts top-down tileset (used by WorldScene + IsoScene) ───
     const pad2 = (n) => String(n).padStart(2, '0');
@@ -129,10 +127,6 @@ export default class BootScene extends Phaser.Scene {
       'chicken', 'cow', 'sheep',
     ];
     for (const key of chromaKeyTargets) this.makeWhiteTransparent(key);
-    // buildings.png has light-colored highlights inside each sprite body — a flat
-    // threshold nukes them along with the background. Use flood-fill from frame
-    // edges instead so only the outer white ring is removed.
-    this.makeWhiteTransparent('buildings', { threshold: 240, floodFill: true });
 
     // ─── Create animations ───
     this.createNPCAnimations();
