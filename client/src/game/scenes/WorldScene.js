@@ -13,6 +13,7 @@ import {
   ROAD_CONNECTORS,
   RESOURCE_TYPES,
 } from '../maps/IsoMapGenerator';
+import { bakeWangTiles } from '../maps/WangAutotile';
 import { TILE_SIZE, MAP_W, MAP_H } from '../maps/tileConfig';
 import NPC from '../entities/NPC';
 import Animal from '../entities/Animal';
@@ -62,6 +63,9 @@ export default class WorldScene extends Phaser.Scene {
     // Legacy-shape objects array: services/createXxx methods read this.
     this.mapData.objects = this.deriveObjects(this.mapData);
 
+    // Bake biome-edge transition textures (Wang tiles) before terrain draws.
+    this.wang = bakeWangTiles(this);
+
     this.drawTerrain();
     this.drawDecorations();
     this.drawResourceMarkers();
@@ -97,11 +101,15 @@ export default class WorldScene extends Phaser.Scene {
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const { px, py } = this.tileToPx(x, y);
-        const tileId =
-          terrain[y][x] === BIOMES.ROAD
-            ? this.pickRoadTile(x, y)
-            : tileVariants[y][x];
-        const tile = this.add.image(px, py, `iso_tile_${tileId}`);
+        let textureKey;
+        if (terrain[y][x] === BIOMES.ROAD) {
+          textureKey = `iso_tile_${this.pickRoadTile(x, y)}`;
+        } else {
+          // Wang resolver returns a plain tile when all neighbors match, else a
+          // pre-baked transition texture toward the nearest differing biome.
+          textureKey = this.wang.resolve(x, y, terrain, width, height, tileVariants);
+        }
+        const tile = this.add.image(px, py, textureKey);
         tile.setOrigin(0.5, 0.5);
         tile.setDepth(0);
         this.terrainSprites.set(`${x},${y}`, tile);

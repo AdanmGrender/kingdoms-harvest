@@ -12,6 +12,7 @@ import useGameStore from '../../store/gameStore';
 import EventBridge from '../EventBridge';
 import { generateMap, BIOMES, RESOURCE_TYPES } from '../maps/IsoMapGenerator';
 import { ROAD_CONNECTORS } from '../maps/IsoMapGenerator';
+import { bakeWangTiles } from '../maps/WangAutotile';
 import { addStaticShadow } from '../systems/ShadowSystem';
 
 // Kenney medieval-rts tiles are 64×64 top-down squares.
@@ -76,6 +77,8 @@ export default class IsoScene extends Phaser.Scene {
     this.originX = cam.width / 2;
     this.originY = cam.height / 4;
 
+    this.wang = bakeWangTiles(this);
+
     this.drawTerrain();
     this.drawStructures();
     this.drawDecorations();
@@ -113,11 +116,10 @@ export default class IsoScene extends Phaser.Scene {
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const { x: sx, y: sy } = this.isoToScreen(x, y);
-        const tileId =
-          terrain[y][x] === BIOMES.ROAD
-            ? this.pickRoadTile(x, y)
-            : tileVariants[y][x];
-        const tile = this.add.image(sx, sy, `iso_tile_${tileId}`);
+        const textureKey = terrain[y][x] === BIOMES.ROAD
+          ? `iso_tile_${this.pickRoadTile(x, y)}`
+          : this.wang.resolve(x, y, terrain, width, height, tileVariants);
+        const tile = this.add.image(sx, sy, textureKey);
         tile.setOrigin(0.5, 0.5);
         tile.setDepth(y * 100 + x);
         this.terrainSprites.set(`${x},${y}`, tile);
