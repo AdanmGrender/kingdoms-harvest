@@ -58,8 +58,8 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('terrain', '/assets/game/tilesets/terrain.png');
     this.load.image('farm_tiles', '/assets/game/tilesets/farm_tiles.png');
     this.load.spritesheet('buildings', '/assets/game/tilesets/buildings.png', {
-      frameWidth: 64,
-      frameHeight: 64,
+      frameWidth: 128,
+      frameHeight: 128,
     });
 
     // ─── Load characters ───
