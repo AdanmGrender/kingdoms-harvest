@@ -534,8 +534,8 @@ const useGameStore = create((set, get) => ({
   },
 }));
 
-// Expose store globally for dev/Puppeteer screenshot tool
-if (typeof window !== 'undefined') {
+// Expose store globally for dev/Puppeteer screenshot tool (stripped from prod builds by Vite)
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
   window.__gameStore = useGameStore;
 }
 
