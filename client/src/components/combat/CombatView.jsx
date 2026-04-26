@@ -91,11 +91,84 @@ function AbilityPicker({ troops, selected, onSelect }) {
   );
 }
 
+function BattleResultCard({ result, isPvp }) {
+  if (!result) return null;
+  const won = result.winner === 'attacker';
+  const losses = result.attackerLosses || {};
+  const lossEntries = Object.entries(losses).filter(([, qty]) => qty > 0);
+  const defLosses = result.defenderLosses || {};
+  const defLossEntries = Object.entries(defLosses).filter(([, qty]) => qty > 0);
+
+  return (
+    <div className={`game-card animate-fade-in ${won ? 'border-green-500' : 'border-red-500'}`}>
+      <p className="text-center font-bold mb-2">
+        {won ? `🏆 Victoria${isPvp ? ' PvP' : ''}!` : `💀 Derrota${isPvp ? ' PvP' : ''}`}
+      </p>
+      <p className="text-xs text-gray-400 text-center mb-1">
+        ATK: {result.attackPower} vs DEF: {result.defensePower}
+      </p>
+      {result.tokensAwarded > 0 && (
+        <p className="text-xs text-yellow-400 text-center mb-2">+{result.tokensAwarded} KH 🪙</p>
+      )}
+      {result.loot && Object.keys(result.loot).length > 0 && (
+        <p className="text-xs text-kingdom-gold text-center mb-2">
+          {isPvp ? 'Botín robado' : 'Botín'}: {Object.entries(result.loot).map(([k, v]) => `${v} ${k}`).join(', ')}
+        </p>
+      )}
+      {lossEntries.length > 0 && (
+        <p className="text-xs text-red-300 text-center">
+          Tus bajas: {lossEntries.map(([k, v]) => `${v} ${k}`).join(', ')}
+        </p>
+      )}
+      {defLossEntries.length > 0 && (
+        <p className="text-xs text-red-200/80 text-center">
+          Bajas enemigas: {defLossEntries.map(([k, v]) => `${v} ${k}`).join(', ')}
+        </p>
+      )}
+      {Array.isArray(result.battleLog) && result.battleLog.length > 0 && (
+        <details className="mt-2 text-[10px] text-gray-400">
+          <summary className="cursor-pointer">📜 Ver log de batalla</summary>
+          <ul className="mt-1 space-y-0.5 pl-2">
+            {result.battleLog.map((line, i) => <li key={i}>· {line}</li>)}
+          </ul>
+        </details>
+      )}
+    </div>
+  );
+}
+
+function HistoryItem({ b, myId }) {
+  const isAttacker = b.attacker_id === myId;
+  const won = (isAttacker && b.winner === 'attacker') || (!isAttacker && b.winner === 'defender');
+  const loot = (() => { try { return JSON.parse(b.loot || '{}'); } catch { return {}; } })();
+  const lootEntries = Object.entries(loot);
+  const at = b.resolved_at ? new Date(b.resolved_at).toLocaleString() : '';
+
+  return (
+    <div className={`game-card text-xs py-2 ${won ? 'border-green-700/60' : 'border-red-700/60'}`}>
+      <div className="flex items-center justify-between">
+        <span className="font-bold">
+          {b.type === 'pve' ? '🏰 PvE' : '⚔️ PvP'} · {isAttacker ? 'Atacaste' : 'Te atacaron'}
+        </span>
+        <span className={won ? 'text-green-400' : 'text-red-400'}>
+          {won ? 'Victoria' : 'Derrota'}
+        </span>
+      </div>
+      {lootEntries.length > 0 && (
+        <p className="text-kingdom-gold mt-1">
+          {isAttacker ? 'Ganaste' : 'Perdiste'}: {lootEntries.map(([k, v]) => `${v} ${k}`).join(', ')}
+        </p>
+      )}
+      {at && <p className="text-gray-500 mt-0.5">{at}</p>}
+    </div>
+  );
+}
+
 export default function CombatView() {
   const {
-    troops, player, pvpPlayers,
+    troops, player, pvpPlayers, battleHistory,
     trainTroops, attackPVE, attackPVP,
-    loadPvpPlayers, refreshResources,
+    loadPvpPlayers, loadBattleHistory, refreshResources,
   } = useGameStore();
 
   const [trainForm, setTrainForm] = useState({ troopId: 'militia', quantity: 1 });
@@ -114,6 +187,7 @@ export default function CombatView() {
 
   useEffect(() => {
     if (activeSection === 'pvp') loadPvpPlayers();
+    if (activeSection === 'history') loadBattleHistory();
   }, [activeSection]);
 
   const handleTrain = async () => {
@@ -140,10 +214,11 @@ export default function CombatView() {
   };
 
   const sections = [
-    { id: 'troops', label: 'Tropas' },
-    { id: 'train',  label: 'Entrenar' },
-    { id: 'attack', label: 'PvE' },
-    { id: 'pvp',    label: 'PvP' },
+    { id: 'troops',  label: 'Tropas' },
+    { id: 'train',   label: 'Entrenar' },
+    { id: 'attack',  label: 'PvE' },
+    { id: 'pvp',     label: 'PvP' },
+    { id: 'history', label: 'Historial' },
   ];
 
   return (
@@ -256,23 +331,7 @@ export default function CombatView() {
             Atacar Aldea NPC {selectedAbility ? `(${SIEGE_ABILITIES.find(a => a.id === selectedAbility)?.name})` : ''}
           </button>
 
-          {battleResult && (
-            <div className={`game-card animate-fade-in ${
-              battleResult.winner === 'attacker' ? 'border-green-500' : 'border-red-500'
-            }`}>
-              <p className="text-center font-bold mb-2">
-                {battleResult.winner === 'attacker' ? '🏆 Victoria!' : '💀 Derrota'}
-              </p>
-              <p className="text-xs text-gray-400 text-center mb-2">
-                ATK: {battleResult.attackPower} vs DEF: {battleResult.defensePower}
-              </p>
-              {battleResult.loot && Object.keys(battleResult.loot).length > 0 && (
-                <p className="text-xs text-kingdom-gold text-center">
-                  Botín: {Object.entries(battleResult.loot).map(([k, v]) => `${v} ${k}`).join(', ')}
-                </p>
-              )}
-            </div>
-          )}
+          <BattleResultCard result={battleResult} isPvp={false} />
         </div>
       )}
 
@@ -327,23 +386,21 @@ export default function CombatView() {
             </>
           )}
 
-          {pvpResult && (
-            <div className={`game-card animate-fade-in ${
-              pvpResult.winner === 'attacker' ? 'border-green-500' : 'border-red-500'
-            }`}>
-              <p className="text-center font-bold mb-2">
-                {pvpResult.winner === 'attacker' ? '🏆 Victoria PvP!' : '💀 Derrota PvP'}
-              </p>
-              <p className="text-xs text-gray-400 text-center">
-                ATK: {pvpResult.attackPower} vs DEF: {pvpResult.defensePower}
-              </p>
-              {pvpResult.loot && Object.keys(pvpResult.loot).length > 0 && (
-                <p className="text-xs text-kingdom-gold text-center mt-1">
-                  Botín robado: {Object.entries(pvpResult.loot).map(([k, v]) => `${v} ${k}`).join(', ')}
-                </p>
-              )}
-            </div>
+          <BattleResultCard result={pvpResult} isPvp={true} />
+        </div>
+      )}
+
+      {/* Historial */}
+      {activeSection === 'history' && (
+        <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+          {(!battleHistory || battleHistory.length === 0) && (
+            <p className="text-gray-400 text-xs text-center py-4">
+              No hay batallas todavía. Atacá una aldea NPC o un jugador para empezar.
+            </p>
           )}
+          {(battleHistory || []).map((b) => (
+            <HistoryItem key={b.id} b={b} myId={player?.telegram_id} />
+          ))}
         </div>
       )}
     </div>

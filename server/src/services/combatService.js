@@ -363,6 +363,19 @@ const combatService = {
       }
     }
 
+    // Anti-griefing: defenders below level 3 are protected; level differential
+    // capped at ±5 to prevent high-level players from farming low-level targets.
+    // Both players are fetched here for level comparison; reused below for bonuses.
+    const attacker = await db('players').where('telegram_id', playerId).first();
+    const defender = await db('players').where('telegram_id', defenderId).first();
+    if (!defender) throw new Error('El jugador defensor ya no existe');
+    if (defender.level < 3) {
+      throw new Error('Este jugador está bajo escudo de novato (nivel < 3)');
+    }
+    if (Math.abs((attacker?.level || 1) - defender.level) > 5) {
+      throw new Error('Diferencia de nivel demasiado grande (máx ±5)');
+    }
+
     army = this.sanitizeArmy(army);
     await this.validateArmy(playerId, army);
 
@@ -377,8 +390,7 @@ const combatService = {
       if (t.quantity > 0) defenderArmy[t.troop_id] = t.quantity;
     });
 
-    const attacker = await db('players').where('telegram_id', playerId).first();
-    const defender = await db('players').where('telegram_id', defenderId).first();
+    // attacker + defender already fetched above for the level-diff check
     const attackerFactionAtk = FACTIONS[attacker?.faction_id]?.bonus?.atk || 0;
     const defenderFactionDef = FACTIONS[defender?.faction_id]?.bonus?.def || 0;
 
@@ -421,6 +433,7 @@ const combatService = {
 
     // Si el atacante gana, roba recursos (con escudo mínimo de 50 por recurso)
     let loot = {};
+    let tokensAwarded = 0;
     if (result.winner === 'attacker') {
       const defResources = await db('player_resources').where('player_id', defenderId);
       const stealRate = 0.1;
@@ -439,7 +452,8 @@ const combatService = {
       await playerService.addXP(playerId, 50);
 
       // Dar KH Tokens + trackear tarea diaria
-      await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVP_WIN, 'pvp');
+      const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVP_WIN, 'pvp');
+      tokensAwarded = tokenResult.awarded;
       await dailyTaskService.trackProgress(playerId, 'battle_win');
     }
 
@@ -455,7 +469,27 @@ const combatService = {
       resolved_at: new Date().toISOString(),
     });
 
-    return { ...result, loot };
+    // Notify the defender via Telegram bot DM. Respects the same opt-out flag
+    // gameTick uses (players.notif_enabled). Inline check to avoid coupling
+    // back to the tick module.
+    try {
+      if (defender?.notif_enabled !== 0) {
+        const { getBot } = require('../bot/telegramBot');
+        const bot = getBot();
+        if (bot) {
+          const attackerName = attacker?.display_name || 'Un jugador';
+          const lootStr = result.winner === 'attacker' && Object.keys(loot).length > 0
+            ? ` y robó ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
+            : '';
+          const msg = result.winner === 'attacker'
+            ? `⚔️ ¡${attackerName} te atacó y ganó${lootStr}! Volvé a defender tu reino.`
+            : `🛡️ ¡Defendiste un ataque de ${attackerName}! Tus tropas ganaron.`;
+          bot.sendMessage(defenderId, msg).catch(() => {});
+        }
+      }
+    } catch {}
+
+    return { ...result, loot, tokensAwarded };
   },
 
   /**

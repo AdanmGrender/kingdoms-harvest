@@ -287,6 +287,16 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  battleHistory: [],
+  loadBattleHistory: async () => {
+    try {
+      const { data } = await api.get('/combat/history');
+      set({ battleHistory: data });
+    } catch (error) {
+      console.error('Error loading battle history:', error);
+    }
+  },
+
   // ---- Asedios ----
   loadSieges: async () => {
     try {
