@@ -4,6 +4,7 @@ const { CROPS, ANIMALS, FACTIONS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
+const techService = require('./techService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 function secureRandom() {
@@ -158,7 +159,10 @@ const commerceService = {
     // Faction bonus: shadow_merchants +15% sell price
     const player = await db('players').where('telegram_id', playerId).first();
     const commerceBonus = FACTIONS[player?.faction_id]?.bonus?.commerce || 0;
-    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus));
+    // Tech: haggling +10% sell price
+    const completedTechs = await techService.getCompletedTechs(playerId);
+    const techBonus = completedTechs.has('haggling') ? 0.10 : 0;
+    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus));
 
     // Cobrar recurso (atómico)
     try {

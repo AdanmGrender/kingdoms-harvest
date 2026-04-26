@@ -5,7 +5,38 @@ const playerService = require('./playerService');
 const buildingService = require('./buildingService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
+const techService = require('./techService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
+
+// Tech-driven combat bonuses. Numbers must mirror the human-readable "effect"
+// strings in shared/gameConfig.js TECH_BRANCHES.military.
+const TECH_COMBAT_BONUSES = {
+  attacker: {
+    sharp_blades: { atk: 0.10 },
+  },
+  defender: {
+    reinforced_armor: { def: 0.10 },
+    tactics:          { def: 0.15 },  // only fires when player is defender
+  },
+};
+
+/**
+ * Returns { atk, def } multipliers for a player based on their completed techs,
+ * scoped to whether they're the attacker or defender in this battle.
+ */
+async function getTechCombatBonuses(playerId, role) {
+  if (!playerId) return { atk: 0, def: 0 };
+  const completed = await techService.getCompletedTechs(playerId);
+  const table = TECH_COMBAT_BONUSES[role] || {};
+  let atk = 0, def = 0;
+  for (const techId of Object.keys(table)) {
+    if (completed.has(techId)) {
+      atk += table[techId].atk || 0;
+      def += table[techId].def || 0;
+    }
+  }
+  return { atk, def };
+}
 
 // Secure random float [0, 1) — replaces secureRandom() for fairness
 function secureRandom() {
@@ -218,10 +249,12 @@ const combatService = {
     army = this.sanitizeArmy(army);
     await this.validateArmy(playerId, army);
 
-    // Apply faction atk/def bonus to army power via modified army copy
+    // Apply faction + tech bonuses (tech: sharp_blades adds atk; reinforced_armor/
+    // tactics don't fire on PvE attacks since the player is the attacker)
     const player = await db('players').where('telegram_id', playerId).first();
     const factionAtkBonus = FACTIONS[player?.faction_id]?.bonus?.atk || 0;
     const factionDefBonus = FACTIONS[player?.faction_id]?.bonus?.def || 0;
+    const techAttacker = await getTechCombatBonuses(playerId, 'attacker');
 
     // Generar ejército NPC basado en territorio
     const territory = territoryId
@@ -231,10 +264,10 @@ const combatService = {
     const npcStrength = territory ? territory.defense_strength : 50;
     const npcArmy = this.generateNPCArmy(npcStrength);
 
-    // Calcular batalla con bonuses de facción y habilidad de asedio
+    // Calcular batalla con bonuses de facción + tech + habilidad de asedio
     const result = this.calculateBattle(army, npcArmy, [], {
-      attackBonus: factionAtkBonus,
-      defenseBonus: factionDefBonus,
+      attackBonus: factionAtkBonus + techAttacker.atk,
+      defenseBonus: factionDefBonus + techAttacker.def,
       abilityId,
       attackerArmy: army,
     });
@@ -349,9 +382,13 @@ const combatService = {
     const attackerFactionAtk = FACTIONS[attacker?.faction_id]?.bonus?.atk || 0;
     const defenderFactionDef = FACTIONS[defender?.faction_id]?.bonus?.def || 0;
 
+    // Tech bonuses: attacker contributes atk; defender contributes def + tactics
+    const attackerTech = await getTechCombatBonuses(playerId, 'attacker');
+    const defenderTech = await getTechCombatBonuses(defenderId, 'defender');
+
     const result = this.calculateBattle(army, defenderArmy, defenderBuildings, {
-      attackBonus: attackerFactionAtk,
-      defenseBonus: defenderFactionDef,
+      attackBonus: attackerFactionAtk + attackerTech.atk,
+      defenseBonus: defenderFactionDef + defenderTech.def,
       abilityId,
     });
 
