@@ -505,6 +505,80 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // ---- Factions + Territories (world map) ----
+  factionsList: [],
+  factionMembers: {},  // factionId → array of members
+  territories: [],
+
+  loadFactions: async () => {
+    try {
+      const { data } = await api.get('/factions');
+      set({ factionsList: data });
+    } catch (error) {
+      console.error('Error loading factions:', error);
+    }
+  },
+
+  loadFactionMembers: async (factionId) => {
+    try {
+      const { data } = await api.get(`/factions/${factionId}/members`);
+      set((state) => ({
+        factionMembers: { ...state.factionMembers, [factionId]: data },
+      }));
+      return data;
+    } catch (error) {
+      console.error('Error loading faction members:', error);
+      return [];
+    }
+  },
+
+  joinFaction: async (factionId) => {
+    try {
+      const { data } = await api.post('/player/faction/join', { factionId });
+      get().addNotification(`¡Te uniste a ${data.faction?.name || 'la facción'}!`, 'success');
+      // Refresh player + factions list to reflect new membership
+      const { data: profile } = await api.get('/player/profile');
+      set({ player: profile });
+      get().loadFactions();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al unirse', 'error');
+      return null;
+    }
+  },
+
+  loadTerritories: async () => {
+    try {
+      const { data } = await api.get('/territories');
+      set({ territories: data });
+    } catch (error) {
+      console.error('Error loading territories:', error);
+    }
+  },
+
+  attackTerritory: async (territoryId, army, abilityId = null) => {
+    try {
+      const { data } = await api.post(`/territories/${territoryId}/attack`, { army, abilityId });
+      const won = data?.winner === 'attacker';
+      const flipped = !!data?.territoryFlipped;
+      const msg = flipped
+        ? `🏴 ¡Conquistaste el territorio! +${data.pointsAwarded || 0} puntos de facción`
+        : won
+          ? `🏆 Victoria, pero el territorio no cambió de dueño (¿sin facción?).`
+          : '💀 Derrota — el territorio resiste.';
+      get().addNotification(msg, won ? 'success' : 'error');
+      if (won && data.tokensAwarded > 0) {
+        EventBridge.emit('token:earned', { amount: data.tokensAwarded });
+      }
+      get().refreshResources();
+      get().loadTerritories();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al atacar', 'error');
+      return null;
+    }
+  },
+
   // ---- Leaderboard ----
   leaderboard: [],
   loadLeaderboard: async () => {

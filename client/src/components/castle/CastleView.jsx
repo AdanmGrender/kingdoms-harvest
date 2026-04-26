@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 import TechTreePanel from './TechTreePanel';
+import FactionPanel from '../world/FactionPanel';
+import TerritoryMapPanel from '../world/TerritoryMapPanel';
 
 const BUILDING_DATA = {
   // Agricola
@@ -145,16 +147,18 @@ function CastleView() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-1 mb-4 overflow-x-auto">
         {[
-          { id: 'buildings', label: '🏰 Edificios' },
+          { id: 'buildings', label: '🏰 Edif.' },
           { id: 'animals',   label: '🐄 Animales' },
-          { id: 'tech',      label: '🔬 Tecnología' },
+          { id: 'tech',      label: '🔬 Tech' },
+          { id: 'factions',  label: '🛡️ Facción' },
+          { id: 'world',     label: '🗺️ Mundo' },
         ].map((t) => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id)}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex-1 py-2 px-2 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap ${
               activeTab === t.id
                 ? 'bg-kingdom-accent text-white'
                 : 'bg-kingdom-blue/50 text-gray-400'
@@ -180,6 +184,12 @@ function CastleView() {
 
       {/* Tech tab */}
       {activeTab === 'tech' && <TechTreePanel />}
+
+      {/* Factions tab */}
+      {activeTab === 'factions' && <FactionPanel />}
+
+      {/* World map (territories) */}
+      {activeTab === 'world' && <TerritoryMapPanel />}
 
       {/* Buildings tab */}
       {activeTab === 'buildings' && <>

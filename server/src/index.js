@@ -26,6 +26,8 @@ const referralRoutes = require('./routes/referralRoutes');
 const villagerRoutes = require('./routes/villagerRoutes');
 const siegeRoutes = require('./routes/siegeRoutes');
 const techRoutes = require('./routes/techRoutes');
+const factionRoutes = require('./routes/factionRoutes');
+const territoryRoutes = require('./routes/territoryRoutes');
 
 const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
@@ -98,6 +100,8 @@ app.use('/api/referral', referralRoutes);
 app.use('/api/villagers', villagerRoutes);
 app.use('/api/sieges', siegeRoutes);
 app.use('/api/tech', techRoutes);
+app.use('/api/factions', factionRoutes);
+app.use('/api/territories', territoryRoutes);
 
 // SPA fallback: serve index.html for non-API routes
 if (process.env.NODE_ENV === 'production') {
@@ -231,9 +235,10 @@ async function start() {
     });
     console.log('Base de datos migrada correctamente');
 
-    // Seed de facciones
-    const { seedFactions } = require('./game/seedData');
+    // Seed de facciones + territorios (idempotent — solo inserta si faltan)
+    const { seedFactions, seedTerritories } = require('./game/seedData');
     await seedFactions(db);
+    await seedTerritories(db);
 
     // Iniciar bot de Telegram
     if (process.env.BOT_TOKEN) {
