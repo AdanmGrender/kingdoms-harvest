@@ -218,6 +218,7 @@ const farmService = {
     await db('player_animals').where('id', animalDbId).update({
       is_fed: true,
       next_production_at: nextProd.toISOString(),
+      notified_at: null, // reset so next ready-cycle pushes once
     });
 
     return {
@@ -253,6 +254,7 @@ const farmService = {
       is_fed: false,
       last_collected_at: now.toISOString(),
       next_production_at: null,
+      notified_at: null, // clear so next feed→ready cycle pushes once
     });
 
     return {

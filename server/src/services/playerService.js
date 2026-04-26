@@ -257,6 +257,20 @@ const playerService = {
       .orderBy('xp', 'desc')
       .limit(50);
   },
+
+  /**
+   * Toggle (or set) Telegram push notifications for a player.
+   * Pass `enabled` to set explicitly, or omit to flip the current value.
+   */
+  async setNotifEnabled(playerId, enabled) {
+    const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
+    const next = enabled === undefined
+      ? (player.notif_enabled ? 0 : 1)
+      : (enabled ? 1 : 0);
+    await db('players').where('telegram_id', playerId).update({ notif_enabled: next });
+    return { enabled: !!next };
+  },
 };
 
 module.exports = playerService;

@@ -64,4 +64,18 @@ router.get('/leaderboard', telegramAuth, async (req, res) => {
   }
 });
 
+// Toggle/set Telegram push notifications. Body: { enabled?: boolean }
+// Body is intentionally not run through validate — the field is optional and
+// the service coerces undefined → flip current value.
+router.patch('/notif', telegramAuth, async (req, res) => {
+  try {
+    const requested = req.body?.enabled;
+    const enabled = typeof requested === 'boolean' ? requested : undefined;
+    const result = await playerService.setNotifEnabled(req.playerId, enabled);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
 module.exports = router;

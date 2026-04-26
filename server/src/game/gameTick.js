@@ -4,8 +4,34 @@ const dailyTaskService = require('../services/dailyTaskService');
 const { BUILDINGS, DAY_CYCLE } = require('../../../shared/gameConfig');
 const { getBot } = require('../bot/telegramBot');
 
-function sendBotNotification(playerId, message) {
+// Cache of player_id → notif_enabled to avoid hammering the players table
+// on every push. Invalidates after 5 minutes — long enough that a player who
+// just toggled the setting picks it up on the next major tick.
+const NOTIF_PREF_TTL_MS = 5 * 60 * 1000;
+const notifPrefCache = new Map();
+
+async function isNotifEnabled(playerId) {
+  const cached = notifPrefCache.get(playerId);
+  if (cached && cached.expires > Date.now()) return cached.enabled;
   try {
+    const row = await db('players')
+      .where('telegram_id', playerId)
+      .select('notif_enabled')
+      .first();
+    // Default to enabled if column is missing or NULL (pre-migration safety)
+    const enabled = row?.notif_enabled === undefined || row.notif_enabled === null
+      ? true
+      : !!row.notif_enabled;
+    notifPrefCache.set(playerId, { enabled, expires: Date.now() + NOTIF_PREF_TTL_MS });
+    return enabled;
+  } catch {
+    return true;
+  }
+}
+
+async function sendBotNotification(playerId, message) {
+  try {
+    if (!(await isNotifEnabled(playerId))) return;
     const bot = getBot();
     if (bot) bot.sendMessage(playerId, message).catch(() => {});
   } catch {}
@@ -157,12 +183,14 @@ async function processTick() {
     console.error('[Tick] Error procesando producción de edificios:', error.message);
   }
 
-  // 3. Producción de animales
+  // 3. Producción de animales — fire ONCE per ready cycle (not every tick).
+  // `notified_at` is cleared by farmService when the player feeds or collects.
   try {
     const readyAnimals = await db('player_animals')
       .where('is_fed', true)
       .whereNotNull('next_production_at')
-      .where('next_production_at', '<=', now);
+      .where('next_production_at', '<=', now)
+      .whereNull('notified_at');
 
     for (const animal of readyAnimals) {
       if (ioRef) {
@@ -171,6 +199,11 @@ async function processTick() {
           animalType: animal.animal_id,
         });
       }
+      sendBotNotification(animal.player_id, `🐔 ¡Tu ${animal.animal_id} tiene producto listo para recolectar!`);
+      await db('player_animals').where('id', animal.id).update({ notified_at: now });
+    }
+    if (readyAnimals.length > 0) {
+      console.log(`[Tick] ${readyAnimals.length} animales notificados`);
     }
   } catch (error) {
     console.error('[Tick] Error procesando animales:', error.message);

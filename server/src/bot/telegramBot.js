@@ -107,6 +107,29 @@ function initBot() {
     );
   });
 
+  // Comando /notif — toggle push notifications on/off
+  bot.onText(/\/notif(?:\s+(on|off))?/, async (msg, match) => {
+    const db = require('../config/database');
+    const playerService = require('../services/playerService');
+    const player = await db('players').where('telegram_id', msg.from.id).first();
+    if (!player) {
+      return bot.sendMessage(msg.chat.id, '❌ No tenés cuenta. Usá /start para comenzar.');
+    }
+    const arg = (match[1] || '').toLowerCase();
+    const explicit = arg === 'on' ? true : arg === 'off' ? false : undefined;
+    try {
+      const { enabled } = await playerService.setNotifEnabled(msg.from.id, explicit);
+      bot.sendMessage(msg.chat.id,
+        enabled
+          ? '🔔 *Notificaciones activadas.* Te avisaré cuando tus cultivos, animales, edificios o tropas estén listos.'
+          : '🔕 *Notificaciones desactivadas.* No recibirás más DMs del juego. Volvé a usar /notif para activarlas.',
+        { parse_mode: 'Markdown' }
+      );
+    } catch (err) {
+      bot.sendMessage(msg.chat.id, '❌ Error: ' + (err.message || 'no se pudo cambiar la preferencia.'));
+    }
+  });
+
   console.log('Bot de Telegram configurado');
   return bot;
 }
