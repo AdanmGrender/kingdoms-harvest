@@ -5,10 +5,10 @@ import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
 const SOCIAL = [
-  { id: 'achievements', icon: '⭐', label: 'Logros',  color: '#ffd750', metaTab: 'achievements' },
-  { id: 'alliance',     icon: '🤝', label: 'Facción', color: '#8fd4ff', metaTab: 'factions' },
-  { id: 'mail',         icon: '📊', label: 'Rankings', color: '#b8ffb8', metaTab: 'rankings' },
-  { id: 'bag',          icon: '🎒', label: 'Bolsa',   color: '#ffcc88' },
+  { id: 'achievements', icon: '⭐', label: 'Logros',   color: '#ffd750', metaTab: 'achievements' },
+  { id: 'alliance',     icon: '🤝', label: 'Alianza',  color: '#8fd4ff', metaTab: 'alliances' },
+  { id: 'rankings',     icon: '📊', label: 'Rankings', color: '#b8ffb8', metaTab: 'rankings' },
+  { id: 'market',       icon: '💱', label: 'Mercado',  color: '#ffcc88', metaTab: 'market' },
 ];
 
 export default function SocialSidebar() {

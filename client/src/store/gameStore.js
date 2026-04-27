@@ -622,6 +622,132 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // ---- Marketplace ----
+  marketListings: [],
+  myListings: [],
+  loadMarketListings: async () => {
+    try {
+      const { data } = await api.get('/market');
+      set({ marketListings: data });
+    } catch (error) { console.error('Error loading market:', error); }
+  },
+  loadMyListings: async () => {
+    try {
+      const { data } = await api.get('/market/mine');
+      set({ myListings: data });
+    } catch (error) { console.error('Error loading my listings:', error); }
+  },
+  createListing: async (resourceId, quantity, pricePerUnit) => {
+    try {
+      const { data } = await api.post('/market', { resourceId, quantity, pricePerUnit });
+      get().addNotification(data.message, 'success');
+      get().refreshResources();
+      get().loadMyListings();
+      get().loadMarketListings();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al listar', 'error');
+      return null;
+    }
+  },
+  buyFromListing: async (listingId, quantity) => {
+    try {
+      const { data } = await api.post(`/market/${listingId}/buy`, { quantity });
+      get().addNotification(data.message, 'success');
+      get().refreshResources();
+      get().loadMarketListings();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al comprar', 'error');
+      return null;
+    }
+  },
+  cancelListing: async (listingId) => {
+    try {
+      const { data } = await api.delete(`/market/${listingId}`);
+      get().addNotification(data.message, 'success');
+      get().refreshResources();
+      get().loadMyListings();
+      get().loadMarketListings();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al cancelar', 'error');
+      return null;
+    }
+  },
+
+  // ---- Alliances ----
+  alliancesList: [],
+  myAlliance: null,
+  allianceMembers: {},  // allianceId → array of members
+  loadAlliances: async () => {
+    try {
+      const { data } = await api.get('/alliances');
+      set({ alliancesList: data });
+    } catch (error) { console.error('Error loading alliances:', error); }
+  },
+  loadMyAlliance: async () => {
+    try {
+      const { data } = await api.get('/alliances/mine');
+      set({ myAlliance: data });
+    } catch (error) { console.error('Error loading my alliance:', error); }
+  },
+  loadAllianceMembers: async (allianceId) => {
+    try {
+      const { data } = await api.get(`/alliances/${allianceId}/members`);
+      set((state) => ({ allianceMembers: { ...state.allianceMembers, [allianceId]: data } }));
+      return data;
+    } catch (error) { console.error('Error loading alliance members:', error); return []; }
+  },
+  createAlliance: async (name, motto) => {
+    try {
+      const { data } = await api.post('/alliances', { name, motto });
+      get().addNotification(data.message, 'success');
+      get().loadAlliances();
+      get().loadMyAlliance();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al crear', 'error');
+      return null;
+    }
+  },
+  joinAlliance: async (allianceId) => {
+    try {
+      const { data } = await api.post(`/alliances/${allianceId}/join`);
+      get().addNotification(data.message, 'success');
+      get().loadAlliances();
+      get().loadMyAlliance();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al unirse', 'error');
+      return null;
+    }
+  },
+  leaveAlliance: async () => {
+    try {
+      const { data } = await api.post('/alliances/leave');
+      get().addNotification(data.message, 'success');
+      get().loadAlliances();
+      get().loadMyAlliance();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al salir', 'error');
+      return null;
+    }
+  },
+  disbandAlliance: async (allianceId) => {
+    try {
+      const { data } = await api.delete(`/alliances/${allianceId}`);
+      get().addNotification(data.message, 'success');
+      get().loadAlliances();
+      get().loadMyAlliance();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al disolver', 'error');
+      return null;
+    }
+  },
+
   // ---- PvP ----
   pvpPlayers: [],
   loadPvpPlayers: async () => {

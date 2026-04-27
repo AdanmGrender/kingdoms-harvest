@@ -248,6 +248,15 @@ async function processTick() {
     console.error('[Tick] Error procesando asedios:', error.message);
   }
 
+  // 4b2. Expire stale marketplace listings (refunds remaining to seller)
+  try {
+    const marketplaceService = require('../services/marketplaceService');
+    const expired = await marketplaceService.expireListings();
+    if (expired > 0) console.log(`[Tick] ${expired} listados de mercado expirados`);
+  } catch (error) {
+    console.error('[Tick] Error expirando listados:', error.message);
+  }
+
   // 4c. Villager simulation
   try {
     const villagerService = require('../services/villagerService');
