@@ -133,10 +133,12 @@ export default class WorldScene extends Phaser.Scene {
 
   drawDecorations() {
     const { decorations } = this.mapData;
-    // Shadow profile per decoration type — rocks/flowers are too flat to cast shadows
+    // Shadow profile per decoration type — rocks/flowers are too flat to cast
+    // shadows. SE-direction sun: offsetX/offsetY both positive, scaled by
+    // the object's perceived height; subtle CW rotation on tall things.
     const SHADOW_PROFILE = {
-      tree: { width: 26, height: 8, alpha: 0.35, offsetY: 12 },
-      bush: { width: 16, height: 5, alpha: 0.3,  offsetY: 8 },
+      tree: { width: 32, height: 8, alpha: 0.35, offsetX: 10, offsetY: 14, rotation: 0.18 },
+      bush: { width: 18, height: 5, alpha: 0.3,  offsetX: 4,  offsetY: 8,  rotation: 0 },
     };
     for (const d of decorations) {
       const { px, py } = this.tileToPx(d.x, d.y);
@@ -173,8 +175,10 @@ export default class WorldScene extends Phaser.Scene {
     for (const s of this.mapData.structures) {
       // Skip slots we'll re-use for player buildings (starter buildings override these)
       const { px, py } = this.tileToPx(s.x, s.y);
+      // Procedural structures (windmill/ruins/etc.) — small SE projection
       addStaticShadow(this, px, py, {
-        width: 24, height: 8, alpha: 0.35, depth: 1, offsetY: 6,
+        width: 28, height: 8, alpha: 0.35, depth: 1,
+        offsetX: 8, offsetY: 8, rotation: 0.15,
       });
       const sprite = this.add.image(px, py, `iso_struct_${s.tileId}`);
       sprite.setOrigin(0.5, 0.7);
@@ -274,8 +278,10 @@ export default class WorldScene extends Phaser.Scene {
     const buildingObjects = this.mapData.objects.filter(o => o.type === 'building');
     for (const obj of buildingObjects) {
       const { px, py } = this.tileToPx(obj.x, obj.y);
+      // Player buildings are the tallest entities — biggest SE shadow
       addStaticShadow(this, px, py, {
-        width: 60, height: 20, alpha: 0.45, depth: 1, offsetY: 20,
+        width: 72, height: 22, alpha: 0.45, depth: 1,
+        offsetX: 18, offsetY: 22, rotation: 0.20,
       });
       const building = new Building(this, px, py, {
         buildingId: obj.buildingId,
@@ -292,8 +298,10 @@ export default class WorldScene extends Phaser.Scene {
     const npcObjects = this.mapData.objects.filter(o => o.type === 'npc');
     for (const obj of npcObjects) {
       const { px, py } = this.tileToPx(obj.x, obj.y);
+      // NPCs are short — small SE drift, no rotation
       addStaticShadow(this, px, py, {
-        width: 20, height: 7, alpha: 0.35, depth: 1, offsetY: 16,
+        width: 22, height: 7, alpha: 0.35, depth: 1,
+        offsetX: 6, offsetY: 16, rotation: 0,
       });
       const npc = new NPC(this, px, py, obj.npcId, obj.name);
       npc.setDepth(200 + obj.y * 10 + obj.x);
@@ -332,7 +340,8 @@ export default class WorldScene extends Phaser.Scene {
       const animal = new Animal(this, px, py, type, bounds);
       animal.setDepth(150 + Math.floor(py / TILE_SIZE) * 10);
       animal._shadow = addTrackedShadow(this, animal, {
-        width: 18, height: 7, alpha: 0.35, offsetY: 10, depth: 1,
+        width: 20, height: 7, alpha: 0.35,
+        offsetX: 5, offsetY: 10, depth: 1,
       });
       this.animals.push(animal);
     }
@@ -449,7 +458,8 @@ export default class WorldScene extends Phaser.Scene {
   addBuilding(buildingData) {
     const { px, py } = this.tileToPx(buildingData.posX, buildingData.posY);
     addStaticShadow(this, px, py, {
-      width: 60, height: 20, alpha: 0.45, depth: 1, offsetY: 20,
+      width: 72, height: 22, alpha: 0.45, depth: 1,
+      offsetX: 18, offsetY: 22, rotation: 0.20,
     });
     const building = new Building(this, px, py, buildingData);
     building.setDepth(100 + buildingData.posY * 10 + buildingData.posX);
@@ -495,7 +505,7 @@ export default class WorldScene extends Phaser.Scene {
       if (animal._shadow) {
         animal._shadow.setVisible(visible);
         if (visible) {
-          animal._shadow.x = animal.x;
+          animal._shadow.x = animal.x + animal._shadow._shadowOffsetX;
           animal._shadow.y = animal.y + animal._shadow._shadowOffsetY;
         }
       }

@@ -147,7 +147,8 @@ export default class IsoScene extends Phaser.Scene {
     for (const s of this.mapData.structures) {
       const { x: sx, y: sy } = this.isoToScreen(s.x, s.y);
       addStaticShadow(this, sx, sy, {
-        width: 24, height: 8, alpha: 0.35, depth: 3500, offsetY: 6,
+        width: 28, height: 8, alpha: 0.35, depth: 3500,
+        offsetX: 8, offsetY: 8, rotation: 0.15,
       });
       const sprite = this.add.image(sx, sy, `iso_struct_${s.tileId}`);
       sprite.setOrigin(0.5, 0.5);
@@ -171,8 +172,8 @@ export default class IsoScene extends Phaser.Scene {
   drawDecorations() {
     this.decorSprites = [];
     const SHADOW_PROFILE = {
-      tree: { width: 26, height: 8, alpha: 0.35, offsetY: 12 },
-      bush: { width: 16, height: 5, alpha: 0.3,  offsetY: 8 },
+      tree: { width: 32, height: 8, alpha: 0.35, offsetX: 10, offsetY: 14, rotation: 0.18 },
+      bush: { width: 18, height: 5, alpha: 0.3,  offsetX: 4,  offsetY: 8,  rotation: 0 },
     };
     for (const d of this.mapData.decorations) {
       const { x: sx, y: sy } = this.isoToScreen(d.x, d.y);

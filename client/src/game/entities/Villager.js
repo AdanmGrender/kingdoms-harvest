@@ -80,7 +80,10 @@ export default class Villager extends Phaser.GameObjects.Container {
     this.add(this.statusIcon);
 
     // Drop-shadow ellipse beneath sprite — inserted at index 0 so it draws first
-    addContainerShadow(this, { width: 16, height: 6, alpha: 0.35, offsetY: 14 });
+    addContainerShadow(this, {
+      width: 18, height: 6, alpha: 0.35,
+      offsetX: 4, offsetY: 14, rotation: 0,
+    });
 
     this.setDepth(9);
     scene.add.existing(this);
