@@ -622,6 +622,17 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // ---- Seasonal Events ----
+  activeEvent: null,
+  loadActiveEvent: async () => {
+    try {
+      const { data } = await api.get('/events/active');
+      set({ activeEvent: data });
+    } catch (error) {
+      console.error('Error loading event:', error);
+    }
+  },
+
   // ---- Marketplace ----
   marketListings: [],
   myListings: [],

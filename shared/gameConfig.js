@@ -676,6 +676,52 @@ const SIEGE_CONFIG = {
   resourceShield: 50, // can't steal below this per resource
 };
 
+// ---- SEASONAL EVENTS ----
+// Server-wide rotating buffs. gameTick activates one at a time and rotates
+// when its window expires. Each event lasts `durationMs`. Multipliers are
+// added to existing faction + tech stacks in the relevant service paths.
+const SEASONAL_EVENT_DURATION_MS = 24 * 60 * 60 * 1000; // 24h per event
+const SEASONAL_EVENTS = {
+  spring_bloom: {
+    id: 'spring_bloom',
+    name: 'Brote de Primavera',
+    icon: '🌱',
+    color: '#7ee87e',
+    description: '+25% rendimiento de cultivos durante 24h',
+    durationMs: SEASONAL_EVENT_DURATION_MS,
+    multipliers: { farming: 0.25 },
+  },
+  harvest_festival: {
+    id: 'harvest_festival',
+    name: 'Festival de Cosecha',
+    icon: '🍂',
+    color: '#ffac30',
+    description: '+20% precio de venta a caravanas y mercado',
+    durationMs: SEASONAL_EVENT_DURATION_MS,
+    multipliers: { commerce: 0.20 },
+  },
+  battle_frenzy: {
+    id: 'battle_frenzy',
+    name: 'Frenesí de Batalla',
+    icon: '⚔️',
+    color: '#ff6060',
+    description: '+15% botín en PvP y PvE',
+    durationMs: SEASONAL_EVENT_DURATION_MS,
+    multipliers: { battle_loot: 0.15 },
+  },
+  golden_caravan: {
+    id: 'golden_caravan',
+    name: 'Caravana Dorada',
+    icon: '🪙',
+    color: '#ffd750',
+    description: '+10% recompensa KH en cosecha + venta',
+    durationMs: SEASONAL_EVENT_DURATION_MS,
+    multipliers: { kh_bonus: 0.10 },
+  },
+};
+// Order in which events rotate. Change to taste; dropping one unschedules.
+const SEASONAL_EVENT_ROTATION = ['spring_bloom', 'harvest_festival', 'battle_frenzy', 'golden_caravan'];
+
 // ---- ACHIEVEMENTS ----
 // `event` matches the verb passed to achievementService.checkAndUnlock(player, event, payload).
 // `goal` is the running counter target (e.g. 10 harvests). For one-shot
@@ -716,4 +762,7 @@ module.exports = {
   SIEGE_ABILITIES,
   SIEGE_CONFIG,
   ACHIEVEMENTS,
+  SEASONAL_EVENTS,
+  SEASONAL_EVENT_ROTATION,
+  SEASONAL_EVENT_DURATION_MS,
 };

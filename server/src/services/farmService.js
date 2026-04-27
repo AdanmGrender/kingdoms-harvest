@@ -7,6 +7,7 @@ const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const techService = require('./techService');
 const achievementService = require('./achievementService');
+const eventService = require('./eventService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 function secureRandom() {
@@ -101,7 +102,9 @@ const farmService = {
     // Tech: fertile_soil +20% crop yield (multiplicative with quality + faction)
     const completedTechs = await techService.getCompletedTechs(playerId);
     const techYieldBonus = completedTechs.has('fertile_soil') ? 0.20 : 0;
-    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus + techYieldBonus));
+    // Seasonal event: spring_bloom adds farming bonus while active
+    const eventBonus = await eventService.getMultiplier('farming');
+    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus + techYieldBonus + eventBonus));
 
     // Dar recursos al jugador
     await playerService.modifyResource(playerId, plot.crop_id, finalYield);

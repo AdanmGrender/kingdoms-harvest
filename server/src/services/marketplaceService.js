@@ -16,6 +16,7 @@ const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const achievementService = require('./achievementService');
+const eventService = require('./eventService');
 
 const MARKET_FEE = 0.05;        // 5% taken from seller's gold proceeds
 const LISTING_TTL_MS = 24 * 60 * 60 * 1000;  // 24h
@@ -114,7 +115,10 @@ const marketplaceService = {
     }
 
     const totalGold = listing.price_per_unit * qty;
-    const sellerGold = Math.floor(totalGold * (1 - MARKET_FEE));
+    // Seller's net: base 95% minus market fee, plus seasonal commerce event
+    // bonus on top (so a 20% event roughly cancels the fee + adds extra).
+    const eventBonus = await eventService.getMultiplier('commerce');
+    const sellerGold = Math.floor(totalGold * (1 - MARKET_FEE + eventBonus));
 
     // Charge buyer (atomic). Refund the listing if charge fails.
     try {

@@ -6,6 +6,7 @@ const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const techService = require('./techService');
 const achievementService = require('./achievementService');
+const eventService = require('./eventService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 function secureRandom() {
@@ -163,7 +164,9 @@ const commerceService = {
     // Tech: haggling +10% sell price
     const completedTechs = await techService.getCompletedTechs(playerId);
     const techBonus = completedTechs.has('haggling') ? 0.10 : 0;
-    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus));
+    // Seasonal event: harvest_festival adds commerce bonus
+    const eventBonus = await eventService.getMultiplier('commerce');
+    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus + eventBonus));
 
     // Cobrar recurso (atómico)
     try {

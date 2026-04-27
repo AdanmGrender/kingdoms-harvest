@@ -7,6 +7,7 @@ const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const techService = require('./techService');
 const achievementService = require('./achievementService');
+const eventService = require('./eventService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 // Tech-driven combat bonuses. Numbers must mirror the human-readable "effect"
@@ -287,12 +288,13 @@ const combatService = {
       }
     }
 
-    // Generar botín si ganó
+    // Generar botín si ganó (battle_frenzy event scales gold + xp)
     let loot = {};
     if (result.winner === 'attacker') {
+      const eventLoot = await eventService.getMultiplier('battle_loot');
       loot = {
-        gold: Math.floor(npcStrength * (2 + secureRandom() * 3)),
-        xp: Math.floor(npcStrength * 1.5),
+        gold: Math.floor(npcStrength * (2 + secureRandom() * 3) * (1 + eventLoot)),
+        xp: Math.floor(npcStrength * 1.5 * (1 + eventLoot)),
       };
 
       // Chance de recurso raro

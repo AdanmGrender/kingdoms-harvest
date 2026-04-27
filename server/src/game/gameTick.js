@@ -257,6 +257,14 @@ async function processTick() {
     console.error('[Tick] Error expirando listados:', error.message);
   }
 
+  // 4b3. Rotate seasonal events when active window expires
+  try {
+    const eventService = require('../services/eventService');
+    await eventService.tick();
+  } catch (error) {
+    console.error('[Tick] Error rotando eventos:', error.message);
+  }
+
   // 4c. Villager simulation
   try {
     const villagerService = require('../services/villagerService');
