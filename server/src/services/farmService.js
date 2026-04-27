@@ -6,6 +6,7 @@ const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const techService = require('./techService');
+const achievementService = require('./achievementService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 function secureRandom() {
@@ -111,6 +112,7 @@ const farmService = {
     // Dar KH Tokens + trackear tarea diaria
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_HARVEST, 'harvest');
     await dailyTaskService.trackProgress(playerId, 'harvest');
+    achievementService.checkAndUnlock(playerId, 'harvest', 1).catch(() => {});
 
     // Resetear parcela
     await db('farm_plots').where('id', plotId).update({

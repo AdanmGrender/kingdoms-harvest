@@ -2,23 +2,34 @@
  * SocialSidebar — Right rail lower: alliance, mail, achievements, inventory.
  */
 import useGameStore from '../../store/gameStore';
+import EventBridge from '../../game/EventBridge';
 
 const SOCIAL = [
-  { id: 'achievements', icon: '⭐', label: 'Logros', color: '#ffd750' },
-  { id: 'alliance', icon: '🤝', label: 'Alianza', color: '#8fd4ff', badge: 2 },
-  { id: 'mail', icon: '✉️', label: 'Correo', color: '#b8ffb8', badge: 5 },
-  { id: 'bag', icon: '🎒', label: 'Bolsa', color: '#ffcc88' },
+  { id: 'achievements', icon: '⭐', label: 'Logros',  color: '#ffd750', metaTab: 'achievements' },
+  { id: 'alliance',     icon: '🤝', label: 'Facción', color: '#8fd4ff', metaTab: 'factions' },
+  { id: 'mail',         icon: '📊', label: 'Rankings', color: '#b8ffb8', metaTab: 'rankings' },
+  { id: 'bag',          icon: '🎒', label: 'Bolsa',   color: '#ffcc88' },
 ];
 
 export default function SocialSidebar() {
   const addNotification = useGameStore((s) => s.addNotification);
+  const setOverlay = useGameStore((s) => s.setOverlay);
+
+  const handleClick = (item) => {
+    if (item.metaTab) {
+      setOverlay('meta', { tab: item.metaTab });
+      EventBridge.emit('overlay:open', { type: 'meta', data: { tab: item.metaTab } });
+    } else {
+      addNotification(`${item.label} próximamente`, 'info');
+    }
+  };
 
   return (
     <div className="absolute right-2 bottom-24 z-20 pointer-events-none flex flex-col gap-2">
       {SOCIAL.map((s) => (
         <button
           key={s.id}
-          onClick={() => addNotification(`${s.label} próximamente`, 'info')}
+          onClick={() => handleClick(s)}
           className="pointer-events-auto relative w-11 h-11 rounded-xl flex items-center justify-center transition-transform active:scale-90 hover:scale-105"
           style={{
             background: 'linear-gradient(180deg, rgba(25,28,50,0.95) 0%, rgba(12,14,28,0.92) 100%)',

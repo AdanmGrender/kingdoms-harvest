@@ -676,6 +676,27 @@ const SIEGE_CONFIG = {
   resourceShield: 50, // can't steal below this per resource
 };
 
+// ---- ACHIEVEMENTS ----
+// `event` matches the verb passed to achievementService.checkAndUnlock(player, event, payload).
+// `goal` is the running counter target (e.g. 10 harvests). For one-shot
+// achievements (e.g. "first conquest") goal=1 and the trigger always passes 1.
+// `reward.kh` is paid out via tokenService when the player claims.
+const ACHIEVEMENTS = {
+  first_harvest:      { id: 'first_harvest',      name: 'Primera Cosecha',     icon: '🌾', desc: 'Cosechá tu primer cultivo',                event: 'harvest',     goal: 1,   reward: { kh: 5  } },
+  green_thumb:        { id: 'green_thumb',        name: 'Pulgar Verde',        icon: '🌱', desc: 'Cosechá 25 cultivos',                       event: 'harvest',     goal: 25,  reward: { kh: 30 } },
+  farm_master:        { id: 'farm_master',        name: 'Maestro Granjero',    icon: '🚜', desc: 'Cosechá 100 cultivos',                      event: 'harvest',     goal: 100, reward: { kh: 100 } },
+  builder_novice:     { id: 'builder_novice',     name: 'Aprendiz Constructor', icon: '🔨', desc: 'Construí 5 edificios',                     event: 'build',       goal: 5,   reward: { kh: 15 } },
+  city_planner:       { id: 'city_planner',       name: 'Urbanista',           icon: '🏘️', desc: 'Construí 15 edificios',                     event: 'build',       goal: 15,  reward: { kh: 60 } },
+  first_battle:       { id: 'first_battle',       name: 'Primer Combate',      icon: '⚔️', desc: 'Ganá tu primera batalla PvE',               event: 'battle_win',  goal: 1,   reward: { kh: 10 } },
+  warlord:            { id: 'warlord',            name: 'Señor de la Guerra',  icon: '🛡️', desc: 'Ganá 10 batallas (PvE o PvP)',              event: 'battle_win',  goal: 10,  reward: { kh: 50 } },
+  conqueror:          { id: 'conqueror',          name: 'Conquistador',        icon: '🏴', desc: 'Conquistá tu primer territorio',            event: 'conquest',    goal: 1,   reward: { kh: 25 } },
+  empire:             { id: 'empire',             name: 'Imperio',             icon: '👑', desc: 'Conquistá 5 territorios',                    event: 'conquest',    goal: 5,   reward: { kh: 150 } },
+  scholar:            { id: 'scholar',            name: 'Erudito',             icon: '🔬', desc: 'Completá 3 investigaciones',                event: 'research',    goal: 3,   reward: { kh: 40 } },
+  rich_merchant:      { id: 'rich_merchant',      name: 'Mercader Rico',       icon: '💰', desc: 'Hacé 20 ventas a caravanas',                event: 'sell',        goal: 20,  reward: { kh: 35 } },
+  level_5:            { id: 'level_5',            name: 'Veterano',            icon: '⭐', desc: 'Alcanzá nivel 5',                           event: 'level_up',    goal: 5,   reward: { kh: 25 } },
+  level_10:           { id: 'level_10',           name: 'Leyenda',             icon: '🌟', desc: 'Alcanzá nivel 10',                          event: 'level_up',    goal: 10,  reward: { kh: 100 } },
+};
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -694,4 +715,5 @@ module.exports = {
   DAY_CYCLE,
   SIEGE_ABILITIES,
   SIEGE_CONFIG,
+  ACHIEVEMENTS,
 };

@@ -4,12 +4,13 @@
  */
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import EventBridge from '../../game/EventBridge';
 
 const EVENTS = [
-  { id: 'newplayer', icon: '🎁', label: 'Bienvenida', color: '#ff88cc', pulse: true },
-  { id: 'recharge', icon: '💰', label: '1ª Recarga', color: '#ffd750' },
-  { id: 'value', icon: '⭐', label: 'Valor', color: '#ffac30', badge: 1 },
-  { id: 'siege', icon: '🏰', label: 'Asedio', color: '#ff6060' },
+  { id: 'newplayer', icon: '🎁', label: 'Bienvenida', color: '#ff88cc', pulse: true, metaTab: 'achievements' },
+  { id: 'recharge',  icon: '💰', label: '1ª Recarga', color: '#ffd750' },
+  { id: 'value',     icon: '🔬', label: 'Tech',       color: '#ffac30', badge: 1, metaTab: 'tech' },
+  { id: 'siege',     icon: '🏰', label: 'Asedio',     color: '#ff6060', metaTab: 'world' },
 ];
 
 function formatCountdown(seconds) {
@@ -23,6 +24,7 @@ function formatCountdown(seconds) {
 
 export default function EventSidebar() {
   const addNotification = useGameStore((s) => s.addNotification);
+  const setOverlay = useGameStore((s) => s.setOverlay);
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -34,8 +36,13 @@ export default function EventSidebar() {
   const endTime = useState(() => Date.now() + 24 * 3600 * 1000)[0];
   const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
 
-  const handleClick = (id) => {
-    addNotification(`Evento ${id} próximamente`, 'info');
+  const handleClick = (event) => {
+    if (event.metaTab) {
+      setOverlay('meta', { tab: event.metaTab });
+      EventBridge.emit('overlay:open', { type: 'meta', data: { tab: event.metaTab } });
+    } else {
+      addNotification(`Evento ${event.id} próximamente`, 'info');
+    }
   };
 
   return (
@@ -43,7 +50,7 @@ export default function EventSidebar() {
       {EVENTS.map((e) => (
         <button
           key={e.id}
-          onClick={() => handleClick(e.id)}
+          onClick={() => handleClick(e)}
           className={`pointer-events-auto relative w-12 h-14 rounded-xl flex flex-col items-center justify-center transition-transform active:scale-90 hover:scale-105 ${e.pulse ? 'animate-pulse' : ''}`}
           style={{
             background: `linear-gradient(180deg, ${e.color}22 0%, rgba(12,14,28,0.92) 100%)`,

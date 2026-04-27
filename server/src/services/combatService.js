@@ -6,6 +6,7 @@ const buildingService = require('./buildingService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const techService = require('./techService');
+const achievementService = require('./achievementService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 // Tech-driven combat bonuses. Numbers must mirror the human-readable "effect"
@@ -310,9 +311,10 @@ const combatService = {
         }
       }
 
-      // Dar KH Tokens + trackear tarea diaria
+      // Dar KH Tokens + trackear tarea diaria + achievement
       const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVE_WIN, 'pve');
       await dailyTaskService.trackProgress(playerId, 'battle_win');
+      achievementService.checkAndUnlock(playerId, 'battle_win', 1).catch(() => {});
       loot.tokensAwarded = tokenResult.awarded;
     }
 
@@ -451,10 +453,11 @@ const combatService = {
 
       await playerService.addXP(playerId, 50);
 
-      // Dar KH Tokens + trackear tarea diaria
+      // Dar KH Tokens + trackear tarea diaria + achievement
       const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVP_WIN, 'pvp');
       tokensAwarded = tokenResult.awarded;
       await dailyTaskService.trackProgress(playerId, 'battle_win');
+      achievementService.checkAndUnlock(playerId, 'battle_win', 1).catch(() => {});
     }
 
     await db('battles').insert({

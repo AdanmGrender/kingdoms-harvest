@@ -218,6 +218,13 @@ const playerService = {
       level: newLevel,
     });
 
+    if (newLevel > player.level) {
+      // Threshold-style achievement: pass the absolute level so multiple
+      // jumps in one call still count correctly.
+      const achievementService = require('./achievementService');
+      achievementService.checkAndUnlock(playerId, 'level_up', newLevel).catch(() => {});
+    }
+
     return { level: newLevel, xp: newXP, leveledUp: newLevel > player.level };
   },
 

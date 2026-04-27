@@ -28,6 +28,7 @@ const siegeRoutes = require('./routes/siegeRoutes');
 const techRoutes = require('./routes/techRoutes');
 const factionRoutes = require('./routes/factionRoutes');
 const territoryRoutes = require('./routes/territoryRoutes');
+const achievementRoutes = require('./routes/achievementRoutes');
 
 const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
@@ -102,6 +103,7 @@ app.use('/api/sieges', siegeRoutes);
 app.use('/api/tech', techRoutes);
 app.use('/api/factions', factionRoutes);
 app.use('/api/territories', territoryRoutes);
+app.use('/api/achievements', achievementRoutes);
 
 // SPA fallback: serve index.html for non-API routes
 if (process.env.NODE_ENV === 'production') {

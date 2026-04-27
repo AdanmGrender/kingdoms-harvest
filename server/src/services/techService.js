@@ -10,6 +10,7 @@ const techService = {
     const now = new Date();
 
     // Auto-complete finished research
+    const justCompleted = [];
     for (const row of rows) {
       if (row.is_researching && row.research_complete_at && new Date(row.research_complete_at) <= now) {
         await db('player_research').where('id', row.id).update({
@@ -20,7 +21,12 @@ const techService = {
         row.is_researching = false;
         row.completed_at = row.research_complete_at;
         row.research_complete_at = null;
+        justCompleted.push(row);
       }
+    }
+    if (justCompleted.length > 0) {
+      const achievementService = require('./achievementService');
+      achievementService.checkAndUnlock(playerId, 'research', justCompleted.length).catch(() => {});
     }
 
     // Build enriched response

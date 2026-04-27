@@ -579,14 +579,46 @@ const useGameStore = create((set, get) => ({
     }
   },
 
-  // ---- Leaderboard ----
+  // ---- Leaderboard (3 categorías para Rankings panel) ----
   leaderboard: [],
+  leaderboardLevel: [],
   loadLeaderboard: async () => {
     try {
       const { data } = await api.get('/tokens/leaderboard');
       set({ leaderboard: data });
     } catch (error) {
       console.error('Error loading leaderboard:', error);
+    }
+  },
+  loadLeaderboardLevel: async () => {
+    try {
+      const { data } = await api.get('/player/leaderboard');
+      set({ leaderboardLevel: data });
+    } catch (error) {
+      console.error('Error loading level leaderboard:', error);
+    }
+  },
+
+  // ---- Achievements ----
+  achievements: [],
+  loadAchievements: async () => {
+    try {
+      const { data } = await api.get('/achievements');
+      set({ achievements: data });
+    } catch (error) {
+      console.error('Error loading achievements:', error);
+    }
+  },
+  claimAchievement: async (achievementId) => {
+    try {
+      const { data } = await api.post(`/achievements/${achievementId}/claim`);
+      get().addNotification(data.message, 'success');
+      EventBridge.emit('token:earned', { amount: data.awarded || 0 });
+      get().loadAchievements();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al reclamar', 'error');
+      return null;
     }
   },
 

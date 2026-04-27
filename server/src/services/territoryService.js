@@ -8,6 +8,7 @@
 const db = require('../config/database');
 const playerService = require('./playerService');
 const combatService = require('./combatService');
+const achievementService = require('./achievementService');
 
 // Faction points awarded to the conquering player. Tracked per-player so the
 // faction-internal leaderboard can rank contributors. Faction-level totals
@@ -74,6 +75,7 @@ const territoryService = {
         await db('factions').where('id', newOwnerFactionId).increment('territory_count', 1);
         await db('players').where('telegram_id', playerId).increment('faction_points', POINTS_PER_CONQUEST);
         territoryFlipped = true;
+        achievementService.checkAndUnlock(playerId, 'conquest', 1).catch(() => {});
       }
     }
 

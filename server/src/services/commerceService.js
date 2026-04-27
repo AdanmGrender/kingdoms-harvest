@@ -5,6 +5,7 @@ const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const techService = require('./techService');
+const achievementService = require('./achievementService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 function secureRandom() {
@@ -175,6 +176,7 @@ const commerceService = {
     // Dar KH Tokens + trackear tarea diaria
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
     await dailyTaskService.trackProgress(playerId, 'sell');
+    achievementService.checkAndUnlock(playerId, 'sell', 1).catch(() => {});
 
     offer.quantity -= quantity;
     await db('caravans')
@@ -208,6 +210,7 @@ const commerceService = {
     // Dar KH Tokens + trackear tarea diaria
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
     await dailyTaskService.trackProgress(playerId, 'sell');
+    achievementService.checkAndUnlock(playerId, 'sell', 1).catch(() => {});
 
     return {
       success: true,
