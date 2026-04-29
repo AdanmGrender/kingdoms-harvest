@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 
 /**
@@ -35,7 +35,7 @@ export default function AlliancesPanel() {
     }
   };
 
-  // Player IS in an alliance — show the membership panel
+  // Player IS in an alliance — show membership + chat
   if (myAlliance) {
     const members = allianceMembers[myAlliance.id] || [];
     const isLeader = myAlliance.my_role === 'leader';
@@ -68,6 +68,8 @@ export default function AlliancesPanel() {
             )}
           </div>
         </div>
+
+        <AllianceChat myId={player?.telegram_id} />
 
         <p className="text-xs text-gray-400">Miembros:</p>
         {members.length === 0 && <p className="text-[10px] text-gray-500 text-center">Cargando...</p>}
@@ -152,6 +154,84 @@ export default function AlliancesPanel() {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * AllianceChat — last 50 messages + send box. Reads from store, writes via
+ * the sendAllianceMessage action. Socket pushes append in real time;
+ * sender's own message also appears via the post-send refresh.
+ */
+function AllianceChat({ myId }) {
+  const { allianceMessagesList, loadAllianceMessages, sendAllianceMessage } = useGameStore();
+  const [text, setText] = useState('');
+  const scrollRef = useRef(null);
+
+  useEffect(() => { loadAllianceMessages(); }, []);
+
+  // Auto-scroll to newest message when list changes
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [allianceMessagesList.length]);
+
+  const handleSend = async () => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    const ok = await sendAllianceMessage(trimmed);
+    if (ok) setText('');
+  };
+
+  const handleKey = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <div className="game-card border-purple-800/40">
+      <p className="text-[10px] text-purple-300 mb-1">💬 Chat de alianza</p>
+      <div
+        ref={scrollRef}
+        className="bg-kingdom-blue/20 rounded p-2 mb-2 max-h-40 overflow-y-auto space-y-1"
+      >
+        {allianceMessagesList.length === 0 ? (
+          <p className="text-[10px] text-gray-500 text-center py-2">
+            Sin mensajes todavía. Empezá la conversación.
+          </p>
+        ) : (
+          allianceMessagesList.map((m) => {
+            const mine = m.sender_id === myId;
+            return (
+              <div key={m.id} className="text-[11px]">
+                <span className={`font-bold ${mine ? 'text-yellow-400' : 'text-purple-300'}`}>
+                  {m.sender_name}:
+                </span>{' '}
+                <span className="text-gray-200">{m.content}</span>
+              </div>
+            );
+          })
+        )}
+      </div>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKey}
+          placeholder="Escribí un mensaje..."
+          maxLength={280}
+          className="flex-1 bg-kingdom-blue rounded px-2 py-1 text-xs text-white"
+        />
+        <button
+          onClick={handleSend}
+          disabled={!text.trim()}
+          className="btn-primary text-[10px] px-3 py-1 disabled:opacity-40"
+        >
+          Enviar
+        </button>
+      </div>
     </div>
   );
 }

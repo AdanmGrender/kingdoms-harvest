@@ -759,6 +759,52 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // Alliance chat: messages + send action. Socket pushes to allianceMessages.
+  allianceMessagesList: [],
+  loadAllianceMessages: async () => {
+    try {
+      const { data } = await api.get('/alliances/messages/list');
+      set({ allianceMessagesList: data });
+    } catch (error) {
+      console.error('Error loading alliance messages:', error);
+    }
+  },
+  sendAllianceMessage: async (content) => {
+    try {
+      await api.post('/alliances/messages', { content });
+      // Socket emit will refresh the list, but reload as a safety net so the
+      // sender sees their own message even if their socket is disconnected.
+      get().loadAllianceMessages();
+      return true;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al enviar', 'error');
+      return false;
+    }
+  },
+  // Called by EventBridge when a socket alliance_message arrives
+  appendAllianceMessage: (msg) => {
+    set((state) => {
+      // Skip if already in list (e.g. own message just reloaded)
+      if (state.allianceMessagesList.some((m) => m.id === msg.id)) return state;
+      const next = [...state.allianceMessagesList, msg];
+      // Cap at 100 in memory to avoid unbounded growth on long sessions
+      return { allianceMessagesList: next.slice(-100) };
+    });
+  },
+
+  // Marketplace price history (per resource)
+  marketHistory: {},
+  loadMarketHistory: async (resource, limit = 30) => {
+    try {
+      const { data } = await api.get('/market/history', { params: { resource, limit } });
+      set((state) => ({ marketHistory: { ...state.marketHistory, [resource]: data } }));
+      return data;
+    } catch (error) {
+      console.error('Error loading market history:', error);
+      return [];
+    }
+  },
+
   // ---- PvP ----
   pvpPlayers: [],
   loadPvpPlayers: async () => {

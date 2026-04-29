@@ -139,6 +139,17 @@ const marketplaceService = {
       status: newRemaining === 0 ? 'sold' : 'active',
     });
 
+    // Append-only price log — feeds the history endpoint. Decoupled from
+    // listings so cancellations/expirations don't pollute the time series.
+    try {
+      await db('marketplace_price_log').insert({
+        resource_id: listing.resource_id,
+        price_per_unit: listing.price_per_unit,
+        quantity: qty,
+        sold_at: new Date().toISOString(),
+      });
+    } catch {}
+
     // Reward seller — sales count toward daily task + achievement
     try {
       const tokenResult = await tokenService.awardTokens(
@@ -182,6 +193,24 @@ const marketplaceService = {
     });
 
     return { success: true, message: 'Listado cancelado, recursos devueltos' };
+  },
+
+  /**
+   * Last N completed sales for a resource. Used by the price-history
+   * sparkline. Sorted oldest → newest so the chart can plot left-to-right.
+   */
+  async getPriceHistory(resourceId, limit = 30) {
+    if (!RESOURCES?.[resourceId]) return [];
+    const cap = Math.min(Math.max(parseInt(limit, 10) || 30, 1), 100);
+    const rows = await db('marketplace_price_log')
+      .where('resource_id', resourceId)
+      .orderBy('id', 'desc')
+      .limit(cap);
+    return rows.reverse().map((r) => ({
+      price_per_unit: r.price_per_unit,
+      quantity: r.quantity,
+      sold_at: r.sold_at,
+    }));
   },
 
   /**

@@ -65,46 +65,165 @@ export default function MarketplacePanel() {
 }
 
 function BuyTab({ listings, myId, onBuy }) {
-  const filtered = (listings || []).filter((l) => l.seller_id !== myId);
-  if (filtered.length === 0) {
-    return <p className="text-gray-500 text-xs text-center py-6">Sin listados activos por ahora.</p>;
-  }
+  const [resourceFilter, setResourceFilter] = useState('all');
+  const [sortKey, setSortKey] = useState('cheapest');
+
+  const filtered = (listings || [])
+    .filter((l) => l.seller_id !== myId)
+    .filter((l) => resourceFilter === 'all' || l.resource_id === resourceFilter);
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortKey === 'cheapest') return a.price_per_unit - b.price_per_unit;
+    if (sortKey === 'priciest') return b.price_per_unit - a.price_per_unit;
+    if (sortKey === 'most_qty')  return b.quantity_remaining - a.quantity_remaining;
+    if (sortKey === 'newest')    return (new Date(b.created_at)) - (new Date(a.created_at));
+    return 0;
+  });
+
+  // Resources actually present in the listings — filter dropdown only shows
+  // those + 'all' so we don't display empty options.
+  const resourceOptions = [
+    'all',
+    ...[...new Set((listings || []).map((l) => l.resource_id))].sort(),
+  ];
+
   return (
     <div className="space-y-2">
-      {filtered.map((l) => (
-        <ListingRow key={l.id} listing={l} onBuy={onBuy} />
-      ))}
+      <div className="flex gap-2">
+        <select
+          value={resourceFilter}
+          onChange={(e) => setResourceFilter(e.target.value)}
+          className="flex-1 bg-kingdom-blue rounded px-2 py-1 text-xs text-white"
+        >
+          {resourceOptions.map((r) => (
+            <option key={r} value={r}>
+              {r === 'all' ? '🔍 Todos' : `${RESOURCE_ICONS[r] || '📦'} ${r}`}
+            </option>
+          ))}
+        </select>
+        <select
+          value={sortKey}
+          onChange={(e) => setSortKey(e.target.value)}
+          className="flex-1 bg-kingdom-blue rounded px-2 py-1 text-xs text-white"
+        >
+          <option value="cheapest">💰 Más barato</option>
+          <option value="priciest">💎 Más caro</option>
+          <option value="most_qty">📦 Más cantidad</option>
+          <option value="newest">🆕 Más nuevo</option>
+        </select>
+      </div>
+
+      {sorted.length === 0 ? (
+        <p className="text-gray-500 text-xs text-center py-6">
+          {filtered.length === 0 && (listings || []).length > 0
+            ? 'Ningún listado matchea el filtro.'
+            : 'Sin listados activos por ahora.'}
+        </p>
+      ) : (
+        sorted.map((l) => <ListingRow key={l.id} listing={l} onBuy={onBuy} />)
+      )}
     </div>
   );
 }
 
 function ListingRow({ listing, onBuy }) {
   const [qty, setQty] = useState(1);
+  const [showHistory, setShowHistory] = useState(false);
+  const { marketHistory, loadMarketHistory } = useGameStore();
   const total = listing.price_per_unit * qty;
+  const history = marketHistory[listing.resource_id] || [];
+
+  const toggleHistory = async () => {
+    if (!showHistory && history.length === 0) {
+      await loadMarketHistory(listing.resource_id, 30);
+    }
+    setShowHistory(!showHistory);
+  };
+
   return (
-    <div className="game-card flex items-center gap-2 py-2">
-      <span className="text-2xl shrink-0">{RESOURCE_ICONS[listing.resource_id] || '📦'}</span>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold">
-          {listing.quantity_remaining}× {listing.resource_id}
-          <span className="text-yellow-400 ml-1">@ {listing.price_per_unit}🪙</span>
-        </p>
-        <p className="text-[10px] text-gray-400 truncate">de {listing.seller_name} (Lv {listing.seller_level})</p>
+    <div className="game-card py-2">
+      <div className="flex items-center gap-2">
+        <span className="text-2xl shrink-0">{RESOURCE_ICONS[listing.resource_id] || '📦'}</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold">
+            {listing.quantity_remaining}× {listing.resource_id}
+            <span className="text-yellow-400 ml-1">@ {listing.price_per_unit}🪙</span>
+          </p>
+          <p className="text-[10px] text-gray-400 truncate">de {listing.seller_name} (Lv {listing.seller_level})</p>
+        </div>
+        <input
+          type="number"
+          min="1"
+          max={listing.quantity_remaining}
+          value={qty}
+          onChange={(e) => setQty(Math.min(parseInt(e.target.value) || 1, listing.quantity_remaining))}
+          className="bg-kingdom-blue rounded px-2 py-1 text-xs w-14 text-white"
+        />
+        <button
+          onClick={() => onBuy(listing.id, qty)}
+          className="btn-primary text-[10px] px-2 py-1 shrink-0"
+        >
+          {total}🪙
+        </button>
       </div>
-      <input
-        type="number"
-        min="1"
-        max={listing.quantity_remaining}
-        value={qty}
-        onChange={(e) => setQty(Math.min(parseInt(e.target.value) || 1, listing.quantity_remaining))}
-        className="bg-kingdom-blue rounded px-2 py-1 text-xs w-14 text-white"
-      />
       <button
-        onClick={() => onBuy(listing.id, qty)}
-        className="btn-primary text-[10px] px-2 py-1 shrink-0"
+        onClick={toggleHistory}
+        className="mt-1 text-[10px] text-purple-300 hover:text-purple-200"
       >
-        {total}🪙
+        {showHistory ? '▾' : '▸'} Historial precios
       </button>
+      {showHistory && (
+        <PriceSparkline
+          history={history}
+          currentPrice={listing.price_per_unit}
+        />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Inline SVG sparkline of recent sale prices for the resource. Shows the
+ * current listing's price as a horizontal reference line so the player can
+ * see if they're getting a deal vs recent average.
+ */
+function PriceSparkline({ history, currentPrice }) {
+  if (!history || history.length < 2) {
+    return (
+      <p className="text-[10px] text-gray-500 mt-1 text-center">
+        {history?.length === 1 ? '1 venta registrada — esperá más datos' : 'Sin historial de ventas para este recurso'}
+      </p>
+    );
+  }
+  const W = 220, H = 36, P = 4;
+  const prices = history.map((h) => h.price_per_unit);
+  const min = Math.min(...prices, currentPrice);
+  const max = Math.max(...prices, currentPrice);
+  const range = max - min || 1;
+  const xStep = (W - 2 * P) / Math.max(1, history.length - 1);
+  const ys = prices.map((p) => P + (H - 2 * P) * (1 - (p - min) / range));
+  const path = ys.map((y, i) => `${i === 0 ? 'M' : 'L'} ${P + i * xStep} ${y}`).join(' ');
+  const currentY = P + (H - 2 * P) * (1 - (currentPrice - min) / range);
+  const avg = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length);
+
+  return (
+    <div className="mt-1 px-1">
+      <svg width={W} height={H} className="block">
+        {/* current price reference line */}
+        <line x1={P} y1={currentY} x2={W - P} y2={currentY}
+          stroke="#facc15" strokeOpacity="0.4" strokeWidth="1" strokeDasharray="2 2" />
+        {/* sparkline */}
+        <path d={path} stroke="#a78bfa" strokeWidth="1.5" fill="none" />
+        {/* dots at each sample */}
+        {ys.map((y, i) => (
+          <circle key={i} cx={P + i * xStep} cy={y} r="1.5" fill="#a78bfa" />
+        ))}
+      </svg>
+      <p className="text-[9px] text-gray-500 flex justify-between">
+        <span>min {min}🪙</span>
+        <span>avg {avg}🪙</span>
+        <span>max {max}🪙</span>
+      </p>
     </div>
   );
 }

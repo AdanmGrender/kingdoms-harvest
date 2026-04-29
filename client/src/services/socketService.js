@@ -1,5 +1,6 @@
 import { io } from 'socket.io-client';
 import EventBridge from '../game/EventBridge';
+import useGameStore from '../store/gameStore';
 
 let socket = null;
 
@@ -44,6 +45,11 @@ export function connectSocket(initData) {
       text: `🌾 ${count} cultivo${count > 1 ? 's' : ''} listo${count > 1 ? 's' : ''} para cosechar`,
       type: 'success',
     });
+  });
+
+  // Alliance chat — server fans out one event per member when someone posts.
+  socket.on('alliance_message', (msg) => {
+    useGameStore.getState().appendAllianceMessage(msg);
   });
 
   return socket;

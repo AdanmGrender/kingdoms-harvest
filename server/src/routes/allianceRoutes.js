@@ -77,4 +77,27 @@ router.delete('/:id', telegramAuth, async (req, res) => {
   }
 });
 
+// Last 50 chat messages for the player's alliance
+router.get('/messages/list', telegramAuth, async (req, res) => {
+  try {
+    const messages = await allianceService.getMessages(req.playerId);
+    res.json(messages);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Post a chat message — fans out via socket + rate-limited DMs to offline
+router.post('/messages', telegramAuth, validate({
+  content: { type: 'string', required: true, maxLength: 280 },
+}), async (req, res) => {
+  try {
+    const io = req.app.get('io');
+    const result = await allianceService.sendMessage(req.playerId, req.body.content, io);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
 module.exports = router;

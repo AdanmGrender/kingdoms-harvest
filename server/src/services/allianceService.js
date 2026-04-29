@@ -12,11 +12,18 @@
  */
 const db = require('../config/database');
 const { sanitizeDisplayText } = require('../utils/sanitize');
+const notifyService = require('./notifyService');
 
 const NAME_MIN = 3;
 const NAME_MAX = 24;
 const MOTTO_MAX = 80;
 const DEFAULT_MEMBER_LIMIT = 10;
+const MESSAGE_MAX = 280;
+const MESSAGE_HISTORY_LIMIT = 50;
+// Anti-spam for member DMs: re-notify the same alliance at most once every
+// 10 minutes. Players inside the app see the socket event regardless.
+const ALLIANCE_DM_COOLDOWN_MS = 10 * 60 * 1000;
+const _lastDmAt = new Map(); // alliance_id → ms timestamp
 
 const allianceService = {
   /** List every alliance with live member counts. */
@@ -151,7 +158,90 @@ const allianceService = {
 
     await db('alliance_members').where('alliance_id', allianceId).delete();
     await db('alliances').where('id', allianceId).delete();
+    await db('alliance_messages').where('alliance_id', allianceId).delete();
     return { success: true, message: `Disolviste ${alliance.name}` };
+  },
+
+  /**
+   * Send a chat message to the player's alliance. Emits a socket event to
+   * every connected member and DMs offline members (rate-limited per
+   * alliance to avoid Telegram spam).
+   */
+  async sendMessage(playerId, content, io) {
+    const text = sanitizeDisplayText(content || '', MESSAGE_MAX);
+    if (!text) throw new Error('Mensaje vacío');
+
+    const member = await db('alliance_members').where('player_id', playerId).first();
+    if (!member) throw new Error('No estás en ninguna alianza');
+
+    const sender = await db('players').where('telegram_id', playerId).first();
+    const senderName = sender?.display_name || 'Anónimo';
+
+    const now = new Date().toISOString();
+    const [messageId] = await db('alliance_messages').insert({
+      alliance_id: member.alliance_id,
+      player_id: playerId,
+      content: text,
+      created_at: now,
+    });
+
+    // Socket fan-out: every member's join_game subscribed them to player_<id>.
+    // Loop members and emit to each so reading is identical to existing flow.
+    const members = await db('alliance_members')
+      .where('alliance_id', member.alliance_id)
+      .select('player_id');
+    if (io) {
+      for (const m of members) {
+        io.to(`player_${m.player_id}`).emit('alliance_message', {
+          id: messageId, alliance_id: member.alliance_id,
+          sender_id: playerId, sender_name: senderName,
+          content: text, created_at: now,
+        });
+      }
+    }
+
+    // Rate-limited DM to keep offline members aware. One DM per alliance
+    // per ALLIANCE_DM_COOLDOWN_MS regardless of message volume.
+    const lastDm = _lastDmAt.get(member.alliance_id) || 0;
+    if (Date.now() - lastDm > ALLIANCE_DM_COOLDOWN_MS) {
+      _lastDmAt.set(member.alliance_id, Date.now());
+      for (const m of members) {
+        if (m.player_id === playerId) continue; // don't DM the sender
+        notifyService.sendBotDM(
+          m.player_id,
+          `💬 [Alianza] ${senderName}: ${text}`,
+        );
+      }
+    }
+
+    return { success: true, messageId, content: text };
+  },
+
+  /** Last MESSAGE_HISTORY_LIMIT messages of the player's alliance. */
+  async getMessages(playerId) {
+    const member = await db('alliance_members').where('player_id', playerId).first();
+    if (!member) throw new Error('No estás en ninguna alianza');
+
+    const rows = await db('alliance_messages')
+      .where('alliance_id', member.alliance_id)
+      .orderBy('id', 'desc')
+      .limit(MESSAGE_HISTORY_LIMIT);
+
+    if (rows.length === 0) return [];
+
+    const senderIds = [...new Set(rows.map((r) => r.player_id))];
+    const senders = await db('players')
+      .whereIn('telegram_id', senderIds)
+      .select('telegram_id', 'display_name');
+    const senderMap = new Map(senders.map((s) => [s.telegram_id, s.display_name]));
+
+    return rows.reverse().map((r) => ({
+      id: r.id,
+      sender_id: r.player_id,
+      sender_name: senderMap.get(r.player_id) || 'Anónimo',
+      content: r.content,
+      created_at: r.created_at,
+    }));
   },
 };
 

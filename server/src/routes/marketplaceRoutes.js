@@ -23,6 +23,20 @@ router.get('/mine', telegramAuth, async (req, res) => {
   }
 });
 
+router.get('/history', telegramAuth, async (req, res) => {
+  try {
+    const resource = String(req.query.resource || '').slice(0, 30);
+    if (!/^[a-z_]+$/.test(resource)) {
+      return res.status(400).json({ error: 'Recurso inválido' });
+    }
+    const limit = parseInt(req.query.limit || '30', 10);
+    const history = await marketplaceService.getPriceHistory(resource, limit);
+    res.json(history);
+  } catch (error) {
+    res.status(500).json({ error: safeErrorMessage(error) });
+  }
+});
+
 router.post('/', telegramAuth, validate({
   resourceId: { type: 'string', required: true, maxLength: 30, pattern: /^[a-z_]+$/ },
   quantity: { type: 'number', required: true, min: 1, max: 999999 },

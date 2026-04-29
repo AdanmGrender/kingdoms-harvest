@@ -1,6 +1,8 @@
 const db = require('../config/database');
 const { TOKEN_CONFIG, getDailyCap, getStreakMultiplier } = require('../../../shared/tokenConfig');
 const playerService = require('./playerService');
+// Lazy-required where used — eventService imports nothing from tokenService
+// today, but keep the indirection so a future circular reference doesn't bite.
 
 const tokenService = {
   /**
@@ -71,9 +73,16 @@ const tokenService = {
       return { awarded: 0, balance: tokenData.balance, dailyRemaining: 0, capped: true };
     }
 
-    // Apply streak multiplier
+    // Apply streak multiplier + active seasonal event kh_bonus (golden_caravan
+    // adds +10%). Stacked multiplicatively: streak × (1 + event). Player at
+    // daily cap still gets nothing extra — cap exists for a reason.
     const multiplier = getStreakMultiplier(streak?.current_streak || 0);
-    const boostedAmount = Math.floor(baseAmount * multiplier);
+    let eventBonus = 0;
+    try {
+      const eventService = require('./eventService');
+      eventBonus = await eventService.getMultiplier('kh_bonus');
+    } catch {}
+    const boostedAmount = Math.floor(baseAmount * multiplier * (1 + eventBonus));
 
     // Clamp to daily remaining
     const awarded = Math.min(boostedAmount, remaining);
