@@ -9,9 +9,15 @@ echo "========================================="
 
 cd "$APP_DIR"
 
+# Live branch is iso-rework — origin/main is just a baseline snapshot.
+# Override with DEPLOY_BRANCH=name ./deploy.sh to test other branches.
+BRANCH="${DEPLOY_BRANCH:-iso-rework}"
+
 echo ""
-echo "=== Pulling latest code ==="
-git pull origin main
+echo "=== Pulling latest code from $BRANCH ==="
+git fetch origin
+git checkout "$BRANCH"
+git pull origin "$BRANCH"
 
 echo ""
 echo "=== Instalando dependencias del server ==="
@@ -27,7 +33,9 @@ npm run build
 echo ""
 echo "=== Reiniciando aplicación ==="
 cd "$APP_DIR"
-pm2 reload ecosystem.config.js
+# Migrations apply on boot via db.migrate.latest in server/src/index.js.
+# pm2 reload restarts the running app; if it's not running yet, start it.
+pm2 reload ecosystem.config.js || pm2 start ecosystem.config.js
 
 echo ""
 echo "=== Deploy completado ==="

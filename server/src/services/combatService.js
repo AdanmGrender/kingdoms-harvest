@@ -8,6 +8,7 @@ const dailyTaskService = require('./dailyTaskService');
 const techService = require('./techService');
 const achievementService = require('./achievementService');
 const eventService = require('./eventService');
+const notifyService = require('./notifyService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 // Tech-driven combat bonuses. Numbers must mirror the human-readable "effect"
@@ -435,9 +436,11 @@ const combatService = {
       }
     }
 
-    // Si el atacante gana, roba recursos (con escudo mínimo de 50 por recurso)
+    // Recompensas según quién ganó. Hasta ahora solo el atacante recibía
+    // XP+tokens; el defensor exitoso quedaba sin reward — fix asimetría.
     let loot = {};
     let tokensAwarded = 0;
+    let defenderTokensAwarded = 0;
     if (result.winner === 'attacker') {
       const defResources = await db('player_resources').where('player_id', defenderId);
       const stealRate = 0.1;
@@ -460,6 +463,20 @@ const combatService = {
       tokensAwarded = tokenResult.awarded;
       await dailyTaskService.trackProgress(playerId, 'battle_win');
       achievementService.checkAndUnlock(playerId, 'battle_win', 1).catch(() => {});
+    } else if (result.winner === 'defender') {
+      // Successful defense: half the attacker's PvP win reward (XP + tokens)
+      // + counts toward the same battle_win achievement so defenders make
+      // progress too. Less than the attacker's haul because the defender
+      // didn't initiate; still rewards staying logged-in defensible.
+      await playerService.addXP(defenderId, 25);
+      const tokenResult = await tokenService.awardTokens(
+        defenderId,
+        Math.max(1, Math.floor(TOKEN_CONFIG.TOKENS_PER_PVP_WIN / 2)),
+        'pvp_defense',
+      );
+      defenderTokensAwarded = tokenResult.awarded;
+      await dailyTaskService.trackProgress(defenderId, 'battle_win');
+      achievementService.checkAndUnlock(defenderId, 'battle_win', 1).catch(() => {});
     }
 
     await db('battles').insert({
@@ -474,27 +491,25 @@ const combatService = {
       resolved_at: new Date().toISOString(),
     });
 
-    // Notify the defender via Telegram bot DM. Respects the same opt-out flag
-    // gameTick uses (players.notif_enabled). Inline check to avoid coupling
-    // back to the tick module.
-    try {
-      if (defender?.notif_enabled !== 0) {
-        const { getBot } = require('../bot/telegramBot');
-        const bot = getBot();
-        if (bot) {
-          const attackerName = attacker?.display_name || 'Un jugador';
-          const lootStr = result.winner === 'attacker' && Object.keys(loot).length > 0
-            ? ` y robó ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
-            : '';
-          const msg = result.winner === 'attacker'
-            ? `⚔️ ¡${attackerName} te atacó y ganó${lootStr}! Volvé a defender tu reino.`
-            : `🛡️ ¡Defendiste un ataque de ${attackerName}! Tus tropas ganaron.`;
-          bot.sendMessage(defenderId, msg).catch(() => {});
-        }
-      }
-    } catch {}
+    // Notify the defender — uses the shared opt-out helper.
+    const attackerName = attacker?.display_name || 'Un jugador';
+    if (result.winner === 'attacker') {
+      const lootStr = Object.keys(loot).length > 0
+        ? ` y robó ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
+        : '';
+      notifyService.sendBotDM(
+        defenderId,
+        `⚔️ ¡${attackerName} te atacó y ganó${lootStr}! Volvé a defender tu reino.`,
+      );
+    } else {
+      // Successful defense — celebrate + surface the reward
+      notifyService.sendBotDM(
+        defenderId,
+        `🛡️ ¡Defendiste un ataque de ${attackerName}! +25 XP, +${defenderTokensAwarded} KH.`,
+      );
+    }
 
-    return { ...result, loot, tokensAwarded };
+    return { ...result, loot, tokensAwarded, defenderTokensAwarded };
   },
 
   /**

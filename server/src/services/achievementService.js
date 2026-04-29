@@ -16,6 +16,7 @@
  */
 const db = require('../config/database');
 const { ACHIEVEMENTS } = require('../../../shared/gameConfig');
+const notifyService = require('./notifyService');
 
 // Lazy-loaded to avoid circular dep with tokenService
 let _tokenService = null;
@@ -71,7 +72,16 @@ const achievementService = {
         });
       }
 
-      if (reachedGoal) newlyUnlocked.push(ach.id);
+      if (reachedGoal) {
+        newlyUnlocked.push(ach.id);
+        // Fire a Telegram DM nudging the player to claim. Fire-and-forget
+        // so the calling service (harvest, build, battle, etc.) doesn't pay
+        // any latency for this side effect.
+        notifyService.sendBotDM(
+          playerId,
+          `🏆 ¡Desbloqueaste "${ach.name}" ${ach.icon}!\n${ach.desc}\nReclamá tu recompensa de ${ach.reward?.kh || 0} KH desde el panel de Logros.`,
+        );
+      }
     }
 
     return newlyUnlocked;

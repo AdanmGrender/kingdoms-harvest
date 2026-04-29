@@ -17,6 +17,7 @@ const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const achievementService = require('./achievementService');
 const eventService = require('./eventService');
+const notifyService = require('./notifyService');
 
 const MARKET_FEE = 0.05;        // 5% taken from seller's gold proceeds
 const LISTING_TTL_MS = 24 * 60 * 60 * 1000;  // 24h
@@ -145,6 +146,14 @@ const marketplaceService = {
       );
       await dailyTaskService.trackProgress(listing.seller_id, 'sell');
       achievementService.checkAndUnlock(listing.seller_id, 'sell', 1).catch(() => {});
+
+      // DM the seller — closes the asynchronous loop. They listed something
+      // and a stranger bought it; otherwise they'd only learn at next login.
+      const sellerLine = newRemaining === 0
+        ? `🛒 ¡Vendiste todo! ${qty}× ${listing.resource_id} → +${sellerGold} oro (${tokenResult?.awarded || 0} KH).`
+        : `🛒 Alguien compró ${qty}× ${listing.resource_id} → +${sellerGold} oro. Quedan ${newRemaining} en tu listado.`;
+      notifyService.sendBotDM(listing.seller_id, sellerLine);
+
       return {
         success: true,
         bought: qty,
