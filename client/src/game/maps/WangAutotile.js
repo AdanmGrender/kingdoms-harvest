@@ -4,13 +4,14 @@
  * Kenney medieval-rts ships plain biome tiles but no transition tiles between
  * biomes, so grass-next-to-dirt renders as a hard seam. This module bakes
  * transition textures at scene boot by compositing two biome tiles with an
- * alpha gradient masked to one cardinal direction (N/E/S/W), plus a small
- * "diagonal corner" variant for L-shaped borders.
+ * alpha gradient masked to one cardinal direction (N/E/S/W) or one diagonal
+ * corner (NE/NW/SE/SW) for L-shaped borders where two cardinals share the
+ * same different biome.
  *
  * Keys produced follow the pattern `wang_<base>_<edge>_<dir>` and are loaded
- * as Phaser canvas textures on the target scene. For 4 biome pairs × 4
- * directions, that's 16 new textures per pair — cheap at load, zero cost per
- * frame since each is a single pre-rendered image.
+ * as Phaser canvas textures on the target scene. For each biome pair we now
+ * bake 8 directional variants (4 cardinals + 4 corners) × 2 ordering = 16
+ * textures per pair. Still cheap at load, zero cost per frame.
  *
  * Usage:
  *   1) In preload()/create(), after the base tileset PNGs are loaded:
@@ -42,21 +43,33 @@ const TILE_PX = 64;
 // eating too much of the base biome.
 const BLEND_RADIUS = 36;
 
-// Direction flags — bitmask order matches IsoMapGenerator.pickRoadTile().
-export const DIR = { N: 0b0001, E: 0b0010, S: 0b0100, W: 0b1000 };
+// Direction flags. Cardinals are bitmask-compatible with road connectors;
+// corners are unique values above the cardinal range.
+export const DIR = {
+  N: 0b0001, E: 0b0010, S: 0b0100, W: 0b1000,
+  NE: 0b10001, SE: 0b10010, SW: 0b10100, NW: 0b11000,
+};
 
-// For each direction, the gradient origin (where edge biome is opaque) and the
-// per-pixel distance function that fades it out.
+const CARDINAL_DIRS = [DIR.N, DIR.E, DIR.S, DIR.W];
+const CORNER_DIRS = [DIR.NE, DIR.SE, DIR.SW, DIR.NW];
+
+// For each direction, the per-pixel distance from the "opaque side". Cardinals
+// fade from one edge inward; corners fade radially from one corner outward.
 const DIR_GRADIENTS = {
   [DIR.N]: (x, y) => y,                              // top edge most opaque
   [DIR.E]: (x, y) => TILE_PX - 1 - x,                // right edge most opaque
   [DIR.S]: (x, y) => TILE_PX - 1 - y,                // bottom edge most opaque
   [DIR.W]: (x, y) => x,                              // left edge most opaque
+  // Corners: Euclidean distance from the named corner pixel.
+  [DIR.NE]: (x, y) => Math.hypot((TILE_PX - 1) - x, y),
+  [DIR.SE]: (x, y) => Math.hypot((TILE_PX - 1) - x, (TILE_PX - 1) - y),
+  [DIR.SW]: (x, y) => Math.hypot(x, (TILE_PX - 1) - y),
+  [DIR.NW]: (x, y) => Math.hypot(x, y),
 };
 
 /**
  * Bake a single transition texture. Composites `edgeKey` on top of `baseKey`
- * using a linear alpha mask that decays from the given direction's edge.
+ * using a cosine-curve alpha mask anchored to the given direction.
  */
 function bakeOne(scene, baseKey, edgeKey, dir, outKey) {
   if (scene.textures.exists(outKey)) return outKey;
@@ -69,14 +82,12 @@ function bakeOne(scene, baseKey, edgeKey, dir, outKey) {
   const edgeImg = edgeTex.getSourceImage();
   if (!baseImg?.width || !edgeImg?.width) return baseKey;
 
-  // Composite buffer
   const canvas = document.createElement('canvas');
   canvas.width = TILE_PX;
   canvas.height = TILE_PX;
   const ctx = canvas.getContext('2d');
   ctx.drawImage(baseImg, 0, 0, TILE_PX, TILE_PX);
 
-  // Masked edge buffer — edge tile multiplied by a linear alpha ramp
   const maskCanvas = document.createElement('canvas');
   maskCanvas.width = TILE_PX;
   maskCanvas.height = TILE_PX;
@@ -88,8 +99,7 @@ function bakeOne(scene, baseKey, edgeKey, dir, outKey) {
   for (let y = 0; y < TILE_PX; y++) {
     for (let x = 0; x < TILE_PX; x++) {
       const d = gradient(x, y);
-      // Alpha = 1 at the edge, 0 at BLEND_RADIUS away, with a soft cos curve
-      // so the midband is slightly less harsh than pure linear.
+      // Alpha = 1 at the edge/corner, 0 at BLEND_RADIUS away, cosine ease.
       let a;
       if (d <= 0) a = 1;
       else if (d >= BLEND_RADIUS) a = 0;
@@ -111,15 +121,25 @@ function primaryTileId(biome) {
   return pool?.[0];
 }
 
+// Each L-shape corner is keyed off a pair of adjacent cardinal directions
+// that share the same differing biome. Order matters in resolve() — we
+// check corners *before* cardinals so a true L picks the radial blend.
+const CORNER_PAIRS = [
+  { dirs: [DIR.N, DIR.E], cornerDir: DIR.NE },
+  { dirs: [DIR.N, DIR.W], cornerDir: DIR.NW },
+  { dirs: [DIR.S, DIR.E], cornerDir: DIR.SE },
+  { dirs: [DIR.S, DIR.W], cornerDir: DIR.SW },
+];
+
 export function bakeWangTiles(scene) {
-  // Index (baseBiome,edgeBiome,dir) → textureKey so resolve() is O(1).
   const index = new Map();
+  const ALL_DIRS = [...CARDINAL_DIRS, ...CORNER_DIRS];
 
   for (const [a, b] of WANG_PAIRS) {
     const aId = primaryTileId(a);
     const bId = primaryTileId(b);
     if (aId == null || bId == null) continue;
-    for (const dir of [DIR.N, DIR.E, DIR.S, DIR.W]) {
+    for (const dir of ALL_DIRS) {
       const abKey = `wang_${a}_${b}_${dir}`;
       const baKey = `wang_${b}_${a}_${dir}`;
       bakeOne(scene, `iso_tile_${aId}`, `iso_tile_${bId}`, dir, abKey);
@@ -130,14 +150,16 @@ export function bakeWangTiles(scene) {
   }
 
   /**
-   * Resolve a texture key for a single tile based on its neighbors. Returns
-   * the plain tile variant if all 4 cardinals match this tile's biome, else a
-   * baked wang texture pointing toward the first differing neighbor (cardinal
-   * priority: N > E > S > W — arbitrary but stable).
+   * Resolve a texture key for a single tile based on its neighbors.
+   *
+   * Resolution priority:
+   *   1. ROAD biome → plain tile (roads use their own connector system)
+   *   2. Two adjacent cardinals share the same differing biome → corner blend
+   *   3. Any single cardinal differs → cardinal blend (priority N > E > S > W)
+   *   4. All cardinals match self → plain tile variant
    */
   function resolve(x, y, terrain, width, height, tileVariants) {
     const selfBiome = terrain[y][x];
-    // Roads have their own dedicated connector logic elsewhere, leave as-is
     if (selfBiome === BIOMES.ROAD) return `iso_tile_${tileVariants[y][x]}`;
 
     const neighbor = (dx, dy) => {
@@ -150,21 +172,33 @@ export function bakeWangTiles(scene) {
 
     const self = selfBiome === BIOMES.FOREST ? BIOMES.GRASS : selfBiome;
 
-    // Check cardinals in fixed priority so adjacent tiles converge on the
-    // same look (otherwise we'd get seams moving frame to frame if we ever
-    // re-rolled tiles).
-    const cardinals = [
-      { dir: DIR.N, biome: neighbor(0, -1) },
-      { dir: DIR.E, biome: neighbor(1,  0) },
-      { dir: DIR.S, biome: neighbor(0,  1) },
-      { dir: DIR.W, biome: neighbor(-1, 0) },
-    ];
-    for (const { dir, biome } of cardinals) {
-      if (biome !== self) {
-        const key = index.get(`${self}|${biome}|${dir}`);
+    const cardinalBiome = {
+      [DIR.N]: neighbor(0, -1),
+      [DIR.E]: neighbor(1,  0),
+      [DIR.S]: neighbor(0,  1),
+      [DIR.W]: neighbor(-1, 0),
+    };
+
+    // 1) Corner pass — only when two adjacent cardinals share the same
+    //    differing biome (true L-shape against a single neighbor biome).
+    for (const pair of CORNER_PAIRS) {
+      const b1 = cardinalBiome[pair.dirs[0]];
+      const b2 = cardinalBiome[pair.dirs[1]];
+      if (b1 !== self && b1 === b2) {
+        const key = index.get(`${self}|${b1}|${pair.cornerDir}`);
         if (key) return key;
       }
     }
+
+    // 2) Cardinal pass — N > E > S > W, first differing neighbor wins.
+    for (const dir of CARDINAL_DIRS) {
+      const b = cardinalBiome[dir];
+      if (b !== self) {
+        const key = index.get(`${self}|${b}|${dir}`);
+        if (key) return key;
+      }
+    }
+
     return `iso_tile_${tileVariants[y][x]}`;
   }
 
