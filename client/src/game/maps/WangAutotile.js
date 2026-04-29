@@ -43,6 +43,22 @@ const TILE_PX = 64;
 // eating too much of the base biome.
 const BLEND_RADIUS = 36;
 
+// Pixel-art dithering — instead of smoothly fading alpha across the midband
+// (a blur that doesn't match Kenney's chunkier art), threshold the cosine
+// value against a 4×4 Bayer ordered-dither matrix. Pixels at the opaque
+// end stay solid, pixels at the transparent end stay gone, and the midband
+// becomes a stippled pattern that reads as pixel-art.
+//
+// Set WANG_DITHER=false to fall back to the original smooth blend.
+const WANG_DITHER = true;
+// Standard 4×4 Bayer matrix normalized to [0, 1). Tiles across the sprite.
+const BAYER_4X4 = [
+   0, 12,  3, 15,
+   8,  4, 11,  7,
+   2, 14,  1, 13,
+  10,  6,  9,  5,
+].map((v) => v / 16);
+
 // Direction flags. Cardinals are bitmask-compatible with road connectors;
 // corners are unique values above the cardinal range.
 export const DIR = {
@@ -67,8 +83,14 @@ const DIR_GRADIENTS = {
   [DIR.NW]: (x, y) => Math.hypot(x, y),
 };
 
-/** Mutate `imageData` in place: multiply each pixel's alpha by the cosine
- *  mask for the given direction. Shared by single-edge and multi-edge bake. */
+/**
+ * Mutate `imageData` in place: multiply each pixel's alpha by the cosine
+ * mask for the given direction. Shared by single-edge and multi-edge bake.
+ *
+ * When WANG_DITHER is on, the cosine value is thresholded against the Bayer
+ * matrix so each pixel is either fully opaque or fully transparent — gives
+ * a pixel-art stippled midband instead of a smooth blur.
+ */
 function applyDirMask(imageData, dir) {
   const px = imageData.data;
   const gradient = DIR_GRADIENTS[dir];
@@ -80,7 +102,15 @@ function applyDirMask(imageData, dir) {
       else if (d >= BLEND_RADIUS) a = 0;
       else a = 0.5 * (1 + Math.cos((d / BLEND_RADIUS) * Math.PI));
       const i = (y * TILE_PX + x) * 4;
-      px[i + 3] = Math.round(px[i + 3] * a);
+      if (WANG_DITHER) {
+        // Bayer threshold — keep the original alpha if cosine value beats
+        // the matrix entry; otherwise drop it. Net effect: stippled blend.
+        const threshold = BAYER_4X4[(y & 3) * 4 + (x & 3)];
+        if (a <= threshold) px[i + 3] = 0;
+        // else: leave alpha alone (sprite's own alpha survives)
+      } else {
+        px[i + 3] = Math.round(px[i + 3] * a);
+      }
     }
   }
 }
