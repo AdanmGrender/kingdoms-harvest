@@ -67,20 +67,41 @@ const DIR_GRADIENTS = {
   [DIR.NW]: (x, y) => Math.hypot(x, y),
 };
 
+/** Mutate `imageData` in place: multiply each pixel's alpha by the cosine
+ *  mask for the given direction. Shared by single-edge and multi-edge bake. */
+function applyDirMask(imageData, dir) {
+  const px = imageData.data;
+  const gradient = DIR_GRADIENTS[dir];
+  for (let y = 0; y < TILE_PX; y++) {
+    for (let x = 0; x < TILE_PX; x++) {
+      const d = gradient(x, y);
+      let a;
+      if (d <= 0) a = 1;
+      else if (d >= BLEND_RADIUS) a = 0;
+      else a = 0.5 * (1 + Math.cos((d / BLEND_RADIUS) * Math.PI));
+      const i = (y * TILE_PX + x) * 4;
+      px[i + 3] = Math.round(px[i + 3] * a);
+    }
+  }
+}
+
+/** Helper: load a texture's source image by key, or return null. */
+function getSourceImage(scene, key) {
+  const tex = scene.textures.get(key);
+  if (!tex || tex.key === '__MISSING') return null;
+  const img = tex.getSourceImage();
+  return img?.width ? img : null;
+}
+
 /**
  * Bake a single transition texture. Composites `edgeKey` on top of `baseKey`
  * using a cosine-curve alpha mask anchored to the given direction.
  */
 function bakeOne(scene, baseKey, edgeKey, dir, outKey) {
   if (scene.textures.exists(outKey)) return outKey;
-  const baseTex = scene.textures.get(baseKey);
-  const edgeTex = scene.textures.get(edgeKey);
-  if (!baseTex || baseTex.key === '__MISSING') return baseKey;
-  if (!edgeTex || edgeTex.key === '__MISSING') return baseKey;
-
-  const baseImg = baseTex.getSourceImage();
-  const edgeImg = edgeTex.getSourceImage();
-  if (!baseImg?.width || !edgeImg?.width) return baseKey;
+  const baseImg = getSourceImage(scene, baseKey);
+  const edgeImg = getSourceImage(scene, edgeKey);
+  if (!baseImg || !edgeImg) return baseKey;
 
   const canvas = document.createElement('canvas');
   canvas.width = TILE_PX;
@@ -94,22 +115,48 @@ function bakeOne(scene, baseKey, edgeKey, dir, outKey) {
   const mctx = maskCanvas.getContext('2d');
   mctx.drawImage(edgeImg, 0, 0, TILE_PX, TILE_PX);
   const img = mctx.getImageData(0, 0, TILE_PX, TILE_PX);
-  const px = img.data;
-  const gradient = DIR_GRADIENTS[dir];
-  for (let y = 0; y < TILE_PX; y++) {
-    for (let x = 0; x < TILE_PX; x++) {
-      const d = gradient(x, y);
-      // Alpha = 1 at the edge/corner, 0 at BLEND_RADIUS away, cosine ease.
-      let a;
-      if (d <= 0) a = 1;
-      else if (d >= BLEND_RADIUS) a = 0;
-      else a = 0.5 * (1 + Math.cos((d / BLEND_RADIUS) * Math.PI));
-      const i = (y * TILE_PX + x) * 4;
-      px[i + 3] = Math.round(px[i + 3] * a);
-    }
-  }
+  applyDirMask(img, dir);
   mctx.putImageData(img, 0, 0);
   ctx.drawImage(maskCanvas, 0, 0);
+
+  scene.textures.addCanvas(outKey, canvas);
+  return outKey;
+}
+
+/**
+ * Bake a multi-edge T-junction texture — base biome with several different
+ * neighbor biomes bleeding in from their respective directions. Lazy: called
+ * by resolve() the first time a unique 4-cardinal signature is seen.
+ *
+ * `edges` is an array of `{ key, dir }`. Each is layered onto the base in
+ * input order. Order is irrelevant for correctness (alpha is per-mask and
+ * masks don't overlap aggressively in the corners) but kept stable so the
+ * cache key uniquely identifies the bake.
+ */
+function bakeMulti(scene, baseKey, edges, outKey) {
+  if (scene.textures.exists(outKey)) return outKey;
+  const baseImg = getSourceImage(scene, baseKey);
+  if (!baseImg) return baseKey;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = TILE_PX;
+  canvas.height = TILE_PX;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(baseImg, 0, 0, TILE_PX, TILE_PX);
+
+  for (const { key: edgeKey, dir } of edges) {
+    const edgeImg = getSourceImage(scene, edgeKey);
+    if (!edgeImg) continue;
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = TILE_PX;
+    maskCanvas.height = TILE_PX;
+    const mctx = maskCanvas.getContext('2d');
+    mctx.drawImage(edgeImg, 0, 0, TILE_PX, TILE_PX);
+    const img = mctx.getImageData(0, 0, TILE_PX, TILE_PX);
+    applyDirMask(img, dir);
+    mctx.putImageData(img, 0, 0);
+    ctx.drawImage(maskCanvas, 0, 0);
+  }
 
   scene.textures.addCanvas(outKey, canvas);
   return outKey;
@@ -154,9 +201,10 @@ export function bakeWangTiles(scene) {
    *
    * Resolution priority:
    *   1. ROAD biome → plain tile (roads use their own connector system)
-   *   2. Two adjacent cardinals share the same differing biome → corner blend
-   *   3. Any single cardinal differs → cardinal blend (priority N > E > S > W)
-   *   4. All cardinals match self → plain tile variant
+   *   2. T-junction (≥2 distinct neighbor biomes) → lazy multi-edge bake
+   *   3. Two adjacent cardinals share the same differing biome → corner blend
+   *   4. Any single cardinal differs → cardinal blend (priority N > E > S > W)
+   *   5. All cardinals match self → plain tile variant
    */
   function resolve(x, y, terrain, width, height, tileVariants) {
     const selfBiome = terrain[y][x];
@@ -179,8 +227,36 @@ export function bakeWangTiles(scene) {
       [DIR.W]: neighbor(-1, 0),
     };
 
-    // 1) Corner pass — only when two adjacent cardinals share the same
-    //    differing biome (true L-shape against a single neighbor biome).
+    // Count distinct neighbor biomes that differ from self
+    const diffByDir = CARDINAL_DIRS
+      .map((d) => ({ dir: d, biome: cardinalBiome[d] }))
+      .filter((c) => c.biome !== self);
+    const distinctNeighbors = new Set(diffByDir.map((c) => c.biome));
+
+    // 1) T-junction pass — 2+ distinct neighbor biomes. Composite each edge
+    //    on the self base lazily; cache by full 4-cardinal signature.
+    if (distinctNeighbors.size >= 2) {
+      const sig = `T|${self}|${cardinalBiome[DIR.N]}|${cardinalBiome[DIR.E]}|${cardinalBiome[DIR.S]}|${cardinalBiome[DIR.W]}`;
+      let key = index.get(sig);
+      if (!key) {
+        const baseId = primaryTileId(self);
+        if (baseId != null) {
+          const edges = diffByDir
+            .map((c) => {
+              const id = primaryTileId(c.biome);
+              return id != null ? { key: `iso_tile_${id}`, dir: c.dir } : null;
+            })
+            .filter(Boolean);
+          if (edges.length > 0) {
+            key = bakeMulti(scene, `iso_tile_${baseId}`, edges, sig);
+            index.set(sig, key);
+          }
+        }
+      }
+      if (key) return key;
+    }
+
+    // 2) Corner pass — single neighbor biome shared across 2 adjacent cardinals
     for (const pair of CORNER_PAIRS) {
       const b1 = cardinalBiome[pair.dirs[0]];
       const b2 = cardinalBiome[pair.dirs[1]];
@@ -190,7 +266,7 @@ export function bakeWangTiles(scene) {
       }
     }
 
-    // 2) Cardinal pass — N > E > S > W, first differing neighbor wins.
+    // 3) Cardinal pass — N > E > S > W, first differing neighbor wins
     for (const dir of CARDINAL_DIRS) {
       const b = cardinalBiome[dir];
       if (b !== self) {
