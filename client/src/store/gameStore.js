@@ -792,6 +792,64 @@ const useGameStore = create((set, get) => ({
     });
   },
 
+  // Alliance: invitations inbox + leader/officer member management
+  pendingInvitations: [],
+  loadPendingInvitations: async () => {
+    try {
+      const { data } = await api.get('/alliances/invitations/mine');
+      set({ pendingInvitations: data });
+    } catch (error) {
+      console.error('Error loading invitations:', error);
+    }
+  },
+  respondInvitation: async (invitationId, accept) => {
+    try {
+      const { data } = await api.post(`/alliances/invitations/${invitationId}/respond`, { accept });
+      get().addNotification(data.message, accept ? 'success' : 'info');
+      get().loadPendingInvitations();
+      get().loadMyAlliance();
+      get().loadAlliances();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error', 'error');
+      return null;
+    }
+  },
+  invitePlayer: async (allianceId, targetPlayerId) => {
+    try {
+      const { data } = await api.post(`/alliances/${allianceId}/invite`, { playerId: targetPlayerId });
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al invitar', 'error');
+      return null;
+    }
+  },
+  setMemberRole: async (allianceId, targetPlayerId, role) => {
+    try {
+      const { data } = await api.post(`/alliances/${allianceId}/members/${targetPlayerId}/role`, { role });
+      get().addNotification(data.message, 'success');
+      get().loadAllianceMembers(allianceId);
+      get().loadMyAlliance();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al cambiar rol', 'error');
+      return null;
+    }
+  },
+  kickMember: async (allianceId, targetPlayerId) => {
+    try {
+      const { data } = await api.delete(`/alliances/${allianceId}/members/${targetPlayerId}`);
+      get().addNotification(data.message, 'success');
+      get().loadAllianceMembers(allianceId);
+      get().loadMyAlliance();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al expulsar', 'error');
+      return null;
+    }
+  },
+
   // Tournaments — active list + per-tournament leaderboards (lazy)
   tournaments: [],
   tournamentLeaderboards: {},

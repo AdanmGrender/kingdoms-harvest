@@ -8,17 +8,20 @@ import useGameStore from '../../store/gameStore';
  */
 export default function AlliancesPanel() {
   const {
-    alliancesList, myAlliance, allianceMembers, player,
-    loadAlliances, loadMyAlliance, loadAllianceMembers,
+    alliancesList, myAlliance, allianceMembers, player, pendingInvitations,
+    loadAlliances, loadMyAlliance, loadAllianceMembers, loadPendingInvitations,
     createAlliance, joinAlliance, leaveAlliance, disbandAlliance,
+    respondInvitation, invitePlayer, setMemberRole, kickMember,
   } = useGameStore();
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState('');
   const [motto, setMotto] = useState('');
+  const [inviteId, setInviteId] = useState('');
 
   useEffect(() => {
     loadAlliances();
     loadMyAlliance();
+    loadPendingInvitations();
   }, []);
 
   useEffect(() => {
@@ -35,10 +38,19 @@ export default function AlliancesPanel() {
     }
   };
 
-  // Player IS in an alliance — show membership + chat
+  const handleInvite = async () => {
+    if (!myAlliance) return;
+    const id = parseInt(inviteId, 10);
+    if (!Number.isInteger(id) || id < 1) return;
+    const res = await invitePlayer(myAlliance.id, id);
+    if (res?.success) setInviteId('');
+  };
+
+  // Player IS in an alliance — show membership + chat + (officer+) controls
   if (myAlliance) {
     const members = allianceMembers[myAlliance.id] || [];
     const isLeader = myAlliance.my_role === 'leader';
+    const isOfficer = myAlliance.my_role === 'officer' || isLeader;
     return (
       <div className="space-y-3">
         <div className="game-card border-yellow-700 bg-yellow-900/10">
@@ -71,31 +83,119 @@ export default function AlliancesPanel() {
 
         <AllianceChat myId={player?.telegram_id} />
 
-        <p className="text-xs text-gray-400">Miembros:</p>
-        {members.length === 0 && <p className="text-[10px] text-gray-500 text-center">Cargando...</p>}
-        {members.map((m) => (
-          <div key={m.player_id} className="game-card py-2 text-xs flex items-center justify-between">
-            <div>
-              <p className="font-bold">
-                {m.role === 'leader' && '👑 '}{m.display_name}
-                {m.player_id === player?.telegram_id && <span className="text-yellow-400 ml-1">(vos)</span>}
-              </p>
-              <p className="text-[10px] text-gray-400">
-                Lv {m.level} · {new Date(m.joined_at).toLocaleDateString()}
-              </p>
+        {/* Invite UI for leader/officer */}
+        {isOfficer && (
+          <div className="game-card border-purple-700/40">
+            <p className="text-[11px] text-gray-400 mb-1">
+              📨 Invitar jugador (pegá su telegram_id)
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={inviteId}
+                onChange={(e) => setInviteId(e.target.value)}
+                placeholder="123456789"
+                className="flex-1 bg-kingdom-blue rounded px-2 py-1 text-xs text-white"
+              />
+              <button
+                onClick={handleInvite}
+                disabled={!inviteId.trim()}
+                className="btn-primary text-[10px] px-3 py-1 disabled:opacity-40"
+              >
+                Invitar
+              </button>
             </div>
           </div>
-        ))}
+        )}
+
+        <div className="game-card border-yellow-700/30 bg-yellow-900/5 py-2">
+          <p className="text-[10px] text-yellow-300">
+            ⚔️ Bonus por miembro: +5% ATK · +5% DEF · +10% botín
+          </p>
+        </div>
+
+        <p className="text-xs text-gray-400">Miembros:</p>
+        {members.length === 0 && <p className="text-[10px] text-gray-500 text-center">Cargando...</p>}
+        {members.map((m) => {
+          const isMe = m.player_id === player?.telegram_id;
+          const canPromote = isLeader && !isMe && m.role === 'member';
+          const canDemote = isLeader && !isMe && m.role === 'officer';
+          // Officers can kick members (not other officers, not leader). Leader can kick anyone except self.
+          const canKick = !isMe && m.role !== 'leader' &&
+            (isLeader || (myAlliance.my_role === 'officer' && m.role === 'member'));
+          return (
+            <div key={m.player_id} className="game-card py-2 text-xs flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="font-bold truncate">
+                  {m.role === 'leader' && '👑 '}{m.role === 'officer' && '⭐ '}{m.display_name}
+                  {isMe && <span className="text-yellow-400 ml-1">(vos)</span>}
+                </p>
+                <p className="text-[10px] text-gray-400">
+                  Lv {m.level} · {new Date(m.joined_at).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex gap-1 shrink-0">
+                {canPromote && (
+                  <button
+                    onClick={() => setMemberRole(myAlliance.id, m.player_id, 'officer')}
+                    className="text-[9px] px-2 py-0.5 rounded bg-purple-800 hover:bg-purple-700 text-white"
+                    title="Promover a oficial"
+                  >Promover</button>
+                )}
+                {canDemote && (
+                  <button
+                    onClick={() => setMemberRole(myAlliance.id, m.player_id, 'member')}
+                    className="text-[9px] px-2 py-0.5 rounded bg-gray-700 hover:bg-gray-600 text-white"
+                    title="Bajar a miembro"
+                  >Bajar</button>
+                )}
+                {canKick && (
+                  <button
+                    onClick={() => kickMember(myAlliance.id, m.player_id)}
+                    className="text-[9px] px-2 py-0.5 rounded bg-red-800 hover:bg-red-700 text-white"
+                    title="Expulsar"
+                  >Kick</button>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   }
 
-  // Player NOT in alliance — show create + join list
+  // Player NOT in alliance — show invitations inbox + create + join list
   return (
     <div className="space-y-3">
       <p className="text-xs text-gray-400 text-center">
         No pertenecés a ninguna alianza. Creá una propia o uníte a una existente.
       </p>
+
+      {/* Invitations inbox */}
+      {(pendingInvitations || []).length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[11px] text-purple-300">📨 Invitaciones pendientes:</p>
+          {pendingInvitations.map((inv) => (
+            <div key={inv.id} className="game-card py-2 border-purple-700/60">
+              <p className="text-sm font-bold">{inv.alliance_name}</p>
+              {inv.alliance_motto && (
+                <p className="text-[11px] text-gray-400 italic">"{inv.alliance_motto}"</p>
+              )}
+              <p className="text-[10px] text-gray-500">Invitado por {inv.invited_by_name}</p>
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={() => respondInvitation(inv.id, true)}
+                  className="btn-primary text-[10px] px-3 py-1 flex-1"
+                >Aceptar</button>
+                <button
+                  onClick={() => respondInvitation(inv.id, false)}
+                  className="text-[10px] px-3 py-1 rounded bg-kingdom-blue/50 text-gray-300 flex-1"
+                >Rechazar</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {creating ? (
         <div className="game-card space-y-2">

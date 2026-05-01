@@ -217,6 +217,194 @@ const allianceService = {
     return { success: true, messageId, content: text };
   },
 
+  /**
+   * Combat bonuses granted just for being in an alliance. Designed to be
+   * additive with existing faction + tech stacks. Modest values so alliance
+   * membership matters but doesn't dwarf faction choice.
+   */
+  async getCombatBonuses(playerId) {
+    if (!playerId) return { atk: 0, def: 0, loot: 0 };
+    const member = await db('alliance_members').where('player_id', playerId).first();
+    if (!member) return { atk: 0, def: 0, loot: 0 };
+    return { atk: 0.05, def: 0.05, loot: 0.10 };
+  },
+
+  /**
+   * Send a pending invitation. Only leader/officer can invite. Target must
+   * not already be in any alliance and must not have a pending invite from
+   * this same alliance.
+   */
+  async invitePlayer(inviterId, allianceId, targetPlayerId) {
+    if (inviterId === targetPlayerId) throw new Error('No podés invitarte a vos mismo');
+
+    const inviter = await db('alliance_members').where('player_id', inviterId).first();
+    if (!inviter || inviter.alliance_id !== allianceId) {
+      throw new Error('No sos miembro de esta alianza');
+    }
+    if (inviter.role !== 'leader' && inviter.role !== 'officer') {
+      throw new Error('Solo líder u oficial pueden invitar');
+    }
+
+    const alliance = await db('alliances').where('id', allianceId).first();
+    if (!alliance) throw new Error('Alianza no encontrada');
+
+    const target = await db('players').where('telegram_id', targetPlayerId).first();
+    if (!target) throw new Error('Jugador no encontrado');
+
+    const targetMember = await db('alliance_members').where('player_id', targetPlayerId).first();
+    if (targetMember) throw new Error('Ese jugador ya pertenece a una alianza');
+
+    const dup = await db('alliance_invitations')
+      .where({ alliance_id: allianceId, invited_player_id: targetPlayerId, status: 'pending' })
+      .first();
+    if (dup) throw new Error('Ya hay una invitación pendiente para ese jugador');
+
+    const [id] = await db('alliance_invitations').insert({
+      alliance_id: allianceId,
+      invited_by_player_id: inviterId,
+      invited_player_id: targetPlayerId,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+    });
+
+    notifyService.sendBotDM(
+      targetPlayerId,
+      `📨 Te invitaron a "${alliance.name}". Abrí Alianza > Invitaciones para responder.`,
+    );
+
+    return { success: true, invitationId: id, message: `Invitación enviada a ${target.display_name}` };
+  },
+
+  /** Pending invitations FOR a specific player (their inbox). */
+  async getPendingInvitations(playerId) {
+    const rows = await db('alliance_invitations')
+      .where({ invited_player_id: playerId, status: 'pending' })
+      .orderBy('id', 'desc');
+    if (rows.length === 0) return [];
+    const allianceIds = [...new Set(rows.map((r) => r.alliance_id))];
+    const inviterIds = [...new Set(rows.map((r) => r.invited_by_player_id))];
+    const alliances = await db('alliances').whereIn('id', allianceIds);
+    const inviters = await db('players').whereIn('telegram_id', inviterIds)
+      .select('telegram_id', 'display_name');
+    const aMap = new Map(alliances.map((a) => [a.id, a]));
+    const iMap = new Map(inviters.map((i) => [i.telegram_id, i.display_name]));
+    return rows.map((r) => ({
+      id: r.id,
+      alliance_id: r.alliance_id,
+      alliance_name: aMap.get(r.alliance_id)?.name || '???',
+      alliance_motto: aMap.get(r.alliance_id)?.motto || '',
+      invited_by_name: iMap.get(r.invited_by_player_id) || 'Anónimo',
+      created_at: r.created_at,
+    }));
+  },
+
+  /**
+   * Accept or reject an invitation. Capacity is re-checked at accept time
+   * because the alliance may have filled up between invite and response.
+   */
+  async respondToInvitation(playerId, invitationId, accept) {
+    const inv = await db('alliance_invitations').where('id', invitationId).first();
+    if (!inv) throw new Error('Invitación no encontrada');
+    if (inv.invited_player_id !== playerId) throw new Error('Esta invitación no es tuya');
+    if (inv.status !== 'pending') throw new Error('Esta invitación ya fue respondida');
+
+    const now = new Date().toISOString();
+    if (!accept) {
+      await db('alliance_invitations').where('id', invitationId).update({
+        status: 'rejected', responded_at: now,
+      });
+      return { success: true, message: 'Invitación rechazada' };
+    }
+
+    // Re-check member-not-in-alliance + capacity at accept time
+    const existing = await db('alliance_members').where('player_id', playerId).first();
+    if (existing) {
+      await db('alliance_invitations').where('id', invitationId).update({
+        status: 'cancelled', responded_at: now,
+      });
+      throw new Error('Ya estás en una alianza');
+    }
+
+    const alliance = await db('alliances').where('id', inv.alliance_id).first();
+    if (!alliance) throw new Error('La alianza ya no existe');
+    const limit = alliance.member_limit || DEFAULT_MEMBER_LIMIT;
+    const countResult = await db('alliance_members').where('alliance_id', inv.alliance_id).count('* as count');
+    const count = Array.isArray(countResult) ? (countResult[0]?.count || 0) : 0;
+    if (count >= limit) {
+      await db('alliance_invitations').where('id', invitationId).update({
+        status: 'cancelled', responded_at: now,
+      });
+      throw new Error(`La alianza está llena (${limit} miembros)`);
+    }
+
+    await db('alliance_members').insert({
+      alliance_id: inv.alliance_id,
+      player_id: playerId,
+      role: 'member',
+      joined_at: now,
+    });
+    await db('alliance_invitations').where('id', invitationId).update({
+      status: 'accepted', responded_at: now,
+    });
+
+    return { success: true, message: `Te uniste a ${alliance.name}` };
+  },
+
+  /** Leader-only: promote a member to officer (or demote officer→member). */
+  async setMemberRole(actorId, allianceId, targetPlayerId, newRole) {
+    if (newRole !== 'member' && newRole !== 'officer') {
+      throw new Error('Rol inválido');
+    }
+    const alliance = await db('alliances').where('id', allianceId).first();
+    if (!alliance) throw new Error('Alianza no encontrada');
+    if (alliance.leader_id !== actorId) {
+      throw new Error('Solo el líder puede cambiar roles');
+    }
+    if (targetPlayerId === actorId) {
+      throw new Error('No podés cambiar tu propio rol');
+    }
+    const target = await db('alliance_members')
+      .where({ alliance_id: allianceId, player_id: targetPlayerId })
+      .first();
+    if (!target) throw new Error('Ese jugador no es miembro de esta alianza');
+    await db('alliance_members').where('id', target.id).update({ role: newRole });
+    return { success: true, message: `Rol cambiado a ${newRole}` };
+  },
+
+  /**
+   * Leader/officer kicks a member. Officers cannot kick officers or the
+   * leader. Leader can kick anyone except themselves (must disband instead).
+   */
+  async kickMember(actorId, allianceId, targetPlayerId) {
+    if (actorId === targetPlayerId) throw new Error('Usá leave/disolver en su lugar');
+    const actor = await db('alliance_members')
+      .where({ alliance_id: allianceId, player_id: actorId })
+      .first();
+    if (!actor) throw new Error('No sos miembro de esta alianza');
+    if (actor.role !== 'leader' && actor.role !== 'officer') {
+      throw new Error('Solo líder u oficial pueden expulsar');
+    }
+    const target = await db('alliance_members')
+      .where({ alliance_id: allianceId, player_id: targetPlayerId })
+      .first();
+    if (!target) throw new Error('Ese jugador no es miembro');
+    if (target.role === 'leader') throw new Error('No podés expulsar al líder');
+    if (actor.role === 'officer' && target.role === 'officer') {
+      throw new Error('Un oficial no puede expulsar a otro oficial');
+    }
+
+    await db('alliance_members').where('id', target.id).delete();
+
+    const alliance = await db('alliances').where('id', allianceId).first();
+    if (alliance) {
+      notifyService.sendBotDM(
+        targetPlayerId,
+        `🚪 Fuiste expulsado de "${alliance.name}".`,
+      );
+    }
+    return { success: true, message: 'Miembro expulsado' };
+  },
+
   /** Last MESSAGE_HISTORY_LIMIT messages of the player's alliance. */
   async getMessages(playerId) {
     const member = await db('alliance_members').where('player_id', playerId).first();

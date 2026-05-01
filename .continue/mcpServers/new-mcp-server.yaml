@@ -1,0 +1,7 @@
+name: ollama-mcp-bridge
+version: 0.0.2
+schema: v1
+mcpServers:
+  - name: ollama-bridge
+    type: sse
+    url: http://localhost:8080/sse

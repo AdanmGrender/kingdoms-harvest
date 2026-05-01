@@ -77,6 +77,72 @@ router.delete('/:id', telegramAuth, async (req, res) => {
   }
 });
 
+// Pending invitations for the current player (inbox)
+router.get('/invitations/mine', telegramAuth, async (req, res) => {
+  try {
+    const list = await allianceService.getPendingInvitations(req.playerId);
+    res.json(list);
+  } catch (error) {
+    res.status(500).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Send an invitation (leader/officer only)
+router.post('/:id/invite', telegramAuth, validate({
+  playerId: { type: 'number', required: true, min: 1 },
+}), async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'ID inválido' });
+    const result = await allianceService.invitePlayer(req.playerId, id, req.body.playerId);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Respond to an invitation. Body: { accept: boolean }
+router.post('/invitations/:id/respond', telegramAuth, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'ID inválido' });
+    const accept = req.body?.accept === true;
+    const result = await allianceService.respondToInvitation(req.playerId, id, accept);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Leader-only: promote/demote member. Body: { role: 'member' | 'officer' }
+router.post('/:id/members/:playerId/role', telegramAuth, async (req, res) => {
+  try {
+    const allianceId = parseInt(req.params.id, 10);
+    const targetId = parseInt(req.params.playerId, 10);
+    if (!Number.isInteger(allianceId) || allianceId < 1) return res.status(400).json({ error: 'ID alianza inválido' });
+    if (!Number.isInteger(targetId) || targetId < 1) return res.status(400).json({ error: 'ID player inválido' });
+    const role = String(req.body?.role || '').slice(0, 20);
+    const result = await allianceService.setMemberRole(req.playerId, allianceId, targetId, role);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Leader/officer kick
+router.delete('/:id/members/:playerId', telegramAuth, async (req, res) => {
+  try {
+    const allianceId = parseInt(req.params.id, 10);
+    const targetId = parseInt(req.params.playerId, 10);
+    if (!Number.isInteger(allianceId) || allianceId < 1) return res.status(400).json({ error: 'ID alianza inválido' });
+    if (!Number.isInteger(targetId) || targetId < 1) return res.status(400).json({ error: 'ID player inválido' });
+    const result = await allianceService.kickMember(req.playerId, allianceId, targetId);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
 // Last 50 chat messages for the player's alliance
 router.get('/messages/list', telegramAuth, async (req, res) => {
   try {

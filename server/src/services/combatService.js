@@ -9,6 +9,7 @@ const techService = require('./techService');
 const achievementService = require('./achievementService');
 const eventService = require('./eventService');
 const notifyService = require('./notifyService');
+const allianceService = require('./allianceService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 // Tech-driven combat bonuses. Numbers must mirror the human-readable "effect"
@@ -252,12 +253,14 @@ const combatService = {
     army = this.sanitizeArmy(army);
     await this.validateArmy(playerId, army);
 
-    // Apply faction + tech bonuses (tech: sharp_blades adds atk; reinforced_armor/
-    // tactics don't fire on PvE attacks since the player is the attacker)
+    // Apply faction + tech + alliance bonuses (tech: sharp_blades adds atk;
+    // reinforced_armor/tactics don't fire on PvE attacks since the player is
+    // the attacker. Alliance: +5% atk just for membership.)
     const player = await db('players').where('telegram_id', playerId).first();
     const factionAtkBonus = FACTIONS[player?.faction_id]?.bonus?.atk || 0;
     const factionDefBonus = FACTIONS[player?.faction_id]?.bonus?.def || 0;
     const techAttacker = await getTechCombatBonuses(playerId, 'attacker');
+    const allianceBonus = await allianceService.getCombatBonuses(playerId);
 
     // Generar ejército NPC basado en territorio
     const territory = territoryId
@@ -267,9 +270,9 @@ const combatService = {
     const npcStrength = territory ? territory.defense_strength : 50;
     const npcArmy = this.generateNPCArmy(npcStrength);
 
-    // Calcular batalla con bonuses de facción + tech + habilidad de asedio
+    // Calcular batalla con bonuses de facción + tech + alianza + habilidad
     const result = this.calculateBattle(army, npcArmy, [], {
-      attackBonus: factionAtkBonus + techAttacker.atk,
+      attackBonus: factionAtkBonus + techAttacker.atk + allianceBonus.atk,
       defenseBonus: factionDefBonus + techAttacker.def,
       abilityId,
       attackerArmy: army,
@@ -289,13 +292,14 @@ const combatService = {
       }
     }
 
-    // Generar botín si ganó (battle_frenzy event scales gold + xp)
+    // Generar botín si ganó (battle_frenzy event + alliance bonus scale gold + xp)
     let loot = {};
     if (result.winner === 'attacker') {
       const eventLoot = await eventService.getMultiplier('battle_loot');
+      const lootMult = 1 + eventLoot + allianceBonus.loot;
       loot = {
-        gold: Math.floor(npcStrength * (2 + secureRandom() * 3) * (1 + eventLoot)),
-        xp: Math.floor(npcStrength * 1.5 * (1 + eventLoot)),
+        gold: Math.floor(npcStrength * (2 + secureRandom() * 3) * lootMult),
+        xp: Math.floor(npcStrength * 1.5 * lootMult),
       };
 
       // Chance de recurso raro
@@ -403,9 +407,13 @@ const combatService = {
     const attackerTech = await getTechCombatBonuses(playerId, 'attacker');
     const defenderTech = await getTechCombatBonuses(defenderId, 'defender');
 
+    // Alliance bonuses: +5% atk attacker, +5% def defender (additive on stack)
+    const attackerAlliance = await allianceService.getCombatBonuses(playerId);
+    const defenderAlliance = await allianceService.getCombatBonuses(defenderId);
+
     const result = this.calculateBattle(army, defenderArmy, defenderBuildings, {
-      attackBonus: attackerFactionAtk + attackerTech.atk,
-      defenseBonus: defenderFactionDef + defenderTech.def,
+      attackBonus: attackerFactionAtk + attackerTech.atk + attackerAlliance.atk,
+      defenseBonus: defenderFactionDef + defenderTech.def + defenderAlliance.def,
       abilityId,
     });
 
@@ -443,7 +451,8 @@ const combatService = {
     let defenderTokensAwarded = 0;
     if (result.winner === 'attacker') {
       const defResources = await db('player_resources').where('player_id', defenderId);
-      const stealRate = 0.1;
+      // Alliance loot bonus stacks on top of the base 10% steal rate
+      const stealRate = 0.1 * (1 + attackerAlliance.loot);
       const RESOURCE_SHIELD = 50; // No se puede robar por debajo de este mínimo
 
       for (const res of defResources) {
