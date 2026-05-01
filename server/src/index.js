@@ -32,6 +32,7 @@ const achievementRoutes = require('./routes/achievementRoutes');
 const marketplaceRoutes = require('./routes/marketplaceRoutes');
 const allianceRoutes = require('./routes/allianceRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const tournamentRoutes = require('./routes/tournamentRoutes');
 
 const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
@@ -110,6 +111,7 @@ app.use('/api/achievements', achievementRoutes);
 app.use('/api/market', marketplaceRoutes);
 app.use('/api/alliances', allianceRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/tournaments', tournamentRoutes);
 
 // SPA fallback: serve index.html for non-API routes
 if (process.env.NODE_ENV === 'production') {

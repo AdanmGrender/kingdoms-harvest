@@ -792,6 +792,30 @@ const useGameStore = create((set, get) => ({
     });
   },
 
+  // Tournaments — active list + per-tournament leaderboards (lazy)
+  tournaments: [],
+  tournamentLeaderboards: {},
+  loadTournaments: async () => {
+    try {
+      const { data } = await api.get('/tournaments/active');
+      set({ tournaments: data });
+    } catch (error) {
+      console.error('Error loading tournaments:', error);
+    }
+  },
+  loadTournamentLeaderboard: async (tournamentId) => {
+    try {
+      const { data } = await api.get(`/tournaments/${tournamentId}/leaderboard`);
+      set((state) => ({
+        tournamentLeaderboards: { ...state.tournamentLeaderboards, [tournamentId]: data },
+      }));
+      return data;
+    } catch (error) {
+      console.error('Error loading tournament leaderboard:', error);
+      return [];
+    }
+  },
+
   // Marketplace price history (per resource)
   marketHistory: {},
   loadMarketHistory: async (resource, limit = 30) => {

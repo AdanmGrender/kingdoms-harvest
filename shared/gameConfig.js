@@ -722,6 +722,44 @@ const SEASONAL_EVENTS = {
 // Order in which events rotate. Change to taste; dropping one unschedules.
 const SEASONAL_EVENT_ROTATION = ['spring_bloom', 'harvest_festival', 'battle_frenzy', 'golden_caravan'];
 
+// ---- TOURNAMENTS ----
+// Timed competitions layered over the existing leaderboards. tournamentService
+// rotates through TOURNAMENT_ROTATION on a fixed cadence (one active per type
+// at a time). Each entry declares:
+//   metric  — column on `players` (or derived) used for the score
+//   prizes  — KH tokens awarded to top 3
+const TOURNAMENT_DURATION_MS = 24 * 60 * 60 * 1000; // 24h per tournament
+const TOURNAMENTS = {
+  kh_rush: {
+    id: 'kh_rush',
+    name: 'Carrera KH',
+    icon: '💎',
+    description: 'Quien gane más KH tokens en 24h',
+    durationMs: TOURNAMENT_DURATION_MS,
+    metric: 'kh',          // computed from player_tokens.total_earned
+    prizes: { 1: 100, 2: 60, 3: 30 },
+  },
+  xp_grind: {
+    id: 'xp_grind',
+    name: 'Sed de XP',
+    icon: '⭐',
+    description: 'Quien gane más XP en 24h',
+    durationMs: TOURNAMENT_DURATION_MS,
+    metric: 'xp',          // computed from players.xp + level synthesis
+    prizes: { 1: 80, 2: 50, 3: 25 },
+  },
+  faction_glory: {
+    id: 'faction_glory',
+    name: 'Gloria de Facción',
+    icon: '🛡️',
+    description: 'Quien sume más puntos de facción en 24h',
+    durationMs: TOURNAMENT_DURATION_MS,
+    metric: 'faction_points', // players.faction_points
+    prizes: { 1: 90, 2: 55, 3: 28 },
+  },
+};
+const TOURNAMENT_ROTATION = ['kh_rush', 'xp_grind', 'faction_glory'];
+
 // ---- ACHIEVEMENTS ----
 // `event` matches the verb passed to achievementService.checkAndUnlock(player, event, payload).
 // `goal` is the running counter target (e.g. 10 harvests). For one-shot
@@ -765,4 +803,7 @@ module.exports = {
   SEASONAL_EVENTS,
   SEASONAL_EVENT_ROTATION,
   SEASONAL_EVENT_DURATION_MS,
+  TOURNAMENTS,
+  TOURNAMENT_ROTATION,
+  TOURNAMENT_DURATION_MS,
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AchievementsPanel from './AchievementsPanel';
 import RankingsPanel from './RankingsPanel';
+import TournamentsPanel from './TournamentsPanel';
 import MarketplacePanel from './MarketplacePanel';
 import AlliancesPanel from './AlliancesPanel';
 import TechTreePanel from '../castle/TechTreePanel';
@@ -15,6 +16,7 @@ import TerritoryMapPanel from '../world/TerritoryMapPanel';
  */
 const TABS = [
   { id: 'achievements', label: '🏆 Logros' },
+  { id: 'tournaments',  label: '🥇 Torneos' },
   { id: 'rankings',     label: '📊 Rankings' },
   { id: 'market',       label: '💱 Mercado' },
   { id: 'alliances',    label: '🤝 Alianza' },
@@ -64,6 +66,7 @@ export default function MetaPanel({ data, onClose }) {
 
       <div className="px-3 pb-3 overflow-y-auto flex-1">
         {tab === 'achievements' && <AchievementsPanel />}
+        {tab === 'tournaments'  && <TournamentsPanel />}
         {tab === 'rankings'     && <RankingsPanel />}
         {tab === 'market'       && <MarketplacePanel />}
         {tab === 'alliances'    && <AlliancesPanel />}

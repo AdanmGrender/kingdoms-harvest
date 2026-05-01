@@ -9,6 +9,8 @@ const db = require('../config/database');
 const playerService = require('./playerService');
 const combatService = require('./combatService');
 const achievementService = require('./achievementService');
+// notifyService imported lazily inside distributePassiveBonuses to avoid
+// pulling Telegram bot init into request paths.
 
 // Faction points awarded to the conquering player. Tracked per-player so the
 // faction-internal leaderboard can rank contributors. Faction-level totals
@@ -91,5 +93,73 @@ const territoryService = {
 function safeJsonParse(s, fallback) {
   try { return JSON.parse(s); } catch { return fallback; }
 }
+
+/**
+ * Hourly cron hook — distribute the resources_bonus from each territory to
+ * its owner faction's members. Per-faction totals are summed across that
+ * faction's territories, divided evenly across active members, and capped
+ * at each member's per-resource capacity (handled by modifyResource).
+ *
+ * Idempotent: gameTick triggers this every hour. Members get nothing if
+ * their faction owns no territories.
+ *
+ * Hour-stamped state (last_passive_tick) keeps a sliding throttle so a
+ * server restart doesn't double-pay if the cron lands twice within the
+ * window.
+ */
+let _lastPassiveTickAt = 0;
+const PASSIVE_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
+
+territoryService.distributePassiveBonuses = async function distributePassiveBonuses() {
+  const now = Date.now();
+  if (now - _lastPassiveTickAt < PASSIVE_INTERVAL_MS) return 0;
+  _lastPassiveTickAt = now;
+
+  const territories = await db('territories').whereNotNull('owner_faction_id');
+  if (territories.length === 0) return 0;
+
+  // Sum bonuses per faction across all owned territories
+  const factionBonuses = new Map(); // faction_id → { resource: total }
+  for (const t of territories) {
+    const bonus = safeJsonParse(t.resources_bonus, {});
+    if (!factionBonuses.has(t.owner_faction_id)) factionBonuses.set(t.owner_faction_id, {});
+    const acc = factionBonuses.get(t.owner_faction_id);
+    for (const [res, amount] of Object.entries(bonus)) {
+      acc[res] = (acc[res] || 0) + amount;
+    }
+  }
+
+  let memberCount = 0;
+  let notify = null;
+  try { notify = require('./notifyService'); } catch {}
+
+  for (const [factionId, bonuses] of factionBonuses) {
+    const members = await db('players').where('faction_id', factionId).select('telegram_id');
+    if (members.length === 0) continue;
+
+    // Divide each resource equally; floor so we never overshoot the pool
+    const perMember = {};
+    for (const [res, total] of Object.entries(bonuses)) {
+      const per = Math.floor(total / members.length);
+      if (per > 0) perMember[res] = per;
+    }
+    if (Object.keys(perMember).length === 0) continue;
+
+    for (const m of members) {
+      memberCount++;
+      for (const [res, amount] of Object.entries(perMember)) {
+        try { await playerService.modifyResource(m.telegram_id, res, amount); } catch {}
+      }
+      // Single DM summarizing the haul (rate-limited via notifyService opt-out)
+      if (notify) {
+        const summary = Object.entries(perMember)
+          .map(([k, v]) => `+${v} ${k}`)
+          .join(', ');
+        notify.sendBotDM(m.telegram_id, `🏴 Tributo de territorio: ${summary}`);
+      }
+    }
+  }
+  return memberCount;
+};
 
 module.exports = territoryService;

@@ -265,6 +265,14 @@ async function processTick() {
     console.error('[Tick] Error rotando eventos:', error.message);
   }
 
+  // 4b4. Rotate tournaments — settle expired, kick off next per type
+  try {
+    const tournamentService = require('../services/tournamentService');
+    await tournamentService.tick();
+  } catch (error) {
+    console.error('[Tick] Error rotando torneos:', error.message);
+  }
+
   // 4c. Villager simulation
   try {
     const villagerService = require('../services/villagerService');
@@ -365,6 +373,19 @@ async function processWithdrawals() {
   }
 }
 
+/** Hourly: territory owner factions get passive resource tributes. */
+async function processTerritoryTribute() {
+  try {
+    const territoryService = require('../services/territoryService');
+    const beneficiaries = await territoryService.distributePassiveBonuses();
+    if (beneficiaries > 0) {
+      console.log(`[Tribute] ${beneficiaries} miembros recibieron tributo de territorio`);
+    }
+  } catch (error) {
+    console.error('[Tribute] Error:', error.message);
+  }
+}
+
 function startGameTick(io) {
   ioRef = io;
   // Ejecutar cada minuto
@@ -374,6 +395,10 @@ function startGameTick(io) {
   // Procesar retiros cada 5 minutos
   cron.schedule('*/5 * * * *', processWithdrawals);
   console.log('[Tick] Procesamiento de retiros cada 5 minutos');
+
+  // Tributo de territorios al inicio de cada hora
+  cron.schedule('0 * * * *', processTerritoryTribute);
+  console.log('[Tick] Tributo de territorios cada hora');
 }
 
 module.exports = { startGameTick, processTick };
