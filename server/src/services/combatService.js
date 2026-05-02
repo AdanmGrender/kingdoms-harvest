@@ -472,6 +472,12 @@ const combatService = {
       tokensAwarded = tokenResult.awarded;
       await dailyTaskService.trackProgress(playerId, 'battle_win');
       achievementService.checkAndUnlock(playerId, 'battle_win', 1).catch(() => {});
+      // Alliance-war hook — credits hit if attacker and defender are in
+      // rival alliances mid-war
+      try {
+        const allianceWarService = require('./allianceWarService');
+        await allianceWarService.logPvpHit(playerId, defenderId);
+      } catch {}
     } else if (result.winner === 'defender') {
       // Successful defense: half the attacker's PvP win reward (XP + tokens)
       // + counts toward the same battle_win achievement so defenders make
@@ -486,6 +492,15 @@ const combatService = {
       defenderTokensAwarded = tokenResult.awarded;
       await dailyTaskService.trackProgress(defenderId, 'battle_win');
       achievementService.checkAndUnlock(defenderId, 'battle_win', 1).catch(() => {});
+      // Faction points for defending — also fires the faction_war hook so
+      // ongoing faction wars credit successful defenses.
+      if (defender?.faction_id) {
+        await db('players').where('telegram_id', defenderId).increment('faction_points', 15);
+        try {
+          const factionWarService = require('./factionWarService');
+          await factionWarService.logPoints(defenderId, defender.faction_id, 15, 'pvp_defense');
+        } catch {}
+      }
     }
 
     await db('battles').insert({

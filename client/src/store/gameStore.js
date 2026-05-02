@@ -850,6 +850,49 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // Player search (alliance invite autocomplete)
+  searchPlayers: async (query) => {
+    try {
+      if (!query || query.length < 2) return [];
+      const { data } = await api.get('/player/search', { params: { q: query } });
+      return data || [];
+    } catch (error) {
+      console.error('Error searching players:', error);
+      return [];
+    }
+  },
+
+  // Wars (faction-wide + alliance vs alliance)
+  factionWar: { active: null, standings: [] },
+  loadFactionWar: async () => {
+    try {
+      const { data } = await api.get('/wars/faction/active');
+      set({ factionWar: data });
+    } catch (error) {
+      console.error('Error loading faction war:', error);
+    }
+  },
+  myAllianceWar: null,
+  loadMyAllianceWar: async () => {
+    try {
+      const { data } = await api.get('/wars/alliance/active');
+      set({ myAllianceWar: data });
+    } catch (error) {
+      console.error('Error loading alliance war:', error);
+    }
+  },
+  declareAllianceWar: async (targetAllianceId) => {
+    try {
+      const { data } = await api.post('/wars/alliance/declare', { targetAllianceId });
+      get().addNotification(data.message, 'success');
+      get().loadMyAllianceWar();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al declarar guerra', 'error');
+      return null;
+    }
+  },
+
   // Tournaments — active list + per-tournament leaderboards (lazy)
   tournaments: [],
   tournamentLeaderboards: {},

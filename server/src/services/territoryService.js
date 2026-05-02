@@ -78,6 +78,11 @@ const territoryService = {
         await db('players').where('telegram_id', playerId).increment('faction_points', POINTS_PER_CONQUEST);
         territoryFlipped = true;
         achievementService.checkAndUnlock(playerId, 'conquest', 1).catch(() => {});
+        // Faction-war hook — counts conquests toward the active war's standings
+        try {
+          const factionWarService = require('./factionWarService');
+          await factionWarService.logPoints(playerId, newOwnerFactionId, POINTS_PER_CONQUEST, 'conquest');
+        } catch {}
       }
     }
 

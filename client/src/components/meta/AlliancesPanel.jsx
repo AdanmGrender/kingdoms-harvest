@@ -46,6 +46,12 @@ export default function AlliancesPanel() {
     if (res?.success) setInviteId('');
   };
 
+  const handleInviteFromSearch = async (targetId) => {
+    if (!myAlliance) return;
+    const res = await invitePlayer(myAlliance.id, targetId);
+    if (res?.success) setInviteId('');
+  };
+
   // Player IS in an alliance — show membership + chat + (officer+) controls
   if (myAlliance) {
     const members = allianceMembers[myAlliance.id] || [];
@@ -83,29 +89,14 @@ export default function AlliancesPanel() {
 
         <AllianceChat myId={player?.telegram_id} />
 
-        {/* Invite UI for leader/officer */}
+        {/* Invite UI for leader/officer — name search w/ autocomplete fallback to ID */}
         {isOfficer && (
-          <div className="game-card border-purple-700/40">
-            <p className="text-[11px] text-gray-400 mb-1">
-              📨 Invitar jugador (pegá su telegram_id)
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                value={inviteId}
-                onChange={(e) => setInviteId(e.target.value)}
-                placeholder="123456789"
-                className="flex-1 bg-kingdom-blue rounded px-2 py-1 text-xs text-white"
-              />
-              <button
-                onClick={handleInvite}
-                disabled={!inviteId.trim()}
-                className="btn-primary text-[10px] px-3 py-1 disabled:opacity-40"
-              >
-                Invitar
-              </button>
-            </div>
-          </div>
+          <InviteSearchBox
+            inviteId={inviteId}
+            setInviteId={setInviteId}
+            onInviteId={handleInvite}
+            onInviteFromSearch={handleInviteFromSearch}
+          />
         )}
 
         <div className="game-card border-yellow-700/30 bg-yellow-900/5 py-2">
@@ -263,9 +254,15 @@ export default function AlliancesPanel() {
  * the sendAllianceMessage action. Socket pushes append in real time;
  * sender's own message also appears via the post-send refresh.
  */
+// Quick-pick stickers for alliance chat. Each is just a unicode emoji that
+// gets appended to the message — no server changes needed since chat
+// content is already arbitrary text.
+const CHAT_STICKERS = ['👍', '⚔️', '🛡️', '🔥', '🏆', '😂', '🎉', '😱', '🤝', '🐺', '🐉', '💀'];
+
 function AllianceChat({ myId }) {
   const { allianceMessagesList, loadAllianceMessages, sendAllianceMessage } = useGameStore();
   const [text, setText] = useState('');
+  const [showStickers, setShowStickers] = useState(false);
   const scrollRef = useRef(null);
 
   useEffect(() => { loadAllianceMessages(); }, []);
@@ -287,6 +284,11 @@ function AllianceChat({ myId }) {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleSticker = (s) => {
+    setText((prev) => (prev + s).slice(0, 280));
+    setShowStickers(false);
   };
 
   return (
@@ -314,7 +316,25 @@ function AllianceChat({ myId }) {
           })
         )}
       </div>
+      {showStickers && (
+        <div className="grid grid-cols-6 gap-1 mb-2 p-1 bg-kingdom-blue/30 rounded">
+          {CHAT_STICKERS.map((s) => (
+            <button
+              key={s}
+              onClick={() => handleSticker(s)}
+              className="text-2xl py-1 hover:bg-kingdom-blue/50 rounded"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="flex gap-2">
+        <button
+          onClick={() => setShowStickers(!showStickers)}
+          className="text-lg px-2 py-1 rounded bg-kingdom-blue/50 hover:bg-kingdom-blue/70"
+          title="Stickers"
+        >😊</button>
         <input
           type="text"
           value={text}
@@ -332,6 +352,74 @@ function AllianceChat({ myId }) {
           Enviar
         </button>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Search players by name (≥2 chars triggers a debounced search). Falls back
+ * to plain telegram_id input if the user prefers to paste an ID. Each result
+ * gets a one-tap "Invitar" button.
+ */
+function InviteSearchBox({ inviteId, setInviteId, onInviteId, onInviteFromSearch }) {
+  const searchPlayers = useGameStore((s) => s.searchPlayers);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    if (query.trim().length < 2) {
+      setResults([]);
+      return;
+    }
+    const handle = setTimeout(async () => {
+      const r = await searchPlayers(query.trim());
+      setResults(r);
+    }, 250);
+    return () => clearTimeout(handle);
+  }, [query]);
+
+  return (
+    <div className="game-card border-purple-700/40 space-y-2">
+      <p className="text-[11px] text-gray-400">📨 Invitar jugador</p>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Buscar por nombre..."
+        className="w-full bg-kingdom-blue rounded px-2 py-1 text-xs text-white"
+      />
+      {results.length > 0 && (
+        <div className="space-y-1 max-h-40 overflow-y-auto">
+          {results.map((p) => (
+            <div key={p.id} className="flex items-center justify-between text-[11px] py-1 px-2 rounded bg-kingdom-blue/30">
+              <span className="truncate">
+                {p.display_name} <span className="text-gray-500">Lv{p.level}</span>
+              </span>
+              <button
+                onClick={() => onInviteFromSearch(p.id)}
+                className="btn-primary text-[9px] px-2 py-0.5"
+              >Invitar</button>
+            </div>
+          ))}
+        </div>
+      )}
+      <details className="text-[10px] text-gray-500">
+        <summary className="cursor-pointer">¿Tenés el telegram_id?</summary>
+        <div className="flex gap-2 mt-1">
+          <input
+            type="number"
+            value={inviteId}
+            onChange={(e) => setInviteId(e.target.value)}
+            placeholder="123456789"
+            className="flex-1 bg-kingdom-blue rounded px-2 py-1 text-xs text-white"
+          />
+          <button
+            onClick={onInviteId}
+            disabled={!inviteId.trim()}
+            className="btn-primary text-[10px] px-3 py-1 disabled:opacity-40"
+          >Invitar</button>
+        </div>
+      </details>
     </div>
   );
 }

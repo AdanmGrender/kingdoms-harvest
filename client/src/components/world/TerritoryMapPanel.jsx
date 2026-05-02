@@ -30,17 +30,24 @@ export default function TerritoryMapPanel() {
     loadTroops();
   }, []);
 
-  const grid = useMemo(() => {
-    // Bucket territories by (x,y) — assumes 3x3 grid from seed
+  const { grid, gridW } = useMemo(() => {
+    // Compute the bounding box from the data so the panel grows to match
+    // any future seed expansion (3×3, 5×5, 6×6, …) without code changes.
     const lookup = new Map();
-    for (const t of territories) lookup.set(`${t.grid_x},${t.grid_y}`, t);
+    let maxX = 2, maxY = 2; // floor at 3×3 even if data is empty
+    for (const t of territories) {
+      lookup.set(`${t.grid_x},${t.grid_y}`, t);
+      if (t.grid_x > maxX) maxX = t.grid_x;
+      if (t.grid_y > maxY) maxY = t.grid_y;
+    }
+    const W = maxX + 1, H = maxY + 1;
     const cells = [];
-    for (let y = 0; y < 3; y++) {
-      for (let x = 0; x < 3; x++) {
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
         cells.push(lookup.get(`${x},${y}`) || null);
       }
     }
-    return cells;
+    return { grid: cells, gridW: W };
   }, [territories]);
 
   const handleAttack = async (territory) => {
@@ -67,8 +74,8 @@ export default function TerritoryMapPanel() {
         Mapa del mundo — conquistá territorios para tu facción
       </p>
 
-      {/* 3×3 grid */}
-      <div className="grid grid-cols-3 gap-2">
+      {/* Dynamic NxN grid bound to gridW so 5×5+ seeds render correctly */}
+      <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${gridW}, minmax(0, 1fr))` }}>
         {grid.map((t, i) => {
           if (!t) return <div key={i} className="aspect-square bg-kingdom-blue/20 rounded-lg" />;
           const ownerColor = t.owner?.color || FALLBACK_BORDER;

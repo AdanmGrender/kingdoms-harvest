@@ -405,6 +405,22 @@ const allianceService = {
     return { success: true, message: 'Miembro expulsado' };
   },
 
+  /**
+   * Mark pending invitations older than 7 days as expired. gameTick hook.
+   * Idempotent — only touches still-pending rows past the threshold.
+   */
+  async expireStaleInvitations() {
+    const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const expired = await db('alliance_invitations')
+      .where('status', 'pending')
+      .where('created_at', '<=', cutoff);
+    if (expired.length === 0) return 0;
+    await db('alliance_invitations')
+      .whereIn('id', expired.map((r) => r.id))
+      .update({ status: 'cancelled', responded_at: new Date().toISOString() });
+    return expired.length;
+  },
+
   /** Last MESSAGE_HISTORY_LIMIT messages of the player's alliance. */
   async getMessages(playerId) {
     const member = await db('alliance_members').where('player_id', playerId).first();

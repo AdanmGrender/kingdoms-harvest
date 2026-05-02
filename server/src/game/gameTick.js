@@ -273,6 +273,29 @@ async function processTick() {
     console.error('[Tick] Error rotando torneos:', error.message);
   }
 
+  // 4b5. Rotate faction wars (server-wide) + settle alliance wars (declared)
+  try {
+    const factionWarService = require('../services/factionWarService');
+    await factionWarService.tick();
+  } catch (error) {
+    console.error('[Tick] Error rotando faction war:', error.message);
+  }
+  try {
+    const allianceWarService = require('../services/allianceWarService');
+    await allianceWarService.tick();
+  } catch (error) {
+    console.error('[Tick] Error settling alliance wars:', error.message);
+  }
+
+  // 4b6. Expire stale alliance invitations (>7 days pending)
+  try {
+    const allianceService = require('../services/allianceService');
+    const expired = await allianceService.expireStaleInvitations();
+    if (expired > 0) console.log(`[Tick] ${expired} invitaciones de alianza expiradas`);
+  } catch (error) {
+    console.error('[Tick] Error expirando invitaciones:', error.message);
+  }
+
   // 4c. Villager simulation
   try {
     const villagerService = require('../services/villagerService');
