@@ -12,7 +12,12 @@ function initBot() {
     return;
   }
 
-  bot = new TelegramBot(token, { polling: true });
+  // Set BOT_POLLING=false in .env when another instance (e.g. VPS PM2) already
+  // owns getUpdates — avoids the 409 Conflict that kills both pollers. The bot
+  // can still send messages via the API; only inbound /commands stop firing.
+  const polling = process.env.BOT_POLLING !== 'false';
+  bot = new TelegramBot(token, { polling });
+  if (!polling) console.log('Bot polling DESACTIVADO (BOT_POLLING=false)');
   const webAppUrl = process.env.WEBAPP_URL || 'https://tu-dominio.com';
 
   // Comando /start (con soporte para referidos: /start ref_123456)
