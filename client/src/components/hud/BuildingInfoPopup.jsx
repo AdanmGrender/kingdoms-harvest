@@ -69,8 +69,8 @@ export default function BuildingInfoPopup() {
 
   return (
     <div
-      className="absolute left-1/2 bottom-24 -translate-x-1/2 z-30 pointer-events-auto"
-      style={{ minWidth: 240 }}
+      className="absolute left-1/2 bottom-32 -translate-x-1/2 z-50 pointer-events-auto"
+      style={{ minWidth: 240, maxWidth: 'calc(100vw - 24px)' }}
     >
       <div
         className="px-4 py-3 rounded-2xl"

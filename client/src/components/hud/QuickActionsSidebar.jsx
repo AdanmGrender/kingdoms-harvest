@@ -8,15 +8,17 @@ import EventBridge from '../../game/EventBridge';
 const ACTIONS = [
   { id: 'castle', icon: '🏠', label: 'Castillo', color: '#ffd750' },
   { id: 'missions', icon: '📜', label: 'Misiones', color: '#8fd4ff', badge: 3 },
+  { id: 'build', icon: '🔨', label: 'Construir', color: '#ffb070' },
   { id: 'explore', icon: '🗺️', label: 'Explorar', color: '#8fff9e' },
   { id: 'settings', icon: '⚙️', label: 'Ajustes', color: '#cccccc' },
 ];
 
 export default function QuickActionsSidebar() {
   const addNotification = useGameStore((s) => s.addNotification);
+  const setOverlay = useGameStore((s) => s.setOverlay);
   const missions = useGameStore((s) => s.missions);
 
-  const missionCount = missions?.length || 0;
+  const missionCount = missions?.filter((m) => m.status === 'active' || m.status === 'available').length || 0;
 
   const handleAction = (id) => {
     switch (id) {
@@ -24,13 +26,16 @@ export default function QuickActionsSidebar() {
         EventBridge.emit('camera:centerOnCastle');
         break;
       case 'missions':
-        addNotification(`${missionCount} misiones activas`, 'info');
+        setOverlay('missions', {});
+        break;
+      case 'build':
+        EventBridge.emit('building:toolbar:toggle');
         break;
       case 'explore':
-        addNotification('Exploración próximamente', 'info');
+        addNotification('🗺️ Exploración llega pronto', 'info');
         break;
       case 'settings':
-        addNotification('Ajustes próximamente', 'info');
+        setOverlay('settings', {});
         break;
     }
   };

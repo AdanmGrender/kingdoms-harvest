@@ -72,13 +72,16 @@ export default function BuildingToolbar() {
   useEffect(() => {
     const handlePlacementStarted = () => setIsPlacing(true);
     const handlePlacementEnded = () => setIsPlacing(false);
+    const handleToggle = () => setIsExpanded((v) => !v);
 
     EventBridge.on('placement:started', handlePlacementStarted);
     EventBridge.on('placement:ended', handlePlacementEnded);
+    EventBridge.on('building:toolbar:toggle', handleToggle);
 
     return () => {
       EventBridge.off('placement:started', handlePlacementStarted);
       EventBridge.off('placement:ended', handlePlacementEnded);
+      EventBridge.off('building:toolbar:toggle', handleToggle);
     };
   }, []);
 
