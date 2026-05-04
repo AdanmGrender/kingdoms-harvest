@@ -99,6 +99,19 @@ class QueryBuilder {
     return this;
   }
 
+  whereNull(col) {
+    this._wheres.push(`"${sanitizeIdentifier(col)}" IS NULL`);
+    return this;
+  }
+
+  whereNot(col, val) {
+    // Equivalent to .where(col, '!=', val) — small ergonomic helper used by
+    // routes that filter out the requesting player's own row.
+    this._wheres.push(`"${sanitizeIdentifier(col)}" != ?`);
+    this._whereParams.push(val);
+    return this;
+  }
+
   orWhereIn(col, values) {
     const safeName = sanitizeIdentifier(col);
     if (values.length === 0) {
