@@ -136,21 +136,20 @@ export default function BuildingToolbar() {
 
   const category = CATEGORIES.find(c => c.id === activeCategory);
 
-  return (
-    <div className="absolute bottom-0 left-0 right-0 z-40 pointer-events-none">
-      {/* Toggle button */}
-      <div className="flex justify-center pointer-events-auto mb-1">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="px-4 py-1 rounded-t-lg text-xs text-yellow-300 font-bold"
-          style={{ background: 'rgba(22, 33, 62, 0.9)', border: '1px solid rgba(255, 215, 0, 0.3)', borderBottom: 'none' }}
-        >
-          {isExpanded ? '▼ Cerrar' : '▲ Construir'}
-        </button>
-      </div>
+  if (!isExpanded) return null;
 
-      {isExpanded && (
-        <div className="pointer-events-auto" style={{ background: 'rgba(22, 33, 62, 0.95)', borderTop: '1px solid rgba(255, 215, 0, 0.3)' }}>
+  return (
+    <div className="absolute bottom-20 left-0 right-0 z-40 pointer-events-none">
+      <div className="pointer-events-auto" style={{ background: 'rgba(22, 33, 62, 0.95)', borderTop: '1px solid rgba(255, 215, 0, 0.3)' }}>
+        <div className="flex items-center justify-between px-3 py-1 border-b border-yellow-900/30">
+          <span className="text-yellow-300 text-[11px] font-bold">🔨 Construir</span>
+          <button
+            onClick={() => setIsExpanded(false)}
+            className="text-gray-300 hover:text-white text-sm leading-none px-1"
+            aria-label="Cerrar"
+          >✕</button>
+        </div>
+        <div>
           {/* Category tabs */}
           <div className="flex border-b border-yellow-900/30">
             {CATEGORIES.map(cat => (
@@ -204,7 +203,7 @@ export default function BuildingToolbar() {
             })}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

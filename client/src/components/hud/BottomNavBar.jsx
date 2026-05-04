@@ -6,14 +6,16 @@ import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
 export default function BottomNavBar() {
-  const addNotification = useGameStore((s) => s.addNotification);
+  const setOverlay = useGameStore((s) => s.setOverlay);
 
   const openHeroes = () => {
-    addNotification('Sistema de héroes próximamente', 'info');
+    // TroopManagementPanel = barracks training + standing army view.
+    // Closest existing surface to "héroes" until a proper hero system lands.
+    setOverlay('troops', {});
   };
 
   const openWorldMap = () => {
-    addNotification('Mapa mundial próximamente', 'info');
+    setOverlay('meta', { tab: 'world' });
   };
 
   const openCastle = () => {
