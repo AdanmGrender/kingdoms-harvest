@@ -244,6 +244,13 @@ export default class BootScene extends Phaser.Scene {
         frameRate: 2,
         repeat: -1,
       });
+      // The 32×48 NPC sheets pack 4 frames; 2-3 are the walk cycle.
+      this.anims.create({
+        key: `npc_${name}_walk`,
+        frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: 2, end: 3 }),
+        frameRate: 6,
+        repeat: -1,
+      });
     }
   }
 

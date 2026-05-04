@@ -28,6 +28,14 @@ export const BUILDING_SPRITES = {
   tavern:      'iso_struct_23', // green dome pavilion
   barracks:    'iso_struct_22', // columned temple (military)
   tower:       'iso_struct_1',  // tall orange stone tower
+  // Previously fell through to FALLBACK and looked identical in-world.
+  house:       'iso_struct_4',  // standard HOUSE pool variant
+  mine:        'iso_struct_8',  // rocky stub from RUINS pool reads as a pit
+  stable:      'iso_struct_10', // BARN-pool variant — wide low roof
+  wall:        'iso_struct_5',  // short stone pentagon — wall segment
+  trap:        'iso_struct_19', // jagged ruins — fits a hidden trap
+  embassy:     'iso_struct_7',  // fancier HOUSE-pool building
+  library:     'iso_struct_15', // CHURCH-pool variant w/ tall door
 };
 
 const FALLBACK = 'iso_struct_16';

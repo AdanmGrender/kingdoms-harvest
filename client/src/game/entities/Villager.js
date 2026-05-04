@@ -8,14 +8,16 @@ import { addContainerShadow } from '../systems/ShadowSystem';
 
 const VILLAGER_SPEED = 40; // pixels per second
 
-// Map villager roles to loaded NPC spritesheets
+// Map villager roles to loaded NPC spritesheets — every role gets its own
+// silhouette so a row of mixed villagers does not look cloned. Six roles → six
+// distinct sprites (princess stays reserved for a future noble role).
 const ROLE_SPRITE_MAP = {
-  farmer: 'npc_farmer',
+  farmer:     'npc_farmer',
   woodcutter: 'npc_ranger',
-  miner: 'npc_knight',
-  soldier: 'npc_knight',
-  merchant: 'npc_merchant',
-  builder: 'npc_baker',
+  miner:      'npc_baker',     // dusty light-coat figure reads as a miner
+  soldier:    'npc_knight',
+  merchant:   'npc_merchant',
+  builder:    'npc_wizard',    // robed, carries staff — stands in for foreman
 };
 
 const STATE_ICONS = {
@@ -123,9 +125,11 @@ export default class Villager extends Phaser.GameObjects.Container {
 
       if (dist < 4) {
         this.isMoving = false;
-        // Flip sprite based on last movement direction
-        if (this.sprite && dx < 0) this.sprite.setFlipX(true);
-        else if (this.sprite) this.sprite.setFlipX(false);
+        // Flip sprite based on last movement direction + drop back to idle anim
+        if (this.sprite) {
+          this.sprite.setFlipX(dx < 0);
+          this._playAnim('idle');
+        }
         return;
       }
 
@@ -135,9 +139,10 @@ export default class Villager extends Phaser.GameObjects.Container {
       this.x += nx * speed;
       this.y += ny * speed;
 
-      // Flip sprite based on movement direction
+      // Flip sprite based on movement direction + show walk cycle while moving
       if (this.sprite) {
         this.sprite.setFlipX(nx < 0);
+        this._playAnim('walk');
       }
     } else {
       // Random wander when idle
@@ -153,6 +158,14 @@ export default class Villager extends Phaser.GameObjects.Container {
         this.isMoving = true;
       }
     }
+  }
+
+  _playAnim(suffix) {
+    if (!this.sprite || !this.sprite.anims) return;
+    const spriteKey = ROLE_SPRITE_MAP[this.villagerData.role] || 'npc_farmer';
+    const animKey = `${spriteKey}_${suffix}`;
+    if (this.sprite.anims.currentAnim?.key === animKey) return;
+    if (this.scene?.anims.exists(animKey)) this.sprite.play(animKey);
   }
 
   destroy(fromScene) {
