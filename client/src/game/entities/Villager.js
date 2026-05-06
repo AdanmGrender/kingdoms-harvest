@@ -3,26 +3,8 @@
  * works, rests, and shows status indicators.
  */
 import Phaser from 'phaser';
-import { TILE_SIZE } from '../maps/MapGenerator';
 
 const VILLAGER_SPEED = 40; // pixels per second
-const ROLE_COLORS = {
-  farmer: 0x66bb6a,
-  woodcutter: 0x8d6e63,
-  miner: 0x78909c,
-  soldier: 0xef5350,
-  merchant: 0xffd54f,
-  builder: 0xff9800,
-};
-
-const ROLE_ICONS = {
-  farmer: '🧑‍🌾',
-  woodcutter: '🪓',
-  miner: '⛏️',
-  soldier: '⚔️',
-  merchant: '💰',
-  builder: '🔨',
-};
 
 const STATE_ICONS = {
   idle: '💤',
@@ -31,6 +13,16 @@ const STATE_ICONS = {
   resting: '🏠',
   sleeping: '😴',
   hungry: '🍽️',
+};
+
+// Maps role to spritesheet tint color for visual variety
+const ROLE_TINTS = {
+  farmer:     0xa8d880,
+  woodcutter: 0xd4a070,
+  miner:      0xa0b0c0,
+  soldier:    0xff8888,
+  merchant:   0xffd070,
+  builder:    0xffb040,
 };
 
 export default class Villager extends Phaser.GameObjects.Container {
@@ -44,17 +36,20 @@ export default class Villager extends Phaser.GameObjects.Container {
     this.wanderTimer = 0;
     this.wanderDelay = Phaser.Math.Between(3000, 6000);
 
-    // Simple colored circle for the villager body
-    const body = scene.add.graphics();
-    const color = ROLE_COLORS[data.role] || 0xffffff;
-    body.fillStyle(color, 1);
-    body.fillCircle(0, 0, 8);
-    body.lineStyle(1, 0x000000, 0.5);
-    body.strokeCircle(0, 0, 8);
-    this.add(body);
+    // Sprite body using generated villager spritesheet
+    this.sprite = scene.add.sprite(0, 0, 'villager', 0);
+    this.sprite.setDisplaySize(28, 42);
+    const tint = ROLE_TINTS[data.role];
+    if (tint) this.sprite.setTint(tint);
+    this.add(this.sprite);
+
+    // Play idle animation
+    if (scene.anims.exists('villager_idle')) {
+      this.sprite.play('villager_idle');
+    }
 
     // Name label
-    this.nameText = scene.add.text(0, -16, data.name || 'Aldeano', {
+    this.nameText = scene.add.text(0, -24, data.name || 'Aldeano', {
       fontSize: '8px',
       color: '#ffffff',
       stroke: '#000000',
@@ -62,14 +57,8 @@ export default class Villager extends Phaser.GameObjects.Container {
     }).setOrigin(0.5);
     this.add(this.nameText);
 
-    // Role icon
-    this.roleIcon = scene.add.text(0, 12, ROLE_ICONS[data.role] || '👤', {
-      fontSize: '10px',
-    }).setOrigin(0.5);
-    this.add(this.roleIcon);
-
-    // Status icon (shows current state)
-    this.statusIcon = scene.add.text(10, -12, '', {
+    // Status icon
+    this.statusIcon = scene.add.text(16, -18, '', {
       fontSize: '8px',
     }).setOrigin(0.5);
     this.add(this.statusIcon);
@@ -84,7 +73,6 @@ export default class Villager extends Phaser.GameObjects.Container {
     this.villagerData = data;
     this.updateStatusIcon();
 
-    // If assigned to a building, walk toward it
     if (data.state === 'walking_to_work' && data.targetPos) {
       this.targetX = data.targetPos.x;
       this.targetY = data.targetPos.y;
@@ -95,17 +83,11 @@ export default class Villager extends Phaser.GameObjects.Container {
   updateStatusIcon() {
     const state = this.villagerData.state || 'idle';
     const hunger = this.villagerData.hunger || 100;
-
-    if (hunger <= 20) {
-      this.statusIcon.setText(STATE_ICONS.hungry);
-    } else {
-      this.statusIcon.setText(STATE_ICONS[state] || '');
-    }
+    this.statusIcon.setText(hunger <= 20 ? STATE_ICONS.hungry : (STATE_ICONS[state] || ''));
   }
 
   update(delta) {
     if (this.isMoving) {
-      // Move toward target
       const dx = this.targetX - this.x;
       const dy = this.targetY - this.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -116,18 +98,13 @@ export default class Villager extends Phaser.GameObjects.Container {
       }
 
       const speed = VILLAGER_SPEED * (delta / 1000);
-      const nx = dx / dist;
-      const ny = dy / dist;
-      this.x += nx * speed;
-      this.y += ny * speed;
+      this.x += (dx / dist) * speed;
+      this.y += (dy / dist) * speed;
     } else {
-      // Random wander when idle
       this.wanderTimer += delta;
       if (this.wanderTimer >= this.wanderDelay) {
         this.wanderTimer = 0;
         this.wanderDelay = Phaser.Math.Between(3000, 8000);
-
-        // Wander within a small radius
         const radius = 32;
         this.targetX = this.x + Phaser.Math.Between(-radius, radius);
         this.targetY = this.y + Phaser.Math.Between(-radius, radius);

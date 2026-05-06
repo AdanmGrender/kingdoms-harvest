@@ -14,6 +14,24 @@ const ROLE_LABELS = {
   builder: { icon: '🔨', label: 'Constructor' },
 };
 
+const BUILDING_NAMES = {
+  farm_plot: 'Parcela',
+  barn: 'Granero',
+  mill: 'Molino',
+  wall: 'Muralla',
+  tower: 'Torre',
+  barracks: 'Cuartel',
+  tavern: 'Taberna',
+  market: 'Mercado',
+  throne_room: 'Sala del Trono',
+  library: 'Biblioteca',
+  stable: 'Establos',
+  smithy: 'Herrería',
+  sawmill: 'Serrería',
+  trap: 'Trampa',
+  embassy: 'Embajada',
+};
+
 const STATE_LABELS = {
   idle: { icon: '💤', label: 'Inactivo' },
   walking_to_work: { icon: '🚶', label: 'Caminando' },
@@ -121,7 +139,7 @@ export default function VillagerPanel({ data, onClose }) {
                     className="bg-gray-700 hover:bg-gray-600 text-white text-xs px-2 py-1 rounded truncate"
                     onClick={() => handleAssign(b.id)}
                   >
-                    {b.building_id || b.buildingId}
+                    {BUILDING_NAMES[b.building_id || b.buildingId] || (b.building_id || b.buildingId)}
                   </button>
                 ))
               ) : (

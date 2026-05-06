@@ -13,6 +13,7 @@ import StreakBanner from './components/overlay/StreakBanner';
 
 function App() {
   const { initGame, isLoading, error } = useGameStore();
+  const overlayActive = useGameStore((s) => !!s.overlayState?.type);
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -79,7 +80,7 @@ function App() {
       <PhaserGame />
       <GameHUD />
       <OverlayManager />
-      <BuildingToolbar />
+      {!overlayActive && <BuildingToolbar />}
       <StreakBanner />
       <NotificationToast />
       <TutorialOverlay />

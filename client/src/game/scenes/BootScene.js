@@ -78,6 +78,12 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 48,
     });
 
+    // Villagers
+    this.load.spritesheet('villager', '/assets/game/characters/villager.png', {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
+
     // ─── Load animals ───
     this.load.spritesheet('chicken', '/assets/game/animals/chicken.png', {
       frameWidth: 32,
@@ -106,6 +112,7 @@ export default class BootScene extends Phaser.Scene {
     // ─── Create animations ───
     this.createNPCAnimations();
     this.createAnimalAnimations();
+    this.createVillagerAnimations();
 
     // Transition to world
     this.scene.start('WorldScene');
@@ -121,6 +128,21 @@ export default class BootScene extends Phaser.Scene {
         repeat: -1,
       });
     }
+  }
+
+  createVillagerAnimations() {
+    this.anims.create({
+      key: 'villager_idle',
+      frames: this.anims.generateFrameNumbers('villager', { start: 0, end: 1 }),
+      frameRate: 2,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'villager_walk',
+      frames: this.anims.generateFrameNumbers('villager', { start: 2, end: 3 }),
+      frameRate: 6,
+      repeat: -1,
+    });
   }
 
   createAnimalAnimations() {

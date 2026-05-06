@@ -22,7 +22,7 @@ export default function DialogPanel({ data, onClose }) {
   ) || [];
 
   return (
-    <div className="mx-2 mb-2 p-4 rounded-t-xl max-h-[60vh] overflow-y-auto"
+    <div className="mx-2 mb-2 p-4 pb-6 rounded-t-xl max-h-[65vh] overflow-y-auto"
       style={{ background: 'rgba(22, 33, 62, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
 
       {/* Header */}
