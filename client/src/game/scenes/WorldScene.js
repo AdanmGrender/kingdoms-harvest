@@ -220,13 +220,10 @@ export default class WorldScene extends Phaser.Scene {
   setupCamera() {
     this.cameraSystem = new CameraSystem(this);
     this.cameraSystem.setBounds(0, 0, this.mapData.width * TILE_SIZE, this.mapData.height * TILE_SIZE);
-    this.cameraSystem.setZoom(1.0);
+    this.cameraSystem.setZoom(1.3);
 
-    // Center camera on the map center (spawn area)
-    const spawn = this.mapData.objects.find(o => o.type === 'spawn');
-    const cx = (spawn?.x ?? 80) * TILE_SIZE;
-    const cy = (spawn?.y ?? 62) * TILE_SIZE;
-    this.cameraSystem.centerOn(cx, cy);
+    // Start camera on the castle zone (throne room at tile 77,12; library/embassy at y=18)
+    this.cameraSystem.centerOn(78 * TILE_SIZE, 18 * TILE_SIZE);
   }
 
   setupSystems() {

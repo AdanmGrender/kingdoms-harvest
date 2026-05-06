@@ -4,7 +4,7 @@
  */
 import Phaser from 'phaser';
 
-const BUILDING_SIZE = 96;
+const BUILDING_SIZE = 112;
 
 export default class Building extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, buildingData) {
