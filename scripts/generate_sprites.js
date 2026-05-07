@@ -99,15 +99,31 @@ function b0_barn(ctx) {
   // Gabled roof
   poly(ctx, [[CX-HW,GY-wH],[CX,GY-HH-wH],[CX,GY-HH-wH-18],[CX-HW,GY-wH-9]], '#a07018','rgba(0,0,0,0.3)');
   poly(ctx, [[CX,GY-HH-wH],[CX+HW,GY-wH],[CX+HW,GY-wH-9],[CX,GY-HH-wH-18]], '#b88420','rgba(0,0,0,0.3)');
+  // Thatch lines on left roof face
+  ctx.strokeStyle='rgba(80,40,0,0.22)'; ctx.lineWidth=1.2;
+  for (let r=0; r<5; r++) {
+    const t=r/5;
+    const x0=CX-HW+(CX-CX+HW)*t, y0=(GY-wH)+(GY-HH-wH-GY+wH)*t;
+    const x1=CX+(CX-CX)*t,        y1=(GY-HH-wH)+(GY-HH-wH-GY+HH+wH)*t;
+    ctx.beginPath(); ctx.moveTo(x0, y0-9*t); ctx.lineTo(x1, y1-9*t); ctx.stroke();
+  }
+  // Thatch highlight on right roof edge
+  ctx.strokeStyle='rgba(200,160,30,0.35)'; ctx.lineWidth=1;
+  for (let r=0; r<4; r++) {
+    const t=r/4;
+    const x0=CX+(CX+HW-CX)*t, y0=(GY-HH-wH)+(GY-wH-GY+HH+wH)*t;
+    ctx.beginPath(); ctx.moveTo(x0, y0-8*t); ctx.lineTo(x0+4, y0-7*t+2); ctx.stroke();
+  }
   // Door
   ctx.fillStyle='#3a1a00'; ctx.fillRect(CX-5, GY+HH-wH-2, 10, 18);
   ctx.fillStyle='#5a2a00'; ctx.fillRect(CX-4, GY+HH-wH, 4, 15);
+  ctx.fillStyle='rgba(255,220,100,0.15)'; ctx.fillRect(CX-5, GY+HH-wH-2, 3, 18); // door shine
   // Window
   win(ctx, CX+10, GY+HH-wH-18, 10, 12);
   // Plank lines on left face
   ctx.strokeStyle='rgba(0,0,0,0.18)'; ctx.lineWidth=1;
-  for (let i=1; i<4; i++) {
-    const t=i/4, y=GY-wH*t;
+  for (let i=1; i<5; i++) {
+    const t=i/5, y=GY-wH*t;
     ctx.beginPath(); ctx.moveTo(CX-HW, y); ctx.lineTo(CX, y+HH); ctx.stroke();
   }
 }
@@ -139,13 +155,37 @@ function b1_mill(ctx) {
 function b2_wall(ctx) {
   const wH = 22;
   isoBox(ctx, CX, GY, HW, HH, wH, '#8090a8','#3a4858','#506070');
+  // Stone block texture on right face
+  ctx.strokeStyle='rgba(0,0,0,0.15)'; ctx.lineWidth=0.5;
+  for (let row=0; row<3; row++) {
+    const off=(row%2===0)?0:7, y0=GY+HH-wH+row*7;
+    for (let col=0; col<6; col++) ctx.strokeRect(CX+off+col*13-HW*0.5, y0, 12, 6);
+  }
+  // Arrow slits
+  ctx.fillStyle='#0d1520';
+  ctx.fillRect(CX+8,  GY+HH-wH+1, 2, 9);
+  ctx.fillRect(CX+22, GY+HH-wH+1, 2, 9);
+  ctx.fillRect(CX+36, GY+HH-wH+1, 2, 9);
   battlements(ctx, CX, GY, HW, HH, wH, '#607080', 6);
+  // Gate arch on right face
   ctx.fillStyle='#111'; ctx.fillRect(CX+14, GY-wH+5, 4, 11); ctx.fillRect(CX+15, GY-wH+3, 2, 3);
 }
 
 function b3_tower(ctx) {
   const tw=HW*0.55, th=HH*0.55, wH=66;
   isoBox(ctx, CX, GY, tw, th, wH, '#9ca3af','#374151','#4b5563');
+  // Brick/stone texture on right face
+  ctx.strokeStyle='rgba(0,0,0,0.18)'; ctx.lineWidth=0.6;
+  for (let row=0; row<6; row++) {
+    const off=(row%2===0)?0:5, y0=GY+th-wH+row*10;
+    for (let col=0; col<4; col++) {
+      ctx.strokeRect(CX+off+col*10-tw*0.3, y0, 9, 9);
+    }
+  }
+  // Arrow slits on left face
+  ctx.fillStyle='#111';
+  ctx.fillRect(CX-tw*0.55, GY-wH*0.55, 2, 10);
+  ctx.fillRect(CX-tw*0.2,  GY-wH*0.75, 2, 10);
   battlements(ctx, CX, GY, tw, th, wH, '#5a6a7a', 4);
   win(ctx, CX+3, GY+th-wH-28, 5, 14);
   win(ctx, CX-8, GY-wH-18, 5, 12);
@@ -172,16 +212,32 @@ function b4_barracks(ctx) {
 function b5_tavern(ctx) {
   const wH = 36;
   isoBox(ctx, CX, GY, HW, HH, wH, '#c07010','#682808','#8a3808');
+  // Wood plank texture on left face
+  ctx.strokeStyle='rgba(0,0,0,0.14)'; ctx.lineWidth=1;
+  for (let r=1; r<5; r++) {
+    const t=r/5, y=GY-wH*t;
+    ctx.beginPath(); ctx.moveTo(CX-HW, y); ctx.lineTo(CX, y+HH); ctx.stroke();
+  }
   win(ctx, CX+8, GY+HH-wH-20, 11, 13, true);
   win(ctx, CX+22, GY-wH-14, 8, 10, true);
-  // Hanging sign
-  ctx.fillStyle='#5c2a06'; ctx.fillRect(CX-22, GY+HH-wH-32, 20, 11);
-  ctx.strokeStyle='#8a4010'; ctx.lineWidth=0.8; ctx.strokeRect(CX-22, GY+HH-wH-32, 20, 11);
-  ctx.fillStyle='#fbbf24'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('TABERNA', CX-12, GY+HH-wH-23); ctx.textAlign='left';
-  // Thatch line on left
-  ctx.strokeStyle='rgba(160,100,20,0.3)'; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.moveTo(CX-HW, GY-wH-4); ctx.lineTo(CX, GY-HH-wH-4); ctx.stroke();
+  // Hanging sign board (pixel art — no text)
+  const sx=CX-22, sy=GY+HH-wH-33;
+  ctx.fillStyle='#3a1a04'; ctx.fillRect(sx, sy, 20, 12);
+  ctx.strokeStyle='#7a3808'; ctx.lineWidth=0.8; ctx.strokeRect(sx, sy, 20, 12);
+  // Pixel art mug icon on sign
+  ctx.fillStyle='#d4a020'; // mug body
+  ctx.fillRect(sx+4, sy+3, 8, 6);
+  ctx.fillRect(sx+12, sy+4, 3, 4); // handle outer
+  ctx.fillStyle='#3a1a04'; ctx.fillRect(sx+13, sy+5, 1, 2); // handle inner cutout
+  ctx.fillStyle='rgba(200,240,255,0.6)'; ctx.fillRect(sx+4, sy+3, 4, 2); // foam
+  // Sign chain hooks
+  ctx.fillStyle='#888'; ctx.fillRect(sx+2, sy-3, 1, 3); ctx.fillRect(sx+17, sy-3, 1, 3);
+  // Thatch eave lines on left roof
+  ctx.strokeStyle='rgba(120,70,10,0.25)'; ctx.lineWidth=1.5;
+  for (let r=0; r<4; r++) {
+    const y=GY-wH-2+r*3;
+    ctx.beginPath(); ctx.moveTo(CX-HW, y); ctx.lineTo(CX, y-HH); ctx.stroke();
+  }
 }
 
 function b6_market(ctx) {
@@ -216,9 +272,15 @@ function b7_throne(ctx) {
   ctx.fillStyle='#c03028';
   ctx.beginPath(); ctx.moveTo(CX-HW+2,GY-wH-14); ctx.lineTo(CX-HW+7,GY-wH-30); ctx.lineTo(CX-HW+12,GY-wH-14); ctx.fill();
   ctx.beginPath(); ctx.moveTo(CX+HW-12,GY-wH-14); ctx.lineTo(CX+HW-7,GY-wH-30); ctx.lineTo(CX+HW-2,GY-wH-14); ctx.fill();
-  // Gold rim
+  // Gold rim highlight
   ctx.strokeStyle='rgba(255,250,180,0.6)'; ctx.lineWidth=1.5;
   poly(ctx, [[CX-HW-6,GY-wH],[CX,GY-HH-wH],[CX+HW+6,GY-wH],[CX,GY+HH-wH]], null, 'rgba(255,240,100,0.5)');
+  // Extra shimmer dots on top face
+  ctx.fillStyle='rgba(255,250,150,0.5)';
+  for (const [dx,dy] of [[-10,-5],[5,-10],[20,-5],[35,-2]]) ctx.fillRect(CX+dx, GY-HH-wH+dy, 3, 2);
+  // Side tower flags
+  flag(ctx, CX-HW+5, GY-wH-22, 1, '#dc2626');
+  flag(ctx, CX+HW-5, GY-wH-22, -1, '#dc2626');
 }
 
 function b8_library(ctx) {
@@ -231,11 +293,19 @@ function b8_library(ctx) {
     ctx.beginPath(); ctx.arc(wx+3.5, wy+5, 3.5, Math.PI, 0); ctx.fill();
     ctx.fillStyle='#1e40af'; ctx.fillRect(wx+3, wy+5, 1, 15); ctx.fillRect(wx, wy+11, 7, 1);
   }
-  // Book on left face
-  ctx.fillStyle='#d4a020'; ctx.fillRect(CX-28, GY-wH/2-8, 14, 18);
-  ctx.fillStyle='#b07818'; ctx.fillRect(CX-28, GY-wH/2-8, 2, 18);
-  ctx.fillStyle='#1e40af'; ctx.font='8px serif'; ctx.textAlign='center';
-  ctx.fillText('📖', CX-20, GY-wH/2+5); ctx.textAlign='left';
+  // Pixel art book spines on left face
+  const booksData = [
+    [CX-36, GY-wH/2-7, '#dc2626'],
+    [CX-31, GY-wH/2-9, '#1e40af'],
+    [CX-26, GY-wH/2-6, '#15803d'],
+    [CX-21, GY-wH/2-8, '#7e22ce'],
+    [CX-16, GY-wH/2-5, '#92400e'],
+  ];
+  for (const [bx, by, bc] of booksData) {
+    ctx.fillStyle=bc; ctx.fillRect(bx, by, 4, 13);
+    ctx.fillStyle='rgba(255,255,255,0.22)'; ctx.fillRect(bx, by, 1, 13);
+    ctx.fillStyle='rgba(0,0,0,0.18)'; ctx.fillRect(bx+3, by, 1, 13);
+  }
 }
 
 function b9_stable(ctx) {
@@ -319,18 +389,29 @@ function b12_trap(ctx) {
 function b13_embassy(ctx) {
   const wH = 46;
   isoBox(ctx, CX, GY, HW, HH, wH, '#e8eef8','#7a8a9a','#aab4c8');
-  // Columns on right face
-  ctx.fillStyle='#f0f5ff';
-  for (const dx of [CX+6, CX+17, CX+28]) {
-    ctx.fillRect(dx, GY+HH-wH, 4, wH);
-    ctx.fillRect(dx-2, GY+HH-wH, 8, 4); ctx.fillRect(dx-2, GY+HH-2, 8, 2);
+  // Columns on right face — wider capitals
+  ctx.fillStyle='#f4f8ff';
+  for (const dx of [CX+5, CX+17, CX+29]) {
+    ctx.fillRect(dx+1, GY+HH-wH+6, 3, wH-10); // shaft
+    ctx.fillRect(dx-1, GY+HH-wH+2, 7, 5);      // capital top
+    ctx.fillRect(dx-1, GY+HH-4,    7, 4);       // base
   }
-  flag(ctx, CX-12, GY-wH-20, 1, '#0f3460');
-  flag(ctx, CX+14, GY-wH-20, -1, '#0f3460');
-  win(ctx, CX-7, GY+HH-wH-30, 10, 18, true);
-  // Pediment
-  ctx.strokeStyle='rgba(180,190,210,0.8)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(CX-HW,GY-wH); ctx.lineTo(CX,GY-HH-wH-10); ctx.lineTo(CX+HW,GY-wH); ctx.stroke();
+  ctx.fillStyle='rgba(200,210,230,0.5)';
+  for (const dx of [CX+5, CX+17, CX+29]) {
+    ctx.fillRect(dx+2, GY+HH-wH+6, 1, wH-10); // column highlight
+  }
+  flag(ctx, CX-12, GY-wH-22, 1, '#0f3460');
+  flag(ctx, CX+14, GY-wH-22, -1, '#0f3460');
+  win(ctx, CX-8, GY+HH-wH-32, 10, 20, true);
+  // Pediment triangle (top face decoration)
+  ctx.strokeStyle='rgba(140,155,180,0.9)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(CX-HW,GY-wH); ctx.lineTo(CX,GY-HH-wH-12); ctx.lineTo(CX+HW,GY-wH); ctx.stroke();
+  // Fill pediment
+  ctx.fillStyle='rgba(220,228,245,0.35)';
+  ctx.beginPath(); ctx.moveTo(CX-HW,GY-wH); ctx.lineTo(CX,GY-HH-wH-12); ctx.lineTo(CX+HW,GY-wH); ctx.closePath(); ctx.fill();
+  // Frieze band below pediment
+  ctx.fillStyle='rgba(150,165,190,0.4)';
+  ctx.fillRect(CX-HW, GY-wH-1, HW*2, 5);
 }
 
 function b14_farmplot(ctx) {
@@ -364,8 +445,12 @@ function b15_construction(ctx) {
     ctx.fillStyle = i%2===0 ? '#c4742a' : '#b86820';
     ctx.fillRect(CX-HW+2, GY-i*(wH/3)-6, HW*0.8, 5);
   }
-  ctx.font='10px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('🔨', CX, GY-wH-28); ctx.textAlign='left';
+  // Pixel art hammer (head + handle)
+  ctx.fillStyle='#909090'; ctx.fillRect(CX-7, GY-wH-40, 14, 5); // head
+  ctx.fillStyle='#b0b0b0'; ctx.fillRect(CX-7, GY-wH-40, 14, 2); // top highlight
+  ctx.fillStyle='#606060'; ctx.fillRect(CX-7, GY-wH-36, 14, 1); // bottom shadow
+  ctx.fillStyle='#c89050'; ctx.fillRect(CX-1, GY-wH-35, 3, 8);  // handle
+  ctx.fillStyle='#a87030'; ctx.fillRect(CX+1, GY-wH-35, 1, 8);  // handle shadow
 }
 
 function genBuildings() {
@@ -846,8 +931,10 @@ const NPC_CONFIGS = {
       // Coin pouch
       ctx.fillStyle='#7a5010'; ctx.beginPath(); ctx.arc(hx+14,by+4,5,0,Math.PI*2); ctx.fill();
       ctx.fillStyle='#c0900a'; ctx.beginPath(); ctx.arc(hx+14,by+4,3,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#ffd700'; ctx.font='6px sans-serif'; ctx.textAlign='center';
-      ctx.fillText('$', hx+14, by+7); ctx.textAlign='left';
+      // Pixel art coin mark (cross pattern)
+      ctx.fillStyle='#ffd700';
+      ctx.fillRect(hx+13, by+2, 3, 1); ctx.fillRect(hx+13, by+6, 3, 1);
+      ctx.fillRect(hx+12, by+3, 5, 3); ctx.fillRect(hx+14, by+1, 1, 6);
     },
   },
   ranger: {
