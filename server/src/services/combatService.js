@@ -126,15 +126,12 @@ const combatService = {
 
       let atk = troop.atk * qty;
 
-      // Bonus contra tipos específicos
-      for (const defTroopId of Object.keys(defenderArmy)) {
-        if (troop.strongVs.includes(defTroopId)) {
-          atk *= 1.3;
-        }
-        if (troop.weakVs.includes(defTroopId)) {
-          atk *= 0.7;
-        }
-      }
+      // Bonus contra tipos específicos — apply once regardless of how many enemy types match
+      const defTroopIds = Object.keys(defenderArmy);
+      const isStrongVs = defTroopIds.some((id) => troop.strongVs?.includes(id));
+      const isWeakVs   = defTroopIds.some((id) => troop.weakVs?.includes(id));
+      if (isStrongVs) atk *= 1.3;
+      if (isWeakVs)   atk *= 0.7;
 
       attackPower += atk;
       battleLog.push(`${troop.icon} x${qty} aporta ${Math.floor(atk)} ATK`);

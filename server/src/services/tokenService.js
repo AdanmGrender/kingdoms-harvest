@@ -114,14 +114,9 @@ const tokenService = {
     if (commission <= 0) return;
 
     // Award commission to inviter (bypasses daily cap — it's passive income)
-    const inviterTokens = await db('player_tokens')
-      .where('player_id', referral.inviter_id).first();
-    if (!inviterTokens) return;
-
-    await db('player_tokens').where('player_id', referral.inviter_id).update({
-      balance: inviterTokens.balance + commission,
-      total_earned: inviterTokens.total_earned + commission,
-    });
+    await this.ensureTokenRecord(referral.inviter_id);
+    await db('player_tokens').where('player_id', referral.inviter_id).increment('balance', commission);
+    await db('player_tokens').where('player_id', referral.inviter_id).increment('total_earned', commission);
 
     // Track commission total
     await db('referrals').where('id', referral.id).increment('total_commission', commission);

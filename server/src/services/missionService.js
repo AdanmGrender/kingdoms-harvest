@@ -164,6 +164,11 @@ const missionService = {
 
     if (!mission) throw new Error('Misión no encontrada o no aceptada');
 
+    if (mission.expires_at && new Date(mission.expires_at) < new Date()) {
+      await db('missions').where('id', missionId).update({ status: 'expired' });
+      throw new Error('Esta misión ha expirado');
+    }
+
     let requirements, rewards;
     try {
       requirements = JSON.parse(mission.requirements);

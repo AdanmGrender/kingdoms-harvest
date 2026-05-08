@@ -79,7 +79,8 @@ const siegeService = {
     if (siege.status !== 'fighting') throw new Error('El asedio no está en combate');
 
     // Check requirements
-    const army = JSON.parse(siege.attacker_army);
+    let army;
+    try { army = JSON.parse(siege.attacker_army); } catch { army = {}; }
     for (const [troopId, minQty] of Object.entries(ability.requires)) {
       if (!army[troopId] || army[troopId] < minQty) {
         throw new Error(`Necesitás al menos ${minQty} ${TROOPS[troopId]?.name || troopId}`);
@@ -125,7 +126,8 @@ const siegeService = {
    * Resolve a siege battle.
    */
   async resolveSiege(siege, io) {
-    const attackerArmy = JSON.parse(siege.attacker_army);
+    let attackerArmy;
+    try { attackerArmy = JSON.parse(siege.attacker_army); } catch { attackerArmy = {}; }
 
     // Get defender's troops and buildings
     const defenderTroops = await db('player_troops').where('player_id', siege.defender_id);

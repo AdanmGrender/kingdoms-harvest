@@ -3,7 +3,7 @@ import useGameStore from '../../store/gameStore';
 import SpriteIcon from './SpriteIcon';
 
 function TopBar() {
-  const { player, resources } = useGameStore();
+  const { player, resources, tokenInfo } = useGameStore();
 
   if (!player) return null;
 
@@ -41,7 +41,7 @@ function TopBar() {
           <div key={res.id} className="flex items-center gap-1 text-xs whitespace-nowrap">
             <SpriteIcon name={res.sprite} size={16} />
             <span className={res.color}>
-              {res.isToken ? (player.tokenBalance || 0) : (resources[res.id]?.amount || 0)}
+              {res.isToken ? (tokenInfo?.balance || 0) : (resources[res.id]?.amount || 0)}
             </span>
           </div>
         ))}

@@ -109,8 +109,8 @@ const villagerService = {
       const newAge = v.age + 1;
 
       if (newAge >= 70) {
-        // Old age death (probability increases with age)
-        const deathChance = (newAge - 70) * 0.05;
+        // Old age death (probability increases with age, capped at 95%)
+        const deathChance = Math.min((newAge - 70) * 0.05, 0.95);
         if (crypto.randomInt(0, 10000) / 10000 < deathChance) {
           await db('villagers').where('id', v.id).delete();
           continue;

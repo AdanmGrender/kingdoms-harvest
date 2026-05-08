@@ -133,11 +133,19 @@ const commerceService = {
     }
     await playerService.modifyResource(playerId, resourceId, quantity);
 
-    // Actualizar stock de caravana
-    offer.quantity -= quantity;
+    // Re-read caravan to get current stock (prevents race condition between concurrent buyers)
+    const freshCaravan = await this.getActiveCaravan();
+    const freshOffer = freshCaravan.buy_offers.find((o) => o.resource_id === resourceId);
+    if (!freshOffer || freshOffer.quantity < quantity) {
+      // Rollback: refund gold and deduct the resource we already gave
+      await playerService.modifyResource(playerId, 'gold', totalCost);
+      await playerService.modifyResource(playerId, resourceId, -quantity);
+      throw new Error('Stock agotado — otro jugador lo compró primero');
+    }
+    freshOffer.quantity -= quantity;
     await db('caravans')
-      .where('id', caravan.id)
-      .update({ buy_offers: JSON.stringify(caravan.buy_offers) });
+      .where('id', freshCaravan.id)
+      .update({ buy_offers: JSON.stringify(freshCaravan.buy_offers) });
 
     return {
       success: true,
@@ -172,10 +180,19 @@ const commerceService = {
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
     await dailyTaskService.trackProgress(playerId, 'sell');
 
-    offer.quantity -= quantity;
+    // Re-read caravan to get current capacity (prevents race condition between concurrent sellers)
+    const freshCaravan = await this.getActiveCaravan();
+    const freshOffer = freshCaravan.sell_offers.find((o) => o.resource_id === resourceId);
+    if (!freshOffer || freshOffer.quantity < quantity) {
+      // Rollback: refund resource and deduct gold already given
+      await playerService.modifyResource(playerId, resourceId, quantity);
+      await playerService.modifyResource(playerId, 'gold', -totalGold);
+      throw new Error('La caravana ya no acepta más — vuelve a intentarlo');
+    }
+    freshOffer.quantity -= quantity;
     await db('caravans')
-      .where('id', caravan.id)
-      .update({ sell_offers: JSON.stringify(caravan.sell_offers) });
+      .where('id', freshCaravan.id)
+      .update({ sell_offers: JSON.stringify(freshCaravan.sell_offers) });
 
     return {
       success: true,
