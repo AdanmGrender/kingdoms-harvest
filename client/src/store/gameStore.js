@@ -17,6 +17,9 @@ const useGameStore = create((set, get) => ({
   error: null,
   activeTab: 'farm', // farm, castle, combat, commerce, map
 
+  // Crafting
+  craftableItems: [],
+
   // Token system
   tokenInfo: null,
   dailyTasks: [],
@@ -321,6 +324,28 @@ const useGameStore = create((set, get) => ({
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error al usar habilidad', 'error');
+      return null;
+    }
+  },
+
+  // ---- Crafting ----
+  loadCraftableItems: async () => {
+    try {
+      const { data } = await api.get('/crafting');
+      set({ craftableItems: data });
+    } catch (error) {
+      console.error('Error loading craftable items:', error);
+    }
+  },
+
+  craftItem: async (itemId, quantity) => {
+    try {
+      const { data } = await api.post('/crafting/craft', { itemId, quantity });
+      get().loadResources();
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al fabricar', 'error');
       return null;
     }
   },

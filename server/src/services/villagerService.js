@@ -1,6 +1,9 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { VILLAGER_ROLES, VILLAGER_NAMES } = require('../../../shared/gameConfig');
+const { VILLAGER_ROLES, VILLAGER_NAMES, BUILDINGS } = require('../../../shared/gameConfig');
+
+// Fractional production accumulators: villagerId:resource → sub-integer remainder
+const villagerAccumulators = {};
 
 const villagerService = {
   async getVillagers(playerId) {
@@ -80,6 +83,31 @@ const villagerService = {
         updates.state = 'working';
       } else if (v.state === 'resting' && updates.hunger > 50) {
         updates.state = v.assigned_building_id ? 'walking_to_work' : 'idle';
+      }
+
+      // Villager production: working villagers produce 50% of building's hourly rate per tick
+      if ((updates.state || v.state) === 'working' && v.assigned_building_id) {
+        const building = await db('player_buildings').where('id', v.assigned_building_id).first();
+        const config = building ? BUILDINGS[building.building_id] : null;
+        if (config?.produces) {
+          for (const [resource, ratePerHour] of Object.entries(config.produces)) {
+            const key = `${v.id}:${resource}`;
+            villagerAccumulators[key] = (villagerAccumulators[key] || 0) + (ratePerHour * 0.5) / 60;
+            const intAmount = Math.floor(villagerAccumulators[key]);
+            if (intAmount > 0) {
+              villagerAccumulators[key] -= intAmount;
+              const res = db.raw(
+                'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
+                [intAmount, playerId, resource]
+              );
+              if (res.count === 0) {
+                await db('player_resources').insert({
+                  player_id: playerId, resource_id: resource, amount: intAmount, capacity: 1000,
+                });
+              }
+            }
+          }
+        }
       }
 
       await db('villagers').where('id', v.id).update(updates);

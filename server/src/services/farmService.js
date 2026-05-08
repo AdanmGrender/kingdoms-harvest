@@ -7,6 +7,9 @@ const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
+let _techService = null;
+function getTechService() { if (!_techService) _techService = require('./techService'); return _techService; }
+
 function secureRandom() {
   return crypto.randomInt(0, 2147483647) / 2147483647;
 }
@@ -44,7 +47,11 @@ const farmService = {
     }
 
     const now = new Date();
-    const readyAt = new Date(now.getTime() + crop.growthTime);
+    const completedTechs = await getTechService().getCompletedTechs(playerId);
+    const growthTime = completedTechs.has('irrigation')
+      ? Math.floor(crop.growthTime * 0.8)
+      : crop.growthTime;
+    const readyAt = new Date(now.getTime() + growthTime);
 
     // Cobrar semillas (atómico — lanza error si no hay suficiente)
     try {
@@ -92,7 +99,10 @@ const farmService = {
     // Faction bonus: green_wardens +15% farming yield
     const player = await db('players').where('telegram_id', playerId).first();
     const factionBonus = FACTIONS[player?.faction_id]?.bonus?.farming || 0;
-    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus));
+    // Tech bonus: fertile_soil +10% yield
+    const completedTechs = await getTechService().getCompletedTechs(playerId);
+    const techBonus = completedTechs.has('fertile_soil') ? 0.1 : 0;
+    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus + techBonus));
 
     // Dar recursos al jugador
     await playerService.modifyResource(playerId, plot.crop_id, finalYield);
@@ -242,9 +252,12 @@ const farmService = {
     }
 
     const animalType = ANIMALS[animal.animal_id];
-    const quantity = Math.floor(
+    const baseQty = Math.floor(
       secureRandom() * (animalType.yield.max - animalType.yield.min + 1) + animalType.yield.min
     );
+    // Tech bonus: selective_breeding +20% animal yield
+    const completedTechs = await getTechService().getCompletedTechs(playerId);
+    const quantity = completedTechs.has('selective_breeding') ? Math.ceil(baseQty * 1.2) : baseQty;
 
     await playerService.modifyResource(playerId, animalType.product, quantity);
     const xpResult = await playerService.addXP(playerId, animalType.xp);

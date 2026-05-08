@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 import TechTreePanel from './TechTreePanel';
+import CraftingPanel from '../overlay/CraftingPanel';
 
 const BUILDING_DATA = {
   // Agricola
@@ -150,6 +151,7 @@ function CastleView() {
           { id: 'buildings', label: '🏰 Edificios' },
           { id: 'animals',   label: '🐄 Animales' },
           { id: 'tech',      label: '🔬 Tecnología' },
+          { id: 'crafting',  label: '⚒️ Fabricar' },
         ].map((t) => (
           <button
             key={t.id}
@@ -180,6 +182,9 @@ function CastleView() {
 
       {/* Tech tab */}
       {activeTab === 'tech' && <TechTreePanel />}
+
+      {/* Crafting tab */}
+      {activeTab === 'crafting' && <CraftingPanel onClose={() => setActiveTab('buildings')} />}
 
       {/* Buildings tab */}
       {activeTab === 'buildings' && <>

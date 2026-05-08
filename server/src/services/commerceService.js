@@ -163,10 +163,14 @@ const commerceService = {
     if (!offer) throw new Error('La caravana no compra ese recurso');
     if (quantity > offer.quantity) throw new Error(`La caravana solo acepta ${offer.quantity} más`);
 
-    // Faction bonus: shadow_merchants +15% sell price
+    // Faction + tech sell price bonus
     const player = await db('players').where('telegram_id', playerId).first();
     const commerceBonus = FACTIONS[player?.faction_id]?.bonus?.commerce || 0;
-    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus));
+    let _ts = null;
+    try { _ts = require('./techService'); } catch {}
+    const completedTechs = _ts ? await _ts.getCompletedTechs(playerId) : new Set();
+    const techBonus = completedTechs.has('haggling') ? 0.15 : 0;
+    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus));
 
     // Cobrar recurso (atómico)
     try {

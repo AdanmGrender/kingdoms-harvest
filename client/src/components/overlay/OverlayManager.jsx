@@ -10,6 +10,7 @@ import CropSelectMenu from './CropSelectMenu';
 import VillagerPanel from './VillagerPanel';
 import WarPanel from './WarPanel';
 import TroopManagementPanel from './TroopManagementPanel';
+import CraftingPanel from './CraftingPanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -129,6 +130,8 @@ function renderPanel(overlayState, onClose) {
       return <TroopManagementPanel data={overlayState.data} onClose={onClose} />;
     case 'harvest':
       return <HarvestPanel data={overlayState.data} onClose={onClose} />;
+    case 'crafting':
+      return <CraftingPanel onClose={onClose} />;
     default:
       return (
         <GenericPanel title={overlayState.type} onClose={onClose}>

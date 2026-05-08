@@ -3,6 +3,9 @@ const db = require('../config/database');
 const { TROOPS, BUILDINGS, FACTIONS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const buildingService = require('./buildingService');
+
+let _techService = null;
+function getTechService() { if (!_techService) _techService = require('./techService'); return _techService; }
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
@@ -215,10 +218,14 @@ const combatService = {
     army = this.sanitizeArmy(army);
     await this.validateArmy(playerId, army);
 
-    // Apply faction atk/def bonus to army power via modified army copy
+    // Apply faction atk/def bonus + tech bonuses
     const player = await db('players').where('telegram_id', playerId).first();
     const factionAtkBonus = FACTIONS[player?.faction_id]?.bonus?.atk || 0;
     const factionDefBonus = FACTIONS[player?.faction_id]?.bonus?.def || 0;
+    const completedTechs = await getTechService().getCompletedTechs(playerId);
+    const techAtkBonus = (completedTechs.has('sharp_blades') ? 0.1 : 0) +
+                         (completedTechs.has('tactics') ? 0.15 : 0);
+    const techDefBonus = completedTechs.has('reinforced_armor') ? 0.1 : 0;
 
     // Generar ejército NPC basado en territorio
     const territory = territoryId
@@ -230,8 +237,8 @@ const combatService = {
 
     // Calcular batalla con bonuses de facción y habilidad de asedio
     const result = this.calculateBattle(army, npcArmy, [], {
-      attackBonus: factionAtkBonus,
-      defenseBonus: factionDefBonus,
+      attackBonus: factionAtkBonus + techAtkBonus,
+      defenseBonus: factionDefBonus + techDefBonus,
       abilityId,
       attackerArmy: army,
     });
