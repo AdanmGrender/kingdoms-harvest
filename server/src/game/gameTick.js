@@ -124,23 +124,22 @@ async function processTick() {
         if (intAmount > 0) {
           productionAccumulators[key] -= intAmount;
           try {
-            // Cap at capacity to prevent overflow
-            db.raw(
+            // Cap at capacity to prevent overflow; check count to detect missing row
+            const result = db.raw(
               'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
               [intAmount, playerId, resource]
             );
-          } catch (e) {
-            // Resource row may not exist, insert it
-            try {
+            if (result.count === 0) {
+              // Resource row doesn't exist yet — insert it
               await db('player_resources').insert({
                 player_id: playerId,
                 resource_id: resource,
                 amount: intAmount,
                 capacity: 1000,
               });
-            } catch (e2) {
-              // Already exists race condition, ignore
             }
+          } catch (e) {
+            // Race condition on insert, ignore
           }
         }
       }

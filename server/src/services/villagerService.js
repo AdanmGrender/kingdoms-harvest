@@ -126,6 +126,7 @@ const villagerService = {
    */
   async processRelationships(playerId) {
     const villagers = await db('villagers').where('player_id', playerId);
+    if (villagers.length === 0) return;
     const existingFamilies = await db('villager_families')
       .whereIn('villager_a_id', villagers.map(v => v.id))
       .orWhereIn('villager_b_id', villagers.map(v => v.id));

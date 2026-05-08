@@ -104,7 +104,7 @@ const tokenService = {
   async payReferralCommission(refereeId, tokensEarned) {
     // Check if referee has a referrer
     const referral = await db('referrals').where('referee_id', refereeId).first();
-    if (!referral) return;
+    if (!referral || !referral.inviter_id) return;
 
     // Referee must be at least level 3 for commission to flow
     const referee = await db('players').where('telegram_id', refereeId).first();

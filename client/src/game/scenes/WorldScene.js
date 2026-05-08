@@ -341,6 +341,17 @@ export default class WorldScene extends Phaser.Scene {
       this.updateAnimals(animals);
     });
 
+    // Missions updated: show quest icons on NPCs that have available missions
+    EventBridge.on('game:missionsUpdated', (missions) => {
+      for (const npc of this.npcs) {
+        const hasQuest = missions.some((m) =>
+          (m.status === 'available' || m.status === 'accepted') &&
+          m.npc_name?.toLowerCase().includes(npc.npcId?.toLowerCase() ?? '')
+        );
+        npc.setHasQuest(hasQuest);
+      }
+    });
+
     // Token earned: float "+X KH" text in game world
     EventBridge.on('token:earned', ({ amount, x, y }) => {
       if (!this.particleSystem || amount <= 0) return;
@@ -440,6 +451,7 @@ export default class WorldScene extends Phaser.Scene {
     EventBridge.removeAllListeners('building:addToScene');
     EventBridge.removeAllListeners('game:plotsUpdated');
     EventBridge.removeAllListeners('game:animalsUpdated');
+    EventBridge.removeAllListeners('game:missionsUpdated');
 
     if (this.cameraSystem) this.cameraSystem.destroy();
     if (this.selectionSystem) this.selectionSystem.destroy();

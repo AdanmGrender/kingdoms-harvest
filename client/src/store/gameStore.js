@@ -73,6 +73,7 @@ const useGameStore = create((set, get) => ({
       // Cargar parcelas y animales
       get().loadPlots();
       get().loadAnimals();
+      EventBridge.emit('game:missionsUpdated', data.activeMissions || []);
 
       // Conectar socket para notificaciones en tiempo real
       const initData = window.Telegram?.WebApp?.initData || '';
@@ -213,6 +214,7 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.get('/missions');
       set({ missions: data });
+      EventBridge.emit('game:missionsUpdated', data);
     } catch (error) {
       console.error('Error loading missions:', error);
     }
