@@ -356,9 +356,9 @@ db.fn = {
   },
 };
 
-// Run raw SQL
+// Run raw SQL — returns { count, lastId } from dbRun
 db.raw = function (sql, params = []) {
-  dbRun(sql, params);
+  return dbRun(sql, params);
 };
 
 // Migration support
