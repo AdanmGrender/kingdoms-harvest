@@ -676,6 +676,49 @@ const SIEGE_CONFIG = {
   resourceShield: 50, // can't steal below this per resource
 };
 
+// ─── Hero System ─────────────────────────────────────────────────────────────
+
+const HERO_CLASSES = {
+  warrior: { name: 'Guerrero',  color: '#ef4444', icon: '⚔️',  description: 'Fuerza y resistencia en combate cuerpo a cuerpo' },
+  mage:    { name: 'Mago',      color: '#8b5cf6', icon: '🔮',  description: 'Poder mágico devastador a distancia' },
+  ranger:  { name: 'Cazador',   color: '#10b981', icon: '🏹',  description: 'Ágil y preciso, experto en terreno abierto' },
+  paladin: { name: 'Paladín',   color: '#f59e0b', icon: '🛡️',  description: 'Defensor sagrado con habilidades de curación' },
+  rogue:   { name: 'Pícaro',    color: '#6366f1', icon: '🗡️',  description: 'Veloz y letal, ataca desde las sombras' },
+};
+
+const HERO_RARITIES = {
+  common:    { name: 'Común',      color: '#9ca3af', border: '#6b7280', statMultiplier: 1.0, summonCost: 200,  weight: 55 },
+  rare:      { name: 'Raro',       color: '#3b82f6', border: '#2563eb', statMultiplier: 1.3, summonCost: 500,  weight: 30 },
+  epic:      { name: 'Épico',      color: '#a855f7', border: '#7c3aed', statMultiplier: 1.7, summonCost: 1000, weight: 12 },
+  legendary: { name: 'Legendario', color: '#f59e0b', border: '#d97706', statMultiplier: 2.5, summonCost: 2000, weight: 3  },
+};
+
+const HEROES = {
+  aria:   { id: 'aria',   name: 'Aria la Valiente',    class: 'warrior', rarity: 'common',    sprite: 'warrior',    baseStats: { atk: 14, def: 12, hp: 90,  spd: 8,  mgk: 2  }, passive: 'Golpe Certero: +15% ATK al atacar con ventaja numérica' },
+  thorin: { id: 'thorin', name: 'Thorin Escudobronce', class: 'warrior', rarity: 'epic',      sprite: 'knight',     baseStats: { atk: 18, def: 20, hp: 120, spd: 5,  mgk: 1  }, passive: 'Bastión: +30% DEF cuando HP < 50%' },
+  lyra:   { id: 'lyra',   name: 'Lyra Brillante',      class: 'mage',    rarity: 'common',    sprite: 'mage',       baseStats: { atk: 8,  def: 5,  hp: 55,  spd: 7,  mgk: 18 }, passive: 'Arcano: los hechizos ignoran 10% de DEF enemiga' },
+  zara:   { id: 'zara',   name: 'Zara la Oscura',      class: 'mage',    rarity: 'legendary', sprite: 'wizard',     baseStats: { atk: 10, def: 6,  hp: 65,  spd: 9,  mgk: 30 }, passive: 'Maldición: −20% ATK al enemigo objetivo durante 2 turnos' },
+  finn:   { id: 'finn',   name: 'Finn el Rastreador',  class: 'ranger',  rarity: 'common',    sprite: 'ranger',     baseStats: { atk: 12, def: 7,  hp: 65,  spd: 14, mgk: 3  }, passive: 'Tiro Preciso: +20% ATK contra enemigos a distancia' },
+  elena:  { id: 'elena',  name: 'Elena Plumaveloz',    class: 'ranger',  rarity: 'rare',      sprite: 'explorer',   baseStats: { atk: 15, def: 8,  hp: 70,  spd: 18, mgk: 4  }, passive: 'Evasión: 15% de esquivar ataques cuerpo a cuerpo' },
+  viktor: { id: 'viktor', name: 'Viktor el Sagrado',   class: 'paladin', rarity: 'common',    sprite: 'guard',      baseStats: { atk: 10, def: 16, hp: 100, spd: 6,  mgk: 8  }, passive: 'Aura Protectora: aliados adyacentes +10% DEF' },
+  seraph: { id: 'seraph', name: 'Serafín Celeste',     class: 'paladin', rarity: 'epic',      sprite: 'adventurer', baseStats: { atk: 12, def: 20, hp: 130, spd: 7,  mgk: 14 }, passive: 'Sanación Divina: restaura 8% HP al inicio de cada ronda' },
+  shadow: { id: 'shadow', name: 'Sombra',              class: 'rogue',   rarity: 'common',    sprite: 'traveler',   baseStats: { atk: 16, def: 5,  hp: 55,  spd: 16, mgk: 5  }, passive: 'Sorpresa: primer ataque hace +40% daño' },
+  vex:    { id: 'vex',    name: 'Vex el Veloz',        class: 'rogue',   rarity: 'rare',      sprite: 'farmer',     baseStats: { atk: 20, def: 6,  hp: 60,  spd: 20, mgk: 6  }, passive: 'Ataque Dual: 25% de golpear dos veces por turno' },
+};
+
+const HERO_ITEMS = {
+  iron_sword:    { id: 'iron_sword',    name: 'Espada de Hierro',  slot: 'weapon',    icon: '⚔️', bonuses: { atk: 6 },                    rarity: 'common', description: 'Hoja forjada en el yunque del herrero del pueblo' },
+  magic_staff:   { id: 'magic_staff',   name: 'Báculo Arcano',     slot: 'weapon',    icon: '🪄', bonuses: { mgk: 10, atk: 2 },           rarity: 'rare',   description: 'Concentra el maná del portador en un flujo devastador' },
+  hunters_bow:   { id: 'hunters_bow',   name: 'Arco del Cazador',  slot: 'weapon',    icon: '🏹', bonuses: { atk: 5, spd: 3 },            rarity: 'common', description: 'Tallado de tejo centenario, silencioso y mortal' },
+  shadow_dagger: { id: 'shadow_dagger', name: 'Daga Sombría',      slot: 'weapon',    icon: '🗡️', bonuses: { atk: 8, spd: 4 },            rarity: 'rare',   description: 'Acero negro que absorbe la luz del portador' },
+  leather_armor: { id: 'leather_armor', name: 'Armadura de Cuero', slot: 'armor',     icon: '🧥', bonuses: { def: 6, hp: 15 },            rarity: 'common', description: 'Ligera y flexible, no entorpece el movimiento' },
+  chainmail:     { id: 'chainmail',     name: 'Cota de Malla',     slot: 'armor',     icon: '🛡️', bonuses: { def: 14, hp: 30 },           rarity: 'rare',   description: 'Miles de anillos de acero forman una barrera impenetrable' },
+  mage_robe:     { id: 'mage_robe',     name: 'Túnica del Mago',   slot: 'armor',     icon: '👘', bonuses: { def: 4, mgk: 8, hp: 20 },    rarity: 'rare',   description: 'Tejida con hilos imbuidos de energía arcana' },
+  speed_boots:   { id: 'speed_boots',   name: 'Botas de Velocidad',slot: 'accessory', icon: '👢', bonuses: { spd: 6 },                    rarity: 'common', description: 'Suela encantada que permite moverse como el viento' },
+  power_ring:    { id: 'power_ring',    name: 'Anillo de Poder',   slot: 'accessory', icon: '💍', bonuses: { atk: 4, mgk: 4 },            rarity: 'rare',   description: 'Forjado en las fraguas de los antiguos reyes' },
+  lucky_charm:   { id: 'lucky_charm',   name: 'Amuleto de Fortuna',slot: 'accessory', icon: '🍀', bonuses: { atk: 2, def: 2, hp: 10, spd: 2, mgk: 2 }, rarity: 'common', description: 'Trébol de cuatro hojas preservado por magia del bosque' },
+};
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -694,4 +737,8 @@ module.exports = {
   DAY_CYCLE,
   SIEGE_ABILITIES,
   SIEGE_CONFIG,
+  HERO_CLASSES,
+  HERO_RARITIES,
+  HEROES,
+  HERO_ITEMS,
 };

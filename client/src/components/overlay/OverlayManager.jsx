@@ -11,6 +11,7 @@ import VillagerPanel from './VillagerPanel';
 import WarPanel from './WarPanel';
 import TroopManagementPanel from './TroopManagementPanel';
 import CraftingPanel from './CraftingPanel';
+import HeroPanel from './HeroPanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -132,6 +133,8 @@ function renderPanel(overlayState, onClose) {
       return <HarvestPanel data={overlayState.data} onClose={onClose} />;
     case 'crafting':
       return <CraftingPanel onClose={onClose} />;
+    case 'heroes':
+      return <HeroPanel onClose={onClose} />;
     default:
       return (
         <GenericPanel title={overlayState.type} onClose={onClose}>

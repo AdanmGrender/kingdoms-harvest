@@ -6,6 +6,19 @@ import { useState, useEffect, useCallback } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
+function HeroesButton() {
+  const setOverlay = useGameStore((s) => s.setOverlay);
+  return (
+    <button
+      onClick={() => setOverlay('heroes', {})}
+      className="px-4 py-1 rounded-t-lg text-xs text-purple-300 font-bold"
+      style={{ background: 'rgba(22, 33, 62, 0.9)', border: '1px solid rgba(168, 85, 247, 0.4)', borderBottom: 'none' }}
+    >
+      ⚔️ Héroes
+    </button>
+  );
+}
+
 // Building categories with their building IDs
 const CATEGORIES = [
   {
@@ -136,7 +149,8 @@ export default function BuildingToolbar() {
   return (
     <div className="absolute bottom-0 left-0 right-0 z-40 pointer-events-none">
       {/* Toggle button */}
-      <div className="flex justify-center pointer-events-auto mb-1">
+      <div className="flex justify-center gap-2 pointer-events-auto mb-1">
+        <HeroesButton />
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="px-4 py-1 rounded-t-lg text-xs text-yellow-300 font-bold"

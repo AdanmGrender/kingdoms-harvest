@@ -20,6 +20,10 @@ const useGameStore = create((set, get) => ({
   // Crafting
   craftableItems: [],
 
+  // Hero system
+  heroes: [],
+  heroItems: [],
+
   // Token system
   tokenInfo: null,
   dailyTasks: [],
@@ -346,6 +350,82 @@ const useGameStore = create((set, get) => ({
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error al fabricar', 'error');
+      return null;
+    }
+  },
+
+  // ---- Hero System ----
+  loadHeroes: async () => {
+    try {
+      const { data } = await api.get('/heroes');
+      set({ heroes: data });
+    } catch (error) {
+      console.error('Error loading heroes:', error);
+    }
+  },
+
+  loadHeroItems: async () => {
+    try {
+      const { data } = await api.get('/heroes/items');
+      set({ heroItems: data });
+    } catch (error) {
+      console.error('Error loading hero items:', error);
+    }
+  },
+
+  summonHero: async (payWithTokens = true) => {
+    try {
+      const { data } = await api.post('/heroes/summon', { payWithTokens });
+      get().loadHeroes();
+      get().loadHeroItems();
+      if (!payWithTokens) get().refreshResources();
+      else get().loadTokenInfo();
+      if (data.tokensAwarded > 0) {
+        EventBridge.emit('token:earned', { amount: data.tokensAwarded });
+      }
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al invocar', 'error');
+      return null;
+    }
+  },
+
+  levelUpHero: async (heroDbId) => {
+    try {
+      const { data } = await api.post('/heroes/level-up', { heroDbId });
+      get().loadHeroes();
+      get().refreshResources();
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al subir nivel', 'error');
+      return null;
+    }
+  },
+
+  equipHeroItem: async (heroDbId, itemId) => {
+    try {
+      const { data } = await api.post('/heroes/equip', { heroDbId, itemId });
+      get().loadHeroes();
+      get().loadHeroItems();
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al equipar', 'error');
+      return null;
+    }
+  },
+
+  unequipHeroItem: async (heroDbId, slot) => {
+    try {
+      const { data } = await api.post('/heroes/unequip', { heroDbId, slot });
+      get().loadHeroes();
+      get().loadHeroItems();
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al desequipar', 'error');
       return null;
     }
   },
