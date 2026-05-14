@@ -14,6 +14,8 @@ import SelectionSystem from '../systems/SelectionSystem';
 import BuildingPlacementSystem from '../systems/BuildingPlacementSystem';
 import DayNightSystem from '../systems/DayNightSystem';
 import ParticleSystem from '../systems/ParticleSystem';
+import PathfindingSystem from '../systems/PathfindingSystem';
+import NPCBehaviorSystem from '../systems/NPCBehaviorSystem';
 import EventBridge from '../EventBridge';
 
 export default class WorldScene extends Phaser.Scene {
@@ -24,6 +26,8 @@ export default class WorldScene extends Phaser.Scene {
     this.placementSystem = null;
     this.dayNightSystem = null;
     this.particleSystem = null;
+    this.pathfinding = null;
+    this.npcBehavior = null;
     this.npcs = [];
     this.animals = [];
     this.cropPlots = [];
@@ -111,10 +115,12 @@ export default class WorldScene extends Phaser.Scene {
       const py = obj.y * TILE_SIZE + TILE_SIZE;
 
       const building = new Building(this, px, py, {
-        buildingId: obj.buildingId,
-        tileIndex: obj.tileIndex,
-        level: 1,
+        buildingId:  obj.buildingId,
+        tileIndex:   obj.tileIndex,
+        level:       1,
         is_building: false,
+        posX:        obj.x,
+        posY:        obj.y,
       });
 
       this.buildings.push(building);
@@ -128,7 +134,7 @@ export default class WorldScene extends Phaser.Scene {
       const px = obj.x * TILE_SIZE + TILE_SIZE / 2;
       const py = obj.y * TILE_SIZE + TILE_SIZE / 2;
 
-      const npc = new NPC(this, px, py, obj.npcId, obj.name);
+      const npc = new NPC(this, px, py, obj.npcId, obj.name, obj.role);
       this.npcs.push(npc);
     }
   }
@@ -232,6 +238,25 @@ export default class WorldScene extends Phaser.Scene {
     this.dayNightSystem = new DayNightSystem(this);
     this.particleSystem = new ParticleSystem(this);
 
+    // Pathfinding — A* on collision grid + building obstacles
+    this.pathfinding = new PathfindingSystem(
+      this.mapData.layers.collision,
+      this.mapData.width,
+      this.mapData.height
+    );
+    for (const building of this.buildings) {
+      const posX = building.buildingData.posX;
+      const posY = building.buildingData.posY;
+      if (posX != null && posY != null) {
+        this.pathfinding.addObstacle(posX, posY);
+      }
+    }
+
+    // NPC behavior — role-based schedule
+    this.npcBehavior = new NPCBehaviorSystem(this, this.pathfinding);
+    for (const building of this.buildings) this.npcBehavior.registerBuilding(building);
+    for (const npc of this.npcs) this.npcBehavior.registerNPC(npc);
+
     // Add smoke to production buildings
     for (const building of this.buildings) {
       const id = building.buildingData.buildingId;
@@ -258,6 +283,8 @@ export default class WorldScene extends Phaser.Scene {
     for (const building of this.buildings) {
       this.selectionSystem.register(building, 'building', {
         buildingId: building.buildingData.buildingId,
+        posX:       building.buildingData.posX,
+        posY:       building.buildingData.posY,
       });
     }
 
@@ -332,6 +359,11 @@ export default class WorldScene extends Phaser.Scene {
       this.addBuilding(buildingData);
     });
 
+    // Building finished construction
+    EventBridge.on('building:completed', (buildingData) => {
+      this.completeBuilding(buildingData);
+    });
+
     // Listen for game state updates
     EventBridge.on('game:plotsUpdated', (plots) => {
       this.updateCropPlots(plots);
@@ -364,7 +396,8 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   /**
-   * Add a building to the scene (called after server confirms placement)
+   * Add a building to the scene (called after server confirms placement).
+   * Registers with pathfinding (obstacle) and NPC behavior system.
    */
   addBuilding(buildingData) {
     const px = buildingData.posX * TILE_SIZE + TILE_SIZE;
@@ -372,13 +405,37 @@ export default class WorldScene extends Phaser.Scene {
 
     const building = new Building(this, px, py, buildingData);
     this.buildings.push(building);
+
     this.selectionSystem.register(building, 'building', {
       buildingId: buildingData.buildingId,
+      posX: buildingData.posX,
+      posY: buildingData.posY,
     });
-    // Construction dust effect
+
+    if (this.pathfinding && buildingData.posX != null) {
+      this.pathfinding.addObstacle(buildingData.posX, buildingData.posY);
+    }
+    if (this.npcBehavior) {
+      this.npcBehavior.onBuildingAdded(building);
+    }
+
     if (this.particleSystem) {
       this.particleSystem.emitConstructionDust(px, py);
     }
+  }
+
+  /**
+   * Called when a building finishes construction (is_building → false).
+   * Clears the construction state and notifies the behavior system.
+   */
+  completeBuilding(buildingData) {
+    const building = this.buildings.find(b =>
+      b.buildingData.posX === buildingData.posX &&
+      b.buildingData.posY === buildingData.posY
+    );
+    if (!building) return;
+    building.updateData(buildingData);
+    if (this.npcBehavior) this.npcBehavior.onConstructionComplete(building);
   }
 
   updateCropPlots(plotsData) {
@@ -427,6 +484,19 @@ export default class WorldScene extends Phaser.Scene {
     // Update selection ring position
     this.selectionSystem.update();
 
+    // NPC behavior scheduler (role-based building assignments)
+    if (this.npcBehavior) this.npcBehavior.update(time, delta);
+
+    // Update NPCs — always update so off-screen walking still progresses;
+    // only hide the sprite visually when out of view
+    for (const npc of this.npcs) {
+      const onScreen = this.isOnScreen(npc, 256);
+      npc.setVisible(onScreen && npc.state !== 'inside');
+      if (npc.nameText)  npc.nameText.setVisible(onScreen && npc.state !== 'inside');
+      if (npc.questIcon) npc.questIcon.setVisible(onScreen && npc.questIcon.visible && npc.state !== 'inside');
+      npc.update(delta);
+    }
+
     // Update animals (only on-screen for performance)
     for (const animal of this.animals) {
       const visible = this.isOnScreen(animal);
@@ -452,11 +522,14 @@ export default class WorldScene extends Phaser.Scene {
     EventBridge.removeAllListeners('game:plotsUpdated');
     EventBridge.removeAllListeners('game:animalsUpdated');
     EventBridge.removeAllListeners('game:missionsUpdated');
+    EventBridge.removeAllListeners('token:earned');
+    EventBridge.removeAllListeners('building:completed');
 
-    if (this.cameraSystem) this.cameraSystem.destroy();
+    if (this.cameraSystem)   this.cameraSystem.destroy();
     if (this.selectionSystem) this.selectionSystem.destroy();
-    if (this.particleSystem) this.particleSystem.destroy();
-    if (this.dayNightSystem) this.dayNightSystem.destroy();
+    if (this.particleSystem)  this.particleSystem.destroy();
+    if (this.dayNightSystem)  this.dayNightSystem.destroy();
     if (this.placementSystem) this.placementSystem.destroy();
+    // pathfinding and npcBehavior hold no Phaser resources — no destroy needed
   }
 }

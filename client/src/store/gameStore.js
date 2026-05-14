@@ -186,6 +186,23 @@ const useGameStore = create((set, get) => ({
   loadBuildings: async () => {
     try {
       const { data } = await api.get('/buildings');
+      // Detect buildings that just finished construction and notify Phaser
+      const prev = get().buildings;
+      for (const b of data) {
+        if (!b.is_building) {
+          const old = prev.find(p => p.id === b.id);
+          if (old?.is_building) {
+            EventBridge.emit('building:completed', {
+              buildingId:  b.building_id,
+              tileIndex:   b.tile_index ?? 0,
+              level:       b.level,
+              is_building: false,
+              posX:        b.position_x,
+              posY:        b.position_y,
+            });
+          }
+        }
+      }
       set({ buildings: data });
     } catch (error) {
       console.error('Error loading buildings:', error);
