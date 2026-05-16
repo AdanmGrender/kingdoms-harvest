@@ -27,6 +27,9 @@ const useGameStore = create((set, get) => ({
   // Villagers
   villagers: [],
 
+  // World events
+  worldEvents: [],
+
   // Token system
   tokenInfo: null,
   dailyTasks: [],
@@ -80,10 +83,11 @@ const useGameStore = create((set, get) => ({
         missions: data.activeMissions || [],
         isLoading: false,
       });
-      // Cargar parcelas, animales y aldeanos
+      // Cargar parcelas, animales, aldeanos y eventos del mundo
       get().loadPlots();
       get().loadAnimals();
       get().loadVillagers();
+      get().loadWorldEvents();
       EventBridge.emit('game:missionsUpdated', data.activeMissions || []);
 
       // Conectar socket para notificaciones en tiempo real
@@ -101,6 +105,28 @@ const useGameStore = create((set, get) => ({
       set({ resources: data });
     } catch (error) {
       console.error('Error refreshing resources:', error);
+    }
+  },
+
+  // ---- Eventos del mundo ----
+  loadWorldEvents: async () => {
+    try {
+      const { data } = await api.get('/world-events');
+      set({ worldEvents: data });
+      EventBridge.emit('world_events:loaded', data);
+    } catch (error) {
+      console.error('Error loading world events:', error);
+    }
+  },
+
+  claimWorldEvent: async (eventId) => {
+    try {
+      const { data } = await api.post(`/world-events/${eventId}/claim`);
+      return data;
+    } catch (error) {
+      const msg = error.response?.data?.error || 'Error al reclamar el evento';
+      get().addNotification(msg, 'error');
+      return null;
     }
   },
 

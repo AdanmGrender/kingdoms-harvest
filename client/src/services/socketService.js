@@ -46,6 +46,11 @@ export function connectSocket(initData) {
     });
   });
 
+  socket.on('world_events_updated', () => {
+    // Signal the app to reload world events from the API
+    EventBridge.emit('world_events:refresh');
+  });
+
   return socket;
 }
 

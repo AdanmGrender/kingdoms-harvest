@@ -51,10 +51,17 @@ function App() {
     };
     EventBridge.on('game:notification', handleGameNotification);
 
+    // Reload world events when server broadcasts new ones via socket
+    const handleWorldEventsRefresh = () => {
+      useGameStore.getState().loadWorldEvents();
+    };
+    EventBridge.on('world_events:refresh', handleWorldEventsRefresh);
+
     EventBridge.on('building:placed', handleBuildingPlaced);
     return () => {
       EventBridge.off('building:placed', handleBuildingPlaced);
       EventBridge.off('game:notification', handleGameNotification);
+      EventBridge.off('world_events:refresh', handleWorldEventsRefresh);
     };
   }, []);
 

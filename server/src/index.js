@@ -28,6 +28,7 @@ const siegeRoutes = require('./routes/siegeRoutes');
 const techRoutes = require('./routes/techRoutes');
 const craftingRoutes = require('./routes/craftingRoutes');
 const heroRoutes = require('./routes/heroRoutes');
+const worldEventRoutes = require('./routes/worldEventRoutes');
 
 const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
@@ -101,6 +102,7 @@ app.use('/api/sieges', siegeRoutes);
 app.use('/api/tech', techRoutes);
 app.use('/api/crafting', craftingRoutes);
 app.use('/api/heroes', heroRoutes);
+app.use('/api/world-events', worldEventRoutes);
 
 // SPA fallback: serve index.html for non-API routes
 if (process.env.NODE_ENV === 'production') {
@@ -237,6 +239,11 @@ async function start() {
     // Seed de facciones
     const { seedFactions } = require('./game/seedData');
     await seedFactions(db);
+
+    // Generar eventos iniciales del mundo
+    const worldEventService = require('./services/worldEventService');
+    await worldEventService.cleanExpiredEvents();
+    await worldEventService.generateEvents();
 
     // Iniciar bot de Telegram
     if (process.env.BOT_TOKEN) {

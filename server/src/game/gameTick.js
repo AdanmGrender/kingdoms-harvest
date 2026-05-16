@@ -12,6 +12,8 @@ function sendBotNotification(playerId, message) {
 }
 
 let ioRef = null;
+let lastEventGenTime = 0;
+const EVENT_GEN_INTERVAL_MS = 15 * 60 * 1000; // 15 minutos
 
 // Fractional production accumulator — tracks sub-integer resource amounts
 // between ticks so buildings producing < 60/hour still generate resources.
@@ -311,6 +313,22 @@ async function processWithdrawals() {
   }
 }
 
+async function processWorldEvents() {
+  const now = Date.now();
+  if (now - lastEventGenTime < EVENT_GEN_INTERVAL_MS) return;
+  lastEventGenTime = now;
+  try {
+    const worldEventService = require('../services/worldEventService');
+    await worldEventService.cleanExpiredEvents();
+    const created = await worldEventService.generateEvents();
+    if (created > 0 && ioRef) {
+      ioRef.emit('world_events_updated', { count: created });
+    }
+  } catch (error) {
+    console.error('[Tick] Error procesando eventos del mundo:', error.message);
+  }
+}
+
 function startGameTick(io) {
   ioRef = io;
   // Ejecutar cada minuto
@@ -320,6 +338,10 @@ function startGameTick(io) {
   // Procesar retiros cada 5 minutos
   cron.schedule('*/5 * * * *', processWithdrawals);
   console.log('[Tick] Procesamiento de retiros cada 5 minutos');
+
+  // Generar eventos del mundo cada 15 minutos
+  cron.schedule('*/15 * * * *', processWorldEvents);
+  console.log('[Tick] Eventos del mundo programados cada 15 minutos');
 }
 
 module.exports = { startGameTick, processTick };

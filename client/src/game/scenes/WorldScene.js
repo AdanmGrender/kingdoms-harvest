@@ -16,6 +16,7 @@ import DayNightSystem from '../systems/DayNightSystem';
 import ParticleSystem from '../systems/ParticleSystem';
 import PathfindingSystem from '../systems/PathfindingSystem';
 import NPCBehaviorSystem from '../systems/NPCBehaviorSystem';
+import WorldEventSystem from '../systems/WorldEventSystem';
 import EventBridge from '../EventBridge';
 
 export default class WorldScene extends Phaser.Scene {
@@ -28,6 +29,7 @@ export default class WorldScene extends Phaser.Scene {
     this.particleSystem = null;
     this.pathfinding = null;
     this.npcBehavior = null;
+    this.worldEventSystem = null;
     this.npcs = [];
     this.animals = [];
     this.cropPlots = [];
@@ -270,6 +272,9 @@ export default class WorldScene extends Phaser.Scene {
     for (const building of this.buildings) this.npcBehavior.registerBuilding(building);
     for (const npc of this.npcs) this.npcBehavior.registerNPC(npc);
 
+    // World event markers
+    this.worldEventSystem = new WorldEventSystem(this, this.selectionSystem);
+
     // Add smoke to production buildings
     for (const building of this.buildings) {
       const id = building.buildingData.buildingId;
@@ -400,6 +405,16 @@ export default class WorldScene extends Phaser.Scene {
     // Villagers loaded from server: spawn/replace villager entities
     EventBridge.on('game:villagersUpdated', (villagersData) => {
       this.spawnVillagersFromData(villagersData);
+    });
+
+    // World events loaded from server: render markers on map
+    EventBridge.on('world_events:loaded', (events) => {
+      if (this.worldEventSystem) this.worldEventSystem.loadEvents(events);
+    });
+
+    // Single event claimed: update its marker without full reload
+    EventBridge.on('world_event:claimed', ({ eventId }) => {
+      if (this.worldEventSystem) this.worldEventSystem.markClaimed(eventId);
     });
 
     // Token earned: float "+X KH" text in game world
@@ -541,8 +556,12 @@ export default class WorldScene extends Phaser.Scene {
     EventBridge.removeAllListeners('game:animalsUpdated');
     EventBridge.removeAllListeners('game:missionsUpdated');
     EventBridge.removeAllListeners('game:villagersUpdated');
+    EventBridge.removeAllListeners('world_events:loaded');
+    EventBridge.removeAllListeners('world_event:claimed');
     EventBridge.removeAllListeners('token:earned');
     EventBridge.removeAllListeners('building:completed');
+
+    if (this.worldEventSystem) this.worldEventSystem.destroy();
 
     if (this.cameraSystem)   this.cameraSystem.destroy();
     if (this.selectionSystem) this.selectionSystem.destroy();

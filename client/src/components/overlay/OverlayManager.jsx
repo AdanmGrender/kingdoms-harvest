@@ -13,6 +13,7 @@ import TroopManagementPanel from './TroopManagementPanel';
 import CraftingPanel from './CraftingPanel';
 import HeroPanel from './HeroPanel';
 import CommerceView from '../commerce/CommerceView';
+import WorldEventPanel from './WorldEventPanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -136,6 +137,8 @@ function renderPanel(overlayState, onClose) {
       return <CraftingPanel onClose={onClose} />;
     case 'heroes':
       return <HeroPanel onClose={onClose} />;
+    case 'world_event':
+      return <WorldEventPanel data={overlayState.data} onClose={onClose} />;
     default:
       return (
         <GenericPanel title={overlayState.type} onClose={onClose}>
