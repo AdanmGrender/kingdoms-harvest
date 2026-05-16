@@ -11,6 +11,9 @@ import BuildingToolbar from './components/overlay/BuildingToolbar';
 import TutorialOverlay from './components/overlay/TutorialOverlay';
 import StreakBanner from './components/overlay/StreakBanner';
 
+// Deep-link patterns handled at startup
+const COOP_DEEP_LINK_RE = /^event_(\d+)_s(\d+)$/;
+
 function App() {
   const { initGame, isLoading, error } = useGameStore();
   const overlayActive = useGameStore((s) => !!s.overlayState?.type);
@@ -26,9 +29,52 @@ function App() {
 
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     const urlRef = new URLSearchParams(window.location.search).get('ref');
-    const referralCode = startParam || urlRef || null;
+
+    // Check if the start_param is a co-op session invite (event_5_s12)
+    const coopMatch = startParam && COOP_DEEP_LINK_RE.exec(startParam);
+    const referralCode = coopMatch ? null : (startParam || urlRef || null);
 
     initGame(referralCode);
+
+    // After game loads, auto-join co-op session from deep link
+    if (coopMatch) {
+      const eventId  = parseInt(coopMatch[1], 10);
+      const sessionId = parseInt(coopMatch[2], 10);
+      const handleGameReady = async () => {
+        const store = useGameStore.getState();
+        const joinResult = await store.joinCoopSession(sessionId);
+        if (joinResult) {
+          // Load world events, then open the event panel
+          await store.loadWorldEvents();
+          const events = useGameStore.getState().worldEvents;
+          const ev = events.find((e) => e.id === eventId);
+          if (ev) {
+            store.setOverlay('world_event', {
+              eventId:    ev.id,
+              ...ev,
+              player_in_session: 1,
+              session_id:        sessionId,
+              session_count:     joinResult.participant_count,
+              session_max:       joinResult.max_participants,
+            });
+          }
+          store.addNotification(
+            `¡Te uniste a la sesión cooperativa! ×${joinResult.multiplier?.toFixed(1) || '1.3'} de recompensas`,
+            'success',
+          );
+        }
+      };
+      // Defer until after initGame resolves (loading screen gone)
+      const unsub = useGameStore.subscribe(
+        (state) => state.isLoading,
+        (isLoading) => {
+          if (!isLoading) {
+            unsub();
+            handleGameReady();
+          }
+        },
+      );
+    }
 
     // Listen for building placement from Phaser scene
     const handleBuildingPlaced = async ({ buildingId, posX, posY }) => {

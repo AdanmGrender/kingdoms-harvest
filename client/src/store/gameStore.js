@@ -130,6 +130,37 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  startCoopSession: async (eventId) => {
+    try {
+      const { data } = await api.post(`/world-events/${eventId}/start-coop`);
+      return data;
+    } catch (error) {
+      const msg = error.response?.data?.error || 'Error al iniciar sesión cooperativa';
+      get().addNotification(msg, 'error');
+      return null;
+    }
+  },
+
+  joinCoopSession: async (sessionId) => {
+    try {
+      const { data } = await api.post(`/world-events/session/${sessionId}/join`);
+      return data;
+    } catch (error) {
+      const msg = error.response?.data?.error || 'Error al unirse a la sesión';
+      get().addNotification(msg, 'error');
+      return null;
+    }
+  },
+
+  getCoopSession: async (sessionId) => {
+    try {
+      const { data } = await api.get(`/world-events/session/${sessionId}`);
+      return data;
+    } catch (error) {
+      return null;
+    }
+  },
+
   // ---- Aldeanos ----
   loadVillagers: async () => {
     try {

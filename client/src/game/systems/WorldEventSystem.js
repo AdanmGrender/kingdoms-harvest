@@ -40,11 +40,28 @@ export default class WorldEventSystem {
     const py = event.tile_y * TILE_SIZE + TILE_SIZE / 2;
     const color  = RARITY_COLOR[event.rarity]      || RARITY_COLOR.common;
     const gAlpha = RARITY_GLOW_ALPHA[event.rarity] || RARITY_GLOW_ALPHA.common;
+    const isFeatured = !!event.is_featured;
 
     const tweens = [];
 
+    // Featured events get a larger, golden outer glow ring
+    let featuredRing = null;
+    if (isFeatured) {
+      featuredRing = this.scene.add.ellipse(px, py, 58, 29, 0xffd700, 0.12);
+      featuredRing.setDepth(16);
+      tweens.push(this.scene.tweens.add({
+        targets: featuredRing,
+        scaleX: 1.4, scaleY: 1.4,
+        alpha: { from: 0.06, to: 0.2 },
+        duration: 1600,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      }));
+    }
+
     // Pulsing ellipse glow
-    const glow = this.scene.add.ellipse(px, py, 44, 22, color, gAlpha);
+    const glow = this.scene.add.ellipse(px, py, isFeatured ? 52 : 44, isFeatured ? 26 : 22, color, gAlpha);
     glow.setDepth(17);
     tweens.push(this.scene.tweens.add({
       targets: glow,
@@ -58,7 +75,7 @@ export default class WorldEventSystem {
 
     // Floating icon
     const icon = this.scene.add.text(px, py - 22, event.icon, {
-      fontSize: '20px',
+      fontSize: isFeatured ? '24px' : '20px',
     }).setOrigin(0.5, 0.5).setDepth(20);
 
     tweens.push(this.scene.tweens.add({
@@ -70,23 +87,36 @@ export default class WorldEventSystem {
       ease: 'Sine.easeInOut',
     }));
 
-    // Small rarity dot
-    const dot = this.scene.add.ellipse(px + 10, py - 30, 7, 7, color, 0.9)
-      .setDepth(21);
+    // Small rarity dot (golden star for featured)
+    const dotText = isFeatured ? '★' : null;
+    let dot;
+    if (dotText) {
+      dot = this.scene.add.text(px + 12, py - 34, dotText, {
+        fontSize: '10px',
+        color: '#ffd700',
+      }).setOrigin(0.5, 0.5).setDepth(21);
+    } else {
+      dot = this.scene.add.ellipse(px + 10, py - 30, 7, 7, color, 0.9).setDepth(21);
+    }
 
-    // Register with selection system
+    // Register with selection system — pass all event fields for the panel
     this.selectionSystem.register(icon, 'world_event', {
-      eventId:     event.id,
-      title:       event.title,
-      description: event.description,
-      icon:        event.icon,
-      rarity:      event.rarity,
-      rewards:     event.rewards,
-      expires_at:  event.expires_at,
-      is_claimed:  false,
+      eventId:          event.id,
+      title:            event.title,
+      description:      event.description,
+      icon:             event.icon,
+      rarity:           event.rarity,
+      rewards:          event.rewards,
+      expires_at:       event.expires_at,
+      is_featured:      event.is_featured || 0,
+      is_claimed:       false,
+      session_id:       event.session_id || null,
+      session_count:    event.session_count || 0,
+      session_max:      event.session_max || 4,
+      player_in_session: event.player_in_session || 0,
     });
 
-    this.markers.push({ event, icon, glow, dot, tweens });
+    this.markers.push({ event, icon, glow, dot, featuredRing, tweens });
   }
 
   _createClaimedMarker(event) {
@@ -110,6 +140,7 @@ export default class WorldEventSystem {
     // Stop and destroy animated objects
     for (const t of marker.tweens) { this.scene.tweens.remove(t); }
     marker.tweens = [];
+    if (marker.featuredRing) { marker.featuredRing.destroy(); marker.featuredRing = null; }
     if (marker.glow)  { marker.glow.destroy();  marker.glow  = null; }
     if (marker.dot)   { marker.dot.destroy();    marker.dot   = null; }
 
@@ -125,6 +156,7 @@ export default class WorldEventSystem {
   clearMarkers() {
     for (const m of this.markers) {
       for (const t of m.tweens) { this.scene.tweens.remove(t); }
+      if (m.featuredRing) m.featuredRing.destroy();
       if (m.glow) m.glow.destroy();
       if (m.dot)  m.dot.destroy();
       if (m.icon) {
