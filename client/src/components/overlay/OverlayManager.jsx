@@ -12,6 +12,7 @@ import WarPanel from './WarPanel';
 import TroopManagementPanel from './TroopManagementPanel';
 import CraftingPanel from './CraftingPanel';
 import HeroPanel from './HeroPanel';
+import CommerceView from '../commerce/CommerceView';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -287,11 +288,19 @@ function ConstructionView({ record, meta, onClose }) {
   );
 }
 
+const COMMERCE_BUILDINGS = new Set(['market', 'tavern', 'embassy']);
+
+const UPGRADE_COSTS = [
+  { wood: 20, stone: 10 },
+  { wood: 50, stone: 30, iron: 5 },
+  { wood: 100, stone: 80, iron: 20 },
+  { wood: 200, stone: 150, iron: 50 },
+];
+
 function BuildingInfoPanel({ data, onClose }) {
   const { buildings, upgradeBuilding } = useGameStore();
   const meta = BUILDING_META[data.buildingId] || { name: data.buildingId, sprite: 'castle', zone: '', desc: '' };
 
-  // Find the actual DB record for this building (match by buildingId + position if available)
   const record = buildings.find(b =>
     b.building_id === data.buildingId &&
     (data.posX == null || b.position_x === data.posX)
@@ -300,26 +309,21 @@ function BuildingInfoPanel({ data, onClose }) {
   const level = record?.level ?? data.level ?? 1;
   const isBuilding = record?.is_building ?? data.isBuilding ?? false;
 
-  // Construction in progress → show dedicated panel
   if (isBuilding) {
     return <ConstructionView record={record} meta={meta} onClose={onClose} />;
   }
 
-  const UPGRADE_COSTS = [
-    { wood: 20, stone: 10 },
-    { wood: 50, stone: 30, iron: 5 },
-    { wood: 100, stone: 80, iron: 20 },
-    { wood: 200, stone: 150, iron: 50 },
-  ];
+  const isCommerce = COMMERCE_BUILDINGS.has(data.buildingId);
   const upgradeCost = UPGRADE_COSTS[Math.min(level - 1, UPGRADE_COSTS.length - 1)];
 
   return (
     <div className="mx-2 mb-2 rounded-t-xl overflow-hidden"
       style={{ background: 'rgba(22, 33, 62, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
-      {/* Header strip */}
+
+      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
         <div className="flex items-center gap-3">
-          <SpriteIcon name={meta.sprite} size={36} />
+          <SpriteIcon name={meta.sprite} size={32} />
           <div>
             <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
               {meta.name}
@@ -330,19 +334,46 @@ function BuildingInfoPanel({ data, onClose }) {
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
       </div>
 
-      <div className="px-4 py-3 space-y-3">
-        <p className="text-gray-300 text-xs">{meta.desc}</p>
-        {record && (
-          <button
-            onClick={() => { upgradeBuilding(record.id); onClose(); }}
-            className="w-full py-2 rounded-lg text-xs font-bold text-white"
-            style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
-          >
-            ⬆ Mejorar a Nivel {level + 1}
-            <span className="ml-2 opacity-75 text-[10px]">
-              🪵{upgradeCost.wood} 🪨{upgradeCost.stone}{upgradeCost.iron ? ` ⛏️${upgradeCost.iron}` : ''}
-            </span>
-          </button>
+      <div className="px-4 py-3">
+        {isCommerce ? (
+          /* Commerce buildings: show full trade interface */
+          <CommerceView buildingId={data.buildingId} />
+        ) : (
+          /* Generic buildings: description + upgrade */
+          <div className="space-y-3">
+            <p className="text-gray-300 text-xs">{meta.desc}</p>
+            {record && (
+              <button
+                onClick={() => { upgradeBuilding(record.id); onClose(); }}
+                className="w-full py-2 rounded-lg text-xs font-bold text-white"
+                style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
+              >
+                ⬆ Mejorar a Nivel {level + 1}
+                <span className="ml-2 opacity-75 text-[10px]">
+                  🪵{upgradeCost.wood} 🪨{upgradeCost.stone}{upgradeCost.iron ? ` ⛏️${upgradeCost.iron}` : ''}
+                </span>
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Upgrade button for commerce buildings too, collapsed */}
+        {isCommerce && record && (
+          <details className="mt-3">
+            <summary className="text-[10px] text-gray-500 cursor-pointer hover:text-gray-300">
+              Mejorar edificio ▸
+            </summary>
+            <button
+              onClick={() => { upgradeBuilding(record.id); onClose(); }}
+              className="w-full mt-2 py-2 rounded-lg text-xs font-bold text-white"
+              style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
+            >
+              ⬆ Mejorar a Nivel {level + 1}
+              <span className="ml-2 opacity-75 text-[10px]">
+                🪵{upgradeCost.wood} 🪨{upgradeCost.stone}{upgradeCost.iron ? ` ⛏️${upgradeCost.iron}` : ''}
+              </span>
+            </button>
+          </details>
         )}
       </div>
     </div>
