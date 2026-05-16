@@ -179,25 +179,38 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   createVillagers() {
-    // Spawn some default villagers in the farm zone
-    // In production, these would come from the server API
-    const defaultVillagers = [
-      { id: 1, name: 'Aldric', role: 'farmer', state: 'idle' },
-      { id: 2, name: 'Brynn', role: 'builder', state: 'idle' },
-      { id: 3, name: 'Cedric', role: 'soldier', state: 'idle' },
-    ];
+    // Villagers are loaded from the server API via game:villagersUpdated event.
+    // This method is intentionally empty; spawnVillagersFromData() handles creation.
+  }
+
+  spawnVillagersFromData(villagersData) {
+    // Destroy any existing villager sprites before replacing
+    for (const v of this.villagers) {
+      try { v.destroy(); } catch {}
+    }
+    this.villagers = [];
 
     const spawn = this.mapData.objects.find(o => o.type === 'spawn');
     const cx = (spawn?.x ?? 40) * TILE_SIZE;
     const cy = (spawn?.y ?? 32) * TILE_SIZE;
 
-    for (let i = 0; i < defaultVillagers.length; i++) {
-      const data = defaultVillagers[i];
-      const px = cx + Phaser.Math.Between(-64, 64);
-      const py = cy + Phaser.Math.Between(-64, 64);
-
+    for (const data of villagersData) {
+      const px = cx + Phaser.Math.Between(-96, 96);
+      const py = cy + Phaser.Math.Between(-96, 96);
       const villager = new Villager(this, px, py, data);
       this.villagers.push(villager);
+    }
+
+    // Re-register villagers with selection system
+    if (this.selectionSystem) {
+      for (const villager of this.villagers) {
+        this.selectionSystem.register(villager, 'villager', {
+          villagerId: villager.villagerData.id,
+          name: villager.villagerData.name,
+          role: villager.villagerData.role,
+          state: villager.villagerData.state,
+        });
+      }
     }
   }
 
@@ -384,6 +397,11 @@ export default class WorldScene extends Phaser.Scene {
       }
     });
 
+    // Villagers loaded from server: spawn/replace villager entities
+    EventBridge.on('game:villagersUpdated', (villagersData) => {
+      this.spawnVillagersFromData(villagersData);
+    });
+
     // Token earned: float "+X KH" text in game world
     EventBridge.on('token:earned', ({ amount, x, y }) => {
       if (!this.particleSystem || amount <= 0) return;
@@ -522,6 +540,7 @@ export default class WorldScene extends Phaser.Scene {
     EventBridge.removeAllListeners('game:plotsUpdated');
     EventBridge.removeAllListeners('game:animalsUpdated');
     EventBridge.removeAllListeners('game:missionsUpdated');
+    EventBridge.removeAllListeners('game:villagersUpdated');
     EventBridge.removeAllListeners('token:earned');
     EventBridge.removeAllListeners('building:completed');
 

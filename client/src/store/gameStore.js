@@ -24,6 +24,9 @@ const useGameStore = create((set, get) => ({
   heroes: [],
   heroItems: [],
 
+  // Villagers
+  villagers: [],
+
   // Token system
   tokenInfo: null,
   dailyTasks: [],
@@ -77,9 +80,10 @@ const useGameStore = create((set, get) => ({
         missions: data.activeMissions || [],
         isLoading: false,
       });
-      // Cargar parcelas y animales
+      // Cargar parcelas, animales y aldeanos
       get().loadPlots();
       get().loadAnimals();
+      get().loadVillagers();
       EventBridge.emit('game:missionsUpdated', data.activeMissions || []);
 
       // Conectar socket para notificaciones en tiempo real
@@ -97,6 +101,17 @@ const useGameStore = create((set, get) => ({
       set({ resources: data });
     } catch (error) {
       console.error('Error refreshing resources:', error);
+    }
+  },
+
+  // ---- Aldeanos ----
+  loadVillagers: async () => {
+    try {
+      const { data } = await api.get('/villagers');
+      set({ villagers: data });
+      EventBridge.emit('game:villagersUpdated', data);
+    } catch (error) {
+      console.error('Error loading villagers:', error);
     }
   },
 
