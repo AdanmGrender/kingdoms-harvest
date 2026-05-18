@@ -65,14 +65,14 @@ describe('HeroService — getHeroes', () => {
   let insertedId;
 
   beforeAll(async () => {
-    const [id] = await db('player_heroes').insert({
+    const [{ id }] = await db('player_heroes').insert({
       player_id: HERO_PLAYER_ID,
       hero_id: 'aria',
       level: 3,
       xp: 0,
       equipment: JSON.stringify({ weapon: 'iron_sword', armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
+    }).returning('id');
     insertedId = id;
   });
 
@@ -104,22 +104,22 @@ describe('HeroService — getHeroes', () => {
   });
 
   test('stats increase with level', async () => {
-    const [idLv1] = await db('player_heroes').insert({
+    const [{ id: idLv1 }] = await db('player_heroes').insert({
       player_id: HERO_PLAYER_ID,
       hero_id: 'aria',
       level: 1,
       xp: 0,
       equipment: JSON.stringify({ weapon: null, armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
-    const [idLv10] = await db('player_heroes').insert({
+    }).returning('id');
+    const [{ id: idLv10 }] = await db('player_heroes').insert({
       player_id: HERO_PLAYER_ID,
       hero_id: 'aria',
       level: 10,
       xp: 0,
       equipment: JSON.stringify({ weapon: null, armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
+    }).returning('id');
 
     const heroes = await heroService.getHeroes(HERO_PLAYER_ID);
     const lv1 = heroes.find((h) => h.dbId === idLv1);
@@ -138,22 +138,22 @@ describe('HeroService — getHeroes', () => {
   });
 
   test('item bonuses are reflected in stats', async () => {
-    const [idNoItem] = await db('player_heroes').insert({
+    const [{ id: idNoItem }] = await db('player_heroes').insert({
       player_id: HERO_PLAYER_ID,
       hero_id: 'aria',
       level: 1,
       xp: 0,
       equipment: JSON.stringify({ weapon: null, armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
-    const [idWithItem] = await db('player_heroes').insert({
+    }).returning('id');
+    const [{ id: idWithItem }] = await db('player_heroes').insert({
       player_id: HERO_PLAYER_ID,
       hero_id: 'aria',
       level: 1,
       xp: 0,
       equipment: JSON.stringify({ weapon: 'iron_sword', armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
+    }).returning('id');
 
     const heroes = await heroService.getHeroes(HERO_PLAYER_ID);
     const bare = heroes.find((h) => h.dbId === idNoItem);
@@ -317,14 +317,14 @@ describe('HeroService — levelUpHero', () => {
   let heroDbId;
 
   beforeEach(async () => {
-    const [id] = await db('player_heroes').insert({
+    const [{ id }] = await db('player_heroes').insert({
       player_id: HERO_PLAYER_ID,
       hero_id: 'aria',
       level: 5,
       xp: 0,
       equipment: JSON.stringify({ weapon: null, armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
+    }).returning('id');
     heroDbId = id;
     await db('player_resources')
       .where({ player_id: HERO_PLAYER_ID, resource_id: 'gold' })
@@ -384,14 +384,14 @@ describe('HeroService — equipItem', () => {
   let heroDbId;
 
   beforeEach(async () => {
-    const [id] = await db('player_heroes').insert({
+    const [{ id }] = await db('player_heroes').insert({
       player_id: HERO_PLAYER_ID,
       hero_id: 'aria',
       level: 1,
       xp: 0,
       equipment: JSON.stringify({ weapon: null, armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
+    }).returning('id');
     heroDbId = id;
     await db('player_items').insert({ player_id: HERO_PLAYER_ID, item_id: 'iron_sword', quantity: 1 });
   });
@@ -462,14 +462,14 @@ describe('HeroService — unequipItem', () => {
   let heroDbId;
 
   beforeEach(async () => {
-    const [id] = await db('player_heroes').insert({
+    const [{ id }] = await db('player_heroes').insert({
       player_id: HERO_PLAYER_ID,
       hero_id: 'aria',
       level: 1,
       xp: 0,
       equipment: JSON.stringify({ weapon: 'iron_sword', armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
+    }).returning('id');
     heroDbId = id;
   });
 

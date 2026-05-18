@@ -469,14 +469,14 @@ const worldEventService = {
       };
     }
 
-    const [sessionId] = await db('event_sessions').insert({
+    const [{ id: sessionId }] = await db('event_sessions').insert({
       event_id:          eventId,
       host_player_id:    playerId,
       participant_count: 1,
       max_participants:  4,
       expires_at:        event.expires_at,
       created_at:        new Date().toISOString(),
-    });
+    }).returning('id');
 
     // Add host as first participant
     await db('event_session_participants').insert({

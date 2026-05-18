@@ -75,6 +75,11 @@ async function processTick() {
           });
         }
 
+        if (building.building_id === 'house') {
+          const villagerService = require('../services/villagerService');
+          await villagerService.checkAndSpawnInitial(building.player_id);
+        }
+
         if (ioRef) {
           ioRef.to(`player_${building.player_id}`).emit('building_complete', {
             buildingId: building.id,
@@ -126,13 +131,11 @@ async function processTick() {
         if (intAmount > 0) {
           productionAccumulators[key] -= intAmount;
           try {
-            // Cap at capacity to prevent overflow; check count to detect missing row
-            const result = db.raw(
-              'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
+            const result = await db.raw(
+              'UPDATE "player_resources" SET "amount" = LEAST("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
               [intAmount, playerId, resource]
             );
-            if (result.count === 0) {
-              // Resource row doesn't exist yet — insert it
+            if (result.rowCount === 0) {
               await db('player_resources').insert({
                 player_id: playerId,
                 resource_id: resource,
@@ -251,10 +254,10 @@ async function processTick() {
       const rolled = allPlayers.filter((p) => (p.world_time || 0) + timeIncrement >= 1.0);
 
       // One SQL statement updates every player atomically — no event-loop yield between rows
-      db.raw(
+      await db.raw(
         `UPDATE "players" SET
-           "world_time" = ("world_time" + ?) - CAST(("world_time" + ?) AS INTEGER),
-           "world_day"  = "world_day" + CAST(("world_time" + ?) AS INTEGER)`,
+           "world_time" = ("world_time" + ?) - FLOOR(("world_time" + ?))::INTEGER,
+           "world_day"  = "world_day" + FLOOR(("world_time" + ?))::INTEGER`,
         [timeIncrement, timeIncrement, timeIncrement]
       );
 

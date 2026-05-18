@@ -60,7 +60,7 @@ const missionService = {
     for (let i = 0; i < maxMissions; i++) {
       const mission = this.createRandomMission(player.level);
       mission.player_id = playerId;
-      const [id] = await db('missions').insert(mission);
+      const [{ id }] = await db('missions').insert(mission).returning('id');
       missions.push({ id, ...mission });
     }
 

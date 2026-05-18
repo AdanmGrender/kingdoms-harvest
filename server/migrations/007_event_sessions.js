@@ -1,6 +1,5 @@
 exports.up = async function (db) {
-  // Add featured-event column to existing world_events table
-  db.raw('ALTER TABLE "world_events" ADD COLUMN "is_featured" INTEGER DEFAULT 0');
+  await db.raw('ALTER TABLE "world_events" ADD COLUMN IF NOT EXISTS "is_featured" INTEGER DEFAULT 0');
 
   await db.schema.createTable('event_sessions', (t) => {
     t.increments('id').primary();
@@ -19,8 +18,8 @@ exports.up = async function (db) {
     t.text('joined_at').notNullable();
   });
 
-  db.raw('CREATE INDEX IF NOT EXISTS idx_event_sessions_event ON event_sessions (event_id)');
-  db.raw('CREATE UNIQUE INDEX IF NOT EXISTS idx_session_participants_unique ON event_session_participants (session_id, player_id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_event_sessions_event ON event_sessions (event_id)');
+  await db.raw('CREATE UNIQUE INDEX IF NOT EXISTS idx_session_participants_unique ON event_session_participants (session_id, player_id)');
 };
 
 exports.down = async function (db) {

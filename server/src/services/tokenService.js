@@ -275,14 +275,14 @@ const tokenService = {
       .increment('total_withdrawn', amount);
 
     // Create withdrawal request
-    const [requestId] = await db('withdrawal_requests').insert({
+    const [{ id: requestId }] = await db('withdrawal_requests').insert({
       player_id: playerId,
       amount,
       ton_amount: tonAmount,
       wallet_address: tokenData.wallet_address,
       status: 'pending',
       created_at: new Date().toISOString(),
-    });
+    }).returning('id');
 
     return {
       success: true,

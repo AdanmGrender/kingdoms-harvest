@@ -112,14 +112,14 @@ const heroService = {
     const pool = Object.values(HEROES).filter((h) => h.rarity === rarityId);
     const hero = pool[crypto.randomInt(0, pool.length)];
 
-    const [heroDbId] = await db('player_heroes').insert({
+    const [{ id: heroDbId }] = await db('player_heroes').insert({
       player_id:   playerId,
       hero_id:     hero.id,
       level:       1,
       xp:          0,
       equipment:   JSON.stringify({ weapon: null, armor: null, accessory: null }),
       obtained_at: new Date().toISOString(),
-    });
+    }).returning('id');
 
     // Drop a starter item (random common item)
     const commonItems = Object.values(HERO_ITEMS).filter((i) => i.rarity === 'common');
@@ -146,74 +146,88 @@ const heroService = {
   },
 
   async levelUpHero(playerId, heroDbId) {
-    const row = await db('player_heroes')
-      .where({ id: heroDbId, player_id: playerId }).first();
-    if (!row) throw new Error('Héroe no encontrado');
-    if (row.level >= 20) throw new Error('El héroe ya está al nivel máximo (20)');
+    return db.transaction(async (trx) => {
+      const row = await trx('player_heroes')
+        .where({ id: heroDbId, player_id: playerId })
+        .forUpdate()
+        .first();
+      if (!row) throw new Error('Héroe no encontrado');
+      if (row.level >= 20) throw new Error('El héroe ya está al nivel máximo (20)');
 
-    const goldCost = 50 * row.level;
-    await getPlayerService().modifyResource(playerId, 'gold', -goldCost);
+      const goldCost = 50 * row.level;
+      const affected = await trx('player_resources')
+        .where({ player_id: playerId, resource_id: 'gold' })
+        .where('amount', '>=', goldCost)
+        .decrement('amount', goldCost);
+      if (!affected) throw new Error(`Necesitás ${goldCost} oro para subir de nivel`);
 
-    await db('player_heroes').where('id', heroDbId).update({
-      level: row.level + 1,
-      xp:    0,
+      await trx('player_heroes').where('id', heroDbId).update({
+        level: row.level + 1,
+        xp:    0,
+      });
+
+      const hero = HEROES[row.hero_id];
+      const updated = { ...row, level: row.level + 1, xp: 0 };
+      return {
+        success:  true,
+        newLevel: updated.level,
+        stats:    computeStats(hero, updated),
+        message:  `¡${hero.name} subió al nivel ${updated.level}!`,
+      };
     });
-
-    const hero = HEROES[row.hero_id];
-    const updated = { ...row, level: row.level + 1, xp: 0 };
-    return {
-      success:  true,
-      newLevel: updated.level,
-      stats:    computeStats(hero, updated),
-      message:  `¡${hero.name} subió al nivel ${updated.level}!`,
-    };
   },
 
   async equipItem(playerId, heroDbId, itemId) {
-    const row = await db('player_heroes')
-      .where({ id: heroDbId, player_id: playerId }).first();
-    if (!row) throw new Error('Héroe no encontrado');
+    return db.transaction(async (trx) => {
+      const row = await trx('player_heroes')
+        .where({ id: heroDbId, player_id: playerId })
+        .forUpdate()
+        .first();
+      if (!row) throw new Error('Héroe no encontrado');
 
-    const item = HERO_ITEMS[itemId];
-    if (!item) throw new Error('Objeto no válido');
+      const item = HERO_ITEMS[itemId];
+      if (!item) throw new Error('Objeto no válido');
 
-    const playerItem = await db('player_items')
-      .where({ player_id: playerId, item_id: itemId }).first();
-    if (!playerItem || playerItem.quantity < 1) throw new Error('No tenés ese objeto en el inventario');
+      const playerItem = await trx('player_items')
+        .where({ player_id: playerId, item_id: itemId })
+        .forUpdate()
+        .first();
+      if (!playerItem || playerItem.quantity < 1) throw new Error('No tenés ese objeto en el inventario');
 
-    let equipment;
-    try { equipment = JSON.parse(row.equipment); } catch { equipment = { weapon: null, armor: null, accessory: null }; }
+      let equipment;
+      try { equipment = JSON.parse(row.equipment); } catch { equipment = { weapon: null, armor: null, accessory: null }; }
 
-    // Return currently equipped item to inventory
-    const currentItem = equipment[item.slot];
-    if (currentItem) {
-      const existing = await db('player_items')
-        .where({ player_id: playerId, item_id: currentItem }).first();
-      if (existing) {
-        await db('player_items').where('id', existing.id).increment('quantity', 1);
-      } else {
-        await db('player_items').insert({ player_id: playerId, item_id: currentItem, quantity: 1 });
+      // Return currently equipped item to inventory
+      const currentItem = equipment[item.slot];
+      if (currentItem) {
+        const existing = await trx('player_items')
+          .where({ player_id: playerId, item_id: currentItem }).first();
+        if (existing) {
+          await trx('player_items').where('id', existing.id).increment('quantity', 1);
+        } else {
+          await trx('player_items').insert({ player_id: playerId, item_id: currentItem, quantity: 1 });
+        }
       }
-    }
 
-    // Equip new item (decrement inventory)
-    equipment[item.slot] = itemId;
-    await db('player_heroes').where('id', heroDbId).update({
-      equipment: JSON.stringify(equipment),
+      // Equip new item (decrement inventory)
+      equipment[item.slot] = itemId;
+      await trx('player_heroes').where('id', heroDbId).update({
+        equipment: JSON.stringify(equipment),
+      });
+      if (playerItem.quantity <= 1) {
+        await trx('player_items').where('id', playerItem.id).delete();
+      } else {
+        await trx('player_items').where('id', playerItem.id).decrement('quantity', 1);
+      }
+
+      const hero = HEROES[row.hero_id];
+      return {
+        success:   true,
+        equipment,
+        stats:     computeStats(hero, { ...row, equipment: JSON.stringify(equipment) }),
+        message:   `${item.icon} ${item.name} equipado en ${hero.name}`,
+      };
     });
-    if (playerItem.quantity <= 1) {
-      await db('player_items').where('id', playerItem.id).delete();
-    } else {
-      await db('player_items').where('id', playerItem.id).decrement('quantity', 1);
-    }
-
-    const hero = HEROES[row.hero_id];
-    return {
-      success:   true,
-      equipment,
-      stats:     computeStats(hero, { ...row, equipment: JSON.stringify(equipment) }),
-      message:   `${item.icon} ${item.name} equipado en ${hero.name}`,
-    };
   },
 
   async unequipItem(playerId, heroDbId, slot) {

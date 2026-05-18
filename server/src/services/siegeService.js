@@ -10,60 +10,62 @@ const siegeService = {
   async declareWar(attackerId, defenderId, army) {
     if (attackerId === defenderId) throw new Error('No podés atacarte a vos mismo');
 
-    // Check no active siege from this attacker
-    const activeSiege = await db('sieges')
-      .where('attacker_id', attackerId)
-      .whereIn('status', ['marching', 'fighting'])
-      .first();
-    if (activeSiege) throw new Error('Ya tenés un asedio en curso');
-
-    // Validate and sanitize army
+    // Sanitize and validate army composition before entering transaction
     army = combatService.sanitizeArmy(army);
     await combatService.validateArmy(attackerId, army);
 
-    // Deduct troops from player (they're marching)
-    for (const [troopId, qty] of Object.entries(army)) {
-      await db('player_troops')
-        .where({ player_id: attackerId, troop_id: troopId })
-        .decrement('quantity', qty);
-    }
-
-    // Calculate march time based on army speed
+    // Calculate march time
     let slowestSpeed = Infinity;
     for (const [troopId] of Object.entries(army)) {
       const troop = TROOPS[troopId];
       if (troop && troop.speed < slowestSpeed) slowestSpeed = troop.speed;
     }
-
-    // March time inversely proportional to speed, clamped
     const marchTime = Math.min(
       SIEGE_CONFIG.maxMarchTime,
       Math.max(SIEGE_CONFIG.baseMarchTime, Math.floor(SIEGE_CONFIG.baseMarchTime * (10 / slowestSpeed)))
     );
-
     const now = new Date();
     const arrivesAt = new Date(now.getTime() + marchTime);
 
-    const [siegeId] = await db('sieges').insert({
-      attacker_id: attackerId,
-      defender_id: defenderId,
-      status: 'marching',
-      attacker_army: JSON.stringify(army),
-      defender_army: null,
-      march_started_at: now.toISOString(),
-      arrives_at: arrivesAt.toISOString(),
-      resolved_at: null,
-      result: null,
-      loot: null,
-    });
+    return db.transaction(async (trx) => {
+      // Check no active siege (inside transaction to prevent concurrent double-march)
+      const activeSiege = await trx('sieges')
+        .where('attacker_id', attackerId)
+        .whereIn('status', ['marching', 'fighting'])
+        .forUpdate()
+        .first();
+      if (activeSiege) throw new Error('Ya tenés un asedio en curso');
 
-    return {
-      siegeId,
-      marchTime,
-      arrivesAt: arrivesAt.toISOString(),
-      army,
-      message: `Tropas en marcha! Llegada en ${Math.ceil(marchTime / 60000)} min.`,
-    };
+      // Atomically deduct troops — roll back whole transaction if any unit is short
+      for (const [troopId, qty] of Object.entries(army)) {
+        const affected = await trx('player_troops')
+          .where({ player_id: attackerId, troop_id: troopId })
+          .where('quantity', '>=', qty)
+          .decrement('quantity', qty);
+        if (!affected) throw new Error(`No tenés suficientes ${TROOPS[troopId]?.name || troopId}`);
+      }
+
+      const [{ id: siegeId }] = await trx('sieges').insert({
+        attacker_id: attackerId,
+        defender_id: defenderId,
+        status: 'marching',
+        attacker_army: JSON.stringify(army),
+        defender_army: null,
+        march_started_at: now.toISOString(),
+        arrives_at: arrivesAt.toISOString(),
+        resolved_at: null,
+        result: null,
+        loot: null,
+      }).returning('id');
+
+      return {
+        siegeId,
+        marchTime,
+        arrivesAt: arrivesAt.toISOString(),
+        army,
+        message: `Tropas en marcha! Llegada en ${Math.ceil(marchTime / 60000)} min.`,
+      };
+    });
   },
 
   /**

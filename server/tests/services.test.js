@@ -503,7 +503,7 @@ describe('MissionService', () => {
     const goldBefore = await db('player_resources')
       .where({ player_id: TEST_PLAYER_ID, resource_id: 'gold' }).first();
 
-    const [missionId] = await db('missions').insert({
+    const [{ id: missionId }] = await db('missions').insert({
       player_id: TEST_PLAYER_ID,
       title: 'Test Mission',
       description: 'Test',
@@ -513,7 +513,7 @@ describe('MissionService', () => {
       status: 'accepted',
       is_urgent: false,
       expires_at: new Date(Date.now() + 86400000).toISOString(),
-    });
+    }).returning('id');
 
     const result = await missionService.completeMission(TEST_PLAYER_ID, missionId);
     expect(result.success).toBe(true);
@@ -542,7 +542,7 @@ describe('MissionService', () => {
       .where({ player_id: TEST_PLAYER_ID, resource_id: 'iron' })
       .update({ amount: 10 });
 
-    const [missionId] = await db('missions').insert({
+    const [{ id: missionId }] = await db('missions').insert({
       player_id: TEST_PLAYER_ID,
       title: 'Hard Mission',
       description: 'Test rollback',
@@ -552,7 +552,7 @@ describe('MissionService', () => {
       status: 'accepted',
       is_urgent: false,
       expires_at: new Date(Date.now() + 86400000).toISOString(),
-    });
+    }).returning('id');
 
     await expect(
       missionService.completeMission(TEST_PLAYER_ID, missionId)

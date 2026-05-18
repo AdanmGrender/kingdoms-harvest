@@ -49,14 +49,14 @@ const playerService = {
       ];
 
       for (const b of starterBuildings) {
-        const [buildingId] = await db('player_buildings').insert({
+        const [{ id: buildingId }] = await db('player_buildings').insert({
           player_id: telegramId,
           building_id: b.building_id,
           level: b.level,
           is_building: false,
           position_x: b.position_x,
           position_y: b.position_y,
-        });
+        }).returning('id');
 
         // Crear farm plots para las parcelas
         if (b.building_id === 'farm_plot') {

@@ -16,8 +16,8 @@ exports.up = async function (db) {
     t.integer('quantity').notNullable().defaultTo(1);
   });
 
-  db.raw('CREATE INDEX IF NOT EXISTS idx_player_heroes_player ON player_heroes (player_id)');
-  db.raw('CREATE INDEX IF NOT EXISTS idx_player_items_player ON player_items (player_id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_player_heroes_player ON player_heroes (player_id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_player_items_player ON player_items (player_id)');
 };
 
 exports.down = async function (db) {

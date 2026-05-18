@@ -99,14 +99,14 @@ const commerceService = {
       'Caravana Imperial', 'Buhoneros Errantes', 'Feria Ambulante',
     ];
 
-    const [id] = await db('caravans').insert({
+    const [{ id }] = await db('caravans').insert({
       name: caravanNames[Math.floor(secureRandom() * caravanNames.length)],
       buy_offers: JSON.stringify(buyOffers),
       sell_offers: JSON.stringify(sellOffers),
       arrives_at: arrives.toISOString(),
       departs_at: departs.toISOString(),
       is_active: true,
-    });
+    }).returning('id');
 
     return db('caravans').where('id', id).first();
   },

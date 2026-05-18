@@ -15,7 +15,6 @@ const useGameStore = create((set, get) => ({
   missions: [],
   isLoading: true,
   error: null,
-  activeTab: 'farm', // farm, castle, combat, commerce, map
 
   // Crafting
   craftableItems: [],
@@ -44,16 +43,12 @@ const useGameStore = create((set, get) => ({
 
   // Overlay state for RTS mode
   overlayState: null, // { type: string, data: object } or null
-  selectedEntity: null, // currently selected entity info
 
   // Notificaciones del juego
   notifications: [],
 
-  setActiveTab: (tab) => set({ activeTab: tab }),
-
   setOverlay: (type, data) => set({ overlayState: { type, data } }),
   clearOverlay: () => set({ overlayState: null }),
-  setSelectedEntity: (entity) => set({ selectedEntity: entity }),
 
   addNotification: (message, type = 'info') => {
     const id = Date.now();

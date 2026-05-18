@@ -21,9 +21,9 @@ exports.up = async function (db) {
     t.text('claimed_at').notNullable();
   });
 
-  db.raw('CREATE INDEX IF NOT EXISTS idx_world_events_active ON world_events (is_active)');
-  db.raw('CREATE INDEX IF NOT EXISTS idx_event_claims_player ON world_event_claims (player_id)');
-  db.raw('CREATE UNIQUE INDEX IF NOT EXISTS idx_event_claims_unique ON world_event_claims (event_id, player_id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_world_events_active ON world_events (is_active)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_event_claims_player ON world_event_claims (player_id)');
+  await db.raw('CREATE UNIQUE INDEX IF NOT EXISTS idx_event_claims_unique ON world_event_claims (event_id, player_id)');
 };
 
 exports.down = async function (db) {
