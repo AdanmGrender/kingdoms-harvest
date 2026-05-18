@@ -177,6 +177,7 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.get('/farm/plots');
       set({ plots: data });
+      EventBridge.emit('game:plotsUpdated', data);
     } catch (error) {
       console.error('Error loading plots:', error);
     }
@@ -216,6 +217,7 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.get('/farm/animals');
       set({ animals: data });
+      EventBridge.emit('game:animalsUpdated', data);
     } catch (error) {
       console.error('Error loading animals:', error);
     }

@@ -32,6 +32,7 @@ const tokenService = {
 
     const tokenData = await db('player_tokens').where('player_id', playerId).first();
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     const streak = await db('player_streaks').where('player_id', playerId).first();
 
     const dailyCap = getDailyCap(player.level);
@@ -62,6 +63,7 @@ const tokenService = {
 
     const tokenData = await db('player_tokens').where('player_id', playerId).first();
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     const streak = await db('player_streaks').where('player_id', playerId).first();
 
     const dailyCap = getDailyCap(player.level);

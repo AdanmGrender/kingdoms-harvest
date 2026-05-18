@@ -18,6 +18,8 @@ export function connectSocket(initData) {
       text: `🏗️ ¡Construcción lista! ${buildingType}`,
       type: 'success',
     });
+    // Refresh buildings so Phaser clears the construction scaffold
+    EventBridge.emit('buildings:refresh');
   });
 
   socket.on('troops_trained', ({ troopId, quantity }) => {
@@ -35,8 +37,7 @@ export function connectSocket(initData) {
   });
 
   socket.on('resources_updated', () => {
-    // Debounced — store handles actual reload
-    EventBridge.emit('resources:tick');
+    EventBridge.emit('resources:refresh');
   });
 
   socket.on('crop_ready', ({ count }) => {

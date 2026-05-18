@@ -98,7 +98,8 @@ export default function BuildingToolbar() {
   const canAfford = useCallback((cost) => {
     if (!resources) return false;
     for (const [resource, amount] of Object.entries(cost)) {
-      const playerAmount = resources[resource] ?? 0;
+      // resources[key] is { amount, capacity }, not a bare number
+      const playerAmount = resources[resource]?.amount ?? 0;
       if (playerAmount < amount) return false;
     }
     return true;

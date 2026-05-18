@@ -93,12 +93,15 @@ const heroService = {
     const rarity = HERO_RARITIES[rarityId];
 
     if (payWithTokens) {
-      const tokenService = getTokenService();
       const tokenData = await db('player_tokens').where('player_id', playerId).first();
       if (!tokenData || tokenData.balance < rarity.summonCost) {
         throw new Error(`Necesitás ${rarity.summonCost} KH Tokens para invocar un héroe ${rarity.name}`);
       }
-      await db('player_tokens').where('player_id', playerId).decrement('balance', rarity.summonCost);
+      // Atomic deduction — safe against concurrent summon requests
+      const taken = await db('player_tokens')
+        .where('player_id', playerId)
+        .decrementIfEnough('balance', rarity.summonCost);
+      if (!taken) throw new Error(`Necesitás ${rarity.summonCost} KH Tokens para invocar un héroe ${rarity.name}`);
     } else {
       // Pay with gold (common only)
       if (rarityId !== 'common') throw new Error('Solo podés invocar héroes Comunes con oro');

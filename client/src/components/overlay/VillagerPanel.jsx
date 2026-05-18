@@ -1,9 +1,9 @@
 /**
  * VillagerPanel: Shows selected villager info and assignment controls.
  */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import useGameStore from '../../store/gameStore';
-import EventBridge from '../../game/EventBridge';
+import api from '../../services/api';
 
 const ROLE_LABELS = {
   farmer: { icon: '🧑‍🌾', label: 'Granjero' },
@@ -52,14 +52,8 @@ export default function VillagerPanel({ data, onClose }) {
 
   const handleAssign = async (buildingId) => {
     try {
-      const res = await fetch('/api/villagers/assign', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ villagerId: data.villagerId, buildingId }),
-      });
-      if (res.ok) {
-        setAssigning(false);
-      }
+      await api.post('/villagers/assign', { villagerId: data.villagerId, buildingId });
+      setAssigning(false);
     } catch (err) {
       console.error('Error assigning villager:', err);
     }
@@ -67,11 +61,7 @@ export default function VillagerPanel({ data, onClose }) {
 
   const handleUnassign = async () => {
     try {
-      await fetch('/api/villagers/unassign', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ villagerId: data.villagerId }),
-      });
+      await api.post('/villagers/unassign', { villagerId: data.villagerId });
     } catch (err) {
       console.error('Error unassigning villager:', err);
     }

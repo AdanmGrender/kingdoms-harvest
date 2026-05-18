@@ -204,6 +204,7 @@ const playerService = {
    */
   async addXP(playerId, amount) {
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     const { LEVEL_XP_TABLE } = require('../../../shared/gameConfig');
 
     let newXP = player.xp + amount;
@@ -234,6 +235,7 @@ const playerService = {
     }
 
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     if (player.faction_id) {
       throw new Error('Ya pertenecés a una facción');
     }

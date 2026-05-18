@@ -54,6 +54,7 @@ const missionService = {
       .delete();
 
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     const missions = [];
 
     for (let i = 0; i < maxMissions; i++) {

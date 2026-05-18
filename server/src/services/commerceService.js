@@ -180,11 +180,7 @@ const commerceService = {
     }
     await playerService.modifyResource(playerId, 'gold', totalGold);
 
-    // Dar KH Tokens + trackear tarea diaria
-    const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
-    await dailyTaskService.trackProgress(playerId, 'sell');
-
-    // Re-read caravan to get current capacity (prevents race condition between concurrent sellers)
+    // Verify caravan still has capacity BEFORE awarding tokens (avoids unrollbackable award)
     const freshCaravan = await this.getActiveCaravan();
     const freshOffer = freshCaravan.sell_offers.find((o) => o.resource_id === resourceId);
     if (!freshOffer || freshOffer.quantity < quantity) {
@@ -193,10 +189,15 @@ const commerceService = {
       await playerService.modifyResource(playerId, 'gold', -totalGold);
       throw new Error('La caravana ya no acepta más — vuelve a intentarlo');
     }
+
     freshOffer.quantity -= quantity;
     await db('caravans')
       .where('id', freshCaravan.id)
       .update({ sell_offers: JSON.stringify(freshCaravan.sell_offers) });
+
+    // Award tokens + track task only after the sale is confirmed
+    const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
+    await dailyTaskService.trackProgress(playerId, 'sell');
 
     return {
       success: true,

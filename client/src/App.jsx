@@ -38,13 +38,12 @@ function App() {
 
     // After game loads, auto-join co-op session from deep link
     if (coopMatch) {
-      const eventId  = parseInt(coopMatch[1], 10);
+      const eventId   = parseInt(coopMatch[1], 10);
       const sessionId = parseInt(coopMatch[2], 10);
       const handleGameReady = async () => {
         const store = useGameStore.getState();
         const joinResult = await store.joinCoopSession(sessionId);
         if (joinResult) {
-          // Load world events, then open the event panel
           await store.loadWorldEvents();
           const events = useGameStore.getState().worldEvents;
           const ev = events.find((e) => e.id === eventId);
@@ -64,16 +63,14 @@ function App() {
           );
         }
       };
-      // Defer until after initGame resolves (loading screen gone)
-      const unsub = useGameStore.subscribe(
-        (state) => state.isLoading,
-        (isLoading) => {
-          if (!isLoading) {
-            unsub();
-            handleGameReady();
-          }
-        },
-      );
+      // subscribe(listener) form works without subscribeWithSelector middleware;
+      // watch for the transition loading=true → loading=false
+      const unsub = useGameStore.subscribe((state, prev) => {
+        if (prev.isLoading && !state.isLoading) {
+          unsub();
+          handleGameReady();
+        }
+      });
     }
 
     // Listen for building placement from Phaser scene
@@ -103,11 +100,25 @@ function App() {
     };
     EventBridge.on('world_events:refresh', handleWorldEventsRefresh);
 
+    // Reload buildings after construction completes (clears scaffold in Phaser)
+    const handleBuildingsRefresh = () => {
+      useGameStore.getState().loadBuildings();
+    };
+    EventBridge.on('buildings:refresh', handleBuildingsRefresh);
+
+    // Sync resources when server pushes production updates via socket
+    const handleResourcesRefresh = () => {
+      useGameStore.getState().refreshResources();
+    };
+    EventBridge.on('resources:refresh', handleResourcesRefresh);
+
     EventBridge.on('building:placed', handleBuildingPlaced);
     return () => {
       EventBridge.off('building:placed', handleBuildingPlaced);
       EventBridge.off('game:notification', handleGameNotification);
       EventBridge.off('world_events:refresh', handleWorldEventsRefresh);
+      EventBridge.off('buildings:refresh', handleBuildingsRefresh);
+      EventBridge.off('resources:refresh', handleResourcesRefresh);
     };
   }, []);
 
