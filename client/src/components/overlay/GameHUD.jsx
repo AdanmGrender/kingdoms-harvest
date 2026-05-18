@@ -6,6 +6,7 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
+import NotificationPrefsPanel from '../ui/NotificationPrefsPanel';
 
 const RESOURCE_SPRITES = {
   gold:  'gold',
@@ -43,6 +44,7 @@ export default function GameHUD() {
 
   const [timeInfo, setTimeInfo] = useState({ icon: '☀️', period: 'morning', dayCount: 1 });
   const [tokenPulse, setTokenPulse] = useState(false);
+  const [showNotifPanel, setShowNotifPanel] = useState(false);
   const pulseTimer = useRef(null);
   const constructionTimers = useConstructionTimers(buildings);
 
@@ -112,10 +114,19 @@ export default function GameHUD() {
           </div>
         </div>
 
-        {/* Day/Night indicator */}
-        <div className="flex items-center gap-1 text-[10px] text-gray-300 pointer-events-auto">
-          <span>{timeInfo.icon}</span>
-          <span className="text-yellow-300">Dia {timeInfo.dayCount}</span>
+        {/* Day/Night indicator + notification bell */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <div className="flex items-center gap-1 text-[10px] text-gray-300">
+            <span>{timeInfo.icon}</span>
+            <span className="text-yellow-300">Dia {timeInfo.dayCount}</span>
+          </div>
+          <button
+            onClick={() => setShowNotifPanel(true)}
+            className="text-[13px] opacity-70 hover:opacity-100 transition-opacity"
+            title="Notificaciones"
+          >
+            🔔
+          </button>
         </div>
 
         {/* Resources */}
@@ -138,6 +149,8 @@ export default function GameHUD() {
           )}
         </div>
       </div>
+
+      {showNotifPanel && <NotificationPrefsPanel onClose={() => setShowNotifPanel(false)} />}
 
       {/* Construction timers */}
       {constructionTimers.length > 0 && (

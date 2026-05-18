@@ -86,6 +86,7 @@ const playerService = {
       // Actualizar último login
       await db('players').where('telegram_id', telegramId).update({
         last_login: new Date().toISOString(),
+        last_login_at: new Date().toISOString(),
       });
     }
 

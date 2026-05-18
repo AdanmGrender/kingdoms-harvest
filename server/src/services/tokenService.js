@@ -1,6 +1,12 @@
 const db = require('../config/database');
 const { TOKEN_CONFIG, getDailyCap, getStreakMultiplier } = require('../../../shared/tokenConfig');
 const playerService = require('./playerService');
+// Lazy-loaded to avoid circular dependency
+let _notificationService = null;
+function getNotifService() {
+  if (!_notificationService) _notificationService = require('./notificationService');
+  return _notificationService;
+}
 
 const tokenService = {
   /**
@@ -334,6 +340,10 @@ const tokenService = {
           processed_at: new Date().toISOString(),
         });
 
+        getNotifService().notify(
+          request.player_id, 'withdrawals',
+          `💰 ¡Retiro completado! ${request.amount} KH Tokens → ${request.ton_amount} TON enviados a tu wallet. TX: ${txHash}`
+        );
         console.log(`[TON] Withdrawal #${request.id} completed: ${txHash}`);
       } catch (err) {
         console.error(`[TON] Withdrawal #${request.id} failed:`, err.message);
@@ -351,6 +361,11 @@ const tokenService = {
           admin_note: err.message,
           processed_at: new Date().toISOString(),
         });
+
+        getNotifService().notify(
+          request.player_id, 'withdrawals',
+          `⚠️ Tu retiro de ${request.amount} KH Tokens falló. El balance fue reintegrado a tu cuenta. Intentá de nuevo más tarde.`
+        );
       }
     }
   },

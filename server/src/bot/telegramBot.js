@@ -73,6 +73,46 @@ function initBot() {
     });
   });
 
+  // Comando /notificaciones — muestra y gestiona preferencias con teclado inline
+  bot.onText(/\/notificaciones/, async (msg) => {
+    const chatId = msg.chat.id;
+    const playerId = msg.from.id;
+    try {
+      const notificationService = require('../services/notificationService');
+      const prefs = await notificationService.getPrefs(playerId);
+      await bot.sendMessage(chatId, notificationService.buildPrefsText(), {
+        parse_mode: 'Markdown',
+        reply_markup: notificationService.buildPrefsKeyboard(prefs),
+      });
+    } catch (err) {
+      bot.sendMessage(chatId, '❌ Error cargando preferencias. Intentá de nuevo.');
+    }
+  });
+
+  // Callback para toggle de notificaciones vía botones inline
+  bot.on('callback_query', async (query) => {
+    if (!query.data?.startsWith('notif_toggle_')) return;
+    const type = query.data.replace('notif_toggle_', '');
+    const playerId = query.from.id;
+    try {
+      const notificationService = require('../services/notificationService');
+      const newValue = await notificationService.togglePref(playerId, type);
+      const typeInfo = notificationService.TYPES[type];
+      const prefs = await notificationService.getPrefs(playerId);
+
+      await bot.answerCallbackQuery(query.id, {
+        text: `${typeInfo?.icon || ''} ${typeInfo?.label || type}: ${newValue ? '✅ Activado' : '❌ Desactivado'}`,
+      });
+      // Update the message in-place with new keyboard state
+      await bot.editMessageReplyMarkup(
+        notificationService.buildPrefsKeyboard(prefs),
+        { chat_id: query.message.chat.id, message_id: query.message.message_id }
+      );
+    } catch {
+      bot.answerCallbackQuery(query.id, { text: '❌ Error al actualizar' });
+    }
+  });
+
   // Comando /stats
   bot.onText(/\/stats/, async (msg) => {
     const db = require('../config/database');

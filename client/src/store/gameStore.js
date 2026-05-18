@@ -41,6 +41,9 @@ const useGameStore = create((set, get) => ({
   // Captcha challenge
   captchaChallenge: null,
 
+  // Preferencias de notificaciones push del bot
+  notificationPrefs: null,
+
   // Overlay state for RTS mode
   overlayState: null, // { type: string, data: object } or null
 
@@ -718,6 +721,31 @@ const useGameStore = create((set, get) => ({
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error en ataque PvP', 'error');
+      return null;
+    }
+  },
+
+  // ---- Notification preferences ----
+  loadNotificationPrefs: async () => {
+    try {
+      const { data } = await api.get('/notifications/prefs');
+      set({ notificationPrefs: data });
+    } catch (error) {
+      console.error('Error loading notification prefs:', error);
+    }
+  },
+
+  toggleNotificationPref: async (type) => {
+    try {
+      const { data } = await api.post('/notifications/toggle', { type });
+      set((state) => ({
+        notificationPrefs: state.notificationPrefs
+          ? { ...state.notificationPrefs, [type]: data.enabled }
+          : null,
+      }));
+      return data.enabled;
+    } catch (error) {
+      get().addNotification('Error actualizando preferencia', 'error');
       return null;
     }
   },

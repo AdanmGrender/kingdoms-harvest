@@ -2,14 +2,7 @@ const cron = require('node-cron');
 const db = require('../config/database');
 const dailyTaskService = require('../services/dailyTaskService');
 const { BUILDINGS, DAY_CYCLE } = require('../../../shared/gameConfig');
-const { getBot } = require('../bot/telegramBot');
-
-function sendBotNotification(playerId, message) {
-  try {
-    const bot = getBot();
-    if (bot) bot.sendMessage(playerId, message).catch(() => {});
-  } catch {}
-}
+const notificationService = require('../services/notificationService');
 
 let ioRef = null;
 let lastEventGenTime = 0;
@@ -45,10 +38,17 @@ async function processTick() {
       for (const plot of justReady) {
         perPlayer[plot.player_id] = (perPlayer[plot.player_id] || 0) + 1;
       }
+      // Batch notify once per player — single prefs query for all affected players
+      const batchEntries = [];
       for (const [playerId, count] of Object.entries(perPlayer)) {
         if (ioRef) ioRef.to(`player_${playerId}`).emit('crop_ready', { count });
-        sendBotNotification(playerId, `🌾 ¡${count} cultivo${count > 1 ? 's' : ''} listo${count > 1 ? 's' : ''} para cosechar! Volvé al juego.`);
+        batchEntries.push({
+          playerId: Number(playerId),
+          type: 'crops',
+          message: `🌾 ¡${count} cultivo${count > 1 ? 's' : ''} listo${count > 1 ? 's' : ''} para cosechar! Abrí el juego para recolectar.`,
+        });
       }
+      await notificationService.notifyBatch(batchEntries);
       console.log(`[Tick] ${justReady.length} cultivos listos para cosechar`);
     }
   } catch (error) {
@@ -96,7 +96,11 @@ async function processTick() {
             buildingType: building.building_id,
           });
         }
-        sendBotNotification(building.player_id, `🏗️ ¡Tu ${building.building_id} ha terminado de construirse! Volvé al juego para continuar.`);
+        const buildName = BUILDINGS[building.building_id]?.name || building.building_id;
+        notificationService.notify(
+          building.player_id, 'buildings',
+          `🏗️ ¡${buildName} terminado! Volvé al juego para continuar.`
+        );
       } catch (err) {
         console.error(`[Tick] Error completando edificio ${building.id}:`, err.message);
       }
@@ -175,13 +179,22 @@ async function processTick() {
       .whereNotNull('next_production_at')
       .where('next_production_at', '<=', now);
 
-    for (const animal of readyAnimals) {
-      if (ioRef) {
-        ioRef.to(`player_${animal.player_id}`).emit('animal_ready', {
+    if (readyAnimals.length > 0) {
+      // Group by player to send one message per player
+      const perPlayer = {};
+      for (const animal of readyAnimals) {
+        if (ioRef) ioRef.to(`player_${animal.player_id}`).emit('animal_ready', {
           animalId: animal.id,
           animalType: animal.animal_id,
         });
+        perPlayer[animal.player_id] = (perPlayer[animal.player_id] || 0) + 1;
       }
+      const animalBatch = Object.entries(perPlayer).map(([pid, count]) => ({
+        playerId: Number(pid),
+        type: 'animals',
+        message: `🐄 ¡${count} animal${count > 1 ? 'es' : ''} listo${count > 1 ? 's' : ''} para recolectar! Abrí el juego.`,
+      }));
+      await notificationService.notifyBatch(animalBatch);
     }
   } catch (error) {
     console.error('[Tick] Error procesando animales:', error.message);
@@ -209,7 +222,10 @@ async function processTick() {
             quantity: troop.training_quantity,
           });
         }
-        sendBotNotification(troop.player_id, `⚔️ ¡${troop.training_quantity}x ${troop.troop_id} están listos para la batalla!`);
+        notificationService.notify(
+          troop.player_id, 'troops',
+          `⚔️ ¡${troop.training_quantity}x ${troop.troop_id} están listos para la batalla!`
+        );
       } catch (err) {
         console.error(`[Tick] Error completando tropa ${troop.id}:`, err.message);
       }
@@ -355,11 +371,52 @@ async function processWorldEvents() {
     const worldEventService = require('../services/worldEventService');
     await worldEventService.cleanExpiredEvents();
     const created = await worldEventService.generateEvents();
-    if (created > 0 && ioRef) {
-      ioRef.emit('world_events_updated', { count: created });
+    if (created > 0) {
+      if (ioRef) ioRef.emit('world_events_updated', { count: created });
+      // Notify all players who opted into event alerts
+      const allPlayers = await db('players').select('telegram_id');
+      const eventBatch = allPlayers.map((p) => ({
+        playerId: p.telegram_id,
+        type: 'events',
+        message: `🌍 ¡${created} nuevo${created > 1 ? 's' : ''} evento${created > 1 ? 's' : ''} en el mundo! Abrí el juego para participar.`,
+      }));
+      await notificationService.notifyBatch(eventBatch);
     }
   } catch (error) {
     console.error('[Tick] Error procesando eventos del mundo:', error.message);
+  }
+}
+
+/**
+ * Daily reminder: notify players who haven't logged in for 24–48 hours.
+ * Only sends to players with daily_reminder preference enabled.
+ */
+async function processDailyReminders() {
+  try {
+    const cutoff24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+
+    // Players inactive 24–48 h (don't spam players idle for days)
+    const inactive = await db('players')
+      .whereNotNull('last_login_at')
+      .where('last_login_at', '<=', cutoff24h)
+      .where('last_login_at', '>', cutoff48h)
+      .select('telegram_id', 'display_name', 'level');
+
+    if (inactive.length === 0) return;
+
+    const reminderBatch = inactive.map((p) => ({
+      playerId: p.telegram_id,
+      type: 'daily_reminder',
+      message:
+        `👑 ¡Tu reino te necesita, ${p.display_name}! ` +
+        `Hay cultivos que cosechar, tropas que entrenar y misiones que completar. ` +
+        `Volvé a Kingdoms Harvest y seguí tu aventura. ⚔️`,
+    }));
+    await notificationService.notifyBatch(reminderBatch);
+    console.log(`[Reminder] ${reminderBatch.length} recordatorios enviados`);
+  } catch (error) {
+    console.error('[Reminder] Error enviando recordatorios:', error.message);
   }
 }
 
@@ -376,6 +433,10 @@ function startGameTick(io) {
   // Generar eventos del mundo cada 15 minutos
   cron.schedule('*/15 * * * *', processWorldEvents);
   console.log('[Tick] Eventos del mundo programados cada 15 minutos');
+
+  // Recordatorios diarios — cada 30 minutos
+  cron.schedule('*/30 * * * *', processDailyReminders);
+  console.log('[Tick] Recordatorios diarios programados cada 30 minutos');
 }
 
 module.exports = { startGameTick, processTick };

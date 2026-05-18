@@ -2,6 +2,7 @@ const db = require('../config/database');
 const { TROOPS, SIEGE_CONFIG, SIEGE_ABILITIES } = require('../../../shared/gameConfig');
 const combatService = require('./combatService');
 const playerService = require('./playerService');
+const notificationService = require('./notificationService');
 
 const siegeService = {
   /**
@@ -238,7 +239,7 @@ const siegeService = {
       loot: JSON.stringify(loot),
     });
 
-    // Notify both players
+    // Notify both players via socket
     if (io) {
       const notification = {
         siegeId: siege.id,
@@ -249,6 +250,28 @@ const siegeService = {
       };
       io.to(`player_${siege.attacker_id}`).emit('siege_resolved', notification);
       io.to(`player_${siege.defender_id}`).emit('siege_resolved', notification);
+    }
+
+    // Push notifications (respects per-player preferences)
+    if (attackerWins) {
+      const lootSummary = Object.entries(loot).map(([r, v]) => `${v} ${r}`).join(', ');
+      notificationService.notify(
+        siege.attacker_id, 'sieges',
+        `⚔️ ¡Victoria en el asedio! Botín: ${lootSummary || 'ninguno'}. Volvé al juego.`
+      );
+      notificationService.notify(
+        siege.defender_id, 'sieges',
+        `🛡️ ¡Tu reino fue atacado y derrotado! Perdiste: ${lootSummary || 'ninguno'}. Reforzá tus defensas.`
+      );
+    } else {
+      notificationService.notify(
+        siege.attacker_id, 'sieges',
+        `⚔️ Tu asedio fue repelido. Tus tropas se retiran. Reforzá tu ejército e intentá de nuevo.`
+      );
+      notificationService.notify(
+        siege.defender_id, 'sieges',
+        `🛡️ ¡Defendiste tu reino con éxito! El atacante fue rechazado.`
+      );
     }
   },
 
