@@ -262,11 +262,15 @@ const tokenService = {
     const netAmount = amount - fee;
     const tonAmount = (netAmount * TOKEN_CONFIG.TOKEN_TO_TON_RATE).toFixed(6);
 
-    // Deduct from balance
-    await db('player_tokens').where('player_id', playerId).update({
-      balance: tokenData.balance - amount,
-      total_withdrawn: tokenData.total_withdrawn + amount,
-    });
+    // Atomically deduct balance — safe against concurrent withdrawal requests.
+    // decrementIfEnough only updates if balance >= amount (single SQL statement).
+    const affected = await db('player_tokens')
+      .where('player_id', playerId)
+      .decrementIfEnough('balance', amount);
+    if (!affected) throw new Error('Balance insuficiente');
+    await db('player_tokens')
+      .where('player_id', playerId)
+      .increment('total_withdrawn', amount);
 
     // Create withdrawal request
     const [requestId] = await db('withdrawal_requests').insert({
@@ -309,10 +313,12 @@ const tokenService = {
 
     for (const request of pending) {
       try {
-        // Mark as processing
-        await db('withdrawal_requests').where('id', request.id).update({
-          status: 'processing',
-        });
+        // Atomic status claim — only proceeds if status is still 'pending'.
+        // Returns 0 if another process already claimed it, preventing duplicate TON sends.
+        const claimed = await db('withdrawal_requests')
+          .where({ id: request.id, status: 'pending' })
+          .update({ status: 'processing' });
+        if (!claimed) continue;
 
         // Send TON via hot wallet
         const txHash = await this.sendTON(request.wallet_address, request.ton_amount);
@@ -328,15 +334,13 @@ const tokenService = {
       } catch (err) {
         console.error(`[TON] Withdrawal #${request.id} failed:`, err.message);
 
-        // Refund balance
-        const tokenData = await db('player_tokens')
-          .where('player_id', request.player_id).first();
-        if (tokenData) {
-          await db('player_tokens').where('player_id', request.player_id).update({
-            balance: tokenData.balance + request.amount,
-            total_withdrawn: Math.max(0, tokenData.total_withdrawn - request.amount),
-          });
-        }
+        // Refund balance atomically — no read-modify-write
+        await db('player_tokens')
+          .where('player_id', request.player_id)
+          .increment('balance', request.amount);
+        await db('player_tokens')
+          .where('player_id', request.player_id)
+          .decrement('total_withdrawn', request.amount);
 
         await db('withdrawal_requests').where('id', request.id).update({
           status: 'failed',

@@ -434,7 +434,7 @@ const useGameStore = create((set, get) => ({
   craftItem: async (itemId, quantity) => {
     try {
       const { data } = await api.post('/crafting/craft', { itemId, quantity });
-      get().loadResources();
+      get().refreshResources();
       get().addNotification(data.message, 'success');
       return data;
     } catch (error) {

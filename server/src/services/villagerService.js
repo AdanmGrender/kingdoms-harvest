@@ -61,56 +61,57 @@ const villagerService = {
   },
 
   /**
-   * Simulate villager behavior for one tick (called from gameTick)
+   * Simulate villager behavior for one tick (called from gameTick every 5 minutes).
+   * Hunger/state/happiness updated in a single batch SQL for all villagers of this player.
+   * Resource production loop only runs for villagers already in 'working' state.
    */
   async simulateTick(playerId) {
-    const villagers = await db('villagers').where('player_id', playerId);
+    // Single UPDATE for all N villagers — replaces N individual updates
+    db.raw(`
+      UPDATE "villagers" SET
+        "hunger" = MAX(0, "hunger" - 1),
+        "happiness" = CASE
+          WHEN ("hunger" - 1) <= 20 THEN MAX(0, "happiness" - 1)
+          ELSE "happiness"
+        END,
+        "state" = CASE
+          WHEN ("hunger" - 1) <= 20 THEN 'resting'
+          WHEN "assigned_building_id" IS NOT NULL AND "state" = 'idle' THEN 'walking_to_work'
+          WHEN "state" = 'walking_to_work' THEN 'working'
+          WHEN "state" = 'resting' AND ("hunger" - 1) > 50 AND "assigned_building_id" IS NOT NULL THEN 'walking_to_work'
+          WHEN "state" = 'resting' AND ("hunger" - 1) > 50 THEN 'idle'
+          ELSE "state"
+        END
+      WHERE "player_id" = ?
+    `, [playerId]);
 
-    for (const v of villagers) {
-      // Simple state machine
-      const updates = {};
+    // Resource production: only for working villagers (smaller loop after batch state update)
+    const workingVillagers = await db('villagers')
+      .where({ player_id: playerId, state: 'working' })
+      .whereNotNull('assigned_building_id');
 
-      // Decrease hunger each tick
-      updates.hunger = Math.max(0, v.hunger - 1);
+    for (const v of workingVillagers) {
+      const building = await db('player_buildings').where('id', v.assigned_building_id).first();
+      const config = building ? BUILDINGS[building.building_id] : null;
+      if (!config?.produces) continue;
 
-      // If hungry, go home and rest
-      if (updates.hunger <= 20) {
-        updates.state = 'resting';
-        updates.happiness = Math.max(0, v.happiness - 1);
-      } else if (v.assigned_building_id && v.state === 'idle') {
-        updates.state = 'walking_to_work';
-      } else if (v.state === 'walking_to_work') {
-        updates.state = 'working';
-      } else if (v.state === 'resting' && updates.hunger > 50) {
-        updates.state = v.assigned_building_id ? 'walking_to_work' : 'idle';
-      }
-
-      // Villager production: working villagers produce 50% of building's hourly rate per tick
-      if ((updates.state || v.state) === 'working' && v.assigned_building_id) {
-        const building = await db('player_buildings').where('id', v.assigned_building_id).first();
-        const config = building ? BUILDINGS[building.building_id] : null;
-        if (config?.produces) {
-          for (const [resource, ratePerHour] of Object.entries(config.produces)) {
-            const key = `${v.id}:${resource}`;
-            villagerAccumulators[key] = (villagerAccumulators[key] || 0) + (ratePerHour * 0.5) / 60;
-            const intAmount = Math.floor(villagerAccumulators[key]);
-            if (intAmount > 0) {
-              villagerAccumulators[key] -= intAmount;
-              const res = db.raw(
-                'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
-                [intAmount, playerId, resource]
-              );
-              if (res.count === 0) {
-                await db('player_resources').insert({
-                  player_id: playerId, resource_id: resource, amount: intAmount, capacity: 1000,
-                });
-              }
-            }
+      for (const [resource, ratePerHour] of Object.entries(config.produces)) {
+        const key = `${v.id}:${resource}`;
+        villagerAccumulators[key] = (villagerAccumulators[key] || 0) + (ratePerHour * 0.5) / 60;
+        const intAmount = Math.floor(villagerAccumulators[key]);
+        if (intAmount > 0) {
+          villagerAccumulators[key] -= intAmount;
+          const res = db.raw(
+            'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
+            [intAmount, playerId, resource]
+          );
+          if (res.count === 0) {
+            await db('player_resources').insert({
+              player_id: playerId, resource_id: resource, amount: intAmount, capacity: 1000,
+            });
           }
         }
       }
-
-      await db('villagers').where('id', v.id).update(updates);
     }
   },
 

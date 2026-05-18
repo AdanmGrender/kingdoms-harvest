@@ -213,42 +213,63 @@ async function processTick() {
     console.error('[Tick] Error procesando asedios:', error.message);
   }
 
-  // 4c. Villager simulation
+  // 4c. Villager simulation (throttled: at most once per 5 minutes per player)
   try {
     const villagerService = require('../services/villagerService');
-    // Get all unique player IDs that have villagers
-    const villagerPlayers = await db('villagers').select('player_id').groupBy('player_id');
-    for (const { player_id } of villagerPlayers) {
-      await villagerService.simulateTick(player_id);
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+
+    // Two queries instead of N+1: get players with villagers, then filter by throttle column
+    const villagerPlayerRows = await db('villagers').select('player_id').groupBy('player_id');
+    if (villagerPlayerRows.length > 0) {
+      const playerIds = villagerPlayerRows.map((r) => r.player_id);
+      const playerTicks = await db('players')
+        .whereIn('telegram_id', playerIds)
+        .select('telegram_id', 'villager_last_tick');
+
+      const toSimulate = playerTicks.filter(
+        (p) => !p.villager_last_tick || p.villager_last_tick < fiveMinAgo
+      );
+
+      for (const p of toSimulate) {
+        await villagerService.simulateTick(p.telegram_id);
+        await db('players')
+          .where('telegram_id', p.telegram_id)
+          .update({ villager_last_tick: new Date().toISOString() });
+      }
     }
   } catch (error) {
     console.error('[Tick] Error simulando aldeanos:', error.message);
   }
 
-  // 4c. Advance world time for all players
+  // 4d. Advance world time — single atomic batch SQL (no per-player await gaps)
   try {
-    // Each tick is 1 minute; day duration is DAY_CYCLE.dayDurationMs (default 10 min)
-    const timeIncrement = 60000 / DAY_CYCLE.dayDurationMs; // fraction of a day per tick
+    const timeIncrement = 60000 / DAY_CYCLE.dayDurationMs;
     const allPlayers = await db('players').select('telegram_id', 'world_time', 'world_day');
-    for (const player of allPlayers) {
-      let newTime = (player.world_time || 0) + timeIncrement;
-      let newDay = player.world_day || 1;
-      if (newTime >= 1.0) {
-        newTime -= 1.0;
-        newDay++;
-        // New day — process aging and families
-        try {
-          const villagerService = require('../services/villagerService');
-          await villagerService.processAging(player.telegram_id);
-          await villagerService.processRelationships(player.telegram_id);
-        } catch (ageErr) {
-          console.error(`[Tick] Error aging/families for player ${player.telegram_id}:`, ageErr.message);
+
+    if (allPlayers.length > 0) {
+      // Identify players crossing a day boundary BEFORE the update (for side effects)
+      const rolled = allPlayers.filter((p) => (p.world_time || 0) + timeIncrement >= 1.0);
+
+      // One SQL statement updates every player atomically — no event-loop yield between rows
+      db.raw(
+        `UPDATE "players" SET
+           "world_time" = ("world_time" + ?) - CAST(("world_time" + ?) AS INTEGER),
+           "world_day"  = "world_day" + CAST(("world_time" + ?) AS INTEGER)`,
+        [timeIncrement, timeIncrement, timeIncrement]
+      );
+
+      // Async side effects (processAging) run AFTER world_day is already committed
+      if (rolled.length > 0) {
+        const villagerService = require('../services/villagerService');
+        for (const p of rolled) {
+          try {
+            await villagerService.processAging(p.telegram_id);
+            await villagerService.processRelationships(p.telegram_id);
+          } catch (ageErr) {
+            console.error(`[Tick] Error aging/families for player ${p.telegram_id}:`, ageErr.message);
+          }
         }
       }
-      await db('players').where('telegram_id', player.telegram_id).update({
-        world_time: newTime,
-        world_day: newDay,
-      });
     }
   } catch (error) {
     console.error('[Tick] Error avanzando tiempo del mundo:', error.message);
