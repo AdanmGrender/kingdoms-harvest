@@ -6,7 +6,7 @@ module.exports = {
     env: { NODE_ENV: 'production' },
     instances: 1,
     exec_mode: 'fork',
-    kill_timeout: 5000,
+    kill_timeout: 20000,   // allow sql.js to flush DB to disk on shutdown
     max_restarts: 10,
     min_uptime: '10s',
     restart_delay: 5000,

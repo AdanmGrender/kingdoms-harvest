@@ -352,46 +352,46 @@ const tokenService = {
   },
 
   /**
-   * Enviar TON desde hot wallet
-   * Returns transaction hash
+   * Enviar TON desde hot wallet usando @ton/ton (SDK oficial)
+   * Returns pseudo transaction hash (real on-chain hash requires polling TonCenter — ⚠️ Known)
    */
   async sendTON(toAddress, tonAmountStr) {
-    const TonWeb = require('tonweb');
+    const { TonClient, WalletContractV4, internal, toNano, SendMode } = require('@ton/ton');
+    const { mnemonicToWalletKey } = require('@ton/crypto');
+    const { loadSecret } = require('../config/secrets');
 
     const network = process.env.TON_NETWORK || 'testnet';
-    const apiKey = process.env.TON_API_KEY || '';
-    const providerUrl = network === 'mainnet'
-      ? `https://toncenter.com/api/v2/jsonRPC${apiKey ? '?api_key=' + apiKey : ''}`
-      : `https://testnet.toncenter.com/api/v2/jsonRPC${apiKey ? '?api_key=' + apiKey : ''}`;
+    const apiKey  = process.env.TON_API_KEY  || undefined;
+    const endpoint = network === 'mainnet'
+      ? 'https://toncenter.com/api/v2/jsonRPC'
+      : 'https://testnet.toncenter.com/api/v2/jsonRPC';
 
-    const tonweb = new TonWeb(new TonWeb.HttpProvider(providerUrl));
+    const client = new TonClient({ endpoint, apiKey });
 
-    const mnemonic = process.env.TON_HOT_WALLET_MNEMONIC;
+    const mnemonic = loadSecret('TON_HOT_WALLET_MNEMONIC');
     if (!mnemonic) throw new Error('Hot wallet not configured');
 
-    const tonMnemonic = require('tonweb-mnemonic');
-    const keyPair = await tonMnemonic.mnemonicToKeyPair(mnemonic.split(' '));
+    const key      = await mnemonicToWalletKey(mnemonic.split(' '));
+    const wallet   = WalletContractV4.create({ publicKey: key.publicKey, workchain: 0 });
+    const contract = client.open(wallet);
 
-    const wallet = tonweb.wallet.create({
-      publicKey: keyPair.publicKey,
-    });
+    const seqno = await contract.getSeqno();
 
-    const tonAmount = parseFloat(tonAmountStr);
-    const nanotons = TonWeb.utils.toNano(tonAmount.toString());
-
-    const seqno = await wallet.methods.seqno().call() || 0;
-
-    const transfer = wallet.methods.transfer({
-      secretKey: keyPair.secretKey,
-      toAddress,
-      amount: nanotons,
+    await contract.sendTransfer({
+      secretKey: key.secretKey,
       seqno,
-      payload: 'KH Token Withdrawal',
+      messages: [
+        internal({
+          to:     toAddress,
+          value:  toNano(tonAmountStr),
+          bounce: false,
+          body:   'KH Token Withdrawal',
+        }),
+      ],
+      sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
     });
 
-    await transfer.send();
-
-    // Return a pseudo hash (TON doesn't return hash from send directly)
+    // Real on-chain hash requires polling TonCenter API — ⚠️ Known limitation
     const hash = require('crypto')
       .createHash('sha256')
       .update(`${toAddress}:${tonAmountStr}:${Date.now()}`)

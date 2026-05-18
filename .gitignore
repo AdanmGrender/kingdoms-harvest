@@ -6,5 +6,6 @@ dist/
 .DS_Store
 Thumbs.db
 server/data/
+server/secrets/
 .claude/
 *.tar.gz
