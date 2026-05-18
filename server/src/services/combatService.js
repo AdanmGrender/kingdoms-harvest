@@ -47,7 +47,7 @@ const combatService = {
       .sum('quantity as total')
       .first();
 
-    const totalCurrent = (currentTroops?.total || 0);
+    const totalCurrent = Number(currentTroops?.total || 0);
     if (totalCurrent + quantity > maxTroops) {
       throw new Error(`Capacidad máxima: ${maxTroops}. Tenés ${totalCurrent}. Mejorá el cuartel.`);
     }
@@ -486,7 +486,7 @@ const combatService = {
     return db('battles')
       .where('attacker_id', playerId)
       .orWhere('defender_id', playerId)
-      .orderBy('started_at', 'desc')
+      .orderBy('resolved_at', 'desc')
       .limit(20);
   },
 };

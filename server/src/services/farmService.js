@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { CROPS, ANIMALS, QUALITY, SEASON_DURATION_MS, DAY_CYCLE, FACTIONS } = require('../../../shared/gameConfig');
+const { CROPS, ANIMALS, QUALITY, FACTIONS } = require('../../../shared/gameConfig');
 const { sanitizeDisplayText } = require('../utils/sanitize');
 const playerService = require('./playerService');
 const tokenService = require('./tokenService');
@@ -33,13 +33,12 @@ const farmService = {
     if (!plot) throw new Error('Parcela no encontrada');
     if (plot.state !== 'empty') throw new Error('La parcela no está vacía');
 
-    // Verificar estación actual
-    const player = await db('players').where('telegram_id', playerId).first();
-    const daysSinceStart = (player?.world_day || 1);
-    const seasonLengthDays = Math.floor(SEASON_DURATION_MS / DAY_CYCLE.dayDurationMs);
-    const seasonIndex = Math.floor((daysSinceStart - 1) / seasonLengthDays) % 4;
+    // Estación global basada en mes calendario real (todos los jugadores comparten
+    // la misma estación). Permite que todos los cultivos sean accesibles dentro del año.
+    // Mar-May → spring, Jun-Aug → summer, Sep-Nov → autumn, Dec-Feb → winter
+    const MONTH_TO_SEASON = [3, 3, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3]; // 0=spring,1=summer,2=autumn,3=winter
     const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
-    const currentSeason = SEASON_ORDER[seasonIndex];
+    const currentSeason = SEASON_ORDER[MONTH_TO_SEASON[new Date().getUTCMonth()]];
 
     if (!crop.season.includes(currentSeason)) {
       const seasonNames = { spring: 'Primavera', summer: 'Verano', autumn: 'Otoño', winter: 'Invierno' };
@@ -49,7 +48,7 @@ const farmService = {
     const now = new Date();
     const completedTechs = await getTechService().getCompletedTechs(playerId);
     const growthTime = completedTechs.has('irrigation')
-      ? Math.floor(crop.growthTime * 0.8)
+      ? Math.floor(crop.growthTime * 0.85) // −15% as per spec
       : crop.growthTime;
     const readyAt = new Date(now.getTime() + growthTime);
 

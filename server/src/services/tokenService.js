@@ -80,11 +80,11 @@ const tokenService = {
     // Clamp to daily remaining
     const awarded = Math.min(boostedAmount, remaining);
 
-    // Update balance
+    // Atomic update — avoids read-modify-write race when concurrent requests arrive
     await db('player_tokens').where('player_id', playerId).update({
-      balance: tokenData.balance + awarded,
-      total_earned: tokenData.total_earned + awarded,
-      daily_earned_today: tokenData.daily_earned_today + awarded,
+      balance:            db.raw('balance + ?', [awarded]),
+      total_earned:       db.raw('total_earned + ?', [awarded]),
+      daily_earned_today: db.raw('daily_earned_today + ?', [awarded]),
     });
 
     // Pay referral commission (async, don't block)
@@ -144,6 +144,7 @@ const tokenService = {
     await this.checkAndResetDaily(playerId);
     const tokenData = await db('player_tokens').where('player_id', playerId).first();
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
 
     const dailyCap = getDailyCap(player.level);
     const remaining = Math.max(0, dailyCap - tokenData.daily_earned_today);
@@ -165,18 +166,18 @@ const tokenService = {
       throw new Error(`No tenes suficiente ${resourceId}`);
     }
 
-    // Award tokens
+    // Atomic update — avoids read-modify-write race
     await db('player_tokens').where('player_id', playerId).update({
-      balance: tokenData.balance + finalTokens,
-      total_earned: tokenData.total_earned + finalTokens,
-      daily_earned_today: tokenData.daily_earned_today + finalTokens,
+      balance:            db.raw('balance + ?', [finalTokens]),
+      total_earned:       db.raw('total_earned + ?', [finalTokens]),
+      daily_earned_today: db.raw('daily_earned_today + ?', [finalTokens]),
     });
 
     return {
       success: true,
       burned: { resourceId, amount: finalBurned },
       tokensAwarded: finalTokens,
-      balance: tokenData.balance + finalTokens,
+      balance: tokenData.balance + finalTokens, // approximate; client should refresh
       message: `Quemaste ${finalBurned}x ${resourceId} y obtuviste ${finalTokens} KH Tokens!`,
     };
   },
@@ -232,6 +233,7 @@ const tokenService = {
 
     // Check player level
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     if (player.level < TOKEN_CONFIG.MIN_LEVEL_FOR_WITHDRAWAL) {
       throw new Error(`Necesitas nivel ${TOKEN_CONFIG.MIN_LEVEL_FOR_WITHDRAWAL} para retirar`);
     }

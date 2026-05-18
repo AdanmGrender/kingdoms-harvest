@@ -143,7 +143,8 @@ const siegeService = {
     });
 
     // Apply used abilities as modifiers
-    const siegeResult = siege.result ? JSON.parse(siege.result) : {};
+    let siegeResult = {};
+    try { siegeResult = siege.result ? JSON.parse(siege.result) : {}; } catch { siegeResult = {}; }
     let attackModifier = 1;
     let defenseModifier = 1;
 
@@ -168,8 +169,21 @@ const siegeService = {
 
     // Re-determine winner with modifiers
     const totalPower = result.attackPower + result.defensePower;
+    const preModifierWinner = result.winner;
     const attackerWins = totalPower > 0 ? (result.attackPower / totalPower) > 0.5 : false;
     result.winner = attackerWins ? 'attacker' : 'defender';
+
+    // If modifiers flipped the winner, recalculate losses to reflect the new outcome
+    if (result.winner !== preModifierWinner) {
+      const winnerLossRate = 0.15;
+      const loserLossRate  = 0.45;
+      for (const [troopId, qty] of Object.entries(attackerArmy)) {
+        result.attackerLosses[troopId] = Math.floor(qty * (attackerWins ? winnerLossRate : loserLossRate));
+      }
+      for (const [troopId, qty] of Object.entries(defenderArmy)) {
+        result.defenderLosses[troopId] = Math.floor(qty * (attackerWins ? loserLossRate : winnerLossRate));
+      }
+    }
 
     // Apply defender losses
     for (const [troopId, losses] of Object.entries(result.defenderLosses)) {

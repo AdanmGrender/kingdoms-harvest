@@ -263,7 +263,6 @@ const useGameStore = create((set, get) => ({
           if (old?.is_building) {
             EventBridge.emit('building:completed', {
               buildingId:  b.building_id,
-              tileIndex:   b.tile_index ?? 0,
               level:       b.level,
               is_building: false,
               posX:        b.position_x,
@@ -466,9 +465,6 @@ const useGameStore = create((set, get) => ({
       get().loadHeroItems();
       if (!payWithTokens) get().refreshResources();
       else get().loadTokenInfo();
-      if (data.tokensAwarded > 0) {
-        EventBridge.emit('token:earned', { amount: data.tokensAwarded });
-      }
       get().addNotification(data.message, 'success');
       return data;
     } catch (error) {

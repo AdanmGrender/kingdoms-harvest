@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { CROPS, RESOURCES } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');

@@ -46,6 +46,10 @@ function telegramAuth(req, res, next) {
       .join('\n');
 
     // Crear secret key usando HMAC del bot token
+    if (!process.env.BOT_TOKEN) {
+      console.error('[Auth] BOT_TOKEN no está configurado');
+      return res.status(500).json({ error: 'Error de configuración del servidor' });
+    }
     const secretKey = crypto
       .createHmac('sha256', 'WebAppData')
       .update(process.env.BOT_TOKEN)

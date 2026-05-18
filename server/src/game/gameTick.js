@@ -80,6 +80,16 @@ async function processTick() {
           await villagerService.checkAndSpawnInitial(building.player_id);
         }
 
+        if (building.building_id === 'barn') {
+          const { BUILDINGS: B } = require('../../../shared/gameConfig');
+          const barnConfig = B['barn'];
+          if (barnConfig?.storagePerLevel) {
+            await db('player_resources')
+              .where('player_id', building.player_id)
+              .increment('capacity', barnConfig.storagePerLevel);
+          }
+        }
+
         if (ioRef) {
           ioRef.to(`player_${building.player_id}`).emit('building_complete', {
             buildingId: building.id,

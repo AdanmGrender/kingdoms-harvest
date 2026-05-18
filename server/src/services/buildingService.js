@@ -38,8 +38,9 @@ const buildingService = {
     }
 
     // Verificar nivel del castillo (throne_room) para desbloqueos
+    // Only count throne_rooms that are fully built (is_building: false)
     const throneRoom = await db('player_buildings')
-      .where({ player_id: playerId, building_id: 'throne_room' })
+      .where({ player_id: playerId, building_id: 'throne_room', is_building: false })
       .first();
 
     const castleLevel = throneRoom ? throneRoom.level : 0;
@@ -51,7 +52,7 @@ const buildingService = {
       noble: 1,
     };
 
-    if (castleLevel < zoneRequirements[building.zone]) {
+    if (castleLevel < (zoneRequirements[building.zone] ?? 99)) {
       throw new Error(
         `Necesitás Salón del Trono nivel ${zoneRequirements[building.zone]} para construir en zona ${building.zone}`
       );
@@ -162,13 +163,8 @@ const buildingService = {
       build_complete_at: completeAt.toISOString(),
     });
 
-    // Si es granero, aumentar capacidad de recursos
-    if (playerBuilding.building_id === 'barn') {
-      const extraStorage = building.storagePerLevel;
-      await db('player_resources')
-        .where('player_id', playerId)
-        .increment('capacity', extraStorage);
-    }
+    // NOTE: Barn capacity is granted in gameTick when construction completes,
+    // not here — granting it now would give capacity before the upgrade finishes.
 
     return {
       success: true,

@@ -181,22 +181,14 @@ const playerService = {
       return resource.amount + delta;
     }
 
-    // Para sumas: increment atómico, luego clamp al cap en una segunda query
-    const cap = resource.capacity;
+    // Single atomic SQL: increment and clamp to capacity in one statement
+    await db.raw(
+      `UPDATE "player_resources" SET "amount" = LEAST("amount" + ?, "capacity")
+       WHERE "player_id" = ? AND "resource_id" = ?`,
+      [delta, playerId, resourceId]
+    );
 
-    await db('player_resources')
-      .where({ player_id: playerId, resource_id: resourceId })
-      .increment('amount', delta);
-
-    // Clamp to capacity if exceeded
-    if (resource.amount + delta > cap) {
-      await db('player_resources')
-        .where({ player_id: playerId, resource_id: resourceId })
-        .where('amount', '>', cap)
-        .update({ amount: cap });
-    }
-
-    return Math.min(resource.amount + delta, cap);
+    return Math.min(resource.amount + delta, resource.capacity);
   },
 
   /**
