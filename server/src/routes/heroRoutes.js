@@ -86,4 +86,36 @@ router.post('/unequip', telegramAuth, validate({
   }
 });
 
+// Deploy a hero for combat
+router.post('/deploy', telegramAuth, validate({
+  heroDbId: { type: 'number', required: true, min: 1 },
+}), async (req, res) => {
+  try {
+    const result = await heroService.deployHero(req.playerId, req.body.heroDbId);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Recall the deployed hero
+router.post('/recall', telegramAuth, async (req, res) => {
+  try {
+    const result = await heroService.recallHero(req.playerId);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Get currently deployed hero
+router.get('/deployed', telegramAuth, async (req, res) => {
+  try {
+    const result = await heroService.getDeployedHero(req.playerId);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener héroe desplegado' });
+  }
+});
+
 module.exports = router;

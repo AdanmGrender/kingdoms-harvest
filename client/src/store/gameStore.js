@@ -22,6 +22,7 @@ const useGameStore = create((set, get) => ({
   // Hero system
   heroes: [],
   heroItems: [],
+  deployedHero: null,
 
   // Villagers
   villagers: [],
@@ -511,6 +512,41 @@ const useGameStore = create((set, get) => ({
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error al desequipar', 'error');
+      return null;
+    }
+  },
+
+  loadDeployedHero: async () => {
+    try {
+      const { data } = await api.get('/heroes/deployed');
+      set({ deployedHero: data.hero });
+    } catch (error) {
+      console.error('Error loading deployed hero:', error);
+    }
+  },
+
+  deployHero: async (heroDbId) => {
+    try {
+      const { data } = await api.post('/heroes/deploy', { heroDbId });
+      get().loadHeroes();
+      get().loadDeployedHero();
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al desplegar', 'error');
+      return null;
+    }
+  },
+
+  recallHero: async () => {
+    try {
+      const { data } = await api.post('/heroes/recall');
+      get().loadHeroes();
+      set({ deployedHero: null });
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al retirar', 'error');
       return null;
     }
   },

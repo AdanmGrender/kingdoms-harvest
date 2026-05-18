@@ -3,6 +3,7 @@ const db = require('../config/database');
 const { TROOPS, BUILDINGS, FACTIONS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const buildingService = require('./buildingService');
+const heroService = require('./heroService');
 
 let _techService = null;
 function getTechService() { if (!_techService) _techService = require('./techService'); return _techService; }
@@ -102,7 +103,12 @@ const combatService = {
    * Motor de combate: calcula el resultado de una batalla
    */
   calculateBattle(attackerArmy, defenderArmy, defenderBuildings = [], opts = {}) {
-    const { attackBonus = 0, defenseBonus = 0, abilityId = null, attackerArmy: rawArmy = attackerArmy } = opts;
+    const {
+      attackBonus = 0, defenseBonus = 0, abilityId = null,
+      attackerArmy: rawArmy = attackerArmy,
+      heroDefDebuff = 0,      // mage: reduces enemy defensePower
+      heroPaladinActive = false, // paladin: reduces attacker losses on win
+    } = opts;
     let attackPower = 0;
     let defensePower = 0;
     const battleLog = [];
@@ -153,8 +159,8 @@ const combatService = {
       battleLog.push(`Defensor: ${troop.icon} x${qty} aporta ${Math.floor(def)} DEF`);
     }
 
-    // Apply faction def bonus + ability multiplier, then arrow_rain debuff on enemy
-    defensePower *= (1 + defenseBonus) * abilityDefMult * (1 - abilityDefDebuff);
+    // Apply faction def bonus + ability multiplier + arrow_rain debuff + mage hero debuff
+    defensePower *= (1 + defenseBonus) * abilityDefMult * (1 - abilityDefDebuff) * (1 - heroDefDebuff);
 
     // Bonus de edificios defensivos
     for (const building of defenderBuildings) {
@@ -192,7 +198,9 @@ const combatService = {
     const defenderLosses = {};
 
     for (const [troopId, qty] of Object.entries(attackerArmy)) {
-      const lossRate = attackerWins ? winnerLossRate : loserLossRate;
+      let lossRate = attackerWins ? winnerLossRate : loserLossRate;
+      // Paladin hero reduces own losses by 25% on victory
+      if (heroPaladinActive && attackerWins) lossRate *= (1 - 0.25);
       attackerLosses[troopId] = Math.floor(qty * lossRate);
     }
 
@@ -227,6 +235,13 @@ const combatService = {
                          (completedTechs.has('tactics') ? 0.15 : 0);
     const techDefBonus = completedTechs.has('reinforced_armor') ? 0.1 : 0;
 
+    // Fetch deployed hero bonuses
+    const { hero: deployedHero, bonuses: heroBonuses } = await heroService.getDeployedHero(playerId);
+    const heroAtkBonus  = heroBonuses?.attackBonus       || 0;
+    const heroDefDebuff = heroBonuses?.defDebuff         || 0;
+    const paladinActive = !!(heroBonuses?.lossReduction);
+    const rangerActive  = !!(heroBonuses?.doubleLootChance);
+
     // Generar ejército NPC basado en territorio
     const territory = territoryId
       ? await db('territories').where('id', territoryId).first()
@@ -235,12 +250,14 @@ const combatService = {
     const npcStrength = territory ? territory.defense_strength : 50;
     const npcArmy = this.generateNPCArmy(npcStrength);
 
-    // Calcular batalla con bonuses de facción y habilidad de asedio
+    // Calcular batalla con bonuses de facción, tech y héroe
     const result = this.calculateBattle(army, npcArmy, [], {
-      attackBonus: factionAtkBonus + techAtkBonus,
-      defenseBonus: factionDefBonus + techDefBonus,
+      attackBonus:       factionAtkBonus + techAtkBonus + heroAtkBonus,
+      defenseBonus:      factionDefBonus + techDefBonus,
       abilityId,
-      attackerArmy: army,
+      attackerArmy:      army,
+      heroDefDebuff,
+      heroPaladinActive: paladinActive,
     });
 
     // Aplicar pérdidas al atacante (clamped para evitar negativos)
@@ -272,11 +289,19 @@ const combatService = {
         loot[rareItem] = 1;
       }
 
+      // Ranger: 5% chance de duplicar botín
+      if (rangerActive && secureRandom() < (heroBonuses.doubleLootChance || 0)) {
+        for (const key of Object.keys(loot)) {
+          if (typeof loot[key] === 'number') loot[key] *= 2;
+        }
+        loot._rangerDoubled = true;
+      }
+
       // Dar recompensas
       for (const [resource, amount] of Object.entries(loot)) {
         if (resource === 'xp') {
           await playerService.addXP(playerId, amount);
-        } else {
+        } else if (resource !== '_rangerDoubled') {
           await playerService.modifyResource(playerId, resource, amount);
         }
       }
@@ -285,6 +310,12 @@ const combatService = {
       const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVE_WIN, 'pve');
       await dailyTaskService.trackProgress(playerId, 'battle_win');
       loot.tokensAwarded = tokenResult.awarded;
+    }
+
+    // Héroe entra en recuperación si el jugador pierde
+    let heroRecovery = null;
+    if (result.winner !== 'attacker' && deployedHero) {
+      heroRecovery = await heroService.applyHeroRecovery(playerId, deployedHero.dbId, 24);
     }
 
     // Guardar batalla
@@ -301,15 +332,19 @@ const combatService = {
     });
 
     const tokensAwarded = loot.tokensAwarded || 0;
+    const rangerDoubled = loot._rangerDoubled || false;
     delete loot.tokensAwarded;
+    delete loot._rangerDoubled;
 
     return {
       ...result,
       loot,
       tokensAwarded,
+      heroBonusLabel: heroBonuses?.label || null,
+      heroRecovery,
       message: result.winner === 'attacker'
-        ? `Victoria! Botín: ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
-        : 'Derrota... tus tropas se retiran.',
+        ? `¡Victoria!${rangerDoubled ? ' 🏹 Botín doble (Ranger)!' : ''} Botín: ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
+        : `Derrota... tus tropas se retiran.${heroRecovery ? ` ${deployedHero?.name || 'Tu héroe'} se recuperará en 24h.` : ''}`,
     };
   },
 
@@ -353,10 +388,20 @@ const combatService = {
     const attackerFactionAtk = FACTIONS[attacker?.faction_id]?.bonus?.atk || 0;
     const defenderFactionDef = FACTIONS[defender?.faction_id]?.bonus?.def || 0;
 
+    // Fetch deployed hero bonuses
+    const { hero: deployedHero, bonuses: heroBonuses } = await heroService.getDeployedHero(playerId);
+    const heroAtkBonus  = heroBonuses?.attackBonus   || 0;
+    const heroDefDebuff = heroBonuses?.defDebuff     || 0;
+    const paladinActive = !!(heroBonuses?.lossReduction);
+    const rogueActive   = !!(heroBonuses?.pvpLootBonus);
+
     const result = this.calculateBattle(army, defenderArmy, defenderBuildings, {
-      attackBonus: attackerFactionAtk,
-      defenseBonus: defenderFactionDef,
+      attackBonus:       attackerFactionAtk + heroAtkBonus,
+      defenseBonus:      defenderFactionDef,
       abilityId,
+      attackerArmy:      army,
+      heroDefDebuff,
+      heroPaladinActive: paladinActive,
     });
 
     // Aplicar pérdidas a ambos (clamped para evitar negativos)
@@ -390,8 +435,9 @@ const combatService = {
     let loot = {};
     if (result.winner === 'attacker') {
       const defResources = await db('player_resources').where('player_id', defenderId);
-      const stealRate = 0.1;
-      const RESOURCE_SHIELD = 50; // No se puede robar por debajo de este mínimo
+      // Rogue: +10% steal rate
+      const stealRate = 0.1 * (1 + (heroBonuses?.pvpLootBonus || 0));
+      const RESOURCE_SHIELD = 50;
 
       for (const res of defResources) {
         const stealable = Math.max(0, res.amount - RESOURCE_SHIELD);
@@ -410,6 +456,12 @@ const combatService = {
       await dailyTaskService.trackProgress(playerId, 'battle_win');
     }
 
+    // Héroe entra en recuperación 48h si el jugador pierde
+    let heroRecovery = null;
+    if (result.winner !== 'attacker' && deployedHero) {
+      heroRecovery = await heroService.applyHeroRecovery(playerId, deployedHero.dbId, 48);
+    }
+
     await db('battles').insert({
       attacker_id: playerId,
       defender_id: defenderId,
@@ -422,7 +474,12 @@ const combatService = {
       resolved_at: new Date().toISOString(),
     });
 
-    return { ...result, loot };
+    return {
+      ...result,
+      loot,
+      heroBonusLabel: heroBonuses?.label || null,
+      heroRecovery,
+    };
   },
 
   /**

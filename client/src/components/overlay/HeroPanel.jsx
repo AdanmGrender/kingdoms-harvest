@@ -1,5 +1,5 @@
 /**
- * HeroPanel: Browse, summon, level up, and equip heroes.
+ * HeroPanel: Browse, summon, level up, equip, and deploy heroes for combat.
  */
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
@@ -17,6 +17,14 @@ const RARITY_ICONS = {
 
 const CLASS_ICONS = {
   warrior: '⚔️', mage: '🔮', ranger: '🏹', paladin: '🛡️', rogue: '🗡️',
+};
+
+const CLASS_BONUS_LABELS = {
+  warrior: '⚔️ +15% ATK de tropas',
+  mage:    '🔮 −15% DEF enemiga',
+  ranger:  '🏹 +10% ATK + 5% botín doble',
+  paladin: '🛡️ −25% bajas propias al ganar',
+  rogue:   '🗡️ +10% recursos robados en PvP',
 };
 
 const STAT_ICONS = { atk: '⚔️', def: '🛡️', hp: '❤️', spd: '💨', mgk: '✨' };
@@ -39,6 +47,22 @@ function StatBar({ stat, value }) {
   );
 }
 
+function RecoveryTimer({ until }) {
+  const [remaining, setRemaining] = useState('');
+  useEffect(() => {
+    const update = () => {
+      const ms = Math.max(0, new Date(until).getTime() - Date.now());
+      const h = Math.floor(ms / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      setRemaining(ms === 0 ? 'Listo' : `${h}h ${m}m`);
+    };
+    update();
+    const id = setInterval(update, 60000);
+    return () => clearInterval(id);
+  }, [until]);
+  return <span>{remaining}</span>;
+}
+
 function HeroCard({ hero, selected, onClick }) {
   const rc = RARITY_COLORS[hero.rarity] || RARITY_COLORS.common;
   return (
@@ -53,13 +77,23 @@ function HeroCard({ hero, selected, onClick }) {
           <p className="text-gray-500 text-[10px]">
             {RARITY_ICONS[hero.rarity]} {hero.rarity} · Nv.{hero.level}
           </p>
+          {hero.deployed && (
+            <span className="inline-block mt-0.5 text-[9px] px-1.5 py-0.5 rounded bg-green-800 text-green-300 font-bold">
+              EN COMBATE
+            </span>
+          )}
+          {hero.inRecovery && (
+            <span className="inline-block mt-0.5 text-[9px] px-1.5 py-0.5 rounded bg-red-900 text-red-300">
+              💤 <RecoveryTimer until={hero.recoveryUntil} />
+            </span>
+          )}
         </div>
       </div>
     </button>
   );
 }
 
-function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, loading }) {
+function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, onRecall, loading }) {
   const rc = RARITY_COLORS[hero.rarity] || RARITY_COLORS.common;
   const xpPct = Math.min(100, Math.round((hero.xp / hero.xpNeeded) * 100));
   const goldCost = 50 * hero.level;
@@ -92,6 +126,46 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, loading })
           </div>
         </div>
         <p className="text-gray-400 text-[10px] mt-2 italic">{hero.passive}</p>
+      </div>
+
+      {/* Combat deployment */}
+      <div className="p-2 rounded-lg border border-gray-700/50 bg-black/20">
+        {hero.inRecovery ? (
+          <div className="text-center">
+            <p className="text-red-400 text-[10px] font-bold">💤 Recuperándose</p>
+            <p className="text-gray-500 text-[9px]">
+              Disponible en <RecoveryTimer until={hero.recoveryUntil} />
+            </p>
+          </div>
+        ) : hero.deployed ? (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-400 text-[10px] font-bold">⚔️ Desplegado en combate</p>
+              <p className="text-gray-500 text-[9px]">{CLASS_BONUS_LABELS[hero.class]}</p>
+            </div>
+            <button
+              onClick={() => onRecall(hero.dbId)}
+              disabled={loading}
+              className="text-[9px] px-2 py-1 rounded border border-gray-500 text-gray-300 hover:border-red-400 hover:text-red-300 disabled:opacity-50"
+            >
+              Retirar
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-[10px]">Sin desplegar</p>
+              <p className="text-gray-600 text-[9px]">{CLASS_BONUS_LABELS[hero.class]}</p>
+            </div>
+            <button
+              onClick={() => onDeploy(hero.dbId)}
+              disabled={loading}
+              className="text-[9px] px-2 py-1 rounded border border-green-600 text-green-300 hover:bg-green-900/40 disabled:opacity-50"
+            >
+              Desplegar
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Tabs */}
@@ -179,12 +253,15 @@ export default function HeroPanel({ onClose }) {
   const heroItems   = useGameStore((s) => s.heroItems);
   const tokenInfo   = useGameStore((s) => s.tokenInfo);
   const resources   = useGameStore((s) => s.resources);
-  const loadHeroes      = useGameStore((s) => s.loadHeroes);
-  const loadHeroItems   = useGameStore((s) => s.loadHeroItems);
-  const summonHero      = useGameStore((s) => s.summonHero);
-  const levelUpHero     = useGameStore((s) => s.levelUpHero);
-  const equipHeroItem   = useGameStore((s) => s.equipHeroItem);
-  const unequipHeroItem = useGameStore((s) => s.unequipHeroItem);
+  const loadHeroes        = useGameStore((s) => s.loadHeroes);
+  const loadHeroItems     = useGameStore((s) => s.loadHeroItems);
+  const loadDeployedHero  = useGameStore((s) => s.loadDeployedHero);
+  const summonHero        = useGameStore((s) => s.summonHero);
+  const levelUpHero       = useGameStore((s) => s.levelUpHero);
+  const equipHeroItem     = useGameStore((s) => s.equipHeroItem);
+  const unequipHeroItem   = useGameStore((s) => s.unequipHeroItem);
+  const deployHeroAction  = useGameStore((s) => s.deployHero);
+  const recallHeroAction  = useGameStore((s) => s.recallHero);
 
   const [selectedId, setSelectedId] = useState(null);
   const [loading, setLoading]       = useState(false);
@@ -193,6 +270,7 @@ export default function HeroPanel({ onClose }) {
   useEffect(() => {
     loadHeroes();
     loadHeroItems();
+    loadDeployedHero();
   }, []);
 
   useEffect(() => {
@@ -225,6 +303,18 @@ export default function HeroPanel({ onClose }) {
   const doUnequip = async (heroDbId, slot) => {
     setLoading(true);
     await unequipHeroItem(heroDbId, slot);
+    setLoading(false);
+  };
+
+  const doDeploy = async (heroDbId) => {
+    setLoading(true);
+    await deployHeroAction(heroDbId);
+    setLoading(false);
+  };
+
+  const doRecall = async () => {
+    setLoading(true);
+    await recallHeroAction();
     setLoading(false);
   };
 
@@ -328,6 +418,8 @@ export default function HeroPanel({ onClose }) {
                 onLevelUp={doLevelUp}
                 onEquip={doEquip}
                 onUnequip={doUnequip}
+                onDeploy={doDeploy}
+                onRecall={doRecall}
                 loading={loading}
               />
             ) : (
