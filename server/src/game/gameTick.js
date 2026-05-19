@@ -420,6 +420,18 @@ async function processDailyReminders() {
   }
 }
 
+async function processTerritoryBonuses() {
+  try {
+    const territoryService = require('../services/territoryService');
+    const applied = await territoryService.applyTerritoryBonuses();
+    if (applied > 0) {
+      console.log(`[Tick] Territorios: ${applied} recursos distribuidos a facciones`);
+    }
+  } catch (error) {
+    console.error('[Tick] Error en bonuses de territorios:', error.message);
+  }
+}
+
 function startGameTick(io) {
   ioRef = io;
   // Ejecutar cada minuto
@@ -434,9 +446,10 @@ function startGameTick(io) {
   cron.schedule('*/15 * * * *', processWorldEvents);
   console.log('[Tick] Eventos del mundo programados cada 15 minutos');
 
-  // Recordatorios diarios — cada 30 minutos
+  // Recordatorios diarios + bonuses de territorios — cada 30 minutos
   cron.schedule('*/30 * * * *', processDailyReminders);
-  console.log('[Tick] Recordatorios diarios programados cada 30 minutos');
+  cron.schedule('*/30 * * * *', processTerritoryBonuses);
+  console.log('[Tick] Recordatorios y bonuses de territorios cada 30 minutos');
 }
 
 module.exports = { startGameTick, processTick };

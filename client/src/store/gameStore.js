@@ -27,6 +27,9 @@ const useGameStore = create((set, get) => ({
   // Villagers
   villagers: [],
 
+  // Territories
+  territories: [],
+
   // World events
   worldEvents: [],
 
@@ -369,10 +372,23 @@ const useGameStore = create((set, get) => ({
       if (data.winner === 'attacker' && data.tokensAwarded > 0) {
         EventBridge.emit('token:earned', { amount: data.tokensAwarded });
       }
+      if (data.territoryClaimed) {
+        get().loadTerritories();
+        get().addNotification(`🏳️ ¡Tu facción conquistó ${data.territoryClaimed.territoryName}!`, 'success');
+      }
       get().refreshResources();
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error', 'error');
+    }
+  },
+
+  loadTerritories: async () => {
+    try {
+      const { data } = await api.get('/territories');
+      set({ territories: data });
+    } catch (error) {
+      console.error('Error loading territories:', error);
     }
   },
 

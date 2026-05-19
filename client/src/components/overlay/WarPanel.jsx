@@ -1,5 +1,5 @@
 /**
- * WarPanel: Siege management — active sieges with countdown, history, ability buttons.
+ * WarPanel: Sieges, battle history, and territory expansion.
  */
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
@@ -15,6 +15,190 @@ const TROOP_ICONS = {
   militia: '🗡️', archer: '🏹', cavalry: '🐎', spearman: '🔱', siege_ram: '🪵',
 };
 
+const TYPE_COLORS = {
+  plains:   'text-green-400',
+  forest:   'text-emerald-400',
+  mountain: 'text-gray-300',
+  coastal:  'text-blue-400',
+  ruins:    'text-purple-400',
+};
+
+function TerritoryTab({ playerFactionId }) {
+  const territories    = useGameStore((s) => s.territories);
+  const troops         = useGameStore((s) => s.troops);
+  const loadTerritories = useGameStore((s) => s.loadTerritories);
+  const loadTroops     = useGameStore((s) => s.loadTroops);
+  const attackPVE      = useGameStore((s) => s.attackPVE);
+
+  const [selected, setSelected]   = useState(null);
+  const [army, setArmy]           = useState({});
+  const [loading, setLoading]     = useState(false);
+  const [filter, setFilter]       = useState('all');
+
+  useEffect(() => {
+    loadTerritories();
+    loadTroops();
+  }, []);
+
+  const readyTroops = (troops || []).filter((t) => t.quantity > 0);
+  const totalArmy = Object.values(army).reduce((s, v) => s + v, 0);
+
+  const doAttack = async () => {
+    if (!selected || totalArmy === 0) return;
+    setLoading(true);
+    await attackPVE(army, selected.id, null);
+    setLoading(false);
+    await loadTerritories();
+  };
+
+  const filteredTerritories = filter === 'all'
+    ? territories
+    : filter === 'mine'
+      ? territories.filter((t) => t.ownerFactionId === playerFactionId)
+      : filter === 'neutral'
+        ? territories.filter((t) => !t.ownerFactionId)
+        : territories.filter((t) => t.ownerFactionId && t.ownerFactionId !== playerFactionId);
+
+  const ownedByMyFaction = territories.filter((t) => t.ownerFactionId === playerFactionId).length;
+  const neutral          = territories.filter((t) => !t.ownerFactionId).length;
+
+  return (
+    <div>
+      {/* Summary */}
+      <div className="flex gap-2 mb-2 text-[10px]">
+        <span className="px-2 py-0.5 rounded bg-green-900/50 text-green-400">
+          ✅ Tu facción: {ownedByMyFaction}
+        </span>
+        <span className="px-2 py-0.5 rounded bg-gray-700/50 text-gray-400">
+          🏳️ Neutral: {neutral}
+        </span>
+        <span className="px-2 py-0.5 rounded bg-red-900/50 text-red-400">
+          ⚔️ Enemigos: {territories.length - ownedByMyFaction - neutral}
+        </span>
+      </div>
+
+      {/* Filters */}
+      <div className="flex gap-1 mb-2">
+        {[['all','Todos'],['mine','Mis'],['neutral','Neutral'],['enemy','Enemigos']].map(([f, label]) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`flex-1 text-[9px] py-1 rounded ${filter === f ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400'}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex gap-2">
+        {/* Territory list */}
+        <div className="w-1/2 space-y-1 overflow-y-auto max-h-48">
+          {filteredTerritories.map((t) => {
+            const isMine  = t.ownerFactionId === playerFactionId;
+            const isEnemy = t.ownerFactionId && !isMine;
+            return (
+              <button
+                key={t.id}
+                onClick={() => { setSelected(t); setArmy({}); }}
+                className={`w-full text-left p-1.5 rounded border text-[10px] transition-all ${
+                  selected?.id === t.id ? 'border-yellow-400 bg-yellow-900/20' :
+                  isMine  ? 'border-green-700/50 bg-green-900/10' :
+                  isEnemy ? 'border-red-700/40 bg-red-900/10' :
+                  'border-gray-700/40 bg-gray-900/10'
+                }`}
+              >
+                <div className="flex items-center gap-1">
+                  <span>{t.typeIcon}</span>
+                  <span className="truncate font-semibold text-white">{t.name}</span>
+                </div>
+                <div className="flex items-center gap-1 mt-0.5">
+                  {isMine  && <span className="text-[8px] px-1 rounded bg-green-800 text-green-300">Tuyo</span>}
+                  {isEnemy && <span className="text-[8px] px-1 rounded bg-red-800 text-red-300">Enemigo</span>}
+                  {!t.ownerFactionId && <span className="text-[8px] px-1 rounded bg-gray-700 text-gray-400">Neutral</span>}
+                  <span className="text-gray-500 text-[8px]">DEF {t.defenseStrength}</span>
+                </div>
+              </button>
+            );
+          })}
+          {filteredTerritories.length === 0 && (
+            <p className="text-gray-600 text-[10px] text-center py-4">Sin territorios</p>
+          )}
+        </div>
+
+        {/* Territory detail + attack */}
+        <div className="flex-1 min-w-0">
+          {selected ? (
+            <div className="space-y-1.5">
+              <div className="p-2 rounded bg-black/20 border border-gray-700/40">
+                <p className={`text-xs font-bold ${TYPE_COLORS[selected.type] || 'text-white'}`}>
+                  {selected.typeIcon} {selected.name}
+                </p>
+                <p className="text-gray-400 text-[9px]">{selected.typeLabel}</p>
+                <p className="text-yellow-400 text-[9px] mt-1">💰 {selected.bonusDesc}</p>
+                <p className="text-gray-500 text-[9px]">Dueño: {selected.ownerFactionName}</p>
+                {selected.conqueredAt && (
+                  <p className="text-gray-600 text-[9px]">
+                    Conquistado: {new Date(selected.conqueredAt).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+
+              {selected.ownerFactionId !== playerFactionId && (
+                <>
+                  <p className="text-gray-400 text-[9px] font-bold">Ejército de ataque:</p>
+                  {readyTroops.length === 0 ? (
+                    <p className="text-gray-600 text-[9px]">Sin tropas disponibles</p>
+                  ) : (
+                    <div className="space-y-1">
+                      {readyTroops.map((t) => (
+                        <div key={t.troop_id} className="flex items-center gap-1">
+                          <span className="text-[10px] w-4">{TROOP_ICONS[t.troop_id]}</span>
+                          <span className="text-gray-400 text-[9px] flex-1 truncate">{t.troop_id}</span>
+                          <span className="text-gray-500 text-[9px]">/{t.quantity}</span>
+                          <input
+                            type="number"
+                            min="0"
+                            max={t.quantity}
+                            value={army[t.troop_id] || 0}
+                            onChange={(e) => {
+                              const v = Math.min(Number(e.target.value), t.quantity);
+                              setArmy((prev) => ({ ...prev, [t.troop_id]: v }));
+                            }}
+                            className="w-10 text-[9px] text-center rounded bg-gray-800 border border-gray-600 text-white"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <button
+                    onClick={doAttack}
+                    disabled={loading || totalArmy === 0}
+                    className="w-full py-1.5 rounded text-[10px] font-bold text-white disabled:opacity-40"
+                    style={{ background: 'linear-gradient(135deg, #7f1d1d, #dc2626)' }}
+                  >
+                    {loading ? 'Atacando...' : `⚔️ Atacar (${totalArmy} tropas)`}
+                  </button>
+                </>
+              )}
+
+              {selected.ownerFactionId === playerFactionId && (
+                <div className="p-2 rounded bg-green-900/20 border border-green-700/30">
+                  <p className="text-green-400 text-[10px] font-bold">✅ Territorio propio</p>
+                  <p className="text-gray-400 text-[9px]">Recibís {selected.bonusDesc} mientras lo controles.</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-gray-600 text-[10px] text-center mt-8">
+              Seleccioná un territorio
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function WarPanel({ data, onClose }) {
   const sieges = useGameStore((s) => s.sieges);
   const player = useGameStore((s) => s.player);
@@ -22,7 +206,7 @@ export default function WarPanel({ data, onClose }) {
   const loadTroops = useGameStore((s) => s.loadTroops);
   const useSiegeAbility = useGameStore((s) => s.useSiegeAbility);
 
-  const [activeTab, setActiveTab] = useState('active');
+  const [activeTab, setActiveTab] = useState('territories');
   const [now, setNow] = useState(Date.now());
 
   // Load data on mount
@@ -81,22 +265,29 @@ export default function WarPanel({ data, onClose }) {
       {/* Tabs */}
       <div className="flex gap-1 mb-3">
         <button
-          className={`flex-1 text-xs py-1.5 rounded ${
-            activeTab === 'active' ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'
-          }`}
-          onClick={() => setActiveTab('active')}
+          className={`flex-1 text-[10px] py-1.5 rounded ${activeTab === 'territories' ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'}`}
+          onClick={() => setActiveTab('territories')}
         >
-          Asedios Activos ({activeSieges.length})
+          🗺️ Territorios
         </button>
         <button
-          className={`flex-1 text-xs py-1.5 rounded ${
-            activeTab === 'history' ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'
-          }`}
+          className={`flex-1 text-[10px] py-1.5 rounded ${activeTab === 'active' ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'}`}
+          onClick={() => setActiveTab('active')}
+        >
+          Asedios ({activeSieges.length})
+        </button>
+        <button
+          className={`flex-1 text-[10px] py-1.5 rounded ${activeTab === 'history' ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'}`}
           onClick={() => setActiveTab('history')}
         >
           Historial
         </button>
       </div>
+
+      {/* Territories */}
+      {activeTab === 'territories' && (
+        <TerritoryTab playerFactionId={player?.faction_id || null} />
+      )}
 
       {/* Active Sieges */}
       {activeTab === 'active' && (

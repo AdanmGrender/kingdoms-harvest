@@ -4,6 +4,7 @@ const { TROOPS, BUILDINGS, FACTIONS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const buildingService = require('./buildingService');
 const heroService = require('./heroService');
+const territoryService = require('./territoryService');
 
 let _techService = null;
 function getTechService() { if (!_techService) _techService = require('./techService'); return _techService; }
@@ -318,6 +319,14 @@ const combatService = {
       heroRecovery = await heroService.applyHeroRecovery(playerId, deployedHero.dbId, 24);
     }
 
+    // Claim territory for player's faction on PvE victory
+    let territoryClaimed = null;
+    if (result.winner === 'attacker' && territoryId) {
+      try {
+        territoryClaimed = await territoryService.claimTerritory(playerId, territoryId);
+      } catch { /* non-blocking */ }
+    }
+
     // Guardar batalla
     await db('battles').insert({
       attacker_id: playerId,
@@ -340,10 +349,11 @@ const combatService = {
       ...result,
       loot,
       tokensAwarded,
-      heroBonusLabel: heroBonuses?.label || null,
+      heroBonusLabel:  heroBonuses?.label || null,
       heroRecovery,
+      territoryClaimed,
       message: result.winner === 'attacker'
-        ? `¡Victoria!${rangerDoubled ? ' 🏹 Botín doble (Ranger)!' : ''} Botín: ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
+        ? `¡Victoria!${rangerDoubled ? ' 🏹 Botín doble (Ranger)!' : ''}${territoryClaimed ? ` 🏳️ ${territoryClaimed.territoryName} conquistado!` : ''} Botín: ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
         : `Derrota... tus tropas se retiran.${heroRecovery ? ` ${deployedHero?.name || 'Tu héroe'} se recuperará en 24h.` : ''}`,
     };
   },

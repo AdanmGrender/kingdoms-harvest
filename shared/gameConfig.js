@@ -719,6 +719,15 @@ const HERO_ITEMS = {
   lucky_charm:   { id: 'lucky_charm',   name: 'Amuleto de Fortuna',slot: 'accessory', icon: '🍀', bonuses: { atk: 2, def: 2, hp: 10, spd: 2, mgk: 2 }, rarity: 'common', description: 'Trébol de cuatro hojas preservado por magia del bosque' },
 };
 
+// Territory types — each type provides passive resource bonuses every 30 min to players in the owning faction
+const TERRITORY_TYPES = {
+  plains:   { icon: '🌾', label: 'Llanura',  bonusDesc: '+5 trigo, +2 oro / 30 min',      bonus: { wheat: 5,  gold: 2           } },
+  forest:   { icon: '🌲', label: 'Bosque',   bonusDesc: '+8 madera / 30 min',              bonus: { wood: 8                      } },
+  mountain: { icon: '⛰️', label: 'Montaña',  bonusDesc: '+6 piedra, +4 hierro / 30 min',  bonus: { stone: 6,  iron: 4           } },
+  coastal:  { icon: '🌊', label: 'Costa',    bonusDesc: '+10 oro, +3 pan / 30 min',        bonus: { gold: 10,  bread: 3          } },
+  ruins:    { icon: '🏛️', label: 'Ruinas',   bonusDesc: '+1 cristal, +5 oro / 30 min',    bonus: { crystal: 1, gold: 5          } },
+};
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -741,4 +750,5 @@ module.exports = {
   HERO_RARITIES,
   HEROES,
   HERO_ITEMS,
+  TERRITORY_TYPES,
 };
