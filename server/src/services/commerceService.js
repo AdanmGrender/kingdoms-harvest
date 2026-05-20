@@ -6,6 +6,9 @@ const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
+let _achievementService = null;
+function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
+
 function secureRandom() {
   return crypto.randomInt(0, 2147483647) / 2147483647;
 }
@@ -198,6 +201,7 @@ const commerceService = {
     // Award tokens + track task only after the sale is confirmed
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
     await dailyTaskService.trackProgress(playerId, 'sell');
+    try { await getAchievementService().checkAndUnlock(playerId, 'sell', 1); } catch { /* non-blocking */ }
 
     return {
       success: true,
@@ -226,6 +230,7 @@ const commerceService = {
     // Dar KH Tokens + trackear tarea diaria
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
     await dailyTaskService.trackProgress(playerId, 'sell');
+    try { await getAchievementService().checkAndUnlock(playerId, 'sell', 1); } catch { /* non-blocking */ }
 
     return {
       success: true,

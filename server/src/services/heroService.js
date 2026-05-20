@@ -4,8 +4,10 @@ const { HEROES, HERO_RARITIES, HERO_ITEMS } = require('../../../shared/gameConfi
 
 let _playerService = null;
 let _tokenService = null;
+let _achievementService = null;
 function getPlayerService() { if (!_playerService) _playerService = require('./playerService'); return _playerService; }
 function getTokenService() { if (!_tokenService) _tokenService = require('./tokenService'); return _tokenService; }
+function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
 
 const STAT_CAPS = { atk: 50, def: 50, hp: 200, spd: 20, mgk: 50 };
 
@@ -216,6 +218,8 @@ const heroService = {
     } else {
       await db('player_items').insert({ player_id: playerId, item_id: droppedItem.id, quantity: 1 });
     }
+
+    try { await getAchievementService().checkAndUnlock(playerId, 'summon', 1); } catch { /* non-blocking */ }
 
     return {
       success:         true,

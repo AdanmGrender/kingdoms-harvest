@@ -1,6 +1,8 @@
 const db = require('../config/database');
 const { BUILDINGS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
+let _achievementService = null;
+function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
 
 const buildingService = {
   async getBuildings(playerId) {
@@ -87,6 +89,8 @@ const buildingService = {
       position_x: posX,
       position_y: posY,
     });
+
+    try { await getAchievementService().checkAndUnlock(playerId, 'build', 1); } catch { /* non-blocking */ }
 
     return {
       success: true,

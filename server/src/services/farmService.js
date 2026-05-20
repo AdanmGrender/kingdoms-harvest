@@ -9,6 +9,8 @@ const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 let _techService = null;
 function getTechService() { if (!_techService) _techService = require('./techService'); return _techService; }
+let _achievementService = null;
+function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
 
 function secureRandom() {
   return crypto.randomInt(0, 2147483647) / 2147483647;
@@ -112,6 +114,7 @@ const farmService = {
     // Dar KH Tokens + trackear tarea diaria
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_HARVEST, 'harvest');
     await dailyTaskService.trackProgress(playerId, 'harvest');
+    try { await getAchievementService().checkAndUnlock(playerId, 'harvest', 1); } catch { /* non-blocking */ }
 
     // Resetear parcela
     await db('farm_plots').where('id', plotId).update({

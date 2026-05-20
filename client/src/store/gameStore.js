@@ -30,6 +30,13 @@ const useGameStore = create((set, get) => ({
   // Territories
   territories: [],
 
+  // Achievements
+  achievements: [],
+
+  // Marketplace
+  marketListings: [],
+  myMarketListings: [],
+
   // World events
   worldEvents: [],
 
@@ -389,6 +396,87 @@ const useGameStore = create((set, get) => ({
       set({ territories: data });
     } catch (error) {
       console.error('Error loading territories:', error);
+    }
+  },
+
+  // ---- Achievement System ----
+  loadAchievements: async () => {
+    try {
+      const { data } = await api.get('/achievements');
+      set({ achievements: data });
+    } catch (error) {
+      console.error('Error loading achievements:', error);
+    }
+  },
+
+  claimAchievement: async (achievementId) => {
+    try {
+      const { data } = await api.post(`/achievements/${achievementId}/claim`);
+      get().loadAchievements();
+      get().refreshResources();
+      get().loadTokenInfo();
+      get().addNotification(data.message, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al reclamar logro', 'error');
+      return null;
+    }
+  },
+
+  // ---- Marketplace P2P ----
+  loadMarket: async (resourceId = null) => {
+    try {
+      const url = resourceId ? `/market?resource=${resourceId}` : '/market';
+      const { data } = await api.get(url);
+      set({ marketListings: data });
+    } catch (error) {
+      console.error('Error loading market:', error);
+    }
+  },
+
+  loadMyMarketListings: async () => {
+    try {
+      const { data } = await api.get('/market/my');
+      set({ myMarketListings: data });
+    } catch (error) {
+      console.error('Error loading my listings:', error);
+    }
+  },
+
+  createMarketListing: async (resourceId, quantity, pricePerUnit) => {
+    try {
+      const { data } = await api.post('/market/list', { resourceId, quantity, pricePerUnit });
+      get().addNotification(data.message, 'success');
+      get().refreshResources();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al publicar', 'error');
+      return null;
+    }
+  },
+
+  buyMarketListing: async (listingId, quantity) => {
+    try {
+      const { data } = await api.post(`/market/${listingId}/buy`, { quantity });
+      get().addNotification(data.message, 'success');
+      get().refreshResources();
+      get().loadAchievements();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al comprar', 'error');
+      return null;
+    }
+  },
+
+  cancelMarketListing: async (listingId) => {
+    try {
+      const { data } = await api.post(`/market/${listingId}/cancel`);
+      get().addNotification(data.message, 'success');
+      get().refreshResources();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al cancelar', 'error');
+      return null;
     }
   },
 

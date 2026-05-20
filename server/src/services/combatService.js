@@ -5,6 +5,8 @@ const playerService = require('./playerService');
 const buildingService = require('./buildingService');
 const heroService = require('./heroService');
 const territoryService = require('./territoryService');
+let _achievementService = null;
+function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
 
 let _techService = null;
 function getTechService() { if (!_techService) _techService = require('./techService'); return _techService; }
@@ -310,6 +312,7 @@ const combatService = {
       // Dar KH Tokens + trackear tarea diaria
       const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVE_WIN, 'pve');
       await dailyTaskService.trackProgress(playerId, 'battle_win');
+      try { await getAchievementService().checkAndUnlock(playerId, 'battle_win', 1); } catch { /* non-blocking */ }
       loot.tokensAwarded = tokenResult.awarded;
     }
 
@@ -464,6 +467,7 @@ const combatService = {
       // Dar KH Tokens + trackear tarea diaria
       await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVP_WIN, 'pvp');
       await dailyTaskService.trackProgress(playerId, 'battle_win');
+      try { await getAchievementService().checkAndUnlock(playerId, 'battle_win', 1); } catch { /* non-blocking */ }
     }
 
     // Héroe entra en recuperación 48h si el jugador pierde

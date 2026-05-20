@@ -420,6 +420,15 @@ async function processDailyReminders() {
   }
 }
 
+async function processMarketExpiry() {
+  try {
+    const marketService = require('../services/marketService');
+    await marketService.cleanupExpired();
+  } catch (error) {
+    console.error('[Tick] Market expiry error:', error.message);
+  }
+}
+
 async function processTerritoryBonuses() {
   try {
     const territoryService = require('../services/territoryService');
@@ -440,6 +449,9 @@ function startGameTick(io) {
 
   // Procesar retiros cada 5 minutos
   cron.schedule('*/5 * * * *', processWithdrawals);
+
+  // Limpiar ventas expiradas del mercado cada hora
+  cron.schedule('0 * * * *', processMarketExpiry);
   console.log('[Tick] Procesamiento de retiros cada 5 minutos');
 
   // Generar eventos del mundo cada 15 minutos

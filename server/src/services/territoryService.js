@@ -1,5 +1,7 @@
 const db = require('../config/database');
 const { TERRITORY_TYPES, FACTIONS } = require('../../../shared/gameConfig');
+let _achievementService = null;
+function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
 
 const territoryService = {
   async getTerritories() {
@@ -44,6 +46,9 @@ const territoryService = {
     await db('factions').where('id', player.faction_id).increment('territory_count', 1);
 
     const factionName = FACTIONS[player.faction_id]?.name || player.faction_id;
+
+    try { await getAchievementService().checkAndUnlock(playerId, 'conquer', 1); } catch { /* non-blocking */ }
+
     return {
       territoryId,
       territoryName:  territory.name,

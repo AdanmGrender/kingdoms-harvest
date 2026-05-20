@@ -31,6 +31,8 @@ const heroRoutes = require('./routes/heroRoutes');
 const worldEventRoutes = require('./routes/worldEventRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const territoryRoutes = require('./routes/territoryRoutes');
+const achievementRoutes = require('./routes/achievementRoutes');
+const marketRoutes = require('./routes/marketRoutes');
 
 const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
@@ -107,6 +109,8 @@ app.use('/api/heroes', heroRoutes);
 app.use('/api/world-events', worldEventRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/territories', territoryRoutes);
+app.use('/api/achievements', achievementRoutes);
+app.use('/api/market', marketRoutes);
 
 // SPA fallback: serve index.html for non-API routes
 if (process.env.NODE_ENV === 'production') {

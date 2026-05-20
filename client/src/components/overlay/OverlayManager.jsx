@@ -14,6 +14,8 @@ import CraftingPanel from './CraftingPanel';
 import HeroPanel from './HeroPanel';
 import CommerceView from '../commerce/CommerceView';
 import WorldEventPanel from './WorldEventPanel';
+import AchievementPanel from './AchievementPanel';
+import MarketplacePanel from './MarketplacePanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -139,6 +141,10 @@ function renderPanel(overlayState, onClose) {
       return <HeroPanel onClose={onClose} />;
     case 'world_event':
       return <WorldEventPanel data={overlayState.data} onClose={onClose} />;
+    case 'achievements':
+      return <AchievementPanel onClose={onClose} />;
+    case 'marketplace':
+      return <MarketplacePanel onClose={onClose} />;
     default:
       return (
         <GenericPanel title={overlayState.type} onClose={onClose}>

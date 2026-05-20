@@ -6,16 +6,33 @@ import { useState, useEffect, useCallback } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
-function HeroesButton() {
+function QuickNavButtons() {
   const setOverlay = useGameStore((s) => s.setOverlay);
-  return (
+  const achievements = useGameStore((s) => s.achievements);
+  const claimableCount = achievements.filter((a) => a.unlocked && !a.claimed).length;
+
+  const btn = (label, type, style) => (
     <button
-      onClick={() => setOverlay('heroes', {})}
-      className="px-4 py-1 rounded-t-lg text-xs text-purple-300 font-bold"
-      style={{ background: 'rgba(22, 33, 62, 0.9)', border: '1px solid rgba(168, 85, 247, 0.4)', borderBottom: 'none' }}
+      key={type}
+      onClick={() => setOverlay(type, {})}
+      className="relative px-3 py-1 rounded-t-lg text-[11px] font-bold"
+      style={style}
     >
-      ⚔️ Héroes
+      {label}
+      {claimableCount > 0 && type === 'achievements' && (
+        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[8px] flex items-center justify-center font-bold">
+          {claimableCount}
+        </span>
+      )}
     </button>
+  );
+
+  return (
+    <>
+      {btn('⚔️ Héroes',  'heroes',       { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(168,85,247,0.4)',  borderBottom: 'none', color: '#d8b4fe' })}
+      {btn('🏆 Logros',  'achievements', { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(234,179,8,0.4)',   borderBottom: 'none', color: '#fde047' })}
+      {btn('🏷️ Mercado', 'marketplace',  { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(59,130,246,0.4)',  borderBottom: 'none', color: '#93c5fd' })}
+    </>
   );
 }
 
@@ -151,7 +168,7 @@ export default function BuildingToolbar() {
     <div className="absolute bottom-0 left-0 right-0 z-40 pointer-events-none">
       {/* Toggle button */}
       <div className="flex justify-center gap-2 pointer-events-auto mb-1">
-        <HeroesButton />
+        <QuickNavButtons />
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="px-4 py-1 rounded-t-lg text-xs text-yellow-300 font-bold"
