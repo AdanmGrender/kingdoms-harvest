@@ -108,25 +108,55 @@ const tokenService = {
 
   /**
    * Pagar comision de referido (5% de los tokens ganados por el referee)
+   * Sujeto a dos caps:
+   *   1. Per-referee lifetime cap (REFERRAL_COMMISSION_CAP_PER_REFEREE)
+   *   2. Daily cap across all referrals (REFERRAL_DAILY_COMMISSION_CAP)
    */
   async payReferralCommission(refereeId, tokensEarned) {
-    // Check if referee has a referrer
     const referral = await db('referrals').where('referee_id', refereeId).first();
     if (!referral || !referral.inviter_id) return;
 
-    // Referee must be at least level 3 for commission to flow
     const referee = await db('players').where('telegram_id', refereeId).first();
     if (!referee || referee.level < TOKEN_CONFIG.REFERRAL_MIN_LEVEL_FOR_COMMISSION) return;
 
-    const commission = Math.floor(tokensEarned * TOKEN_CONFIG.REFERRAL_COMMISSION_RATE);
+    // Cap 1: per-referee lifetime limit
+    const lifetimeRemaining = TOKEN_CONFIG.REFERRAL_COMMISSION_CAP_PER_REFEREE - (referral.total_commission || 0);
+    if (lifetimeRemaining <= 0) return;
+
+    let commission = Math.floor(tokensEarned * TOKEN_CONFIG.REFERRAL_COMMISSION_RATE);
+    commission = Math.min(commission, lifetimeRemaining);
     if (commission <= 0) return;
 
-    // Award commission to inviter (bypasses daily cap — it's passive income)
+    // Cap 2: inviter's daily commission limit (reset at UTC midnight)
     await this.ensureTokenRecord(referral.inviter_id);
-    await db('player_tokens').where('player_id', referral.inviter_id).increment('balance', commission);
-    await db('player_tokens').where('player_id', referral.inviter_id).increment('total_earned', commission);
+    const inviterTokens = await db('player_tokens').where('player_id', referral.inviter_id).first();
 
-    // Track commission total
+    const now = new Date();
+    let commissionToday = inviterTokens.commission_today || 0;
+    const resetAt = inviterTokens.commission_reset_at ? new Date(inviterTokens.commission_reset_at) : null;
+
+    if (!resetAt || resetAt <= now) {
+      commissionToday = 0;
+      const nextReset = new Date(now);
+      nextReset.setUTCHours(24, 0, 0, 0);
+      await db('player_tokens').where('player_id', referral.inviter_id).update({
+        commission_today: 0,
+        commission_reset_at: nextReset.toISOString(),
+      });
+    }
+
+    const dailyRemaining = TOKEN_CONFIG.REFERRAL_DAILY_COMMISSION_CAP - commissionToday;
+    if (dailyRemaining <= 0) return;
+
+    commission = Math.min(commission, dailyRemaining);
+    if (commission <= 0) return;
+
+    await db('player_tokens').where('player_id', referral.inviter_id).update({
+      balance:          db.raw('balance + ?', [commission]),
+      total_earned:     db.raw('total_earned + ?', [commission]),
+      commission_today: db.raw('commission_today + ?', [commission]),
+    });
+
     await db('referrals').where('id', referral.id).increment('total_commission', commission);
   },
 
