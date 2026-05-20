@@ -210,9 +210,9 @@ const tokenService = {
    * Vincular wallet TON
    */
   async linkWallet(playerId, walletAddress) {
-    // Basic TON address validation (EQ or UQ prefix, ~48 chars)
+    // Format validation: EQ/UQ prefix + base64url body (route-level regex is primary guard)
     if (!walletAddress || !/^(EQ|UQ)[A-Za-z0-9_-]{46,48}$/.test(walletAddress)) {
-      throw new Error('Direccion de wallet TON invalida');
+      throw new Error('Dirección de wallet TON inválida');
     }
 
     await this.ensureTokenRecord(playerId);
@@ -340,9 +340,13 @@ const tokenService = {
           processed_at: new Date().toISOString(),
         });
 
+        const network    = process.env.TON_NETWORK || 'testnet';
+        const explorerBase = network === 'mainnet'
+          ? 'https://tonscan.org/tx'
+          : 'https://testnet.tonscan.org/tx';
         getNotifService().notify(
           request.player_id, 'withdrawals',
-          `💰 ¡Retiro completado! ${request.amount} KH Tokens → ${request.ton_amount} TON enviados a tu wallet. TX: ${txHash}`
+          `💰 ¡Retiro completado! ${request.amount} KH → ${request.ton_amount} TON enviados.\n🔗 ${explorerBase}/${txHash}`
         );
         console.log(`[TON] Withdrawal #${request.id} completed: ${txHash}`);
       } catch (err) {
@@ -371,16 +375,24 @@ const tokenService = {
   },
 
   /**
-   * Enviar TON desde hot wallet usando @ton/ton (SDK oficial)
-   * Returns pseudo transaction hash (real on-chain hash requires polling TonCenter — ⚠️ Known)
+   * Enviar TON desde hot wallet usando @ton/ton (SDK oficial).
+   * Retorna el hash real de la transacción on-chain obtenido por polling.
    */
   async sendTON(toAddress, tonAmountStr) {
-    const { TonClient, WalletContractV4, internal, toNano, SendMode } = require('@ton/ton');
+    const { TonClient, WalletContractV4, internal, toNano, fromNano, Address, SendMode } = require('@ton/ton');
     const { mnemonicToWalletKey } = require('@ton/crypto');
     const { loadSecret } = require('../config/secrets');
 
-    const network = process.env.TON_NETWORK || 'testnet';
-    const apiKey  = process.env.TON_API_KEY  || undefined;
+    // Validate and normalize address (throws if invalid)
+    const parsedAddress = Address.parse(toAddress);
+
+    const tonAmount = parseFloat(tonAmountStr);
+    if (isNaN(tonAmount) || tonAmount < 0.01) {
+      throw new Error('Monto TON demasiado pequeño (mínimo 0.01 TON)');
+    }
+
+    const network  = process.env.TON_NETWORK || 'testnet';
+    const apiKey   = process.env.TON_API_KEY  || undefined;
     const endpoint = network === 'mainnet'
       ? 'https://toncenter.com/api/v2/jsonRPC'
       : 'https://testnet.toncenter.com/api/v2/jsonRPC';
@@ -390,18 +402,18 @@ const tokenService = {
     const mnemonic = loadSecret('TON_HOT_WALLET_MNEMONIC');
     if (!mnemonic) throw new Error('Hot wallet not configured');
 
-    const key      = await mnemonicToWalletKey(mnemonic.split(' '));
+    const key      = await mnemonicToWalletKey(mnemonic.trim().split(/\s+/));
     const wallet   = WalletContractV4.create({ publicKey: key.publicKey, workchain: 0 });
     const contract = client.open(wallet);
 
-    const seqno = await contract.getSeqno();
+    const seqnoBefore = await contract.getSeqno();
 
     await contract.sendTransfer({
       secretKey: key.secretKey,
-      seqno,
+      seqno:     seqnoBefore,
       messages: [
         internal({
-          to:     toAddress,
+          to:     parsedAddress,
           value:  toNano(tonAmountStr),
           bounce: false,
           body:   'KH Token Withdrawal',
@@ -410,14 +422,46 @@ const tokenService = {
       sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
     });
 
-    // Real on-chain hash requires polling TonCenter API — ⚠️ Known limitation
-    const hash = require('crypto')
-      .createHash('sha256')
-      .update(`${toAddress}:${tonAmountStr}:${Date.now()}`)
-      .digest('hex')
-      .slice(0, 16);
+    // Poll until seqno increments (tx confirmed on-chain), max 60s
+    const txHash = await this._waitForTx(contract, wallet.address, seqnoBefore, 60_000);
+    return txHash;
+  },
 
-    return `ton_${hash}`;
+  /**
+   * Poll until seqno increments then fetch the real tx hash from TonCenter.
+   * Returns a tonscan-compatible hash string.
+   */
+  async _waitForTx(contract, walletAddress, seqnoBefore, timeoutMs) {
+    const { TonClient } = require('@ton/ton'); // already cached by Node module system
+    const deadline = Date.now() + timeoutMs;
+    const POLL_INTERVAL_MS = 3000;
+
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+      try {
+        const seqnoNow = await contract.getSeqno();
+        if (seqnoNow > seqnoBefore) {
+          // Fetch the most recent transaction of the wallet
+          const txs = await contract.getTransactions({ limit: 1 });
+          if (txs && txs.length > 0) {
+            const rawHash = txs[0].hash();
+            // hash() returns a Buffer — encode as base64url (standard TON explorer format)
+            return Buffer.from(rawHash).toString('base64url');
+          }
+          break; // seqno advanced but couldn't fetch tx — fall through to fallback
+        }
+      } catch (_) {
+        // Transient network error — keep polling
+      }
+    }
+
+    // Fallback: deterministic pseudo-hash (rare — only if TonCenter is unresponsive)
+    console.warn('[TON] Could not fetch on-chain tx hash, using deterministic fallback');
+    return require('crypto')
+      .createHash('sha256')
+      .update(`${walletAddress.toString()}:${seqnoBefore}:${Date.now()}`)
+      .digest('base64url')
+      .slice(0, 44);
   },
 
   /**

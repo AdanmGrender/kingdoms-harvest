@@ -244,3 +244,53 @@ describe('tokenService.processPendingWithdrawals', () => {
     expect(balanceAfter).toBe(balanceBefore + 500);
   });
 });
+
+// ─── sendTON validation ───────────────────────────────────────────────────────
+
+describe('tokenService.sendTON — input validation', () => {
+  test('throws on invalid TON address (bad checksum)', async () => {
+    await expect(
+      tokenService.sendTON('EQAbcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJ', '0.05')
+    ).rejects.toThrow(/inválid|Invalid|checksum/i);
+  });
+
+  test('throws on dust amount below 0.01 TON', async () => {
+    // Valid address but amount too small — guard before any network call
+    await expect(
+      tokenService.sendTON('EQCVMAPI3VhY8ZRh9wYKWWpE_jCGcQFYCXTRBetyrmfPZ5cV', '0.001')
+    ).rejects.toThrow(/mínimo|minimum|pequeño/i);
+  });
+
+  test('throws when hot wallet mnemonic is not configured', async () => {
+    const prev = process.env.TON_HOT_WALLET_MNEMONIC;
+    delete process.env.TON_HOT_WALLET_MNEMONIC;
+    await expect(
+      tokenService.sendTON('EQCVMAPI3VhY8ZRh9wYKWWpE_jCGcQFYCXTRBetyrmfPZ5cV', '0.05')
+    ).rejects.toThrow(/wallet not configured|mnemonic/i);
+    if (prev !== undefined) process.env.TON_HOT_WALLET_MNEMONIC = prev;
+  });
+});
+
+// ─── linkWallet validation ────────────────────────────────────────────────────
+
+describe('tokenService.linkWallet — address validation', () => {
+  test('accepts a correctly formatted TON address', async () => {
+    const result = await tokenService.linkWallet(
+      TOKEN_PLAYER_ID,
+      'EQAbcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJ'
+    );
+    expect(result.success).toBe(true);
+  });
+
+  test('rejects an address with wrong prefix', async () => {
+    await expect(
+      tokenService.linkWallet(TOKEN_PLAYER_ID, '0:abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ01')
+    ).rejects.toThrow(/inválid/i);
+  });
+
+  test('rejects an address that is too short', async () => {
+    await expect(
+      tokenService.linkWallet(TOKEN_PLAYER_ID, 'EQshort')
+    ).rejects.toThrow(/inválid/i);
+  });
+});
