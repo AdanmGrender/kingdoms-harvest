@@ -5,6 +5,10 @@ const { BUILDINGS, DAY_CYCLE } = require('../../../shared/gameConfig');
 const notificationService = require('../services/notificationService');
 
 let ioRef = null;
+
+// Safety guard: game tick must only run on PM2 worker 0 (or in non-cluster mode).
+// The primary guard is in index.js (IS_PRIMARY_WORKER); this is a last-resort check.
+const _allowTick = !process.env.NODE_APP_INSTANCE || process.env.NODE_APP_INSTANCE === '0';
 let lastEventGenTime = 0;
 const EVENT_GEN_INTERVAL_MS = 15 * 60 * 1000; // 15 minutos
 
@@ -473,6 +477,10 @@ async function processTerritoryBonuses() {
 }
 
 function startGameTick(io) {
+  if (!_allowTick) {
+    console.warn(`[Tick] BLOQUEADO en worker ${process.env.NODE_APP_INSTANCE} — solo corre en worker 0`);
+    return;
+  }
   ioRef = io;
   // Ejecutar cada minuto
   cron.schedule('* * * * *', processTick);

@@ -3,10 +3,16 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
+const cluster = require('cluster');
 const { Server } = require('socket.io');
+const { setupWorker } = require('@socket.io/cluster-adapter');
 const crypto = require('crypto');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
+// In PM2 cluster mode, NODE_APP_INSTANCE is set to '0' for the first worker.
+// Only that worker runs the game tick to prevent duplicate cron execution.
+const IS_PRIMARY_WORKER = !process.env.NODE_APP_INSTANCE || process.env.NODE_APP_INSTANCE === '0';
 
 const db = require('./config/database');
 const { initBot } = require('./bot/telegramBot');
@@ -46,6 +52,9 @@ const allowedOrigins = [process.env.WEBAPP_URL, 'http://localhost:5173'].filter(
 
 const io = new Server(server, {
   cors: { origin: allowedOrigins, methods: ['GET', 'POST'] },
+  // cluster-adapter enables io.emit/io.to() to reach clients on all PM2 workers
+  // via Node.js IPC — no Redis required.
+  adapter: cluster.isWorker ? require('@socket.io/cluster-adapter').createAdapter() : undefined,
 });
 
 // Middleware de seguridad
@@ -267,16 +276,26 @@ async function start() {
       console.log('BOT_TOKEN no configurado, bot desactivado');
     }
 
-    // Iniciar game tick (procesa timers, producciones, etc)
-    startGameTick(io);
-    console.log('Game tick iniciado');
+    // Iniciar game tick solo en el worker primario para evitar ejecución duplicada
+    if (IS_PRIMARY_WORKER) {
+      startGameTick(io);
+      console.log('Game tick iniciado (worker primario)');
+    } else {
+      console.log(`Worker ${process.env.NODE_APP_INSTANCE} en modo HTTP — game tick en worker 0`);
+    }
 
     server.listen(PORT, () => {
+      // Wire cluster-adapter IPC after the server is listening
+      if (cluster.isWorker) setupWorker(io);
+
+      const workerLabel = process.env.NODE_APP_INSTANCE !== undefined
+        ? ` [worker ${process.env.NODE_APP_INSTANCE}]`
+        : '';
       console.log(`
 ╔══════════════════════════════════════╗
 ║       KINGDOMS HARVEST SERVER        ║
 ║     Puerto: ${PORT}                     ║
-║     Entorno: ${process.env.NODE_ENV || 'development'}            ║
+║     Entorno: ${process.env.NODE_ENV || 'development'}${workerLabel.padEnd(12)}║
 ╚══════════════════════════════════════╝
       `);
     });
