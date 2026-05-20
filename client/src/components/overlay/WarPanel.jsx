@@ -199,6 +199,158 @@ function TerritoryTab({ playerFactionId }) {
   );
 }
 
+const FACTION_ICONS = {
+  knights_of_dawn: '☀️',
+  shadow_merchants: '🌙',
+  iron_legion: '🛡️',
+  green_wardens: '🌿',
+};
+
+function PvPTab() {
+  const pvpPlayers      = useGameStore((s) => s.pvpPlayers);
+  const loadPvpPlayers  = useGameStore((s) => s.loadPvpPlayers);
+  const troops          = useGameStore((s) => s.troops);
+  const attackPVP       = useGameStore((s) => s.attackPVP);
+
+  const [selected, setSelected]   = useState(null);
+  const [army, setArmy]           = useState({});
+  const [abilityId, setAbilityId] = useState(null);
+  const [loading, setLoading]     = useState(false);
+  const [result, setResult]       = useState(null);
+
+  useEffect(() => { loadPvpPlayers(); }, []);
+
+  const readyTroops  = (troops || []).filter((t) => t.quantity > 0);
+  const totalArmy    = Object.values(army).reduce((s, v) => s + v, 0);
+
+  const doAttack = async () => {
+    if (!selected || totalArmy === 0) return;
+    setLoading(true);
+    setResult(null);
+    const res = await attackPVP(army, selected.id, abilityId);
+    if (res) setResult({ ...res, defenderName: selected.display_name });
+    setLoading(false);
+  };
+
+  if (result) {
+    const won = result.winner === 'attacker';
+    const loot = result.loot || {};
+    return (
+      <div className="space-y-3">
+        <div className={`p-3 rounded-lg border ${won ? 'border-green-600 bg-green-900/20' : 'border-red-700 bg-red-900/20'}`}>
+          <p className={`text-sm font-bold ${won ? 'text-green-400' : 'text-red-400'}`}>
+            {won ? '⚔️ ¡Victoria!' : '💀 Derrota'} vs {result.defenderName}
+          </p>
+          {won && Object.keys(loot).length > 0 && (
+            <p className="text-yellow-300 text-xs mt-1">
+              Botín: {Object.entries(loot).map(([r, a]) => `${a}x ${r}`).join(', ')}
+            </p>
+          )}
+          <p className="text-gray-400 text-xs mt-1">{result.message}</p>
+        </div>
+        <button
+          onClick={() => { setResult(null); setSelected(null); setArmy({}); }}
+          className="w-full py-2 rounded text-xs font-bold text-white"
+          style={{ background: 'rgba(55,65,81,0.8)' }}
+        >
+          ← Volver
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* Target list */}
+      <div>
+        <p className="text-gray-400 text-[10px] font-bold mb-1">Jugadores disponibles:</p>
+        <div className="space-y-1 max-h-36 overflow-y-auto">
+          {pvpPlayers.length === 0 && (
+            <p className="text-gray-600 text-[10px] text-center py-3">Sin jugadores disponibles</p>
+          )}
+          {pvpPlayers.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => { setSelected(p); setArmy({}); setResult(null); }}
+              className={`w-full text-left px-2 py-1.5 rounded text-[10px] transition-all flex items-center gap-2 ${
+                selected?.id === p.id
+                  ? 'bg-red-900/40 border border-red-600'
+                  : 'bg-gray-800/60 border border-gray-700/40 hover:border-red-700/50'
+              }`}
+            >
+              <span className="text-base">{FACTION_ICONS[p.faction_id] || '⚔️'}</span>
+              <span className="flex-1 font-semibold text-white truncate">{p.display_name || `Jugador #${p.id}`}</span>
+              <span className="text-gray-400">Nv.{p.level}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {selected && (
+        <>
+          {/* Ability selector */}
+          <div>
+            <p className="text-gray-400 text-[10px] font-bold mb-1">Habilidad de asedio:</p>
+            <div className="flex gap-1 flex-wrap">
+              {[null, ...Object.entries(SIEGE_ABILITIES)].map((entry) => {
+                const [id, ab] = Array.isArray(entry) ? entry : [null, null];
+                const active = abilityId === id;
+                return (
+                  <button
+                    key={id || 'none'}
+                    onClick={() => setAbilityId(id)}
+                    className={`px-2 py-1 rounded text-[9px] font-bold transition-all ${
+                      active ? 'bg-purple-700 text-white' : 'bg-gray-700 text-gray-400'
+                    }`}
+                  >
+                    {ab ? `${ab.icon} ${ab.name}` : '— Ninguna'}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Army builder */}
+          <div>
+            <p className="text-gray-400 text-[10px] font-bold mb-1">Ejército de ataque:</p>
+            {readyTroops.length === 0 ? (
+              <p className="text-gray-600 text-[9px]">Sin tropas disponibles</p>
+            ) : (
+              <div className="space-y-1">
+                {readyTroops.map((t) => (
+                  <div key={t.troop_id} className="flex items-center gap-2">
+                    <span className="text-[10px] w-5">{TROOP_ICONS[t.troop_id]}</span>
+                    <span className="text-gray-400 text-[9px] flex-1">{t.troop_id}</span>
+                    <span className="text-gray-500 text-[9px]">/{t.quantity}</span>
+                    <input
+                      type="number" min="0" max={t.quantity}
+                      value={army[t.troop_id] || 0}
+                      onChange={(e) => {
+                        const v = Math.min(Number(e.target.value), t.quantity);
+                        setArmy((prev) => ({ ...prev, [t.troop_id]: v }));
+                      }}
+                      className="w-10 text-[9px] text-center rounded bg-gray-800 border border-gray-600 text-white"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={doAttack}
+            disabled={loading || totalArmy === 0}
+            className="w-full py-2 rounded text-xs font-bold text-white disabled:opacity-40"
+            style={{ background: loading ? 'rgba(55,65,81,0.8)' : 'linear-gradient(135deg, #7f1d1d, #dc2626)' }}
+          >
+            {loading ? 'Atacando...' : `⚔️ Atacar a ${selected.display_name} (${totalArmy} tropas)`}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function WarPanel({ data, onClose }) {
   const sieges = useGameStore((s) => s.sieges);
   const player = useGameStore((s) => s.player);
@@ -263,31 +415,30 @@ export default function WarPanel({ data, onClose }) {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-3">
-        <button
-          className={`flex-1 text-[10px] py-1.5 rounded ${activeTab === 'territories' ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'}`}
-          onClick={() => setActiveTab('territories')}
-        >
-          🗺️ Territorios
-        </button>
-        <button
-          className={`flex-1 text-[10px] py-1.5 rounded ${activeTab === 'active' ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'}`}
-          onClick={() => setActiveTab('active')}
-        >
-          Asedios ({activeSieges.length})
-        </button>
-        <button
-          className={`flex-1 text-[10px] py-1.5 rounded ${activeTab === 'history' ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'}`}
-          onClick={() => setActiveTab('history')}
-        >
-          Historial
-        </button>
+      <div className="flex gap-1 mb-3 flex-wrap">
+        {[
+          { id: 'territories', label: '🗺️ Territorios' },
+          { id: 'pvp',         label: '⚔️ PvP' },
+          { id: 'active',      label: `Asedios (${activeSieges.length})` },
+          { id: 'history',     label: 'Historial' },
+        ].map(({ id, label }) => (
+          <button
+            key={id}
+            className={`flex-1 text-[10px] py-1.5 rounded ${activeTab === id ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'}`}
+            onClick={() => setActiveTab(id)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {/* Territories */}
       {activeTab === 'territories' && (
         <TerritoryTab playerFactionId={player?.faction_id || null} />
       )}
+
+      {/* PvP */}
+      {activeTab === 'pvp' && <PvPTab />}
 
       {/* Active Sieges */}
       {activeTab === 'active' && (

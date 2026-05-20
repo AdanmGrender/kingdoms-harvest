@@ -242,6 +242,37 @@ async function processTick() {
     console.error('[Tick] Error procesando asedios:', error.message);
   }
 
+  // 4c-pre. Auto-complete finished research + notify
+  try {
+    const doneResearch = await db('player_research')
+      .where('is_researching', true)
+      .where('research_complete_at', '<=', now);
+
+    for (const research of doneResearch) {
+      try {
+        await db('player_research').where('id', research.id).update({
+          is_researching: false,
+          completed_at: research.research_complete_at,
+          research_complete_at: null,
+        });
+        if (ioRef) {
+          ioRef.to(`player_${research.player_id}`).emit('research_complete', {
+            techId: research.tech_id,
+            branchId: research.branch_id,
+          });
+        }
+        notificationService.notify(
+          research.player_id, 'research',
+          `🔬 ¡${research.tech_id} completado! Tu reino ha avanzado.`
+        );
+      } catch (err) {
+        console.error(`[Tick] Error completando investigación ${research.id}:`, err.message);
+      }
+    }
+  } catch (error) {
+    console.error('[Tick] Error procesando investigaciones:', error.message);
+  }
+
   // 4c. Villager simulation (throttled: at most once per 5 minutes per player)
   try {
     const villagerService = require('../services/villagerService');
