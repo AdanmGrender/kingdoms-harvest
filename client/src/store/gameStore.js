@@ -805,6 +805,168 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // ---- Guild system ----
+  guild: null,
+  guildList: [],
+  guildInvites: [],
+
+  loadGuild: async () => {
+    try {
+      const { data } = await api.get('/guilds/me');
+      set({ guild: data.guild || null });
+    } catch (error) {
+      if (error.response?.status !== 404) {
+        console.error('Error loading guild:', error);
+      }
+      set({ guild: null });
+    }
+  },
+
+  loadGuildInvites: async () => {
+    try {
+      const { data } = await api.get('/guilds/invites');
+      set({ guildInvites: data.invites || [] });
+    } catch (error) {
+      console.error('Error loading guild invites:', error);
+    }
+  },
+
+  listGuilds: async () => {
+    try {
+      const { data } = await api.get('/guilds');
+      set({ guildList: data || [] });
+    } catch (error) {
+      console.error('Error listing guilds:', error);
+    }
+  },
+
+  createGuild: async (payload) => {
+    try {
+      const { data } = await api.post('/guilds/create', payload);
+      get().addNotification(data.message || '¡Gremio fundado!', 'success');
+      get().loadGuild();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al crear gremio', 'error');
+      return null;
+    }
+  },
+
+  joinGuild: async (guildId) => {
+    try {
+      const { data } = await api.post(`/guilds/${guildId}/join`);
+      get().addNotification(data.message || '¡Te uniste al gremio!', 'success');
+      get().loadGuild();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al unirse', 'error');
+      return null;
+    }
+  },
+
+  respondGuildInvite: async (guildId, accept) => {
+    try {
+      const { data } = await api.post(`/guilds/${guildId}/respond-invite`, { accept });
+      get().addNotification(
+        data.message || (accept ? '¡Invitación aceptada!' : 'Invitación rechazada'),
+        accept ? 'success' : 'info'
+      );
+      get().loadGuild();
+      get().loadGuildInvites();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al responder', 'error');
+      return null;
+    }
+  },
+
+  leaveGuild: async () => {
+    try {
+      const { data } = await api.post('/guilds/leave');
+      get().addNotification(data.message || 'Has abandonado el gremio', 'info');
+      set({ guild: null });
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al abandonar gremio', 'error');
+      return null;
+    }
+  },
+
+  contributeToGuildTreasury: async (amount) => {
+    try {
+      const { data } = await api.post('/guilds/contribute', { amount });
+      get().addNotification(data.message || `Donaste ${amount} al tesoro`, 'success');
+      get().loadGuild();
+      get().refreshResources();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al donar', 'error');
+      return null;
+    }
+  },
+
+  // ---- Seasonal system ----
+  seasonalData: null,
+
+  loadSeasonalData: async () => {
+    try {
+      const { data } = await api.get('/seasonal');
+      set({ seasonalData: data });
+    } catch (error) {
+      console.error('Error loading seasonal data:', error);
+    }
+  },
+
+  claimSeasonalReward: async (challengeId) => {
+    try {
+      const { data } = await api.post(`/seasonal/claim/${challengeId}`);
+      get().addNotification(data.message || '¡Recompensa reclamada!', 'success');
+      get().loadSeasonalData();
+      get().refreshResources();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al reclamar', 'error');
+      return null;
+    }
+  },
+
+  // ---- Prestige system ----
+  prestigeInfo: null,
+
+  loadPrestige: async () => {
+    try {
+      const { data } = await api.get('/prestige');
+      set({ prestigeInfo: data });
+    } catch (error) {
+      console.error('Error loading prestige:', error);
+    }
+  },
+
+  executePrestige: async () => {
+    try {
+      const { data } = await api.post('/prestige/execute');
+      get().addNotification(data.message || '¡Prestige realizado! El reino renace.', 'success');
+      set({ prestigeInfo: null });
+      get().loadPrestige();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al hacer prestige', 'error');
+      return null;
+    }
+  },
+
+  purchasePrestigeUpgrade: async (upgradeId) => {
+    try {
+      const { data } = await api.post('/prestige/upgrade', { upgradeId });
+      get().addNotification(data.message || '¡Mejora permanente adquirida!', 'success');
+      get().loadPrestige();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al comprar mejora', 'error');
+      return null;
+    }
+  },
+
   // ---- Tech Tree ----
   techResearch: null,
   loadTechResearch: async () => {

@@ -16,6 +16,9 @@ import CommerceView from '../commerce/CommerceView';
 import WorldEventPanel from './WorldEventPanel';
 import AchievementPanel from './AchievementPanel';
 import MarketplacePanel from './MarketplacePanel';
+import GuildPanel from './GuildPanel';
+import SeasonalPanel from './SeasonalPanel';
+import PrestigePanel from './PrestigePanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -145,6 +148,12 @@ function renderPanel(overlayState, onClose) {
       return <AchievementPanel onClose={onClose} />;
     case 'marketplace':
       return <MarketplacePanel onClose={onClose} />;
+    case 'guild':
+      return <GuildPanel onClose={onClose} />;
+    case 'seasonal':
+      return <SeasonalPanel onClose={onClose} />;
+    case 'prestige':
+      return <PrestigePanel onClose={onClose} />;
     default:
       return (
         <GenericPanel title={overlayState.type} onClose={onClose}>
