@@ -8,6 +8,13 @@ import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
 import NotificationPrefsPanel from '../ui/NotificationPrefsPanel';
 
+const FACTION_ICONS = {
+  knights_of_dawn: '☀️',
+  shadow_merchants: '🌙',
+  iron_legion: '🛡️',
+  green_wardens: '🌳',
+};
+
 const RESOURCE_SPRITES = {
   gold:  'gold',
   wheat: 'wheat',
@@ -104,6 +111,21 @@ export default function GameHUD() {
             <span className="text-gray-300 ml-1 text-[10px]">
               {player.display_name || 'Aventurero'}
             </span>
+            {player.faction_id ? (
+              <span
+                className="ml-1 text-[11px]"
+                title={player.faction_id.replace(/_/g, ' ')}
+              >
+                {FACTION_ICONS[player.faction_id] || '⚔️'}
+              </span>
+            ) : (
+              <button
+                className="ml-1 text-[9px] text-yellow-500 underline"
+                onClick={() => useGameStore.getState().setOverlay('faction_select')}
+              >
+                Facción
+              </button>
+            )}
           </div>
           {/* XP Bar */}
           <div className="w-16 h-2 bg-gray-700 rounded-full overflow-hidden">

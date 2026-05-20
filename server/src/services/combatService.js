@@ -488,6 +488,17 @@ const combatService = {
       resolved_at: new Date().toISOString(),
     });
 
+    // Notify the defender about the incoming attack (best-effort, never throws)
+    try {
+      const notifService = require('./notificationService');
+      const attackerName = attacker?.display_name || `Jugador #${playerId}`;
+      const outcome = result.winner === 'attacker' ? 'derrota 💀' : '¡victoria! 🛡️';
+      notifService.notify(
+        defenderId, 'sieges',
+        `⚔️ ¡${attackerName} atacó tu reino! Resultado: ${outcome}. Revisá el historial de guerra.`
+      ).catch(() => {});
+    } catch { /* non-blocking */ }
+
     return {
       ...result,
       loot,

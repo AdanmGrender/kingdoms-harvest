@@ -400,6 +400,20 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  joinFaction: async (factionId) => {
+    try {
+      await api.post('/player/faction/join', { factionId });
+      set((state) => ({
+        player: state.player ? { ...state.player, faction_id: factionId } : state.player,
+      }));
+      get().addNotification('¡Te uniste a la facción!', 'success');
+      return true;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al unirse a la facción', 'error');
+      return false;
+    }
+  },
+
   // ---- Achievement System ----
   loadAchievements: async () => {
     try {
@@ -1018,6 +1032,7 @@ const useGameStore = create((set, get) => ({
 
   // ---- PvP ----
   pvpPlayers: [],
+  pvpCooldowns: {}, // { [defenderId]: expiresAtMs }
   loadPvpPlayers: async () => {
     try {
       const { data } = await api.get('/combat/players');
@@ -1038,7 +1053,16 @@ const useGameStore = create((set, get) => ({
       get().refreshResources();
       return data;
     } catch (error) {
-      get().addNotification(error.response?.data?.error || 'Error en ataque PvP', 'error');
+      const msg = error.response?.data?.error || 'Error en ataque PvP';
+      // Parse cooldown remaining minutes from error message and store per-defender expiry
+      const cooldownMatch = msg.match(/(\d+) minutos/);
+      if (cooldownMatch) {
+        const mins = parseInt(cooldownMatch[1], 10);
+        set((state) => ({
+          pvpCooldowns: { ...state.pvpCooldowns, [defenderId]: Date.now() + mins * 60 * 1000 },
+        }));
+      }
+      get().addNotification(msg, 'error');
       return null;
     }
   },

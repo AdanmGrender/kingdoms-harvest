@@ -10,13 +10,14 @@ const NOTIFICATION_TYPES = {
   withdrawals:    { icon: '💰', label: 'Retiros TON' },
   sieges:         { icon: '🛡️', label: 'Ataques recibidos' },
   events:         { icon: '🌍', label: 'Eventos del mundo' },
+  research:       { icon: '🔬', label: 'Investigaciones' },
   daily_reminder: { icon: '📅', label: 'Recordatorio diario' },
 };
 
 // Default values when the player has no preferences record yet
 const DEFAULTS = {
   crops: true, buildings: true, troops: true, animals: true,
-  withdrawals: true, sieges: true, events: false, daily_reminder: false,
+  withdrawals: true, sieges: true, events: false, research: true, daily_reminder: false,
 };
 
 const notificationService = {

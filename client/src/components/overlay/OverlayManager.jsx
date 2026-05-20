@@ -20,6 +20,8 @@ import GuildPanel from './GuildPanel';
 import SeasonalPanel from './SeasonalPanel';
 import PrestigePanel from './PrestigePanel';
 import WithdrawalPanel from './WithdrawalPanel';
+import TechTreePanel from '../castle/TechTreePanel';
+import FactionSelectPanel from './FactionSelectPanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -157,6 +159,14 @@ function renderPanel(overlayState, onClose) {
       return <PrestigePanel onClose={onClose} />;
     case 'withdrawal':
       return <WithdrawalPanel onClose={onClose} />;
+    case 'tech':
+      return (
+        <GenericPanel title="Árbol de Investigación" onClose={onClose}>
+          <TechTreePanel />
+        </GenericPanel>
+      );
+    case 'faction_select':
+      return <FactionSelectPanel onClose={onClose} />;
     default:
       return (
         <GenericPanel title={overlayState.type} onClose={onClose}>
@@ -363,6 +373,15 @@ function BuildingInfoPanel({ data, onClose }) {
           /* Generic buildings: description + upgrade */
           <div className="space-y-3">
             <p className="text-gray-300 text-xs">{meta.desc}</p>
+            {data.buildingId === 'library' && (
+              <button
+                onClick={() => { useGameStore.getState().setOverlay('tech'); onClose(); }}
+                className="w-full py-2 rounded-lg text-xs font-bold text-white"
+                style={{ background: 'linear-gradient(135deg, #1e40af, #3b82f6)' }}
+              >
+                🔬 Árbol de Investigación
+              </button>
+            )}
             {record && (
               <button
                 onClick={() => { upgradeBuilding(record.id); onClose(); }}

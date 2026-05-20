@@ -211,20 +211,40 @@ function PvPTab() {
   const loadPvpPlayers  = useGameStore((s) => s.loadPvpPlayers);
   const troops          = useGameStore((s) => s.troops);
   const attackPVP       = useGameStore((s) => s.attackPVP);
+  const pvpCooldowns    = useGameStore((s) => s.pvpCooldowns);
 
   const [selected, setSelected]   = useState(null);
   const [army, setArmy]           = useState({});
   const [abilityId, setAbilityId] = useState(null);
   const [loading, setLoading]     = useState(false);
   const [result, setResult]       = useState(null);
+  const [now, setNow]             = useState(Date.now());
 
   useEffect(() => { loadPvpPlayers(); }, []);
+  useEffect(() => {
+    const iv = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(iv);
+  }, []);
 
   const readyTroops  = (troops || []).filter((t) => t.quantity > 0);
   const totalArmy    = Object.values(army).reduce((s, v) => s + v, 0);
 
+  const getCooldownMs = (p) => {
+    const expiresAt = pvpCooldowns[p.id] || pvpCooldowns[p.telegram_id];
+    if (!expiresAt) return 0;
+    return Math.max(0, expiresAt - now);
+  };
+
+  const formatCooldown = (ms) => {
+    const m = Math.floor(ms / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const selectedCooldownMs = selected ? getCooldownMs(selected) : 0;
+
   const doAttack = async () => {
-    if (!selected || totalArmy === 0) return;
+    if (!selected || totalArmy === 0 || selectedCooldownMs > 0) return;
     setLoading(true);
     setResult(null);
     const res = await attackPVP(army, selected.id, abilityId);
@@ -268,21 +288,29 @@ function PvPTab() {
           {pvpPlayers.length === 0 && (
             <p className="text-gray-600 text-[10px] text-center py-3">Sin jugadores disponibles</p>
           )}
-          {pvpPlayers.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => { setSelected(p); setArmy({}); setResult(null); }}
-              className={`w-full text-left px-2 py-1.5 rounded text-[10px] transition-all flex items-center gap-2 ${
-                selected?.id === p.id
-                  ? 'bg-red-900/40 border border-red-600'
-                  : 'bg-gray-800/60 border border-gray-700/40 hover:border-red-700/50'
-              }`}
-            >
-              <span className="text-base">{FACTION_ICONS[p.faction_id] || '⚔️'}</span>
-              <span className="flex-1 font-semibold text-white truncate">{p.display_name || `Jugador #${p.id}`}</span>
-              <span className="text-gray-400">Nv.{p.level}</span>
-            </button>
-          ))}
+          {pvpPlayers.map((p) => {
+            const cdMs = getCooldownMs(p);
+            const onCooldown = cdMs > 0;
+            return (
+              <button
+                key={p.id}
+                onClick={() => { setSelected(p); setArmy({}); setResult(null); }}
+                className={`w-full text-left px-2 py-1.5 rounded text-[10px] transition-all flex items-center gap-2 ${
+                  selected?.id === p.id
+                    ? 'bg-red-900/40 border border-red-600'
+                    : 'bg-gray-800/60 border border-gray-700/40 hover:border-red-700/50'
+                }`}
+              >
+                <span className="text-base">{FACTION_ICONS[p.faction_id] || '⚔️'}</span>
+                <span className="flex-1 font-semibold text-white truncate">{p.display_name || `Jugador #${p.id}`}</span>
+                {onCooldown ? (
+                  <span className="text-orange-400 text-[9px] font-mono">⏳ {formatCooldown(cdMs)}</span>
+                ) : (
+                  <span className="text-gray-400">Nv.{p.level}</span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -337,14 +365,20 @@ function PvPTab() {
             )}
           </div>
 
-          <button
-            onClick={doAttack}
-            disabled={loading || totalArmy === 0}
-            className="w-full py-2 rounded text-xs font-bold text-white disabled:opacity-40"
-            style={{ background: loading ? 'rgba(55,65,81,0.8)' : 'linear-gradient(135deg, #7f1d1d, #dc2626)' }}
-          >
-            {loading ? 'Atacando...' : `⚔️ Atacar a ${selected.display_name} (${totalArmy} tropas)`}
-          </button>
+          {selectedCooldownMs > 0 ? (
+            <div className="w-full py-2 rounded text-xs font-bold text-center text-orange-400 bg-orange-900/20 border border-orange-700/40">
+              ⏳ Cooldown: {formatCooldown(selectedCooldownMs)}
+            </div>
+          ) : (
+            <button
+              onClick={doAttack}
+              disabled={loading || totalArmy === 0}
+              className="w-full py-2 rounded text-xs font-bold text-white disabled:opacity-40"
+              style={{ background: loading ? 'rgba(55,65,81,0.8)' : 'linear-gradient(135deg, #7f1d1d, #dc2626)' }}
+            >
+              {loading ? 'Atacando...' : `⚔️ Atacar a ${selected.display_name} (${totalArmy} tropas)`}
+            </button>
+          )}
         </>
       )}
     </div>
