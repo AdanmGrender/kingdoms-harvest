@@ -1,8 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const { telegramAuth } = require('../middleware/telegramAuth');
+const { validate } = require('../middleware/validate');
 const { safeErrorMessage } = require('../middleware/errorHandler');
 const worldEventService = require('../services/worldEventService');
+
+// Validates a route param is a positive integer; returns 400 on failure.
+function requireIntParam(name) {
+  return (req, res, next) => {
+    const val = parseInt(req.params[name], 10);
+    if (!val || isNaN(val) || val < 1) {
+      return res.status(400).json({ error: `${name} debe ser un número entero positivo` });
+    }
+    req.params[name] = val; // coerce to number for downstream handlers
+    next();
+  };
+}
 
 // Get all active events (with claim + session status for this player)
 router.get('/', telegramAuth, async (req, res) => {
@@ -15,13 +28,9 @@ router.get('/', telegramAuth, async (req, res) => {
 });
 
 // Claim a world event
-router.post('/:id/claim', telegramAuth, async (req, res) => {
+router.post('/:id/claim', telegramAuth, requireIntParam('id'), validate({}), async (req, res) => {
   try {
-    const eventId = parseInt(req.params.id, 10);
-    if (!eventId || isNaN(eventId) || eventId < 1) {
-      return res.status(400).json({ error: 'ID de evento inválido' });
-    }
-    const result = await worldEventService.claimEvent(req.playerId, eventId);
+    const result = await worldEventService.claimEvent(req.playerId, req.params.id);
     res.json(result);
   } catch (error) {
     res.status(400).json({ error: safeErrorMessage(error) });
@@ -29,13 +38,9 @@ router.post('/:id/claim', telegramAuth, async (req, res) => {
 });
 
 // Start a co-op session for a world event
-router.post('/:id/start-coop', telegramAuth, async (req, res) => {
+router.post('/:id/start-coop', telegramAuth, requireIntParam('id'), validate({}), async (req, res) => {
   try {
-    const eventId = parseInt(req.params.id, 10);
-    if (!eventId || isNaN(eventId) || eventId < 1) {
-      return res.status(400).json({ error: 'ID de evento inválido' });
-    }
-    const result = await worldEventService.startCoopSession(req.playerId, eventId);
+    const result = await worldEventService.startCoopSession(req.playerId, req.params.id);
     res.json(result);
   } catch (error) {
     res.status(400).json({ error: safeErrorMessage(error) });
@@ -43,13 +48,9 @@ router.post('/:id/start-coop', telegramAuth, async (req, res) => {
 });
 
 // Get session info (used when joining via deep link)
-router.get('/session/:sessionId', telegramAuth, async (req, res) => {
+router.get('/session/:sessionId', telegramAuth, requireIntParam('sessionId'), async (req, res) => {
   try {
-    const sessionId = parseInt(req.params.sessionId, 10);
-    if (!sessionId || isNaN(sessionId) || sessionId < 1) {
-      return res.status(400).json({ error: 'ID de sesión inválido' });
-    }
-    const session = await worldEventService.getSession(sessionId);
+    const session = await worldEventService.getSession(req.params.sessionId);
     if (!session) return res.status(404).json({ error: 'Sesión no encontrada' });
     res.json(session);
   } catch (error) {
@@ -58,13 +59,9 @@ router.get('/session/:sessionId', telegramAuth, async (req, res) => {
 });
 
 // Join an existing co-op session
-router.post('/session/:sessionId/join', telegramAuth, async (req, res) => {
+router.post('/session/:sessionId/join', telegramAuth, requireIntParam('sessionId'), validate({}), async (req, res) => {
   try {
-    const sessionId = parseInt(req.params.sessionId, 10);
-    if (!sessionId || isNaN(sessionId) || sessionId < 1) {
-      return res.status(400).json({ error: 'ID de sesión inválido' });
-    }
-    const result = await worldEventService.joinCoopSession(req.playerId, sessionId);
+    const result = await worldEventService.joinCoopSession(req.playerId, req.params.sessionId);
     res.json(result);
   } catch (error) {
     res.status(400).json({ error: safeErrorMessage(error) });
@@ -72,3 +69,4 @@ router.post('/session/:sessionId/join', telegramAuth, async (req, res) => {
 });
 
 module.exports = router;
+
