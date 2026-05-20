@@ -3,6 +3,7 @@ const db = require('../config/database');
 const dailyTaskService = require('../services/dailyTaskService');
 const { BUILDINGS, DAY_CYCLE } = require('../../../shared/gameConfig');
 const notificationService = require('../services/notificationService');
+const { captureException } = require('../config/sentry');
 
 let ioRef = null;
 
@@ -57,6 +58,7 @@ async function processTick() {
     }
   } catch (error) {
     console.error('[Tick] Error procesando cultivos:', error.message);
+    captureException(error, { subsystem: 'tick.crops' });
   }
 
   // 2. Construcciones completadas
@@ -107,10 +109,12 @@ async function processTick() {
         );
       } catch (err) {
         console.error(`[Tick] Error completando edificio ${building.id}:`, err.message);
+        captureException(err, { subsystem: 'tick.building_complete', buildingId: building.id });
       }
     }
   } catch (error) {
     console.error('[Tick] Error procesando construcciones:', error.message);
+    captureException(error, { subsystem: 'tick.buildings' });
   }
 
   // 2b. Building resource production (per hour, processed per minute)
@@ -174,6 +178,7 @@ async function processTick() {
     }
   } catch (error) {
     console.error('[Tick] Error procesando producción de edificios:', error.message);
+    captureException(error, { subsystem: 'tick.building_production' });
   }
 
   // 3. Producción de animales
@@ -202,6 +207,7 @@ async function processTick() {
     }
   } catch (error) {
     console.error('[Tick] Error procesando animales:', error.message);
+    captureException(error, { subsystem: 'tick.animals' });
   }
 
   // 4. Tropas entrenadas
@@ -232,10 +238,12 @@ async function processTick() {
         );
       } catch (err) {
         console.error(`[Tick] Error completando tropa ${troop.id}:`, err.message);
+        captureException(err, { subsystem: 'tick.troop_complete', troopId: troop.id });
       }
     }
   } catch (error) {
     console.error('[Tick] Error procesando tropas:', error.message);
+    captureException(error, { subsystem: 'tick.troops' });
   }
 
   // 4b. Process arrived sieges
@@ -244,6 +252,7 @@ async function processTick() {
     await siegeService.processArrivedSieges(ioRef);
   } catch (error) {
     console.error('[Tick] Error procesando asedios:', error.message);
+    captureException(error, { subsystem: 'tick.sieges' });
   }
 
   // 4c-pre. Auto-complete finished research + notify
@@ -271,10 +280,12 @@ async function processTick() {
         );
       } catch (err) {
         console.error(`[Tick] Error completando investigación ${research.id}:`, err.message);
+        captureException(err, { subsystem: 'tick.research_complete', researchId: research.id });
       }
     }
   } catch (error) {
     console.error('[Tick] Error procesando investigaciones:', error.message);
+    captureException(error, { subsystem: 'tick.research' });
   }
 
   // 4c. Villager simulation (throttled: at most once per 5 minutes per player)
@@ -303,6 +314,7 @@ async function processTick() {
     }
   } catch (error) {
     console.error('[Tick] Error simulando aldeanos:', error.message);
+    captureException(error, { subsystem: 'tick.villagers' });
   }
 
   // 4d. Advance world time — single atomic batch SQL (no per-player await gaps)
@@ -331,12 +343,14 @@ async function processTick() {
             await villagerService.processRelationships(p.telegram_id);
           } catch (ageErr) {
             console.error(`[Tick] Error aging/families for player ${p.telegram_id}:`, ageErr.message);
+            captureException(ageErr, { subsystem: 'tick.aging', playerId: p.telegram_id });
           }
         }
       }
     }
   } catch (error) {
     console.error('[Tick] Error avanzando tiempo del mundo:', error.message);
+    captureException(error, { subsystem: 'tick.world_time' });
   }
 
   // 5. Misiones expiradas
@@ -347,6 +361,7 @@ async function processTick() {
       .update({ status: 'expired' });
   } catch (error) {
     console.error('[Tick] Error expirando misiones:', error.message);
+    captureException(error, { subsystem: 'tick.missions_expire' });
   }
 
   // 6. Reset diario de tokens
@@ -365,6 +380,7 @@ async function processTick() {
     }
   } catch (error) {
     console.error('[Tick] Error reseteando tokens diarios:', error.message);
+    captureException(error, { subsystem: 'tick.token_daily_reset' });
   }
 
   // 7. Limpiar tareas diarias expiradas
@@ -372,6 +388,7 @@ async function processTick() {
     await dailyTaskService.resetExpiredDailyTasks();
   } catch (error) {
     console.error('[Tick] Error limpiando tareas diarias:', error.message);
+    captureException(error, { subsystem: 'tick.daily_tasks_reset' });
   }
 
   // 8. Reset streak bonus diario
@@ -383,6 +400,7 @@ async function processTick() {
       .update({ streak_bonus_claimed_today: 0 });
   } catch (error) {
     console.error('[Tick] Error reseteando streak bonus:', error.message);
+    captureException(error, { subsystem: 'tick.streak_reset' });
   }
 }
 
@@ -395,6 +413,7 @@ async function processWithdrawals() {
     await tokenService.processPendingWithdrawals();
   } catch (error) {
     console.error('[Withdrawal] Error procesando retiros:', error.message);
+    captureException(error, { subsystem: 'tick.withdrawals' });
   }
 }
 
@@ -419,6 +438,7 @@ async function processWorldEvents() {
     }
   } catch (error) {
     console.error('[Tick] Error procesando eventos del mundo:', error.message);
+    captureException(error, { subsystem: 'tick.world_events' });
   }
 }
 
@@ -452,6 +472,7 @@ async function processDailyReminders() {
     console.log(`[Reminder] ${reminderBatch.length} recordatorios enviados`);
   } catch (error) {
     console.error('[Reminder] Error enviando recordatorios:', error.message);
+    captureException(error, { subsystem: 'tick.daily_reminders' });
   }
 }
 
@@ -461,6 +482,7 @@ async function processMarketExpiry() {
     await marketService.cleanupExpired();
   } catch (error) {
     console.error('[Tick] Market expiry error:', error.message);
+    captureException(error, { subsystem: 'tick.market_expiry' });
   }
 }
 
@@ -473,6 +495,7 @@ async function processTerritoryBonuses() {
     }
   } catch (error) {
     console.error('[Tick] Error en bonuses de territorios:', error.message);
+    captureException(error, { subsystem: 'tick.territory_bonuses' });
   }
 }
 

@@ -10,6 +10,10 @@ const crypto = require('crypto');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
+// Sentry must be initialized before any other requires so auto-instrumentation works
+const { initSentry, captureException, setupExpressErrorHandler } = require('./config/sentry');
+initSentry();
+
 // In PM2 cluster mode, NODE_APP_INSTANCE is set to '0' for the first worker.
 // Only that worker runs the game tick to prevent duplicate cron execution.
 const IS_PRIMARY_WORKER = !process.env.NODE_APP_INSTANCE || process.env.NODE_APP_INSTANCE === '0';
@@ -126,6 +130,9 @@ app.use('/api/market', marketRoutes);
 app.use('/api/seasonal', seasonalRoutes);
 app.use('/api/prestige', prestigeRoutes);
 app.use('/api/guilds', guildRoutes);
+
+// Sentry error handler — must come after all routes so it can capture Express errors
+setupExpressErrorHandler(app);
 
 // SPA fallback: serve index.html for non-API routes
 if (process.env.NODE_ENV === 'production') {
@@ -304,5 +311,20 @@ async function start() {
     process.exit(1);
   }
 }
+
+// Capture unhandled promise rejections and uncaught exceptions before they crash the process
+process.on('unhandledRejection', (reason) => {
+  console.error('[Process] Unhandled rejection:', reason);
+  captureException(reason instanceof Error ? reason : new Error(String(reason)), {
+    subsystem: 'process.unhandledRejection',
+  });
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('[Process] Uncaught exception:', error);
+  captureException(error, { subsystem: 'process.uncaughtException' });
+  // Allow Sentry to flush before exiting (process is in undefined state after uncaughtException)
+  setTimeout(() => process.exit(1), 2000);
+});
 
 start();
