@@ -48,6 +48,7 @@ const useGameStore = create((set, get) => ({
   referralStats: null,
   referralLink: null,
   withdrawalHistory: [],
+  withdrawalOTP: null, // { otpId, expiresAt, amount } — pending OTP
 
   // Captcha challenge
   captchaChallenge: null,
@@ -738,14 +739,29 @@ const useGameStore = create((set, get) => ({
     }
   },
 
-  requestWithdrawal: async (amount) => {
+  requestWithdrawalOTP: async (amount) => {
     try {
-      const { data } = await api.post('/tokens/withdraw', { amount });
-      get().addNotification(data.message, 'success');
+      const { data } = await api.post('/tokens/withdraw/request-otp', { amount });
+      set({ withdrawalOTP: { otpId: data.otpId, expiresAt: data.expiresAt, amount } });
+      get().addNotification(data.message || 'Código enviado por Telegram', 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al enviar código', 'error');
+      return null;
+    }
+  },
+
+  requestWithdrawal: async (amount, otpId, otp) => {
+    try {
+      const { data } = await api.post('/tokens/withdraw', { amount, otpId, otp });
+      get().addNotification(data.message || '¡Retiro solicitado!', 'success');
+      set({ withdrawalOTP: null });
       get().loadTokenInfo();
       get().loadWithdrawalHistory();
+      return data;
     } catch (error) {
-      get().addNotification(error.response?.data?.error || 'Error', 'error');
+      get().addNotification(error.response?.data?.error || 'Error al retirar', 'error');
+      return null;
     }
   },
 

@@ -19,6 +19,7 @@ import MarketplacePanel from './MarketplacePanel';
 import GuildPanel from './GuildPanel';
 import SeasonalPanel from './SeasonalPanel';
 import PrestigePanel from './PrestigePanel';
+import WithdrawalPanel from './WithdrawalPanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -154,6 +155,8 @@ function renderPanel(overlayState, onClose) {
       return <SeasonalPanel onClose={onClose} />;
     case 'prestige':
       return <PrestigePanel onClose={onClose} />;
+    case 'withdrawal':
+      return <WithdrawalPanel onClose={onClose} />;
     default:
       return (
         <GenericPanel title={overlayState.type} onClose={onClose}>

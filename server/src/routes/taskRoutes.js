@@ -5,6 +5,7 @@ const { validate } = require('../middleware/validate');
 const dailyTaskService = require('../services/dailyTaskService');
 const captchaService = require('../services/captchaService');
 const { safeErrorMessage } = require('../middleware/errorHandler');
+const { captchaLimit } = require('../middleware/endpointLimits');
 
 // Obtener tareas diarias con progreso
 router.get('/daily', telegramAuth, async (req, res) => {
@@ -71,7 +72,7 @@ router.get('/captcha/challenge', telegramAuth, async (req, res) => {
 });
 
 // Resolver desafio CAPTCHA y reclamar recompensa
-router.post('/captcha/solve', telegramAuth, validate({
+router.post('/captcha/solve', telegramAuth, captchaLimit, validate({
   answer: { type: 'string', required: true, maxLength: 30, pattern: /^[a-zA-Z0-9 +\-*]+$/ },
 }), async (req, res) => {
   try {

@@ -3,7 +3,9 @@ const router = express.Router();
 const { telegramAuth } = require('../middleware/telegramAuth');
 const { validate } = require('../middleware/validate');
 const tokenService = require('../services/tokenService');
+const otpService = require('../services/otpService');
 const { safeErrorMessage } = require('../middleware/errorHandler');
+const { withdrawLimit, withdrawOTPLimit, burnLimit } = require('../middleware/endpointLimits');
 
 // Obtener info de tokens del jugador
 router.get('/info', telegramAuth, async (req, res) => {
@@ -16,7 +18,7 @@ router.get('/info', telegramAuth, async (req, res) => {
 });
 
 // Quemar recursos por tokens
-router.post('/burn', telegramAuth, validate({
+router.post('/burn', telegramAuth, burnLimit, validate({
   resourceId: { type: 'string', required: true, maxLength: 50, pattern: /^[a-z_]+$/ },
   quantity: { type: 'number', required: true, min: 1, max: 10000 },
 }), async (req, res) => {
@@ -41,11 +43,26 @@ router.post('/link-wallet', telegramAuth, validate({
   }
 });
 
-// Solicitar retiro
-router.post('/withdraw', telegramAuth, validate({
-  amount: { type: 'number', required: true, min: 1 },
+// Solicitar código OTP para retiro (2FA)
+router.post('/withdraw/request-otp', telegramAuth, withdrawOTPLimit, validate({
+  amount: { type: 'number', required: true, min: 500 },
 }), async (req, res) => {
   try {
+    const result = await otpService.createWithdrawalOTP(req.playerId, req.body.amount);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Solicitar retiro (requiere OTP de 2FA)
+router.post('/withdraw', telegramAuth, withdrawLimit, validate({
+  amount: { type: 'number', required: true, min: 1 },
+  otpId: { type: 'number', required: true },
+  otp:   { type: 'string', required: true, maxLength: 6, pattern: /^\d{6}$/ },
+}), async (req, res) => {
+  try {
+    await otpService.verifyWithdrawalOTP(req.playerId, req.body.otpId, req.body.otp, req.body.amount);
     const result = await tokenService.requestWithdrawal(req.playerId, req.body.amount);
     res.json(result);
   } catch (error) {

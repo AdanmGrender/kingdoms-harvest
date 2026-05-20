@@ -4,8 +4,9 @@ const { telegramAuth } = require('../middleware/telegramAuth');
 const { validate } = require('../middleware/validate');
 const guildService = require('../services/guildService');
 const { safeErrorMessage } = require('../middleware/errorHandler');
+const { guildCreateLimit } = require('../middleware/endpointLimits');
 
-router.post('/create', telegramAuth, validate({
+router.post('/create', telegramAuth, guildCreateLimit, validate({
   name:        { type: 'string', required: true, maxLength: 30 },
   tag:         { type: 'string', required: true, maxLength: 5 },
   description: { type: 'string', maxLength: 200 },
