@@ -14,6 +14,8 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const { initSentry, captureException, setupExpressErrorHandler } = require('./config/sentry');
 initSentry();
 
+const { getRawClient } = require('./config/redis');
+
 // In PM2 cluster mode, NODE_APP_INSTANCE is set to '0' for the first worker.
 // Only that worker runs the game tick to prevent duplicate cron execution.
 const IS_PRIMARY_WORKER = !process.env.NODE_APP_INSTANCE || process.env.NODE_APP_INSTANCE === '0';
@@ -85,14 +87,27 @@ app.use(cors({
   methods: ['GET', 'POST'],
 }));
 
-// Rate limiting global
-app.use(rateLimit({
-  windowMs: 60 * 1000, // 1 minuto
-  max: 100, // 100 requests por minuto por IP
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Demasiadas peticiones, intentá de nuevo en un momento' },
-}));
+// Rate limiting global — uses Redis store when available so limits are shared
+// across all PM2 cluster workers; falls back to in-memory when Redis is absent.
+function buildRateLimiter() {
+  const opts = {
+    windowMs: 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Demasiadas peticiones, intentá de nuevo en un momento' },
+  };
+  const redisClient = getRawClient();
+  if (redisClient) {
+    const { RedisStore } = require('rate-limit-redis');
+    opts.store = new RedisStore({
+      sendCommand: (...args) => redisClient.call(...args),
+      prefix: 'rl:',
+    });
+  }
+  return rateLimit(opts);
+}
+app.use(buildRateLimiter());
 
 // Body parser con límite de tamaño
 app.use(express.json({ limit: '16kb' }));

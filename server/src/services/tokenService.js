@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const { TOKEN_CONFIG, getDailyCap, getStreakMultiplier } = require('../../../shared/tokenConfig');
 const playerService = require('./playerService');
+const cache = require('../config/cache');
 // Lazy-loaded to avoid circular dependency
 let _notificationService = null;
 function getNotifService() {
@@ -97,6 +98,9 @@ const tokenService = {
     this.payReferralCommission(playerId, awarded).catch((err) => {
       console.error('[Token] Referral commission error:', err.message);
     });
+
+    // Invalidate leaderboard cache — player's total_earned changed
+    cache.del('leaderboard').catch(() => {});
 
     return {
       awarded,
@@ -498,6 +502,9 @@ const tokenService = {
    * Leaderboard de tokens — uses a batch JOIN to avoid N+1 queries
    */
   async getTokenLeaderboard() {
+    const cached = await cache.get('leaderboard');
+    if (cached) return cached;
+
     const tokens = await db('player_tokens')
       .orderBy('total_earned', 'desc')
       .limit(50);
@@ -512,7 +519,7 @@ const tokenService = {
       playerMap[p.telegram_id] = p;
     }
 
-    return tokens
+    const result = tokens
       .filter((t) => playerMap[t.player_id])
       .map((t) => {
         const player = playerMap[t.player_id];
@@ -523,6 +530,9 @@ const tokenService = {
           balance: t.balance,
         };
       });
+
+    await cache.set('leaderboard', result, 60);
+    return result;
   },
 };
 

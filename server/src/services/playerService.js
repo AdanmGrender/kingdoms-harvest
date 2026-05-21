@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const { STARTER_RESOURCES, BUILDINGS, FACTIONS } = require('../../../shared/gameConfig');
 const { sanitizeDisplayText } = require('../utils/sanitize');
+const cache = require('../config/cache');
 
 // Lazy-loaded to avoid circular dependencies
 let _tokenService = null;
@@ -106,6 +107,10 @@ const playerService = {
    * Perfil completo con recursos, edificios, etc
    */
   async getFullProfile(playerId) {
+    const cacheKey = `player_profile:${playerId}`;
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
     const player = await db('players').where('telegram_id', playerId).first();
     if (!player) return null;
 
@@ -126,7 +131,7 @@ const playerService = {
       resourceMap[r.resource_id] = { amount: r.amount, capacity: r.capacity };
     });
 
-    return {
+    const profile = {
       ...player,
       resources: resourceMap,
       buildings,
@@ -135,6 +140,14 @@ const playerService = {
       activeMissions,
       tokenBalance: tokenData?.balance || 0,
     };
+
+    await cache.set(cacheKey, profile, 30);
+    return profile;
+  },
+
+  // Invalidate cached profile — call after any write that changes player state
+  invalidateProfileCache(playerId) {
+    cache.del(`player_profile:${playerId}`, `player_resources:${playerId}`).catch(() => {});
   },
 
   async getResources(playerId) {
@@ -189,6 +202,7 @@ const playerService = {
       [delta, playerId, resourceId]
     );
 
+    this.invalidateProfileCache(playerId);
     return Math.min(resource.amount + delta, resource.capacity);
   },
 
@@ -219,6 +233,7 @@ const playerService = {
       level: newLevel,
     });
 
+    this.invalidateProfileCache(playerId);
     return { level: newLevel, xp: newXP, leveledUp: newLevel > player.level };
   },
 
@@ -248,6 +263,7 @@ const playerService = {
     });
 
     await db('factions').where('id', factionId).increment('total_members', 1);
+    this.invalidateProfileCache(playerId);
 
     return { success: true, faction: FACTIONS[factionId] };
   },
