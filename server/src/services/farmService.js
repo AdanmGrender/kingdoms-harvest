@@ -11,6 +11,10 @@ let _techService = null;
 function getTechService() { if (!_techService) _techService = require('./techService'); return _techService; }
 let _achievementService = null;
 function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
+let _seasonalService = null;
+function getSeasonalService() { if (!_seasonalService) _seasonalService = require('./seasonalEventService'); return _seasonalService; }
+let _prestigeService = null;
+function getPrestigeService() { if (!_prestigeService) _prestigeService = require('./prestigeService'); return _prestigeService; }
 
 function secureRandom() {
   return crypto.randomInt(0, 2147483647) / 2147483647;
@@ -103,7 +107,13 @@ const farmService = {
     // Tech bonus: fertile_soil +10% yield
     const completedTechs = await getTechService().getCompletedTechs(playerId);
     const techBonus = completedTechs.has('fertile_soil') ? 0.1 : 0;
-    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus + techBonus));
+    // Seasonal + prestige bonuses
+    const worldDay = player?.world_day || 0;
+    const seasonInfo = getSeasonalService().getSeasonInfo(worldDay);
+    const prestigeMultipliers = await getPrestigeService().getMultipliers(playerId);
+    const seasonalCropMult = seasonInfo.cropYieldMult ?? 1;
+    const prestigeCropMult = prestigeMultipliers.crop_yield ?? 1;
+    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus + techBonus) * seasonalCropMult * prestigeCropMult);
 
     // Dar recursos al jugador
     await playerService.modifyResource(playerId, plot.crop_id, finalYield);
@@ -111,10 +121,11 @@ const farmService = {
     // Dar XP
     const xpResult = await playerService.addXP(playerId, crop.xp);
 
-    // Dar KH Tokens + trackear tarea diaria
+    // Dar KH Tokens + trackear tarea diaria + desafío estacional
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_HARVEST, 'harvest');
     await dailyTaskService.trackProgress(playerId, 'harvest');
     try { await getAchievementService().checkAndUnlock(playerId, 'harvest', 1); } catch { /* non-blocking */ }
+    try { await getSeasonalService().trackSeasonalProgress(playerId, 'harvest', worldDay, 1); } catch { /* non-blocking */ }
 
     // Resetear parcela
     await db('farm_plots').where('id', plotId).update({
@@ -259,7 +270,12 @@ const farmService = {
     );
     // Tech bonus: selective_breeding +20% animal yield
     const completedTechs = await getTechService().getCompletedTechs(playerId);
-    const quantity = completedTechs.has('selective_breeding') ? Math.ceil(baseQty * 1.2) : baseQty;
+    const techQty = completedTechs.has('selective_breeding') ? Math.ceil(baseQty * 1.2) : baseQty;
+    // Seasonal bonus: spring +25% animal production
+    const animalWorldDay = (await db('players').where('telegram_id', playerId).select('world_day').first())?.world_day || 0;
+    const animalSeasonInfo = getSeasonalService().getSeasonInfo(animalWorldDay);
+    const animalSeasonMult = animalSeasonInfo.animalProdMult ?? 1;
+    const quantity = Math.ceil(techQty * animalSeasonMult);
 
     await playerService.modifyResource(playerId, animalType.product, quantity);
     const xpResult = await playerService.addXP(playerId, animalType.xp);
@@ -269,6 +285,8 @@ const farmService = {
       last_collected_at: now.toISOString(),
       next_production_at: null,
     });
+
+    try { await getSeasonalService().trackSeasonalProgress(playerId, 'collect_animal', animalWorldDay, 1); } catch { /* non-blocking */ }
 
     return {
       success: true,

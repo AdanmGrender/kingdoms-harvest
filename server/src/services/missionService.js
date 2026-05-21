@@ -4,6 +4,8 @@ const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
+let _seasonalService = null;
+function getSeasonalService() { if (!_seasonalService) _seasonalService = require('./seasonalEventService'); return _seasonalService; }
 
 function secureRandom() {
   return crypto.randomInt(0, 2147483647) / 2147483647;
@@ -206,9 +208,14 @@ const missionService = {
       await playerService.modifyResource(playerId, item.item_id, item.quantity);
     }
 
-    // Dar KH Tokens + trackear tarea diaria
-    const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_MISSION_COMPLETE, 'mission');
+    // Dar KH Tokens + trackear tarea diaria + desafío estacional
+    const missionPlayer = await db('players').where('telegram_id', playerId).select('world_day').first();
+    const missionWorldDay = missionPlayer?.world_day || 0;
+    const missionSeasonInfo = getSeasonalService().getSeasonInfo(missionWorldDay);
+    const missionTokenMult = missionSeasonInfo.missionTokenMult ?? 1;
+    const tokenResult = await tokenService.awardTokens(playerId, Math.floor(TOKEN_CONFIG.TOKENS_PER_MISSION_COMPLETE * missionTokenMult), 'mission');
     await dailyTaskService.trackProgress(playerId, 'mission_complete');
+    try { await getSeasonalService().trackSeasonalProgress(playerId, 'mission_complete', missionWorldDay, 1); } catch { /* non-blocking */ }
 
     // Marcar completada
     await db('missions').where('id', missionId).update({

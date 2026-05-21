@@ -8,6 +8,10 @@ const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 let _achievementService = null;
 function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
+let _seasonalService = null;
+function getSeasonalService() { if (!_seasonalService) _seasonalService = require('./seasonalEventService'); return _seasonalService; }
+let _prestigeService = null;
+function getPrestigeService() { if (!_prestigeService) _prestigeService = require('./prestigeService'); return _prestigeService; }
 
 function secureRandom() {
   return crypto.randomInt(0, 2147483647) / 2147483647;
@@ -166,14 +170,17 @@ const commerceService = {
     if (!offer) throw new Error('La caravana no compra ese recurso');
     if (quantity > offer.quantity) throw new Error(`La caravana solo acepta ${offer.quantity} más`);
 
-    // Faction + tech sell price bonus
+    // Faction + tech + seasonal + prestige sell price bonus
     const player = await db('players').where('telegram_id', playerId).first();
     const commerceBonus = FACTIONS[player?.faction_id]?.bonus?.commerce || 0;
     let _ts = null;
     try { _ts = require('./techService'); } catch {}
     const completedTechs = _ts ? await _ts.getCompletedTechs(playerId) : new Set();
     const techBonus = completedTechs.has('haggling') ? 0.15 : 0;
-    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus));
+    const worldDay = player?.world_day || 0;
+    const seasonInfo = getSeasonalService().getSeasonInfo(worldDay);
+    const prestigeMultipliers = await getPrestigeService().getMultipliers(playerId);
+    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus) * (seasonInfo.caravanPriceMult ?? 1) * (prestigeMultipliers.sell_price ?? 1));
 
     // Cobrar recurso (atómico)
     try {
@@ -199,9 +206,11 @@ const commerceService = {
       .update({ sell_offers: JSON.stringify(freshCaravan.sell_offers) });
 
     // Award tokens + track task only after the sale is confirmed
-    const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
+    const sellTokenMult = seasonInfo.sellTokenMult ?? 1;
+    const tokenResult = await tokenService.awardTokens(playerId, Math.floor(TOKEN_CONFIG.TOKENS_PER_SALE * sellTokenMult), 'sell');
     await dailyTaskService.trackProgress(playerId, 'sell');
     try { await getAchievementService().checkAndUnlock(playerId, 'sell', 1); } catch { /* non-blocking */ }
+    try { await getSeasonalService().trackSeasonalProgress(playerId, 'sell', worldDay, 1); } catch { /* non-blocking */ }
 
     return {
       success: true,

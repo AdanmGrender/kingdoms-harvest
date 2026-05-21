@@ -2,6 +2,8 @@ const db = require('../config/database');
 const { TOKEN_CONFIG, getDailyCap, getStreakMultiplier } = require('../../../shared/tokenConfig');
 const playerService = require('./playerService');
 const cache = require('../config/cache');
+let _prestigeService = null;
+function getPrestigeService() { if (!_prestigeService) _prestigeService = require('./prestigeService'); return _prestigeService; }
 // Lazy-loaded to avoid circular dependency
 let _notificationService = null;
 function getNotifService() {
@@ -73,7 +75,8 @@ const tokenService = {
     if (!player) throw new Error('Jugador no encontrado');
     const streak = await db('player_streaks').where('player_id', playerId).first();
 
-    const dailyCap = getDailyCap(player.level);
+    const prestigeMultipliers = await getPrestigeService().getMultipliers(playerId);
+    const dailyCap = Math.floor(getDailyCap(player.level) * (prestigeMultipliers.daily_token_cap ?? 1));
     const remaining = Math.max(0, dailyCap - tokenData.daily_earned_today);
 
     if (remaining <= 0) {

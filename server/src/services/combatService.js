@@ -6,6 +6,10 @@ const buildingService = require('./buildingService');
 const heroService = require('./heroService');
 const territoryService = require('./territoryService');
 let _achievementService = null;
+let _seasonalService = null;
+function getSeasonalService() { if (!_seasonalService) _seasonalService = require('./seasonalEventService'); return _seasonalService; }
+let _prestigeService = null;
+function getPrestigeService() { if (!_prestigeService) _prestigeService = require('./prestigeService'); return _prestigeService; }
 function getAchievementService() { if (!_achievementService) _achievementService = require('./achievementService'); return _achievementService; }
 
 let _techService = null;
@@ -229,7 +233,7 @@ const combatService = {
     army = this.sanitizeArmy(army);
     await this.validateArmy(playerId, army);
 
-    // Apply faction atk/def bonus + tech bonuses
+    // Apply faction atk/def bonus + tech bonuses + seasonal + prestige
     const player = await db('players').where('telegram_id', playerId).first();
     const factionAtkBonus = FACTIONS[player?.faction_id]?.bonus?.atk || 0;
     const factionDefBonus = FACTIONS[player?.faction_id]?.bonus?.def || 0;
@@ -237,6 +241,10 @@ const combatService = {
     const techAtkBonus = (completedTechs.has('sharp_blades') ? 0.1 : 0) +
                          (completedTechs.has('tactics') ? 0.15 : 0);
     const techDefBonus = completedTechs.has('reinforced_armor') ? 0.1 : 0;
+    const worldDay = player?.world_day || 0;
+    const seasonInfo = getSeasonalService().getSeasonInfo(worldDay);
+    const prestigeMultipliers = await getPrestigeService().getMultipliers(playerId);
+    const prestigeAtkBonus = (prestigeMultipliers.combat_atk ?? 1) - 1;
 
     // Fetch deployed hero bonuses
     const { hero: deployedHero, bonuses: heroBonuses } = await heroService.getDeployedHero(playerId);
@@ -253,9 +261,9 @@ const combatService = {
     const npcStrength = territory ? territory.defense_strength : 50;
     const npcArmy = this.generateNPCArmy(npcStrength);
 
-    // Calcular batalla con bonuses de facción, tech y héroe
+    // Calcular batalla con bonuses de facción, tech, héroe y prestige
     const result = this.calculateBattle(army, npcArmy, [], {
-      attackBonus:       factionAtkBonus + techAtkBonus + heroAtkBonus,
+      attackBonus:       factionAtkBonus + techAtkBonus + heroAtkBonus + prestigeAtkBonus,
       defenseBonus:      factionDefBonus + techDefBonus,
       abilityId,
       attackerArmy:      army,
@@ -309,10 +317,12 @@ const combatService = {
         }
       }
 
-      // Dar KH Tokens + trackear tarea diaria
-      const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVE_WIN, 'pve');
+      // Dar KH Tokens + trackear tarea diaria + desafío estacional
+      const combatTokenMult = seasonInfo.combatTokenMult ?? 1;
+      const tokenResult = await tokenService.awardTokens(playerId, Math.floor(TOKEN_CONFIG.TOKENS_PER_PVE_WIN * combatTokenMult), 'pve');
       await dailyTaskService.trackProgress(playerId, 'battle_win');
       try { await getAchievementService().checkAndUnlock(playerId, 'battle_win', 1); } catch { /* non-blocking */ }
+      try { await getSeasonalService().trackSeasonalProgress(playerId, 'battle_win', worldDay, 1); } catch { /* non-blocking */ }
       loot.tokensAwarded = tokenResult.awarded;
     }
 
@@ -400,6 +410,10 @@ const combatService = {
     const defender = await db('players').where('telegram_id', defenderId).first();
     const attackerFactionAtk = FACTIONS[attacker?.faction_id]?.bonus?.atk || 0;
     const defenderFactionDef = FACTIONS[defender?.faction_id]?.bonus?.def || 0;
+    const pvpWorldDay = attacker?.world_day || 0;
+    const pvpSeasonInfo = getSeasonalService().getSeasonInfo(pvpWorldDay);
+    const pvpPrestigeMultipliers = await getPrestigeService().getMultipliers(playerId);
+    const pvpPrestigeAtkBonus = (pvpPrestigeMultipliers.combat_atk ?? 1) - 1;
 
     // Fetch deployed hero bonuses
     const { hero: deployedHero, bonuses: heroBonuses } = await heroService.getDeployedHero(playerId);
@@ -409,7 +423,7 @@ const combatService = {
     const rogueActive   = !!(heroBonuses?.pvpLootBonus);
 
     const result = this.calculateBattle(army, defenderArmy, defenderBuildings, {
-      attackBonus:       attackerFactionAtk + heroAtkBonus,
+      attackBonus:       attackerFactionAtk + heroAtkBonus + pvpPrestigeAtkBonus,
       defenseBonus:      defenderFactionDef,
       abilityId,
       attackerArmy:      army,
@@ -464,10 +478,12 @@ const combatService = {
 
       await playerService.addXP(playerId, 50);
 
-      // Dar KH Tokens + trackear tarea diaria
-      await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVP_WIN, 'pvp');
+      // Dar KH Tokens + trackear tarea diaria + desafío estacional
+      const pvpTokenMult = pvpSeasonInfo.combatTokenMult ?? 1;
+      await tokenService.awardTokens(playerId, Math.floor(TOKEN_CONFIG.TOKENS_PER_PVP_WIN * pvpTokenMult), 'pvp');
       await dailyTaskService.trackProgress(playerId, 'battle_win');
       try { await getAchievementService().checkAndUnlock(playerId, 'battle_win', 1); } catch { /* non-blocking */ }
+      try { await getSeasonalService().trackSeasonalProgress(playerId, 'battle_win', pvpWorldDay, 1); } catch { /* non-blocking */ }
     }
 
     // Héroe entra en recuperación 48h si el jugador pierde

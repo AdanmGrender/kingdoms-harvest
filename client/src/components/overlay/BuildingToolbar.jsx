@@ -34,6 +34,8 @@ function QuickNavButtons() {
       {btn('🏷️ Mercado',  'marketplace',  { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(59,130,246,0.4)', borderBottom: 'none', color: '#93c5fd' })}
       {btn('🛡️ Gremio',   'guild',        { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
       {btn('🌸 Temporada','seasonal',     { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(74,222,128,0.4)', borderBottom: 'none', color: '#86efac' })}
+      {btn('⚔️ Guerra',   'combat',       { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('⭐ Prestige', 'prestige',     { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(250,204,21,0.4)', borderBottom: 'none', color: '#fbbf24' })}
       {btn('💸 Retiro',   'withdrawal',   { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(253,224,71,0.4)', borderBottom: 'none', color: '#fde047' })}
     </>
   );
