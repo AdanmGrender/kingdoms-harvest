@@ -3,6 +3,7 @@
  */
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import { CharacterSprite } from '../ui/SpriteIcon';
 
 const RARITY_COLORS = {
   common:    { text: 'text-gray-300',   border: 'border-gray-500',   bg: 'bg-gray-800/60',    badge: 'bg-gray-700'   },
@@ -71,7 +72,7 @@ function HeroCard({ hero, selected, onClick }) {
       className={`p-2.5 rounded-lg border text-left transition-all w-full ${rc.border} ${rc.bg} ${selected ? 'ring-2 ring-yellow-400' : ''}`}
     >
       <div className="flex items-center gap-2">
-        <span className="text-2xl">{CLASS_ICONS[hero.class] || '🧙'}</span>
+        <CharacterSprite name={hero.sprite} height={40} />
         <div className="flex-1 min-w-0">
           <p className={`text-xs font-bold truncate ${rc.text}`}>{hero.name}</p>
           <p className="text-gray-500 text-[10px]">
@@ -109,7 +110,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
       {/* Hero header */}
       <div className={`p-3 rounded-lg border ${rc.border} ${rc.bg}`}>
         <div className="flex items-center gap-3">
-          <span className="text-4xl">{CLASS_ICONS[hero.class] || '🧙'}</span>
+          <CharacterSprite name={hero.sprite} height={64} />
           <div className="flex-1">
             <p className={`text-sm font-bold ${rc.text}`} style={{ fontFamily: 'MedievalSharp, serif' }}>{hero.name}</p>
             <div className="flex items-center gap-2 mt-0.5">
