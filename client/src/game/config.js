@@ -1,9 +1,15 @@
 /**
  * Phaser 3 game configuration for Kingdoms Harvest.
+ *
+ * Feature flag: set VITE_ISO_MODE=true in client/.env.local to activate
+ * IsoWorldScene instead of the default top-down WorldScene.
  */
 import Phaser from 'phaser';
 import BootScene from './scenes/BootScene';
 import WorldScene from './scenes/WorldScene';
+import IsoWorldScene from './scenes/IsoWorldScene';
+
+export const ISO_MODE = import.meta.env.VITE_ISO_MODE === 'true';
 
 const gameConfig = {
   type: Phaser.AUTO,
@@ -23,7 +29,7 @@ const gameConfig = {
     width: '100%',
     height: '100%',
   },
-  scene: [BootScene, WorldScene],
+  scene: ISO_MODE ? [BootScene, IsoWorldScene] : [BootScene, WorldScene],
   parent: 'phaser-container',
   backgroundColor: '#1a1a2e',
   audio: {

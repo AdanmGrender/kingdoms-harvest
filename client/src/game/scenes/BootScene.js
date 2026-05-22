@@ -114,8 +114,9 @@ export default class BootScene extends Phaser.Scene {
     this.createAnimalAnimations();
     this.createVillagerAnimations();
 
-    // Transition to world
-    this.scene.start('WorldScene');
+    // Transition to the appropriate world scene
+    const isoMode = this.game.registry.get('isoMode');
+    this.scene.start(isoMode ? 'IsoWorldScene' : 'WorldScene');
   }
 
   createNPCAnimations() {
