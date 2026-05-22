@@ -9,3 +9,12 @@ server/data/
 server/secrets/
 .claude/
 *.tar.gz
+
+# Generated placeholder sprites — not committed.
+# Real art goes in the same paths. See docs/art-spec.md
+client/public/assets/game/tilesets/
+client/public/assets/game/characters/
+client/public/assets/game/animals/
+client/public/assets/game/effects/
+client/public/assets/game/ui/
+client/public/assets/game/iso/
