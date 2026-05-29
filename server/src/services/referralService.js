@@ -32,18 +32,16 @@ const referralService = {
     await tokenService.ensureTokenRecord(inviterId);
     await tokenService.ensureTokenRecord(refereeId);
 
-    // Inviter bonus (bypasses daily cap — one-time)
-    const inviterTokens = await db('player_tokens').where('player_id', inviterId).first();
-    await db('player_tokens').where('player_id', inviterId).update({
-      balance: inviterTokens.balance + TOKEN_CONFIG.REFERRAL_SIGNUP_BONUS_INVITER,
-      total_earned: inviterTokens.total_earned + TOKEN_CONFIG.REFERRAL_SIGNUP_BONUS_INVITER,
+    // Inviter bonus — atomic increment avoids read-modify-write race
+    await db('player_tokens').where('player_id', inviterId).increment({
+      balance:      TOKEN_CONFIG.REFERRAL_SIGNUP_BONUS_INVITER,
+      total_earned: TOKEN_CONFIG.REFERRAL_SIGNUP_BONUS_INVITER,
     });
 
-    // Referee bonus
-    const refereeTokens = await db('player_tokens').where('player_id', refereeId).first();
-    await db('player_tokens').where('player_id', refereeId).update({
-      balance: refereeTokens.balance + TOKEN_CONFIG.REFERRAL_SIGNUP_BONUS_REFEREE,
-      total_earned: refereeTokens.total_earned + TOKEN_CONFIG.REFERRAL_SIGNUP_BONUS_REFEREE,
+    // Referee bonus — atomic increment
+    await db('player_tokens').where('player_id', refereeId).increment({
+      balance:      TOKEN_CONFIG.REFERRAL_SIGNUP_BONUS_REFEREE,
+      total_earned: TOKEN_CONFIG.REFERRAL_SIGNUP_BONUS_REFEREE,
     });
 
     // Mark bonus paid

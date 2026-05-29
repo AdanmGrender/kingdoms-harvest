@@ -7,8 +7,9 @@ const MAX_AUTH_AGE_SECONDS = 300; // 5 minutos
  * Verifica el initData usando HMAC-SHA256 con el bot token.
  */
 function telegramAuth(req, res, next) {
-  // Dev bypass: only when SKIP_AUTH=true env var is set (never in production)
-  if (process.env.SKIP_AUTH === 'true' || req.headers['x-skip-auth'] === 'true') {
+  // Dev bypass: guarded by NODE_ENV — never active in production
+  if (process.env.NODE_ENV !== 'production' &&
+      (process.env.SKIP_AUTH === 'true' || req.headers['x-skip-auth'] === 'true')) {
     req.playerId = 123456;
     req.playerData = { id: 123456, first_name: 'Dev', username: 'devuser' };
     return next();
@@ -45,6 +46,10 @@ function telegramAuth(req, res, next) {
       .join('\n');
 
     // Crear secret key usando HMAC del bot token
+    if (!process.env.BOT_TOKEN) {
+      console.error('[Auth] BOT_TOKEN no está configurado');
+      return res.status(500).json({ error: 'Error de configuración del servidor' });
+    }
     const secretKey = crypto
       .createHmac('sha256', 'WebAppData')
       .update(process.env.BOT_TOKEN)

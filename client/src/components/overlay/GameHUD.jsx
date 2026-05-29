@@ -6,6 +6,14 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
+import NotificationPrefsPanel from '../ui/NotificationPrefsPanel';
+
+const FACTION_ICONS = {
+  knights_of_dawn: '☀️',
+  shadow_merchants: '🌙',
+  iron_legion: '🛡️',
+  green_wardens: '🌳',
+};
 
 const RESOURCE_SPRITES = {
   gold:  'gold',
@@ -16,14 +24,36 @@ const RESOURCE_SPRITES = {
   bread: 'bread',
 };
 
+function useConstructionTimers(buildings) {
+  const [now, setNow] = useState(Date.now());
+  const underConstruction = useMemo(
+    () => (buildings || []).filter((b) => b.is_building && b.build_complete_at),
+    [buildings]
+  );
+  useEffect(() => {
+    if (underConstruction.length === 0) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [underConstruction.length]);
+  return underConstruction.map((b) => {
+    const msLeft = Math.max(0, new Date(b.build_complete_at).getTime() - now);
+    const mins = Math.floor(msLeft / 60000);
+    const secs = Math.floor((msLeft % 60000) / 1000);
+    return { ...b, timeLeft: msLeft > 0 ? `${mins}m ${secs}s` : 'Listo!' };
+  });
+}
+
 export default function GameHUD() {
   const player = useGameStore((s) => s.player);
   const resources = useGameStore((s) => s.resources);
   const tokenInfo = useGameStore((s) => s.tokenInfo);
+  const buildings = useGameStore((s) => s.buildings);
 
   const [timeInfo, setTimeInfo] = useState({ icon: '☀️', period: 'morning', dayCount: 1 });
   const [tokenPulse, setTokenPulse] = useState(false);
+  const [showNotifPanel, setShowNotifPanel] = useState(false);
   const pulseTimer = useRef(null);
+  const constructionTimers = useConstructionTimers(buildings);
 
   useEffect(() => {
     const handler = (data) => setTimeInfo(data);
@@ -113,12 +143,21 @@ export default function GameHUD() {
           </div>
         </div>
 
-        {/* Day/Night — center */}
+        {/* Day/Night — center + notification bell */}
         <div className="flex items-center gap-1 pointer-events-auto px-2">
           <span className="text-sm">{timeInfo.icon}</span>
           <span className="text-yellow-300 text-[10px] font-medium whitespace-nowrap">
             Día {timeInfo.dayCount}
           </span>
+          {typeof setShowNotifPanel === 'function' && (
+            <button
+              onClick={() => setShowNotifPanel(true)}
+              className="text-[13px] opacity-70 hover:opacity-100 transition-opacity ml-1"
+              title="Notificaciones"
+            >
+              🔔
+            </button>
+          )}
         </div>
 
         {/* Resources — right section */}
@@ -145,6 +184,23 @@ export default function GameHUD() {
           )}
         </div>
       </div>
+
+      {showNotifPanel && <NotificationPrefsPanel onClose={() => setShowNotifPanel(false)} />}
+
+      {/* Construction timers */}
+      {constructionTimers.length > 0 && (
+        <div className="flex gap-1 px-2 py-0.5 pointer-events-none">
+          {constructionTimers.map((b) => (
+            <div key={b.id}
+              className="flex items-center gap-1 text-[9px] text-amber-300 rounded px-1 py-0.5"
+              style={{ background: 'rgba(20,20,40,0.8)', border: '1px solid rgba(251,191,36,0.3)' }}>
+              <span>🏗️</span>
+              <span>{b.building_id.replace(/_/g, ' ')}</span>
+              <span className="text-white font-bold">{b.timeLeft}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

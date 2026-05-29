@@ -343,18 +343,65 @@ export function generateWorldMap(seed = 42) {
     }
   }
 
-  // ─── Scatter flowers and details ───
+  // ─── Scatter flowers, tall grass, rocks ───
   for (let y = 5; y < MAP_HEIGHT - 5; y++) {
     for (let x = 5; x < MAP_WIDTH - 5; x++) {
       if (decoration[y][x] !== -1) continue;
+      const isGrass = ground[y][x] === T.GRASS1 || ground[y][x] === T.GRASS2 || ground[y][x] === T.GRASS_DARK;
+      if (!isGrass) continue;
+
+      const inCore = (x >= 30 && x <= 130 && y >= 10 && y <= 90);
+      const r = rand();
+
+      if (inCore) {
+        // Richer decoration inside the core play area
+        if (r < 0.03)       decoration[y][x] = T.FLOWER_RED;
+        else if (r < 0.06)  decoration[y][x] = T.FLOWER_BLUE;
+        else if (r < 0.09)  decoration[y][x] = T.TALL_GRASS;
+        else if (r < 0.095) { decoration[y][x] = T.ROCK; collision[y][x] = 1; }
+      } else {
+        // Wilderness edges — denser, wilder feel
+        if (r < 0.025)      decoration[y][x] = T.FLOWER_RED;
+        else if (r < 0.05)  decoration[y][x] = T.FLOWER_BLUE;
+        else if (r < 0.12)  decoration[y][x] = T.TALL_GRASS;
+        else if (r < 0.13)  { decoration[y][x] = T.ROCK; collision[y][x] = 1; }
+      }
+    }
+  }
+
+  // ─── GRASS_DIRT transitions along the road edges ───
+  for (let x = 8; x < MAP_WIDTH - 8; x++) {
+    if (decoration[centerY - 2][x] === -1 && ground[centerY - 2][x] !== T.COBBLESTONE && ground[centerY - 2][x] !== T.STONE)
+      ground[centerY - 2][x] = T.GRASS_DIRT;
+    if (decoration[centerY + 2][x] === -1 && ground[centerY + 2][x] !== T.COBBLESTONE && ground[centerY + 2][x] !== T.STONE)
+      ground[centerY + 2][x] = T.GRASS_DIRT;
+  }
+  for (let y = 8; y < MAP_HEIGHT - 5; y++) {
+    if (decoration[y][centerX - 2] === -1 && ground[y][centerX - 2] !== T.COBBLESTONE && ground[y][centerX - 2] !== T.STONE)
+      ground[y][centerX - 2] = T.GRASS_DIRT;
+    if (decoration[y][centerX + 2] === -1 && ground[y][centerX + 2] !== T.COBBLESTONE && ground[y][centerX + 2] !== T.STONE)
+      ground[y][centerX + 2] = T.GRASS_DIRT;
+  }
+
+  // ─── Tall grass patches along farm zone fence interior ───
+  for (let x = 41; x < 110; x++) {
+    if (decoration[46][x] === -1 && rand() < 0.3) decoration[46][x] = T.TALL_GRASS;
+    if (decoration[79][x] === -1 && rand() < 0.3) decoration[79][x] = T.TALL_GRASS;
+  }
+  for (let y = 46; y < 80; y++) {
+    if (decoration[y][41] === -1 && rand() < 0.3) decoration[y][41] = T.TALL_GRASS;
+    if (decoration[y][109] === -1 && rand() < 0.3) decoration[y][109] = T.TALL_GRASS;
+  }
+
+  // ─── Flower meadow patch north of farm (between castle and farm) ───
+  for (let y = 34; y < 44; y++) {
+    for (let x = 55; x < 105; x++) {
+      if (decoration[y][x] !== -1) continue;
       if (ground[y][x] !== T.GRASS1 && ground[y][x] !== T.GRASS2 && ground[y][x] !== T.GRASS_DARK) continue;
       const r = rand();
-      if (r < 0.008) decoration[y][x] = T.FLOWER_RED;
-      else if (r < 0.016) decoration[y][x] = T.FLOWER_BLUE;
-      else if (r < 0.02) {
-        decoration[y][x] = T.ROCK;
-        collision[y][x] = 1;
-      }
+      if (r < 0.12)      decoration[y][x] = T.FLOWER_RED;
+      else if (r < 0.24) decoration[y][x] = T.FLOWER_BLUE;
+      else if (r < 0.30) decoration[y][x] = T.TALL_GRASS;
     }
   }
 

@@ -1,3 +1,5 @@
+const { captureException } = require('../config/sentry');
+
 /**
  * Known game errors thrown intentionally by services (safe to show to users).
  * Unexpected errors (DB failures, type errors, etc.) get a generic message in production.
@@ -21,8 +23,9 @@ function safeErrorMessage(error) {
   if (error instanceof GameError) {
     return error.message;
   }
-  // Log the real error server-side, return generic message to client
+  // Unexpected error — capture to Sentry and return generic message to client
   console.error('Unexpected error:', error);
+  captureException(error);
   return 'Error interno del servidor';
 }
 

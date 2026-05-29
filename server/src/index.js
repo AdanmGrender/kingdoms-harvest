@@ -3,10 +3,22 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
+const cluster = require('cluster');
 const { Server } = require('socket.io');
+const { setupWorker } = require('@socket.io/cluster-adapter');
 const crypto = require('crypto');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
+// Sentry must be initialized before any other requires so auto-instrumentation works
+const { initSentry, captureException, setupExpressErrorHandler } = require('./config/sentry');
+initSentry();
+
+const { getRawClient } = require('./config/redis');
+
+// In PM2 cluster mode, NODE_APP_INSTANCE is set to '0' for the first worker.
+// Only that worker runs the game tick to prevent duplicate cron execution.
+const IS_PRIMARY_WORKER = !process.env.NODE_APP_INSTANCE || process.env.NODE_APP_INSTANCE === '0';
 
 const db = require('./config/database');
 const { initBot } = require('./bot/telegramBot');
@@ -26,6 +38,7 @@ const referralRoutes = require('./routes/referralRoutes');
 const villagerRoutes = require('./routes/villagerRoutes');
 const siegeRoutes = require('./routes/siegeRoutes');
 const techRoutes = require('./routes/techRoutes');
+// Phase 2/3/4 routes (iso-rework)
 const factionRoutes = require('./routes/factionRoutes');
 const territoryRoutes = require('./routes/territoryRoutes');
 const achievementRoutes = require('./routes/achievementRoutes');
@@ -34,6 +47,15 @@ const allianceRoutes = require('./routes/allianceRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const tournamentRoutes = require('./routes/tournamentRoutes');
 const warRoutes = require('./routes/warRoutes');
+// Parallel features merged from WiFOf branch
+const craftingRoutes = require('./routes/craftingRoutes');
+const heroRoutes = require('./routes/heroRoutes');
+const worldEventRoutes = require('./routes/worldEventRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const marketRoutes = require('./routes/marketRoutes');
+const seasonalRoutes = require('./routes/seasonalRoutes');
+const prestigeRoutes = require('./routes/prestigeRoutes');
+const guildRoutes = require('./routes/guildRoutes');
 
 const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
@@ -44,6 +66,9 @@ const allowedOrigins = [process.env.WEBAPP_URL, 'http://localhost:5173'].filter(
 
 const io = new Server(server, {
   cors: { origin: allowedOrigins, methods: ['GET', 'POST'] },
+  // cluster-adapter enables io.emit/io.to() to reach clients on all PM2 workers
+  // via Node.js IPC — no Redis required.
+  adapter: cluster.isWorker ? require('@socket.io/cluster-adapter').createAdapter() : undefined,
 });
 
 // Middleware de seguridad
@@ -70,15 +95,28 @@ app.use(cors({
   methods: ['GET', 'POST'],
 }));
 
-// Rate limiting — solo rutas API (los assets estáticos no cuentan para el quota)
-const apiRateLimit = rateLimit({
-  windowMs: 60 * 1000, // 1 minuto
-  max: 100, // 100 requests por minuto por IP
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Demasiadas peticiones, intentá de nuevo en un momento' },
-});
-app.use('/api', apiRateLimit);
+// Rate limiting — only on /api routes so static assets don't count toward the
+// quota. Uses Redis store when available so limits are shared across all PM2
+// cluster workers; falls back to in-memory when Redis is absent.
+function buildRateLimiter() {
+  const opts = {
+    windowMs: 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Demasiadas peticiones, intentá de nuevo en un momento' },
+  };
+  const redisClient = getRawClient();
+  if (redisClient) {
+    const { RedisStore } = require('rate-limit-redis');
+    opts.store = new RedisStore({
+      sendCommand: (...args) => redisClient.call(...args),
+      prefix: 'rl:',
+    });
+  }
+  return rateLimit(opts);
+}
+app.use('/api', buildRateLimiter());
 
 // Body parser con límite de tamaño
 app.use(express.json({ limit: '16kb' }));
@@ -106,14 +144,27 @@ app.use('/api/referral', referralRoutes);
 app.use('/api/villagers', villagerRoutes);
 app.use('/api/sieges', siegeRoutes);
 app.use('/api/tech', techRoutes);
+// Phase 2/3/4 mounts
 app.use('/api/factions', factionRoutes);
 app.use('/api/territories', territoryRoutes);
 app.use('/api/achievements', achievementRoutes);
-app.use('/api/market', marketplaceRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/alliances', allianceRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/wars', warRoutes);
+// Parallel features from WiFOf
+app.use('/api/crafting', craftingRoutes);
+app.use('/api/heroes', heroRoutes);
+app.use('/api/world-events', worldEventRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/market', marketRoutes);
+app.use('/api/seasonal', seasonalRoutes);
+app.use('/api/prestige', prestigeRoutes);
+app.use('/api/guilds', guildRoutes);
+
+// Sentry error handler — must come after all routes so it can capture Express errors
+setupExpressErrorHandler(app);
 
 // SPA fallback: serve index.html for non-API routes
 if (process.env.NODE_ENV === 'production') {
@@ -252,6 +303,11 @@ async function start() {
     await seedFactions(db);
     await seedTerritories(db);
 
+    // Generar eventos iniciales del mundo
+    const worldEventService = require('./services/worldEventService');
+    await worldEventService.cleanExpiredEvents();
+    await worldEventService.generateEvents();
+
     // Iniciar bot de Telegram
     if (process.env.BOT_TOKEN) {
       initBot();
@@ -260,16 +316,26 @@ async function start() {
       console.log('BOT_TOKEN no configurado, bot desactivado');
     }
 
-    // Iniciar game tick (procesa timers, producciones, etc)
-    startGameTick(io);
-    console.log('Game tick iniciado');
+    // Iniciar game tick solo en el worker primario para evitar ejecución duplicada
+    if (IS_PRIMARY_WORKER) {
+      startGameTick(io);
+      console.log('Game tick iniciado (worker primario)');
+    } else {
+      console.log(`Worker ${process.env.NODE_APP_INSTANCE} en modo HTTP — game tick en worker 0`);
+    }
 
     server.listen(PORT, () => {
+      // Wire cluster-adapter IPC after the server is listening
+      if (cluster.isWorker) setupWorker(io);
+
+      const workerLabel = process.env.NODE_APP_INSTANCE !== undefined
+        ? ` [worker ${process.env.NODE_APP_INSTANCE}]`
+        : '';
       console.log(`
 ╔══════════════════════════════════════╗
 ║       KINGDOMS HARVEST SERVER        ║
 ║     Puerto: ${PORT}                     ║
-║     Entorno: ${process.env.NODE_ENV || 'development'}            ║
+║     Entorno: ${process.env.NODE_ENV || 'development'}${workerLabel.padEnd(12)}║
 ╚══════════════════════════════════════╝
       `);
     });
@@ -278,5 +344,20 @@ async function start() {
     process.exit(1);
   }
 }
+
+// Capture unhandled promise rejections and uncaught exceptions before they crash the process
+process.on('unhandledRejection', (reason) => {
+  console.error('[Process] Unhandled rejection:', reason);
+  captureException(reason instanceof Error ? reason : new Error(String(reason)), {
+    subsystem: 'process.unhandledRejection',
+  });
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('[Process] Uncaught exception:', error);
+  captureException(error, { subsystem: 'process.uncaughtException' });
+  // Allow Sentry to flush before exiting (process is in undefined state after uncaughtException)
+  setTimeout(() => process.exit(1), 2000);
+});
 
 start();

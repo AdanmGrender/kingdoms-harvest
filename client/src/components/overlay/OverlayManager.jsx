@@ -1,7 +1,7 @@
 /**
  * OverlayManager: Renders the correct overlay panel based on gameStore.overlayState.
  */
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon, { CharacterSprite } from '../ui/SpriteIcon';
@@ -13,6 +13,19 @@ import TroopManagementPanel from './TroopManagementPanel';
 import MetaPanel from '../meta/MetaPanel';
 import MissionsPanel from './MissionsPanel';
 import SettingsPanel from './SettingsPanel';
+// Parallel panels from WiFOf merge
+import CraftingPanel from './CraftingPanel';
+import HeroPanel from './HeroPanel';
+import CommerceView from '../commerce/CommerceView';
+import WorldEventPanel from './WorldEventPanel';
+import AchievementPanel from './AchievementPanel';
+import MarketplacePanel from './MarketplacePanel';
+import GuildPanel from './GuildPanel';
+import SeasonalPanel from './SeasonalPanel';
+import PrestigePanel from './PrestigePanel';
+import WithdrawalPanel from './WithdrawalPanel';
+import TechTreePanel from '../castle/TechTreePanel';
+import FactionSelectPanel from './FactionSelectPanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -138,6 +151,32 @@ function renderPanel(overlayState, onClose) {
       return <MissionsPanel onClose={onClose} />;
     case 'settings':
       return <SettingsPanel onClose={onClose} />;
+    case 'crafting':
+      return <CraftingPanel onClose={onClose} />;
+    case 'heroes':
+      return <HeroPanel onClose={onClose} />;
+    case 'world_event':
+      return <WorldEventPanel data={overlayState.data} onClose={onClose} />;
+    case 'achievements':
+      return <AchievementPanel onClose={onClose} />;
+    case 'marketplace':
+      return <MarketplacePanel onClose={onClose} />;
+    case 'guild':
+      return <GuildPanel onClose={onClose} />;
+    case 'seasonal':
+      return <SeasonalPanel onClose={onClose} />;
+    case 'prestige':
+      return <PrestigePanel onClose={onClose} />;
+    case 'withdrawal':
+      return <WithdrawalPanel onClose={onClose} />;
+    case 'tech':
+      return (
+        <GenericPanel title="Árbol de Investigación" onClose={onClose}>
+          <TechTreePanel />
+        </GenericPanel>
+      );
+    case 'faction_select':
+      return <FactionSelectPanel onClose={onClose} />;
     default:
       return (
         <GenericPanel title={overlayState.type} onClose={onClose}>
@@ -182,11 +221,127 @@ const BUILDING_META = {
   library:     { name: 'Biblioteca',     sprite: 'scroll',       zone: 'Noble',     desc: 'Investiga tecnologías para el reino.' },
 };
 
+// Approximate construction durations (seconds) per building — used for progress bar estimate
+const CONSTRUCTION_DURATION = {
+  barn: 30, mill: 60, wall: 20, tower: 90, barracks: 90,
+  tavern: 60, market: 60, embassy: 120, throne_room: 180,
+  library: 120, stable: 60, smithy: 90, sawmill: 60, trap: 30,
+};
+
+// Scaffold accent colour per building type — mirrors Building.js CONSTRUCTION_TINTS
+const CONSTRUCTION_ACCENT = {
+  barn: '#d4a84b', mill: '#9ca3af', wall: '#9ca3af', tower: '#8a8fa3',
+  barracks: '#ef4444', tavern: '#d97706', market: '#fbbf24',
+  throne_room: '#ffd700', library: '#3b82f6', stable: '#c97706',
+  smithy: '#6b7280', sawmill: '#a16207', embassy: '#e2e8f0',
+  trap: '#f97316', default: '#d4a84b',
+};
+
+function ConstructionView({ record, meta, onClose }) {
+  const [msLeft, setMsLeft] = useState(0);
+  const [workers, setWorkers] = useState(0);
+
+  // Live countdown
+  useEffect(() => {
+    if (!record?.build_complete_at) return;
+    const tick = () => setMsLeft(Math.max(0, new Date(record.build_complete_at).getTime() - Date.now()));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [record?.build_complete_at]);
+
+  // Worker count from Phaser via EventBridge
+  useEffect(() => {
+    const handler = ({ buildingId, posX, posY, occupantCount }) => {
+      if (buildingId === record?.building_id &&
+          (posX == null || posX === record?.position_x)) {
+        setWorkers(occupantCount);
+      }
+    };
+    EventBridge.on('building:occupancyChanged', handler);
+    return () => EventBridge.off('building:occupancyChanged', handler);
+  }, [record?.building_id, record?.position_x]);
+
+  const totalSecs = CONSTRUCTION_DURATION[record?.building_id] ?? 60;
+  const secsLeft  = Math.ceil(msLeft / 1000);
+  const mins      = Math.floor(secsLeft / 60);
+  const secs      = secsLeft % 60;
+  const timeStr   = msLeft <= 0 ? '¡Listo!' : `${mins}m ${secs.toString().padStart(2, '0')}s`;
+  const progress  = Math.min(100, Math.max(0, Math.round(((totalSecs - secsLeft) / totalSecs) * 100)));
+  const accent    = CONSTRUCTION_ACCENT[record?.building_id] || CONSTRUCTION_ACCENT.default;
+
+  return (
+    <div className="mx-2 mb-2 rounded-t-xl overflow-hidden"
+      style={{ background: 'rgba(22, 33, 62, 0.97)', border: `1px solid ${accent}50` }}>
+
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30"
+        style={{ background: `linear-gradient(135deg, rgba(22,33,62,0.9), ${accent}22)` }}>
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">🔨</span>
+          <div>
+            <h3 className="text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif', color: accent }}>
+              Construyendo: {meta.name}
+            </h3>
+            <p className="text-gray-400 text-[10px]">{meta.zone}</p>
+          </div>
+        </div>
+        <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
+      </div>
+
+      <div className="px-4 py-4 space-y-4">
+        {/* Countdown */}
+        <div className="text-center">
+          <p className="text-gray-500 text-[10px] mb-1 uppercase tracking-wide">Tiempo restante</p>
+          <p className="text-2xl font-bold" style={{
+            fontFamily: 'MedievalSharp, serif',
+            color: msLeft <= 0 ? '#4ade80' : accent,
+          }}>
+            {timeStr}
+          </p>
+        </div>
+
+        {/* Progress bar */}
+        <div>
+          <div className="h-2 rounded-full bg-gray-700 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-1000"
+              style={{ width: `${progress}%`, background: `linear-gradient(90deg, ${accent}88, ${accent})` }}
+            />
+          </div>
+          <p className="text-gray-600 text-[9px] text-right mt-0.5">{progress}% completado</p>
+        </div>
+
+        {/* Workers */}
+        <div className="flex items-center justify-between rounded-lg px-3 py-2"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <span className="text-gray-400 text-xs">Constructores presentes</span>
+          <span className="font-bold text-xs" style={{ color: workers > 0 ? '#4ade80' : '#6b7280' }}>
+            {workers > 0 ? `${workers} 👷` : '—'}
+          </span>
+        </div>
+
+        <p className="text-gray-600 text-[10px] text-center italic">
+          Los constructores aceleran la obra automáticamente
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const COMMERCE_BUILDINGS = new Set(['market', 'tavern', 'embassy']);
+
+const UPGRADE_COSTS = [
+  { wood: 20, stone: 10 },
+  { wood: 50, stone: 30, iron: 5 },
+  { wood: 100, stone: 80, iron: 20 },
+  { wood: 200, stone: 150, iron: 50 },
+];
+
 function BuildingInfoPanel({ data, onClose }) {
   const { buildings, upgradeBuilding } = useGameStore();
   const meta = BUILDING_META[data.buildingId] || { name: data.buildingId, sprite: 'castle', zone: '', desc: '' };
 
-  // Find the actual DB record for this building (match by buildingId + position if available)
   const record = buildings.find(b =>
     b.building_id === data.buildingId &&
     (data.posX == null || b.position_x === data.posX)
@@ -195,21 +350,21 @@ function BuildingInfoPanel({ data, onClose }) {
   const level = record?.level ?? data.level ?? 1;
   const isBuilding = record?.is_building ?? data.isBuilding ?? false;
 
-  const UPGRADE_COSTS = [
-    { wood: 20, stone: 10 },
-    { wood: 50, stone: 30, iron: 5 },
-    { wood: 100, stone: 80, iron: 20 },
-    { wood: 200, stone: 150, iron: 50 },
-  ];
+  if (isBuilding) {
+    return <ConstructionView record={record} meta={meta} onClose={onClose} />;
+  }
+
+  const isCommerce = COMMERCE_BUILDINGS.has(data.buildingId);
   const upgradeCost = UPGRADE_COSTS[Math.min(level - 1, UPGRADE_COSTS.length - 1)];
 
   return (
     <div className="mx-2 mb-2 rounded-t-xl overflow-hidden"
       style={{ background: 'rgba(22, 33, 62, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
-      {/* Header strip */}
+
+      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
         <div className="flex items-center gap-3">
-          <SpriteIcon name={meta.sprite} size={36} />
+          <SpriteIcon name={meta.sprite} size={32} />
           <div>
             <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
               {meta.name}
@@ -220,25 +375,56 @@ function BuildingInfoPanel({ data, onClose }) {
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
       </div>
 
-      <div className="px-4 py-3 space-y-3">
-        <p className="text-gray-300 text-xs">{meta.desc}</p>
-
-        {isBuilding ? (
-          <div className="flex items-center gap-2 text-yellow-300 text-xs animate-pulse">
-            <span>🔨</span><span>En construcción...</span>
+      <div className="px-4 py-3">
+        {isCommerce ? (
+          /* Commerce buildings: show full trade interface */
+          <CommerceView buildingId={data.buildingId} />
+        ) : (
+          /* Generic buildings: description + upgrade */
+          <div className="space-y-3">
+            <p className="text-gray-300 text-xs">{meta.desc}</p>
+            {data.buildingId === 'library' && (
+              <button
+                onClick={() => { useGameStore.getState().setOverlay('tech'); onClose(); }}
+                className="w-full py-2 rounded-lg text-xs font-bold text-white"
+                style={{ background: 'linear-gradient(135deg, #1e40af, #3b82f6)' }}
+              >
+                🔬 Árbol de Investigación
+              </button>
+            )}
+            {record && (
+              <button
+                onClick={() => { upgradeBuilding(record.id); onClose(); }}
+                className="w-full py-2 rounded-lg text-xs font-bold text-white"
+                style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
+              >
+                ⬆ Mejorar a Nivel {level + 1}
+                <span className="ml-2 opacity-75 text-[10px]">
+                  🪵{upgradeCost.wood} 🪨{upgradeCost.stone}{upgradeCost.iron ? ` ⛏️${upgradeCost.iron}` : ''}
+                </span>
+              </button>
+            )}
           </div>
-        ) : record ? (
-          <button
-            onClick={() => { upgradeBuilding(record.id); onClose(); }}
-            className="w-full py-2 rounded-lg text-xs font-bold text-white"
-            style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
-          >
-            ⬆ Mejorar a Nivel {level + 1}
-            <span className="ml-2 opacity-75 text-[10px]">
-              🪵{upgradeCost.wood} 🪨{upgradeCost.stone}{upgradeCost.iron ? ` ⛏️${upgradeCost.iron}` : ''}
-            </span>
-          </button>
-        ) : null}
+        )}
+
+        {/* Upgrade button for commerce buildings too, collapsed */}
+        {isCommerce && record && (
+          <details className="mt-3">
+            <summary className="text-[10px] text-gray-500 cursor-pointer hover:text-gray-300">
+              Mejorar edificio ▸
+            </summary>
+            <button
+              onClick={() => { upgradeBuilding(record.id); onClose(); }}
+              className="w-full mt-2 py-2 rounded-lg text-xs font-bold text-white"
+              style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
+            >
+              ⬆ Mejorar a Nivel {level + 1}
+              <span className="ml-2 opacity-75 text-[10px]">
+                🪵{upgradeCost.wood} 🪨{upgradeCost.stone}{upgradeCost.iron ? ` ⛏️${upgradeCost.iron}` : ''}
+              </span>
+            </button>
+          </details>
+        )}
       </div>
     </div>
   );

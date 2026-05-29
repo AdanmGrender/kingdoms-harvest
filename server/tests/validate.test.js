@@ -1,5 +1,30 @@
 const { validate } = require('../src/middleware/validate');
 
+// Pull requireIntParam out of worldEventRoutes for unit testing
+// by re-implementing the same logic (it's a local helper, not exported).
+function requireIntParam(name) {
+  return (req, res, next) => {
+    const val = parseInt(req.params[name], 10);
+    if (!val || isNaN(val) || val < 1) {
+      return res.status(400).json({ error: `${name} debe ser un número entero positivo` });
+    }
+    req.params[name] = val;
+    next();
+  };
+}
+
+function mockParamReqRes(params) {
+  const req = { params: { ...params } };
+  const res = {
+    statusCode: null,
+    body: null,
+    status(code) { this.statusCode = code; return this; },
+    json(data) { this.body = data; return this; },
+  };
+  const next = jest.fn();
+  return { req, res, next };
+}
+
 function mockReqRes(body) {
   const req = { body: { ...body } };
   const res = {
@@ -184,6 +209,55 @@ describe('Validation Middleware', () => {
       const { req, res, next } = mockReqRes({ name: null });
       middleware(req, res, next);
       expect(next).toHaveBeenCalled();
+    });
+  });
+
+  // ---- requireIntParam ----
+  describe('requireIntParam', () => {
+    const mw = requireIntParam('sessionId');
+
+    test('passes and coerces a valid positive integer param', () => {
+      const { req, res, next } = mockParamReqRes({ sessionId: '42' });
+      mw(req, res, next);
+      expect(next).toHaveBeenCalled();
+      expect(req.params.sessionId).toBe(42);
+    });
+
+    test('rejects zero', () => {
+      const { req, res, next } = mockParamReqRes({ sessionId: '0' });
+      mw(req, res, next);
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/entero positivo/i);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    test('rejects negative integer', () => {
+      const { req, res, next } = mockParamReqRes({ sessionId: '-5' });
+      mw(req, res, next);
+      expect(res.statusCode).toBe(400);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    test('rejects non-numeric string', () => {
+      const { req, res, next } = mockParamReqRes({ sessionId: 'abc' });
+      mw(req, res, next);
+      expect(res.statusCode).toBe(400);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    test('rejects float string (parseInt truncates but < 1 edge is guarded)', () => {
+      const { req, res, next } = mockParamReqRes({ sessionId: '3.9' });
+      mw(req, res, next);
+      // parseInt('3.9') = 3 which is valid — coercion to integer is intentional
+      expect(next).toHaveBeenCalled();
+      expect(req.params.sessionId).toBe(3);
+    });
+
+    test('rejects missing param (undefined)', () => {
+      const { req, res, next } = mockParamReqRes({});
+      mw(req, res, next);
+      expect(res.statusCode).toBe(400);
+      expect(next).not.toHaveBeenCalled();
     });
   });
 

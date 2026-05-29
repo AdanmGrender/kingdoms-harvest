@@ -1,10 +1,11 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { CROPS, RESOURCES } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
+let _seasonalService = null;
+function getSeasonalService() { if (!_seasonalService) _seasonalService = require('./seasonalEventService'); return _seasonalService; }
 
 function secureRandom() {
   return crypto.randomInt(0, 2147483647) / 2147483647;
@@ -54,12 +55,13 @@ const missionService = {
       .delete();
 
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     const missions = [];
 
     for (let i = 0; i < maxMissions; i++) {
       const mission = this.createRandomMission(player.level);
       mission.player_id = playerId;
-      const [id] = await db('missions').insert(mission);
+      const [{ id }] = await db('missions').insert(mission).returning('id');
       missions.push({ id, ...mission });
     }
 
@@ -164,6 +166,11 @@ const missionService = {
 
     if (!mission) throw new Error('Misión no encontrada o no aceptada');
 
+    if (mission.expires_at && new Date(mission.expires_at) < new Date()) {
+      await db('missions').where('id', missionId).update({ status: 'expired' });
+      throw new Error('Esta misión ha expirado');
+    }
+
     let requirements, rewards;
     try {
       requirements = JSON.parse(mission.requirements);
@@ -201,9 +208,14 @@ const missionService = {
       await playerService.modifyResource(playerId, item.item_id, item.quantity);
     }
 
-    // Dar KH Tokens + trackear tarea diaria
-    const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_MISSION_COMPLETE, 'mission');
+    // Dar KH Tokens + trackear tarea diaria + desafío estacional
+    const missionPlayer = await db('players').where('telegram_id', playerId).select('world_day').first();
+    const missionWorldDay = missionPlayer?.world_day || 0;
+    const missionSeasonInfo = getSeasonalService().getSeasonInfo(missionWorldDay);
+    const missionTokenMult = missionSeasonInfo.missionTokenMult ?? 1;
+    const tokenResult = await tokenService.awardTokens(playerId, Math.floor(TOKEN_CONFIG.TOKENS_PER_MISSION_COMPLETE * missionTokenMult), 'mission');
     await dailyTaskService.trackProgress(playerId, 'mission_complete');
+    try { await getSeasonalService().trackSeasonalProgress(playerId, 'mission_complete', missionWorldDay, 1); } catch { /* non-blocking */ }
 
     // Marcar completada
     await db('missions').where('id', missionId).update({

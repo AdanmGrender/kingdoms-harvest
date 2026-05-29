@@ -6,6 +6,12 @@ import Phaser from 'phaser';
 import BootScene from './scenes/BootScene';
 import WorldScene from './scenes/WorldScene';
 import IsoScene from './scenes/IsoScene';
+import IsoWorldScene from './scenes/IsoWorldScene';
+
+// Feature flag for the new isometric pixel-art experiment (WiFOf branch).
+// PhaserGame stamps registry.isoMode = ISO_MODE on boot so BootScene knows
+// whether to land on IsoWorldScene. URL ?iso=1 falls back to the legacy IsoScene.
+export const ISO_MODE = false;
 
 const gameConfig = {
   type: Phaser.AUTO,
@@ -32,7 +38,7 @@ const gameConfig = {
     width: '100%',
     height: '100%',
   },
-  scene: [BootScene, WorldScene, IsoScene],
+  scene: [BootScene, WorldScene, IsoScene, IsoWorldScene],
   parent: 'phaser-container',
   backgroundColor: '#1a1a2e',
   audio: {

@@ -92,6 +92,12 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 48,
     });
 
+    // Villagers
+    this.load.spritesheet('villager', '/assets/game/characters/villager.png', {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
+
     // ─── Load animals ───
     this.load.spritesheet('chicken', '/assets/game/animals/chicken.png', {
       frameWidth: 32,
@@ -131,10 +137,15 @@ export default class BootScene extends Phaser.Scene {
     // ─── Create animations ───
     this.createNPCAnimations();
     this.createAnimalAnimations();
+    this.createVillagerAnimations();
 
-    // URL-param switch: ?iso=1 → IsoScene, otherwise WorldScene
+    // Scene selection: registry isoMode flag (set by IsoWorldScene experiment)
+    // or URL param ?iso=1 lands on the legacy IsoScene. Default is WorldScene.
     const params = new URLSearchParams(window.location.search);
-    const target = params.get('iso') === '1' ? 'IsoScene' : 'WorldScene';
+    const isoModeFlag = this.game.registry.get('isoMode');
+    let target = 'WorldScene';
+    if (isoModeFlag) target = 'IsoWorldScene';
+    else if (params.get('iso') === '1') target = 'IsoScene';
     this.scene.start(target);
   }
 
@@ -252,6 +263,21 @@ export default class BootScene extends Phaser.Scene {
         repeat: -1,
       });
     }
+  }
+
+  createVillagerAnimations() {
+    this.anims.create({
+      key: 'villager_idle',
+      frames: this.anims.generateFrameNumbers('villager', { start: 0, end: 1 }),
+      frameRate: 2,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'villager_walk',
+      frames: this.anims.generateFrameNumbers('villager', { start: 2, end: 3 }),
+      frameRate: 6,
+      repeat: -1,
+    });
   }
 
   createAnimalAnimations() {

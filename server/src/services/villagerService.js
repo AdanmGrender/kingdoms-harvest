@@ -1,6 +1,9 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { VILLAGER_ROLES, VILLAGER_NAMES } = require('../../../shared/gameConfig');
+const { VILLAGER_ROLES, VILLAGER_NAMES, BUILDINGS } = require('../../../shared/gameConfig');
+
+// Fractional production accumulators: villagerId:resource → sub-integer remainder
+const villagerAccumulators = {};
 
 const villagerService = {
   async getVillagers(playerId) {
@@ -58,31 +61,57 @@ const villagerService = {
   },
 
   /**
-   * Simulate villager behavior for one tick (called from gameTick)
+   * Simulate villager behavior for one tick (called from gameTick every 5 minutes).
+   * Hunger/state/happiness updated in a single batch SQL for all villagers of this player.
+   * Resource production loop only runs for villagers already in 'working' state.
    */
   async simulateTick(playerId) {
-    const villagers = await db('villagers').where('player_id', playerId);
+    // Single UPDATE for all N villagers — replaces N individual updates
+    await db.raw(`
+      UPDATE "villagers" SET
+        "hunger" = GREATEST(0, "hunger" - 1),
+        "happiness" = CASE
+          WHEN ("hunger" - 1) <= 20 THEN GREATEST(0, "happiness" - 1)
+          ELSE "happiness"
+        END,
+        "state" = CASE
+          WHEN ("hunger" - 1) <= 20 THEN 'resting'
+          WHEN "assigned_building_id" IS NOT NULL AND "state" = 'idle' THEN 'walking_to_work'
+          WHEN "state" = 'walking_to_work' THEN 'working'
+          WHEN "state" = 'resting' AND ("hunger" - 1) > 50 AND "assigned_building_id" IS NOT NULL THEN 'walking_to_work'
+          WHEN "state" = 'resting' AND ("hunger" - 1) > 50 THEN 'idle'
+          ELSE "state"
+        END
+      WHERE "player_id" = ?
+    `, [playerId]);
 
-    for (const v of villagers) {
-      // Simple state machine
-      const updates = {};
+    // Resource production: only for working villagers (smaller loop after batch state update)
+    const workingVillagers = await db('villagers')
+      .where({ player_id: playerId, state: 'working' })
+      .whereNotNull('assigned_building_id');
 
-      // Decrease hunger each tick
-      updates.hunger = Math.max(0, v.hunger - 1);
+    for (const v of workingVillagers) {
+      const building = await db('player_buildings').where('id', v.assigned_building_id).first();
+      const config = building ? BUILDINGS[building.building_id] : null;
+      if (!config?.produces) continue;
 
-      // If hungry, go home and rest
-      if (updates.hunger <= 20) {
-        updates.state = 'resting';
-        updates.happiness = Math.max(0, v.happiness - 1);
-      } else if (v.assigned_building_id && v.state === 'idle') {
-        updates.state = 'walking_to_work';
-      } else if (v.state === 'walking_to_work') {
-        updates.state = 'working';
-      } else if (v.state === 'resting' && updates.hunger > 50) {
-        updates.state = v.assigned_building_id ? 'walking_to_work' : 'idle';
+      for (const [resource, ratePerHour] of Object.entries(config.produces)) {
+        const key = `${v.id}:${resource}`;
+        villagerAccumulators[key] = (villagerAccumulators[key] || 0) + (ratePerHour * 0.5) / 60;
+        const intAmount = Math.floor(villagerAccumulators[key]);
+        if (intAmount > 0) {
+          villagerAccumulators[key] -= intAmount;
+          const res = await db.raw(
+            'UPDATE "player_resources" SET "amount" = LEAST("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
+            [intAmount, playerId, resource]
+          );
+          if (res.rowCount === 0) {
+            await db('player_resources').insert({
+              player_id: playerId, resource_id: resource, amount: intAmount, capacity: 1000,
+            });
+          }
+        }
       }
-
-      await db('villagers').where('id', v.id).update(updates);
     }
   },
 
@@ -109,8 +138,8 @@ const villagerService = {
       const newAge = v.age + 1;
 
       if (newAge >= 70) {
-        // Old age death (probability increases with age)
-        const deathChance = (newAge - 70) * 0.05;
+        // Old age death (probability increases with age, capped at 95%)
+        const deathChance = Math.min((newAge - 70) * 0.05, 0.95);
         if (crypto.randomInt(0, 10000) / 10000 < deathChance) {
           await db('villagers').where('id', v.id).delete();
           continue;
@@ -126,6 +155,7 @@ const villagerService = {
    */
   async processRelationships(playerId) {
     const villagers = await db('villagers').where('player_id', playerId);
+    if (villagers.length === 0) return;
     const existingFamilies = await db('villager_families')
       .whereIn('villager_a_id', villagers.map(v => v.id))
       .orWhereIn('villager_b_id', villagers.map(v => v.id));

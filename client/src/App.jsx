@@ -24,8 +24,12 @@ const URL_PARAMS = new URLSearchParams(window.location.search);
 const ISO_PREVIEW =
   URL_PARAMS.get('iso') === '1' || URL_PARAMS.get('preview') === 'world';
 
+// Deep-link patterns handled at startup
+const COOP_DEEP_LINK_RE = /^event_(\d+)_s(\d+)$/;
+
 function App() {
   const { initGame, isLoading, error } = useGameStore();
+  const overlayActive = useGameStore((s) => !!s.overlayState?.type);
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -50,9 +54,49 @@ function App() {
 
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     const urlRef = new URLSearchParams(window.location.search).get('ref');
-    const referralCode = startParam || urlRef || null;
+
+    // Check if the start_param is a co-op session invite (event_5_s12)
+    const coopMatch = startParam && COOP_DEEP_LINK_RE.exec(startParam);
+    const referralCode = coopMatch ? null : (startParam || urlRef || null);
 
     if (!ISO_PREVIEW) initGame(referralCode);
+
+    // After game loads, auto-join co-op session from deep link
+    if (coopMatch) {
+      const eventId   = parseInt(coopMatch[1], 10);
+      const sessionId = parseInt(coopMatch[2], 10);
+      const handleGameReady = async () => {
+        const store = useGameStore.getState();
+        const joinResult = await store.joinCoopSession(sessionId);
+        if (joinResult) {
+          await store.loadWorldEvents();
+          const events = useGameStore.getState().worldEvents;
+          const ev = events.find((e) => e.id === eventId);
+          if (ev) {
+            store.setOverlay('world_event', {
+              eventId:    ev.id,
+              ...ev,
+              player_in_session: 1,
+              session_id:        sessionId,
+              session_count:     joinResult.participant_count,
+              session_max:       joinResult.max_participants,
+            });
+          }
+          store.addNotification(
+            `¡Te uniste a la sesión cooperativa! ×${joinResult.multiplier?.toFixed(1) || '1.3'} de recompensas`,
+            'success',
+          );
+        }
+      };
+      // subscribe(listener) form works without subscribeWithSelector middleware;
+      // watch for the transition loading=true → loading=false
+      const unsub = useGameStore.subscribe((state, prev) => {
+        if (prev.isLoading && !state.isLoading) {
+          unsub();
+          handleGameReady();
+        }
+      });
+    }
 
     // Listen for building placement from Phaser scene
     const handleBuildingPlaced = async ({ buildingId, posX, posY }) => {
@@ -75,10 +119,31 @@ function App() {
     };
     EventBridge.on('game:notification', handleGameNotification);
 
+    // Reload world events when server broadcasts new ones via socket
+    const handleWorldEventsRefresh = () => {
+      useGameStore.getState().loadWorldEvents();
+    };
+    EventBridge.on('world_events:refresh', handleWorldEventsRefresh);
+
+    // Reload buildings after construction completes (clears scaffold in Phaser)
+    const handleBuildingsRefresh = () => {
+      useGameStore.getState().loadBuildings();
+    };
+    EventBridge.on('buildings:refresh', handleBuildingsRefresh);
+
+    // Sync resources when server pushes production updates via socket
+    const handleResourcesRefresh = () => {
+      useGameStore.getState().refreshResources();
+    };
+    EventBridge.on('resources:refresh', handleResourcesRefresh);
+
     EventBridge.on('building:placed', handleBuildingPlaced);
     return () => {
       EventBridge.off('building:placed', handleBuildingPlaced);
       EventBridge.off('game:notification', handleGameNotification);
+      EventBridge.off('world_events:refresh', handleWorldEventsRefresh);
+      EventBridge.off('buildings:refresh', handleBuildingsRefresh);
+      EventBridge.off('resources:refresh', handleResourcesRefresh);
       document.removeEventListener('touchmove', blockMultiTouch);
       document.removeEventListener('gesturestart', blockGesture);
     };
@@ -122,7 +187,7 @@ function App() {
       <ConstructionTimer />
       <BuildingInfoPopup />
       <OverlayManager />
-      <BuildingToolbar />
+      {!overlayActive && <BuildingToolbar />}
       <BottomNavBar />
       <StreakBanner />
       <NotificationToast />

@@ -26,7 +26,7 @@ const dailyTaskService = {
 
     const tasks = [];
     for (const task of TOKEN_CONFIG.DAILY_TASKS) {
-      const [id] = await db('player_daily_tasks').insert({
+      const [{ id }] = await db('player_daily_tasks').insert({
         player_id: playerId,
         task_id: task.id,
         progress: 0,
@@ -34,7 +34,7 @@ const dailyTaskService = {
         completed: 0,
         reward_claimed: 0,
         reset_at: resetAt.toISOString(),
-      });
+      }).returning('id');
       tasks.push({
         id,
         player_id: playerId,

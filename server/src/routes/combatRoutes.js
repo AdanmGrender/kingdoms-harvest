@@ -4,6 +4,7 @@ const { telegramAuth } = require('../middleware/telegramAuth');
 const { validate } = require('../middleware/validate');
 const combatService = require('../services/combatService');
 const { safeErrorMessage } = require('../middleware/errorHandler');
+const { pvpLimit } = require('../middleware/endpointLimits');
 
 // Obtener tropas del jugador
 router.get('/troops', telegramAuth, async (req, res) => {
@@ -60,7 +61,7 @@ router.get('/players', telegramAuth, async (req, res) => {
 });
 
 // Atacar otro jugador (PvP)
-router.post('/attack/pvp', telegramAuth, validate({
+router.post('/attack/pvp', telegramAuth, pvpLimit, validate({
   army: { type: 'object', required: true, maxKeys: 20 },
   defenderId: { type: 'number', required: true, min: 1 },
   abilityId: { type: 'string', required: false, maxLength: 30, pattern: /^[a-z_]*$/ },

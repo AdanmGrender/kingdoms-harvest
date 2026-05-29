@@ -1,113 +1,93 @@
-# Kingdoms Harvest — Developer & AI Guide
+# Kingdoms Harvest — Spec
 
-> Full-stack Telegram Mini App game. Read this before touching any code.
+> **Metodología:** Spec Driven Development. Cada sección define un contrato (entradas, salidas, invariantes, criterios de aceptación). Las notas de implementación son secundarias al contrato.
 
 ---
 
-## What Is This?
+## 0. Contexto del Sistema
 
-A medieval farming + RTS game playable inside Telegram. Players build a kingdom, farm resources, trade with caravans, train troops, and earn **KH Tokens** redeemable for TON cryptocurrency.
+**Qué:** Juego medieval farming + RTS como Telegram Mini App. Los jugadores construyen un reino, cosechan recursos, comercian con caravanas, entrenan tropas y ganan **KH Tokens** canjeables por TON cryptocurrency.
 
-**Stack at a glance:**
+**Stack:**
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 + Vite 6, Phaser 3.90 (game world), TailwindCSS 3.4 |
-| State | Zustand 4.4 (client), Socket.io (real-time sync) |
+| Capa | Tecnología |
+|------|-----------|
+| Frontend | React 18 + Vite 6, Phaser 3.90, TailwindCSS 3.4 |
+| Estado cliente | Zustand 4.4 + Socket.io (sync tiempo real) |
 | Backend | Node.js + Express 4.18 |
-| Database | SQLite via `sql.js` (WASM in-memory + disk persistence) |
-| Auth | Telegram initData HMAC-SHA256 validation |
-| Blockchain | TON via `tonweb` library; `@tonconnect/ui-react` for wallet linking |
-| Bot | `node-telegram-bot-api` Telegram bot for notifications |
+| Base de datos | SQLite vía `sql.js` (WASM in-memory + persistencia en disco) |
+| Auth | Telegram initData HMAC-SHA256, ventana 5 min |
+| Blockchain | TON vía `tonweb`; `@tonconnect/ui-react` para wallet |
+| Bot | `node-telegram-bot-api` |
+
+**No-goals (fuera de scope):**
+- PvP completamente asíncrono (Phase 2)
+- Sistema de facciones completo (Phase 2)
+- Mapa territorial con conquista (Phase 2)
+- Tech tree funcional en Library (Phase 2)
 
 ---
 
-## Repository Layout
+## 1. Spec: Estructura del Repositorio
 
 ```
 kingdoms-harvest/
-├── client/                  # React + Phaser frontend (Telegram Mini App)
-│   ├── src/
-│   │   ├── components/      # React UI
-│   │   │   ├── overlay/     # In-game overlays (GameHUD, OverlayManager, panels)
-│   │   │   ├── token/       # Token economy UI (TokenView, DailyTaskList, etc.)
-│   │   │   ├── ui/          # Shared components (SpriteIcon, LoadingScreen)
-│   │   │   └── combat/castle/commerce/  # Mode-specific panels
-│   │   ├── game/            # Phaser integration
-│   │   │   ├── scenes/      # WorldScene.js (main), BootScene.js
-│   │   │   ├── systems/     # CameraSystem, ParticleSystem, SelectionSystem, etc.
-│   │   │   ├── entities/    # Building, CropPlot, NPC, Animal, Villager
-│   │   │   ├── maps/        # MapGenerator.js (160×120 procedural world)
-│   │   │   └── EventBridge.js  # Phaser ↔ React EventEmitter3 singleton
-│   │   ├── store/           # gameStore.js (Zustand)
-│   │   ├── services/        # API client (axios wrappers)
-│   │   └── styles/          # index.css + Tailwind config
-│   └── public/assets/       # Sprites, tilesets, fonts
-│       ├── sprites/         # UI sprite sheets (Buttons_*.png, Items_*.png, Character_*.png)
-│       └── game/            # tilesets/, characters/, animals/, effects/
-├── server/
-│   ├── src/
-│   │   ├── index.js         # Express app, Socket.io, startup
-│   │   ├── config/
-│   │   │   └── database.js  # sql.js custom query builder (knex-compatible API)
-│   │   ├── routes/          # 11 Express routers (one per domain)
-│   │   ├── services/        # 14+ business logic files
-│   │   ├── middleware/      # telegramAuth, validate, errorHandler
-│   │   ├── game/            # gameTick.js (cron), seedData.js
-│   │   └── bot/             # telegramBot.js
-│   ├── migrations/          # DB schema migrations (003 files + run in order)
-│   └── tests/               # Jest test suites (104 tests, all passing)
+├── client/src/
+│   ├── components/overlay/   # Overlays in-game (GameHUD, OverlayManager, panels)
+│   ├── components/token/     # UI economía de tokens
+│   ├── components/ui/        # Componentes compartidos (SpriteIcon, LoadingScreen)
+│   ├── game/scenes/          # WorldScene.js (principal), BootScene.js
+│   ├── game/systems/         # CameraSystem, ParticleSystem, SelectionSystem
+│   ├── game/entities/        # Building, CropPlot, NPC, Animal, Villager
+│   ├── game/maps/            # MapGenerator.js (mundo procedural 160×120)
+│   ├── game/EventBridge.js   # Singleton Phaser ↔ React (EventEmitter3)
+│   ├── store/gameStore.js    # Estado global Zustand
+│   └── services/             # Clientes axios por dominio
+├── server/src/
+│   ├── routes/               # 11 routers Express (uno por dominio)
+│   ├── services/             # 14+ archivos de lógica de negocio
+│   ├── middleware/           # telegramAuth, validate, errorHandler
+│   ├── config/database.js    # Query builder custom sobre sql.js
+│   └── game/gameTick.js      # Cron del juego (subsistemas independientes)
 ├── shared/
-│   ├── gameConfig.js        # CROPS, TROOPS, BUILDINGS, RESOURCES constants
-│   └── tokenConfig.js       # Token economy config (daily cap, tasks, rates)
-└── docs/
-    ├── GDD.md               # Game Design Document
-    └── AI_ART_GUIDE.md      # Sprite generation prompts for AI art tools
+│   ├── gameConfig.js         # CROPS, TROOPS, BUILDINGS, RESOURCES
+│   └── tokenConfig.js        # Economía de tokens (cap diario, tareas, tasas)
+└── server/migrations/        # Migraciones DB numeradas secuencialmente
 ```
 
 ---
 
-## Dev Commands
+## 2. Spec: API HTTP
 
-```bash
-# Server (Node.js)
-cd server
-npm install
-cp .env.example .env          # Fill in BOT_TOKEN at minimum
-npm run dev                   # nodemon hot-reload on port 3001
-npm test                      # Jest (104 tests)
+### 2.1 Contrato de Endpoint
 
-# Client (React + Vite)
-cd client
-npm install
-npm run dev                   # Vite dev server on port 5173
-npm run build                 # Production build to client/dist/
+**Todo endpoint debe cumplir:**
 
-# Root workspace
-npm install                   # Installs both workspaces
+```
+ENTRADA:
+  - Header: x-telegram-init-data (HMAC-SHA256 válido, max 5 min de antigüedad)
+  - Body: validado por middleware validate() — ver §2.2
+  - req.playerId: integer (Telegram user ID, inyectado por telegramAuth)
+
+SALIDA exitosa:
+  - HTTP 200, body JSON con datos de resultado
+
+SALIDA de error:
+  - HTTP 400: error de negocio (saldo insuficiente, estado inválido)
+  - HTTP 401: auth fallida
+  - HTTP 429: rate limit (100 req/min por IP)
+  - Body: { error: string } — sanitizado por safeErrorMessage()
+
+INVARIANTES:
+  - Nunca exponer stack traces al cliente
+  - Nunca exponer IDs internos de DB (usar telegram_id como identificador externo)
+  - Toda escritura a DB debe pasar por el query builder (no sql.js directo)
 ```
 
-Required env vars (`server/.env`):
-- `BOT_TOKEN` — Telegram bot token (required)
-- `WEBAPP_URL` — Your Mini App URL for CORS
-- `TON_HOT_WALLET_MNEMONIC` — 24-word mnemonic for withdrawal hot wallet
-- `TON_API_KEY` — TonCenter API key (optional but prevents rate limits)
-- `TON_NETWORK` — `testnet` or `mainnet` (default: testnet)
-
----
-
-## Architecture Patterns
-
-### 1. Adding a new API endpoint
+**Plantilla canónica:**
 
 ```js
 // server/src/routes/thingRoutes.js
-const router = express.Router();
-const { telegramAuth } = require('../middleware/telegramAuth');
-const { validate } = require('../middleware/validate');
-const thingService = require('../services/thingService');
-const { safeErrorMessage } = require('../middleware/errorHandler');
-
 router.post('/do-thing', telegramAuth, validate({
   amount: { type: 'number', required: true, min: 1, max: 1000 },
 }), async (req, res) => {
@@ -118,188 +98,271 @@ router.post('/do-thing', telegramAuth, validate({
     res.status(400).json({ error: safeErrorMessage(error) });
   }
 });
-
-module.exports = router;
 ```
 
-Then mount it in `server/src/index.js`:
-```js
-const thingRoutes = require('./routes/thingRoutes');
-app.use('/api/things', thingRoutes);
+Montar en `server/src/index.js`: `app.use('/api/things', thingRoutes);`
+
+### 2.2 Spec de Validación de Input
+
+```
+validate(schema) — tipos permitidos:
+  type: 'string'  → maxLength requerido si puede ser user-supplied
+  type: 'number'  → min/max recomendado
+  type: 'boolean'
+  required: true/false (default false)
+
+INVARIANTE: Toda string que llegue de usuario DEBE tener maxLength ≤ 100
+  para prevenir buffer abuse. Body total: max 16 KB.
 ```
 
-**`req.playerId`** is the Telegram user ID (integer), set by `telegramAuth` middleware after validating initData HMAC.
+### 2.3 Endpoints Existentes
 
-### 2. Database queries
+| Ruta base | Router | Descripción |
+|-----------|--------|-------------|
+| `/api/player` | playerRoutes.js | Init, perfil, nivel |
+| `/api/farm` | farmRoutes.js | Plantar, cosechar, regar |
+| `/api/buildings` | buildingRoutes.js | Construir, mejorar |
+| `/api/commerce` | commerceRoutes.js | Caravanas, ventas |
+| `/api/missions` | missionRoutes.js | NPCs, misiones |
+| `/api/combat` | combatRoutes.js | PvE, PvP |
+| `/api/tokens` | tokenRoutes.js | Balance, retiro, leaderboard |
+| `/api/tasks` | taskRoutes.js | Tareas diarias, captcha |
+| `/api/villagers` | villagerRoutes.js | Asignación de aldeanos |
+| `/api/animals` | animalRoutes.js | Producción animal |
+| `/api/social` | socialRoutes.js | Referidos, canal Telegram |
 
-The custom query builder in `database.js` mimics knex but runs on top of `sql.js`:
+---
+
+## 3. Spec: Base de Datos
+
+### 3.1 Contrato del Query Builder
 
 ```js
 const db = require('../config/database');
 
 // SELECT
-const player = await db('players').where('telegram_id', userId).first();
-const missions = await db('missions').where({ player_id: userId, status: 'active' });
+db('tabla').where('columna', valor).first()          // → objeto | undefined
+db('tabla').where({ campo: valor, campo2: v2 })      // → array
 
-// INSERT — returns [lastInsertRowId]
-const [id] = await db('player_tokens').insert({ player_id: userId, balance: 0 });
+// INSERT → [lastInsertRowId]
+db('tabla').insert({ campo: valor })
 
 // UPDATE
-await db('players').where('id', player.id).update({ level: 5 });
+db('tabla').where('id', id).update({ campo: valor })
 
-// INCREMENT / DECREMENT
-await db('player_tokens').where('player_id', userId).increment('balance', 10);
+// Incremento seguro
+db('tabla').where('player_id', id).increment('balance', n)
 
-// ATOMIC DECREMENT (only if value >= amount) — use for resource spending
-const affected = await db('player_resources')
-  .where({ player_id: userId, resource_id: 'gold' })
+// Decremento atómico (solo si saldo >= cantidad)
+const affected = await db('tabla')
+  .where({ player_id: id, resource_id: 'gold' })
   .decrementIfEnough('amount', cost);
-if (!affected) throw new Error('Not enough gold');
+if (!affected) throw new Error('Saldo insuficiente');
 ```
 
-**⚠️ CRITICAL sql.js quirk:** `changes()` and `last_insert_rowid()` are captured *inside* `dbRun()` **before** `saveToDisk()` is called, because `sqlDb.export()` resets those counters. Never move `saveToDisk()` before the capture.
+### 3.2 Invariantes Críticas de sql.js
 
-### 3. Adding a service
+```
+⚠️  CRÍTICO: changes() y last_insert_rowid() se capturan DENTRO de dbRun()
+    ANTES de que se llame a saveToDisk(). sqlDb.export() resetea esos contadores.
+    Nunca mover saveToDisk() antes de la captura.
+
+⚠️  saveToDisk() está debounced 2 segundos. En SIGINT/SIGTERM se hace flush
+    sincrónico. No llamar saveToDisk() directamente — usar el mecanismo existente.
+
+⚠️  sql.js es single-threaded in-process. A 1000+ jugadores migrar a
+    better-sqlite3 o PostgreSQL.
+```
+
+### 3.3 Migrations
+
+- Archivo: `server/migrations/00N_descripcion.js`
+- Exports: `up(db)` y `down(db)`
+- Se ejecutan en orden numérico al arrancar el servidor
+- Usar `CREATE INDEX IF NOT EXISTS` para índices en columnas `player_id`
+
+---
+
+## 4. Spec: Sistema de Servicios
+
+### 4.1 Contrato de Servicio
+
+```
+ENTRADA: (playerId: integer, ...params)
+SALIDA:  objeto con datos de resultado
+ERROR:   throw new Error('Mensaje legible por usuario')
+         — safeErrorMessage() lo filtra antes de enviarlo al cliente
+
+INVARIANTE: Un servicio NUNCA llama directamente a sql.js.
+            Siempre usa el query builder de database.js.
+```
+
+**Plantilla canónica:**
 
 ```js
 // server/src/services/myService.js
 const db = require('../config/database');
-const playerService = require('./playerService');
 
 const myService = {
   async doThing(playerId, amount) {
     const player = await db('players').where('telegram_id', playerId).first();
     if (!player) throw new Error('Jugador no encontrado');
-    // ... logic ...
-    return { success: true, message: 'Done!' };
+    // lógica...
+    return { success: true };
   },
 };
 
 module.exports = myService;
 ```
 
-Throw plain `Error` objects for user-facing messages. The `safeErrorMessage()` helper sanitizes them before sending to clients.
+### 4.2 Spec: Tokens — awardTokens()
 
-### 4. Token awards
+```
+ENTRADA:  (playerId, amount, source)
+          source ∈ ['harvest','battle_win','battle_pvp','sell','mission_complete',
+                    'daily_task','captcha','resource_burn']
 
-Always go through `tokenService.awardTokens()` — it handles daily caps, streak multipliers, and referral commissions:
+SALIDA:   { awarded: number, balance: number, dailyRemaining: number, capped: boolean }
 
-```js
-const tokenService = require('./tokenService');
-const result = await tokenService.awardTokens(playerId, 5, 'harvest');
-// result: { awarded, balance, dailyRemaining, capped }
+INVARIANTES:
+  - awarded puede ser < amount si se alcanzó el cap diario
+  - Cap diario: 50 + (player.level × 10) tokens por UTC day
+  - Multiplicador de streak se aplica automáticamente:
+      Día 7 → ×2 | Día 14 → ×2.5 | Día 21 → ×3 | Día 30 → ×5
+  - La comisión de referido se paga async (errores se loguean, no propagan)
+
+NUNCA llamar db('player_tokens').increment() directamente para premiar tokens.
+SIEMPRE usar tokenService.awardTokens().
 ```
 
-### 5. Task progress tracking
+### 4.3 Spec: Tareas — trackProgress()
 
-Call `dailyTaskService.trackProgress()` after any player action that maps to a task:
-
-```js
-const dailyTaskService = require('./dailyTaskService');
-await dailyTaskService.trackProgress(playerId, 'harvest', 1);
-// action strings: 'harvest', 'sell', 'battle_win', 'mission_complete', 'login', 'captcha'
 ```
+ENTRADA:  (playerId, action, count = 1)
+          action ∈ ['harvest','sell','battle_win','mission_complete','login','captcha']
 
-### 6. Phaser ↔ React communication
+EFECTO:   Incrementa progreso de la tarea diaria correspondiente.
+          Si progreso >= target → marca completa y llama awardTokens() automáticamente.
 
-Use `EventBridge` (EventEmitter3 singleton at `client/src/game/EventBridge.js`):
+INVARIANTE: Idempotente si la tarea ya está completa — no premia dos veces.
 
-```js
-// From React → Phaser
-EventBridge.emit('building:addToScene', { buildingId: 'barn', posX: 10, posY: 10 });
-
-// From Phaser → React
-EventBridge.emit('overlay:open', { type: 'building', data: buildingData });
-
-// React listening
-useEffect(() => {
-  const handler = (data) => setFoo(data);
-  EventBridge.on('some:event', handler);
-  return () => EventBridge.off('some:event', handler);
-}, []);
+Llamar después de cada acción de jugador que mapee a una tarea.
 ```
-
-**Registered events:**
-- `overlay:open` / `overlay:close` — panel management
-- `entity:selected` / `entity:deselected` — tap-to-select in world
-- `building:placed` / `building:addToScene` — placement flow
-- `time:updated` `{ icon, period, dayCount }` — day/night cycle (every 10 real min)
-- `token:earned` `{ amount, x, y }` — triggers floating "+X KH" text in game world
-- `game:notification` `{ text, type }` — toast notification
-- `game:input` `{ enabled }` — lock/unlock game input during overlays
 
 ---
 
-## Visual Style Guide
+## 5. Spec: Sistema de Farming
 
-**Reference:** Medieval isometric, warm earthy tones, pixel-art chibi — like the Kingdoms Harvest screenshot with isometric buildings, number badges, and action buttons.
+### 5.1 Comportamiento
 
-### Colors (from `tailwind.config.js`)
 ```
-kingdom-bg:     #1a1a2e  (dark blue-black background)
-kingdom-card:   #16213e  (panel/card background)
-kingdom-accent: #e94560  (red/pink — buttons, highlights)
-kingdom-gold:   #ffd700  (gold — important text, XP, level)
-kingdom-green:  #4ade80  (success, crops, nature)
-kingdom-blue:   #0f3460  (secondary panels)
-```
+CULTIVOS: 7 tipos (gameConfig.js → CROPS)
+  Cada cultivo: { growthTime: segundos, baseYield, qualityChance, tokenReward }
 
-### Typography
-- **MedievalSharp** serif — game titles, level numbers, resource labels
-- System sans-serif — body text, descriptions
+FLUJO:
+  plant(playerId, plotId, cropId)
+    PRE:  plot existe, pertenece a playerId, está vacío, player tiene semillas
+    POST: farm_plot.crop_id=cropId, farm_plot.planted_at=now(), status='growing'
 
-### Sprite system
-Sprites come from two sources:
-1. **UI sprite sheets** (`/public/assets/sprites/`) — `SpriteIcon` component, CSS background-position clipping. Named icons: `medal`, `scroll`, `castle_flag`, `reward_bag`, `backpack`, `farmer`, etc.
-2. **Game tilesets** (`/public/assets/game/tilesets/`) — loaded by Phaser. Buildings are 64×64px cells in a 4×4 grid (`buildings.png`). Terrain tiles are 32×32px.
+  harvest(playerId, plotId)
+    PRE:  plot está maduro (now - planted_at >= growthTime)
+    POST: recursos incrementados, tokens awarded vía awardTokens(playerId, n, 'harvest')
+          dailyTaskService.trackProgress(playerId, 'harvest', 1)
+    SALIDA: { resources, quality, tokensAwarded }
 
-### CSS patterns
-```css
-.game-card   /* dark card with gold border */
-.btn-primary /* accent red button */
-.btn-gold    /* yellow-to-gold gradient button */
-.sprite-icon /* pixelated image rendering */
-.progress-bar / .progress-fill  /* resource/XP bars */
+CALIDAD: 'common' | 'uncommon' | 'rare' — afecta yield multiplicador
 ```
 
-Custom animations: `fadeIn`, `pulse-gold`, `shake`, `grow` (defined in `index.css`).
+### 5.2 Animales
+
+```
+TIPOS: chicken, cow, sheep
+PRODUCCIÓN: periódica server-side (gameTick.js)
+RECOLECCIÓN: collectAnimal(playerId, animalId)
+  POST: animal.last_collected=now(), recursos incrementados
+```
 
 ---
 
-## Token Economy Overview
+## 6. Spec: Sistema de Combate
 
-**KH Token** is earned through gameplay and withdrawable as TON cryptocurrency.
+### 6.1 PvE
 
-| Source | Tokens |
+```
+ENTRADA:  attackPVE(playerId, targetId, troops: { troopId, quantity }[])
+
+CÁLCULO de poder:
+  attackPower = Σ (troop.atk * qty) × 1.1   ← bonus first-strike atacante
+  defPower    = Σ (troop.def + troop.atk × 0.3) × qty
+
+RESULTADO:
+  attackPower > defPower → victoria
+  POST victoria: awardTokens(playerId, 3, 'battle_win')
+                 trackProgress(playerId, 'battle_win', 1)
+  POST derrota:  bajas proporcionales, sin tokens
+
+INVARIANTE: losses = Math.min(calculatedLosses, troop.quantity)
+            — nunca bajas negativas
+```
+
+### 6.2 PvP (Phase 2 — spec parcial)
+
+```
+Estado actual: combatService.js tiene esqueleto, no completamente implementado.
+Al implementar: misma fórmula de combate, recompensa +8 tokens por victoria.
+```
+
+---
+
+## 7. Spec: Economía de Tokens
+
+### 7.1 Tabla de Fuentes
+
+| Acción | Tokens |
 |--------|--------|
-| Harvest a crop | +2 |
-| Complete a mission | +5 |
-| Win a PvE battle | +3 |
-| Win a PvP battle | +8 |
-| Make a sale | +1 |
-| Complete daily task | +3–12 (varies) |
-| Complete captcha challenge | +5 |
+| Cosechar cultivo | +2 |
+| Completar misión | +5 |
+| Ganar combate PvE | +3 |
+| Ganar combate PvP | +8 |
+| Realizar venta | +1 |
+| Completar tarea diaria | +3–12 |
+| Resolver captcha diario | +5 |
 
-**Daily cap:** `50 + (player.level × 10)` tokens per UTC day  
-**Streak multiplier:** Day 7 → 2×, Day 14 → 2.5×, Day 21 → 3×, Day 30 → 5×
+### 7.2 Spec de Retiro
 
-**Withdrawal rules:**
-- Min 500 KH, level 5+, account 7+ days old
-- 24h cooldown between withdrawals, 5% fee
-- Rate: 1 KH = 0.0001 TON
-- Processed every 5 minutes from hot wallet (server-side)
+```
+PRE-CONDICIONES (todas deben cumplirse):
+  - balance >= 500 KH
+  - player.level >= 5
+  - cuenta >= 7 días de antigüedad
+  - last_withdrawal > 24h atrás
 
-**Resource burning:** Gold (500→5 KH), Crystal (1→10), Relic (1→15), Blueprint (1→12)
+PROCESO:
+  - Fee: 5% descontado del monto
+  - Tasa: 1 KH = 0.0001 TON
+  - Procesado en background cada 5 minutos desde hot wallet
+
+INVARIANTE: El hash de tx actual es pseudo (no real on-chain).
+            Marcar como ⚠️ Known en tracker hasta integrar TonCenter API real.
+```
+
+### 7.3 Spec de Quema de Recursos
+
+```
+Gold:      500 unidades → 5 KH
+Crystal:   1 unidad     → 10 KH
+Relic:     1 unidad     → 15 KH
+Blueprint: 1 unidad     → 12 KH
+```
 
 ---
 
-## Task System
+## 8. Spec: Sistema de Tareas
 
-### Daily tasks (resets UTC midnight)
-Defined in `shared/tokenConfig.js → DAILY_TASKS`. Each has an `action` string that maps to `dailyTaskService.trackProgress(playerId, action)` call sites:
+### 8.1 Tareas Diarias (reset UTC midnight)
 
-| Task ID | Action | Trigger location |
-|---------|--------|-----------------|
+| Task ID | Action | Trigger |
+|---------|--------|---------|
 | `harvest_5` | `harvest` | `farmService.harvest()` |
 | `sell_3` | `sell` | `commerceService.sellToCaravan()` |
 | `battle_win_1` | `battle_win` | `combatService.attackPVE/PVP()` |
@@ -307,112 +370,244 @@ Defined in `shared/tokenConfig.js → DAILY_TASKS`. Each has an `action` string 
 | `login` | `login` | `playerService.initPlayer()` |
 | `captcha_daily` | `captcha` | `captchaService.solveChallenge()` |
 
-### Social tasks (one-time)
-- Join Telegram channel, invite 1/5/10 friends
-- Verified server-side via `bot.getChatMember()` or referral count
+### 8.2 Spec: Captcha
 
-### Streaks
-`dailyTaskService.updateLoginStreak(playerId)` — called on every login. Tracks consecutive login days.
+```
+GET /api/tasks/captcha/challenge
+  SALIDA: { challengeId, question, type }
+  type ∈ ['math', 'sequence', 'word']
+  Expira: 5 minutos. Max 5 intentos por challenge.
 
----
+POST /api/tasks/captcha/solve
+  ENTRADA: { answer: string (max 30 chars, /^[a-zA-Z0-9 ]+$/) }
+  SALIDA:  { correct: boolean, message: string }
+  POST correcto: trackProgress(playerId, 'captcha', 1)
 
-## Known Bugs & Status
-
-| Issue | Severity | Status | File |
-|-------|----------|--------|------|
-| `changes()`/`last_insert_rowid()` reset by `saveToDisk()` | CRITICAL | ✅ FIXED | `database.js:284` |
-| Defender wins 100% in equal battles (0.5 formula) | HIGH | ✅ FIXED | `combatService.js:133` |
-| `saveToDisk()` blocks event loop on every write | HIGH | ✅ FIXED | `database.js:303` (debounced async) |
-| gameTick single try-catch skips subsequent ops | MEDIUM | ✅ FIXED | `gameTick.js` (per-subsystem) |
-| JSON.parse without try-catch in missionService | LOW | ✅ FIXED | `missionService.js:167` |
-| Leaderboard N+1 query | LOW | ✅ FIXED | `tokenService.js:406` |
-| Math.random() in villagerService | LOW | ✅ FIXED | `villagerService.js` |
-| Missing DB indexes on player_id columns | LOW | ✅ FIXED | migration `004_add_indexes.js` |
-| Referral commission errors silently swallowed | LOW | ✅ FIXED | `tokenService.js:89` |
-| PvP combat not fully implemented | MEDIUM | ⏳ Phase 2 | `combatService.js` |
-| Faction system incomplete | MEDIUM | ⏳ Phase 2 | `siegeService.js` |
-| Territory map not implemented | MEDIUM | ⏳ Phase 2 | — |
-| Tech tree (Library) not functional | LOW | ⏳ Phase 2 | — |
-| TON tx hash is pseudo (not real hash) | LOW | ⚠️ Known | `tokenService.sendTON()` |
-
----
-
-## Feature Status Matrix
-
-### Phase 1 (MVP) ✅
-- Farm system (7 crops + 3 animals, growth timers, quality rolls)
-- Building construction & upgrades (14 building types, 4 zones)
-- Mission trading (NPC quests, urgent missions, caravan commerce)
-- Troop training + PvE combat engine
-- Telegram bot integration + Mini App auth
-- KH Token economy (daily cap, streak multiplier, referral, withdrawal)
-- Daily/social tasks + login streaks
-- Mobile-first React + Phaser UI
-- 104 passing tests
-
-### Phase 2 (In Progress)
-- [ ] PvP combat fully functional
-- [ ] Faction system (join, contribute, faction wars)
-- [ ] Territory map with conquest
-- [ ] Tech tree (Library building research)
-- [ ] Push notifications via bot for crop/troop ready events
-
-### Phase 3–4 (Future)
-- Rankings/tournaments, seasonal events, achievements
-- Player-to-player trading
-- Alliance/cooperative system
-- Improved isometric graphics
-
----
-
-## Performance Notes
-
-- **DB saves are debounced** (2s batch). Data is flushed synchronously on `SIGINT`/`SIGTERM`.
-- At 1000+ players, add Redis caching for frequently-read player state.
-- `sql.js` is in-memory SQLite — entire DB lives in RAM. For production scale, migrate to `better-sqlite3` or PostgreSQL.
-- No explicit DB connection pooling — `sql.js` is single-threaded in-process.
-
----
-
-## Security
-
-- All API routes require `telegramAuth` middleware (HMAC-SHA256 validation + 5-min window)
-- WebSocket auth: same HMAC validation on `join_game` event, 30 events/min rate limit
-- Identifier injection prevented: all column/table names go through `sanitizeIdentifier()` whitelist
-- SQL injection prevented: all values use parameterized queries (`?` placeholders)
-- Operator injection prevented: `sanitizeOperator()` whitelist for `where()` calls
-- Rate limiting: 100 req/min per IP (HTTP), 30 events/min per socket (WS)
-- Input size limited: JSON body max 16kb, string fields validated by `validate()` middleware
-
----
-
-## Deployment
-
-Production uses PM2 (`ecosystem.config.js`) behind Nginx (config in `deploy/nginx.conf`).
-
-```bash
-# Build frontend
-cd client && npm run build
-
-# Start server
-cd server && npm install --production
-pm2 start ../../ecosystem.config.js
-
-# Or directly
-NODE_ENV=production node src/index.js
+INVARIANTE: El challenge se invalida tras 5 intentos fallidos,
+            forzando a solicitar uno nuevo.
 ```
 
-The Express server serves the Vite-built `client/dist/` as static files in production, with SPA fallback for React Router routes.
+### 8.3 Tareas Sociales (one-time)
+
+```
+- Unirse al canal Telegram — verificado vía bot.getChatMember()
+- Invitar 1/5/10 amigos — verificado por referral count en DB
+```
 
 ---
 
-## Adding New Features — Checklist
+## 9. Spec: EventBridge (Phaser ↔ React)
 
-1. **Shared config** — if adding game constants (new crops, buildings, tasks), add to `shared/gameConfig.js` or `shared/tokenConfig.js`
-2. **Migration** — if adding DB tables/columns, create `server/migrations/00N_description.js`
-3. **Service** — add business logic in `server/src/services/`
-4. **Route** — add Express router in `server/src/routes/`, mount in `index.js`
-5. **Client service** — add axios API calls in `client/src/services/`
-6. **Store** — add state + actions in `client/src/store/gameStore.js`
-7. **Component** — add UI in `client/src/components/`
-8. **Tests** — add Jest tests in `server/tests/`
+### 9.1 Contrato
+
+```
+Singleton: client/src/game/EventBridge.js (EventEmitter3)
+
+REGLA: Phaser no importa componentes React. React no importa clases Phaser.
+       Toda comunicación va por EventBridge.emit() / EventBridge.on().
+
+LIMPIEZA: Todo useEffect que registre un listener DEBE devolver cleanup:
+  return () => EventBridge.off('evento', handler);
+```
+
+### 9.2 Eventos Registrados
+
+| Evento | Payload | Dirección | Descripción |
+|--------|---------|-----------|-------------|
+| `overlay:open` | `{ type, data }` | Phaser → React | Abre panel |
+| `overlay:close` | — | React → Phaser | Cierra panel |
+| `entity:selected` | `{ entityType, data }` | Phaser → React | Toque en entidad |
+| `entity:deselected` | — | Phaser → React | Deselección |
+| `building:placed` | `{ buildingId, x, y }` | React → Phaser | Confirmar placement |
+| `building:addToScene` | `{ buildingId, posX, posY }` | React → Phaser | Añadir edificio |
+| `building:startPlacement` | `{ buildingId, tileIndex }` | React → Phaser | Iniciar modo colocación |
+| `building:cancelPlacement` | — | React → Phaser | Cancelar colocación |
+| `building:confirmPlacement` | — | React → Phaser | Confirmar colocación |
+| `token:earned` | `{ amount, x, y }` | React → Phaser | Texto flotante "+X KH" |
+| `time:updated` | `{ icon, period, dayCount }` | Phaser → React | Ciclo día/noche (cada 10 min) |
+| `game:notification` | `{ text, type }` | cualquiera → React | Toast UI |
+| `game:input` | `{ enabled }` | React → Phaser | Lock/unlock input |
+| `placement:started` | — | Phaser → React | Modo colocación activo |
+| `placement:ended` | — | Phaser → React | Modo colocación terminado |
+
+---
+
+## 10. Spec: Visual / UI
+
+### 10.1 Paleta (tailwind.config.js)
+
+```
+kingdom-bg:     #1a1a2e  — fondo general
+kingdom-card:   #16213e  — paneles/cards
+kingdom-accent: #e94560  — botones, highlights
+kingdom-gold:   #ffd700  — texto importante, XP, nivel
+kingdom-green:  #4ade80  — éxito, cultivos
+kingdom-blue:   #0f3460  — paneles secundarios
+```
+
+### 10.2 Tipografía
+
+- **MedievalSharp** serif → títulos, niveles, etiquetas de recursos
+- System sans-serif → texto de cuerpo, descripciones
+
+### 10.3 Spec de Sprites
+
+```
+SPRITES DE UI (/public/assets/sprites/):
+  Componente: SpriteIcon — CSS background-position clipping
+  Íconos disponibles: medal, scroll, castle_flag, reward_bag, backpack, farmer, etc.
+
+TILESETS (/public/assets/game/tilesets/):
+  buildings.png  — 512×512, frames 128×128 en grid 4×4 (16 edificios)
+    frameWidth: 128, frameHeight: 128 (BootScene.js)
+    BUILDING_SIZE en pantalla: 96px (Building.js)
+  terrain.png    — 512×512, tiles 32×32 (19 tipos de terreno, 16/fila)
+  farm_tiles.png — 256×256, stages 64×64 (4 etapas × 2 estados seco/regado)
+
+Generados por: scripts/generate_sprites.js (canvas Node.js)
+```
+
+### 10.4 Clases CSS Canónicas
+
+```css
+.game-card      /* card oscura con borde dorado */
+.btn-primary    /* botón rojo accent */
+.btn-gold       /* gradiente amarillo-dorado */
+.sprite-icon    /* image-rendering: pixelated */
+.progress-bar / .progress-fill
+```
+
+Animaciones custom: `fadeIn`, `pulse-gold`, `shake`, `grow` (index.css)
+
+---
+
+## 11. Spec: Seguridad
+
+### 11.1 Invariantes de Seguridad (nunca violar)
+
+```
+AUTH:
+  ✓ Toda ruta HTTP usa telegramAuth middleware (HMAC-SHA256 + ventana 5 min)
+  ✓ WebSocket auth: misma validación HMAC en evento 'join_game'
+  ✓ Dev bypass (SKIP_AUTH / x-skip-auth) SOLO activo si NODE_ENV !== 'production'
+  ✓ window.__gameStore expuesto SOLO si import.meta.env.DEV (Vite lo elimina en build)
+
+SQL:
+  ✓ Nunca concatenar valores en queries — usar placeholders ?
+  ✓ Nombres de columnas/tablas pasan por sanitizeIdentifier() whitelist
+  ✓ Operadores pasan por sanitizeOperator() whitelist
+
+RATE LIMITING:
+  ✓ HTTP: 100 req/min por IP
+  ✓ WebSocket: 30 events/min por socket
+
+INPUT:
+  ✓ Body JSON máximo 16 KB
+  ✓ Strings de usuario: maxLength validado por validate() middleware
+```
+
+---
+
+## 12. Spec: Performance
+
+```
+ESCRITURAS DB:
+  - saveToDisk() está debounced 2s (batching automático)
+  - Flush sincrónico en SIGINT/SIGTERM
+  - A 1000+ jugadores: agregar Redis para estado de jugador frecuentemente leído
+
+GAME TICK:
+  - gameTick.js ejecuta subsistemas con try-catch INDEPENDIENTE por subsistema
+  - Un subsistema que falla no bloquea los demás
+
+QUERIES:
+  - Índices en todas las columnas player_id (migration 004_add_indexes.js)
+  - Leaderboard: JOIN único, no bucle N+1
+```
+
+---
+
+## 13. Spec: Criterios de Aceptación por Feature
+
+### Para cualquier feature nueva, está COMPLETA cuando:
+
+```
+[ ] Servicio: lógica en server/src/services/ con inputs/outputs documentados
+[ ] Ruta: endpoint en server/src/routes/ con telegramAuth + validate()
+[ ] Config compartida: constantes en shared/gameConfig.js o tokenConfig.js
+[ ] Migración: si hay cambio de schema, 00N_descripcion.js creado
+[ ] Tests: Jest tests en server/tests/ (mantener ≥ 104 tests pasando)
+[ ] Store: estado en gameStore.js si el cliente necesita persistencia
+[ ] Componente: UI en client/src/components/
+[ ] EventBridge: eventos documentados en §9.2 si hay comunicación Phaser↔React
+```
+
+---
+
+## 14. Spec: Estado de Implementación
+
+### Phase 1 — MVP ✅ Completo
+
+| Feature | Tests | Estado |
+|---------|-------|--------|
+| Farm system (7 cultivos + 3 animales) | ✓ | ✅ |
+| Construcción + upgrades (14 tipos, 4 zonas) | ✓ | ✅ |
+| Misiones NPC + comercio caravanas | ✓ | ✅ |
+| Entrenamiento tropas + combate PvE | ✓ | ✅ |
+| Auth Telegram HMAC + Mini App | ✓ | ✅ |
+| Economía KH Token (cap, streak, referral, retiro) | ✓ | ✅ |
+| Tareas diarias/sociales + streaks | ✓ | ✅ |
+| UI React + Phaser mobile-first | ✓ | ✅ |
+| Sprites isométricos canvas-generados | — | ✅ |
+| **Total tests** | **104/104** | ✅ |
+
+### Phase 2 — En Progreso
+
+| Feature | Spec | Implementado |
+|---------|------|-------------|
+| PvP combat completo | §6.2 | ⏳ esqueleto |
+| Sistema de facciones | — | ⏳ |
+| Mapa territorial + conquista | — | ⏳ |
+| Tech tree (Library) | — | ⏳ |
+| Push notifications bot (crop/troop ready) | — | ⏳ |
+
+### Bugs Conocidos
+
+| Issue | Severidad | Estado | Ubicación |
+|-------|-----------|--------|-----------|
+| TON tx hash es pseudo | LOW | ⚠️ Known | `tokenService.sendTON()` |
+| PvP no completamente implementado | MEDIUM | ⏳ Phase 2 | `combatService.js` |
+
+---
+
+## 15. Dev Commands
+
+```bash
+# Servidor
+cd server && npm run dev          # nodemon → :3001
+cd server && npm test             # Jest (104 tests)
+
+# Cliente
+cd client && npm run dev          # Vite → :5173
+cd client && npm run build        # Build prod → client/dist/
+
+# Sprites (regenerar tilesets)
+node scripts/generate_sprites.js
+
+# Screenshots UI (requiere servidor + Vite corriendo)
+SKIP_AUTH=true node server/src/index.js &
+cd client && node_modules/.bin/vite &
+node scripts/screenshot_ui.js
+```
+
+**Variables de entorno** (`server/.env`):
+
+| Variable | Requerida | Descripción |
+|----------|-----------|-------------|
+| `BOT_TOKEN` | ✅ | Telegram bot token |
+| `WEBAPP_URL` | ✅ | URL de la Mini App (CORS) |
+| `TON_HOT_WALLET_MNEMONIC` | ✅ | Mnemónico 24 palabras del hot wallet |
+| `TON_API_KEY` | opcional | TonCenter API key (evita rate limits) |
+| `TON_NETWORK` | opcional | `testnet` \| `mainnet` (default: testnet) |
+
+**Deploy:** PM2 (`ecosystem.config.js`) + Nginx (`deploy/nginx.conf`). El servidor Express sirve `client/dist/` como estáticos con SPA fallback.

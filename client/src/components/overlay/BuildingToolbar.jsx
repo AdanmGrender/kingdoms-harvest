@@ -6,6 +6,41 @@ import { useState, useEffect, useCallback } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
+function QuickNavButtons() {
+  const setOverlay = useGameStore((s) => s.setOverlay);
+  const achievements = useGameStore((s) => s.achievements);
+  const claimableCount = achievements.filter((a) => a.unlocked && !a.claimed).length;
+
+  const btn = (label, type, style) => (
+    <button
+      key={type}
+      onClick={() => setOverlay(type, {})}
+      className="relative px-3 py-1 rounded-t-lg text-[11px] font-bold"
+      style={style}
+    >
+      {label}
+      {claimableCount > 0 && type === 'achievements' && (
+        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[8px] flex items-center justify-center font-bold">
+          {claimableCount}
+        </span>
+      )}
+    </button>
+  );
+
+  return (
+    <>
+      {btn('⚔️ Héroes',   'heroes',       { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(168,85,247,0.4)', borderBottom: 'none', color: '#d8b4fe' })}
+      {btn('🏆 Logros',   'achievements', { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(234,179,8,0.4)',  borderBottom: 'none', color: '#fde047' })}
+      {btn('🏷️ Mercado',  'marketplace',  { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(59,130,246,0.4)', borderBottom: 'none', color: '#93c5fd' })}
+      {btn('🛡️ Gremio',   'guild',        { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('🌸 Temporada','seasonal',     { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(74,222,128,0.4)', borderBottom: 'none', color: '#86efac' })}
+      {btn('⚔️ Guerra',   'combat',       { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('⭐ Prestige', 'prestige',     { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(250,204,21,0.4)', borderBottom: 'none', color: '#fbbf24' })}
+      {btn('💸 Retiro',   'withdrawal',   { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(253,224,71,0.4)', borderBottom: 'none', color: '#fde047' })}
+    </>
+  );
+}
+
 // Building categories with their building IDs
 const CATEGORIES = [
   {
@@ -88,7 +123,8 @@ export default function BuildingToolbar() {
   const canAfford = useCallback((cost) => {
     if (!resources) return false;
     for (const [resource, amount] of Object.entries(cost)) {
-      const playerAmount = resources[resource] ?? 0;
+      // resources[key] is { amount, capacity }, not a bare number
+      const playerAmount = resources[resource]?.amount ?? 0;
       if (playerAmount < amount) return false;
     }
     return true;
