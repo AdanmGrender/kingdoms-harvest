@@ -92,11 +92,8 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 48,
     });
 
-    // Villagers
-    this.load.spritesheet('villager', '/assets/game/characters/villager.png', {
-      frameWidth: 32,
-      frameHeight: 48,
-    });
+    // Villagers reuse the per-role npc_<role> sheets (see entities/Villager.js
+    // ROLE_SPRITE_MAP). The legacy 'villager' sheet is not shipped.
 
     // ─── Load animals ───
     this.load.spritesheet('chicken', '/assets/game/animals/chicken.png', {
@@ -137,7 +134,6 @@ export default class BootScene extends Phaser.Scene {
     // ─── Create animations ───
     this.createNPCAnimations();
     this.createAnimalAnimations();
-    this.createVillagerAnimations();
 
     // Scene selection: registry isoMode flag (set by IsoWorldScene experiment)
     // or URL param ?iso=1 lands on the legacy IsoScene. Default is WorldScene.
@@ -263,21 +259,6 @@ export default class BootScene extends Phaser.Scene {
         repeat: -1,
       });
     }
-  }
-
-  createVillagerAnimations() {
-    this.anims.create({
-      key: 'villager_idle',
-      frames: this.anims.generateFrameNumbers('villager', { start: 0, end: 1 }),
-      frameRate: 2,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'villager_walk',
-      frames: this.anims.generateFrameNumbers('villager', { start: 2, end: 3 }),
-      frameRate: 6,
-      repeat: -1,
-    });
   }
 
   createAnimalAnimations() {
