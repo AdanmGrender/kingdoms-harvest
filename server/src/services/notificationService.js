@@ -29,11 +29,17 @@ const notificationService = {
   async getPrefs(playerId) {
     let prefs = await db('notification_preferences').where('player_id', playerId).first();
     if (!prefs) {
-      await db('notification_preferences').insert({
-        player_id: playerId,
-        ...DEFAULTS,
-        updated_at: new Date().toISOString(),
-      }).onConflict('player_id').ignore();
+      // sql.js QueryBuilder lacks Knex's .onConflict().ignore() — swallow the
+      // unique-constraint error in case a parallel request just inserted.
+      try {
+        await db('notification_preferences').insert({
+          player_id: playerId,
+          ...DEFAULTS,
+          updated_at: new Date().toISOString(),
+        });
+      } catch (e) {
+        if (!/UNIQUE constraint failed|already exists/i.test(e.message)) throw e;
+      }
       prefs = { player_id: playerId, ...DEFAULTS };
     }
     return prefs;
