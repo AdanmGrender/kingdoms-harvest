@@ -1,0 +1,28 @@
+services:
+  kingdoms:
+    build: .
+    image: kingdoms-harvest:latest
+    container_name: kingdoms-harvest
+    restart: unless-stopped
+    env_file:
+      - server/.env
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+    volumes:
+      - kingdoms-data:/data
+    # Traefik on this host runs --network=host; route via 127.0.0.1:3001.
+    # We bind only to loopback so the world can't bypass Traefik + SSL.
+    ports:
+      - "127.0.0.1:3001:3001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kingdoms.rule=Host(`adamn-vps.duckdns.org`)"
+      - "traefik.http.routers.kingdoms.entrypoints=websecure"
+      - "traefik.http.routers.kingdoms.tls=true"
+      - "traefik.http.routers.kingdoms.tls.certresolver=letsencrypt"
+      - "traefik.http.services.kingdoms.loadbalancer.server.port=3001"
+
+volumes:
+  kingdoms-data:
+    driver: local

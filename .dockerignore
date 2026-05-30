@@ -1,0 +1,16 @@
+**/node_modules
+**/dist
+**/.env
+**/.env.local
+**/.git
+**/.github
+**/.vscode
+**/data
+**/secrets
+**/logs
+**/screenshots
+scripts/screenshots
+*.tar.gz
+*.db
+*.sqlite
+docs
