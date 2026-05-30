@@ -12,7 +12,8 @@ exports.up = async function (db) {
   const existing = await db('territories').first();
   if (existing) return;
 
-  await db('territories').insert([
+  // QueryBuilder.insert() only accepts a single row at a time.
+  const seed = [
     // Plains — moderate defense, wheat + gold bonus
     { name: 'Llanura del Rey',    grid_x: 30,  grid_y: 30,  type: 'plains',   defense_strength: 60,  resources_bonus: JSON.stringify({ wheat: 5, gold: 2 }) },
     { name: 'Valle Dorado',       grid_x: 80,  grid_y: 25,  type: 'plains',   defense_strength: 80,  resources_bonus: JSON.stringify({ wheat: 5, gold: 2 }) },
@@ -34,7 +35,8 @@ exports.up = async function (db) {
     // Ruins — rare crystal + gold
     { name: 'Templo Olvidado',    grid_x: 35,  grid_y: 110, type: 'ruins',    defense_strength: 250, resources_bonus: JSON.stringify({ crystal: 1, gold: 5 }) },
     { name: 'Ciudad Perdida',     grid_x: 120, grid_y: 15,  type: 'ruins',    defense_strength: 300, resources_bonus: JSON.stringify({ crystal: 1, gold: 5 }) },
-  ]);
+  ];
+  for (const row of seed) await db('territories').insert(row);
 };
 
 exports.down = async function (db) {
