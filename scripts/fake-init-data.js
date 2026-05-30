@@ -6,8 +6,14 @@
 const crypto = require('crypto');
 const https = require('https');
 
-const BOT_TOKEN = '8161318397:AAFPA0k-VhpJvTTt3kT0KAzmEbQa1J9rOJg';
-const BASE = 'https://adamn-vps.duckdns.org';
+// Load from env so the literal never ends up in git again. Run as:
+//   TELEGRAM_BOT_TOKEN=... node scripts/fake-init-data.js
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+if (!BOT_TOKEN) {
+  console.error('TELEGRAM_BOT_TOKEN env var required');
+  process.exit(1);
+}
+const BASE = process.env.KH_BASE_URL || 'https://adamn-vps.duckdns.org';
 
 const user = {
   id: 999999999,
