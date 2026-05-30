@@ -42,8 +42,16 @@ exports.up = async function (db) {
       t.text('loot');
     });
 
-  await db.raw('ALTER TABLE players ADD COLUMN IF NOT EXISTS world_time REAL DEFAULT 0.20');
-  await db.raw('ALTER TABLE players ADD COLUMN IF NOT EXISTS world_day INTEGER DEFAULT 1');
+  // sql.js rejects ADD COLUMN IF NOT EXISTS — probe pragma first.
+  const cols = await db.raw('PRAGMA table_info("players")');
+  const colRows = Array.isArray(cols) ? cols : (cols?.rows || []);
+  const names = new Set(colRows.map((c) => c.name));
+  if (!names.has('world_time')) {
+    await db.raw('ALTER TABLE players ADD COLUMN world_time REAL DEFAULT 0.20');
+  }
+  if (!names.has('world_day')) {
+    await db.raw('ALTER TABLE players ADD COLUMN world_day INTEGER DEFAULT 1');
+  }
 };
 
 exports.down = async function (db) {
