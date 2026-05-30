@@ -83,25 +83,13 @@ export default class WorldScene extends Phaser.Scene {
     this.setupSystems();
     this.setupEventBridge();
 
-    this.scale.on('resize', this._handleResize, this);
-    this._handleResize(this.scale.gameSize);
-  }
-
-  // Keep the camera viewport in sync with the canvas + bump the zoom so the
-  // world tiles always cover the screen. Without this, expanding the browser
-  // window (especially full-screen on desktop) exposes the canvas
-  // background past the world bounds — what looks like a "black map".
-  _handleResize(gameSize) {
-    const w = gameSize?.width || this.scale.width;
-    const h = gameSize?.height || this.scale.height;
-    this.cameras.main.setSize(w, h);
-
-    const worldW = MAP_W * TILE_SIZE;
-    const worldH = MAP_H * TILE_SIZE;
-    const coverZoom = Math.max(w / worldW, h / worldH);
-    if (coverZoom > this.cameras.main.zoom) {
-      this.cameraSystem?.setZoom(coverZoom);
-    }
+    // Keep camera viewport in sync with canvas. Don't auto-zoom — that kills
+    // drag-pan space when viewport >= world. Margins past the world get the
+    // terrain-tinted backgroundColor (config.js) instead of black so it reads
+    // as "off the edge of the map" rather than a render failure.
+    this.scale.on('resize', (gameSize) => {
+      this.cameras.main.setSize(gameSize.width, gameSize.height);
+    });
   }
 
   // ───────────────────────────────────────────────────────────

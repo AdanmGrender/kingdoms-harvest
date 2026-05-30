@@ -40,7 +40,9 @@ const gameConfig = {
   },
   scene: [BootScene, WorldScene, IsoScene, IsoWorldScene],
   parent: 'phaser-container',
-  backgroundColor: '#1a1a2e',
+  // Grass-tinted so any viewport area past the 32x32 world bounds blends with
+  // the terrain instead of looking like a broken render.
+  backgroundColor: '#6aab5c',
   audio: {
     disableWebAudio: false,
   },
