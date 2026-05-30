@@ -20,7 +20,9 @@ services:
       - "traefik.http.routers.kingdoms.rule=Host(`adamn-vps.duckdns.org`)"
       - "traefik.http.routers.kingdoms.entrypoints=websecure"
       - "traefik.http.routers.kingdoms.tls=true"
-      - "traefik.http.routers.kingdoms.tls.certresolver=letsencrypt"
+      # Use the TLS-ALPN-01 resolver — Hostinger blocks inbound TCP 80,
+      # which makes the HTTP-01 challenge time out.
+      - "traefik.http.routers.kingdoms.tls.certresolver=letsencrypt-tls"
       - "traefik.http.services.kingdoms.loadbalancer.server.port=3001"
 
 volumes:
