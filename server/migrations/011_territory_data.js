@@ -1,14 +1,13 @@
 exports.up = async function (db) {
-  // sql.js rejects ADD COLUMN IF NOT EXISTS — probe pragma first to stay idempotent.
-  const cols = await db.raw('PRAGMA table_info("territories")');
-  const colRows = Array.isArray(cols) ? cols : (cols?.rows || []);
-  const names = new Set(colRows.map((c) => c.name));
-  if (!names.has('conquered_at')) {
-    await db.raw('ALTER TABLE "territories" ADD COLUMN "conquered_at" TEXT DEFAULT NULL');
-  }
-  if (!names.has('conqueror_player_id')) {
-    await db.raw('ALTER TABLE "territories" ADD COLUMN "conqueror_player_id" INTEGER DEFAULT NULL');
-  }
+  // sql.js rejects ADD COLUMN IF NOT EXISTS — swallow "duplicate column" errors so
+  // re-runs after partial application stay idempotent.
+  const addColumn = async (sql) => {
+    try { await db.raw(sql); } catch (e) {
+      if (!/duplicate column/i.test(e.message)) throw e;
+    }
+  };
+  await addColumn('ALTER TABLE "territories" ADD COLUMN "conquered_at" TEXT DEFAULT NULL');
+  await addColumn('ALTER TABLE "territories" ADD COLUMN "conqueror_player_id" INTEGER DEFAULT NULL');
 
   const existing = await db('territories').first();
   if (existing) return;
