@@ -49,7 +49,7 @@ export default class Villager extends Phaser.GameObjects.Container {
       this.sprite = scene.add.sprite(0, 0, spriteKey, 0);
       this.sprite.setDisplaySize(28, 42);
       if (scene.anims.exists(animKey)) {
-        this.sprite.play(animKey);
+        try { this.sprite.play(animKey); } catch (_) { /* anim missing frames */ }
       }
       this.add(this.sprite);
     } else {
@@ -165,7 +165,10 @@ export default class Villager extends Phaser.GameObjects.Container {
     const spriteKey = ROLE_SPRITE_MAP[this.villagerData.role] || 'npc_farmer';
     const animKey = `${spriteKey}_${suffix}`;
     if (this.sprite.anims.currentAnim?.key === animKey) return;
-    if (this.scene?.anims.exists(animKey)) this.sprite.play(animKey);
+    if (!this.scene?.anims.exists(animKey)) return;
+    // Phaser's anim runner reads .duration off the resolved animation;
+    // a sprite without a valid texture frame can still bomb getFirstTick.
+    try { this.sprite.play(animKey); } catch (_) { /* anim missing frames */ }
   }
 
   destroy(fromScene) {

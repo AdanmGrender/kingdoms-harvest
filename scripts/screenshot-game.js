@@ -48,7 +48,7 @@ function parseArgs(argv) {
   page.on('console', (msg) => {
     if (msg.type() === 'error') errors.push(`[console.error] ${msg.text()}`);
   });
-  page.on('pageerror', (e) => errors.push(`[pageerror] ${e.message}`));
+  page.on('pageerror', (e) => errors.push(`[pageerror] ${e.message}\n${e.stack || ''}`));
 
   console.log(`→ opening ${args.url}`);
   await page.goto(args.url, { waitUntil: 'networkidle', timeout: 30000 });
