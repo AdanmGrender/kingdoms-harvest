@@ -30,24 +30,14 @@ export default function TerritoryMapPanel() {
     loadTroops();
   }, []);
 
-  const { grid, gridW } = useMemo(() => {
-    // Compute the bounding box from the data so the panel grows to match
-    // any future seed expansion (3×3, 5×5, 6×6, …) without code changes.
-    const lookup = new Map();
-    let maxX = 2, maxY = 2; // floor at 3×3 even if data is empty
-    for (const t of territories) {
-      lookup.set(`${t.grid_x},${t.grid_y}`, t);
-      if (t.grid_x > maxX) maxX = t.grid_x;
-      if (t.grid_y > maxY) maxY = t.grid_y;
-    }
-    const W = maxX + 1, H = maxY + 1;
-    const cells = [];
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        cells.push(lookup.get(`${x},${y}`) || null);
-      }
-    }
-    return { grid: cells, gridW: W };
+  // Territories now come from a sparse 150×150 world map (see migration 011),
+  // not a dense 3×3 / 5×5 grid. Sort them once for a stable rendering order
+  // (by type then defense) and let the layout below show them as a card list.
+  const sorted = useMemo(() => {
+    return [...territories].sort((a, b) => {
+      if (a.type !== b.type) return a.type.localeCompare(b.type);
+      return (a.defense_strength || 0) - (b.defense_strength || 0);
+    });
   }, [territories]);
 
   const handleAttack = async (territory) => {
@@ -74,33 +64,35 @@ export default function TerritoryMapPanel() {
         Mapa del mundo — conquistá territorios para tu facción
       </p>
 
-      {/* Dynamic NxN grid bound to gridW so 5×5+ seeds render correctly */}
-      <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${gridW}, minmax(0, 1fr))` }}>
-        {grid.map((t, i) => {
-          if (!t) return <div key={i} className="aspect-square bg-kingdom-blue/20 rounded-lg" />;
+      {/* 2-col card grid — sparse coords make a dense N×N matrix unusable */}
+      <div className="grid grid-cols-2 gap-2">
+        {sorted.map((t) => {
           const ownerColor = t.owner?.color || FALLBACK_BORDER;
           const ownedByMe = t.owner?.id === player?.faction_id;
           return (
             <button
               key={t.id}
               onClick={() => setSelected(t)}
-              className={`relative aspect-square rounded-lg p-1 text-left transition-all
+              className={`relative rounded-lg p-2 text-left transition-all
                 bg-kingdom-blue/30 hover:bg-kingdom-blue/50 ${
                 selected?.id === t.id ? 'ring-2 ring-yellow-400' : ''
               }`}
               style={{ borderTop: `3px solid ${ownerColor}` }}
             >
-              <div className="text-lg leading-none">{TYPE_ICON[t.type] || '🗺️'}</div>
-              <p className="text-[9px] font-bold leading-tight mt-1 truncate">{t.name}</p>
-              <p className="text-[8px] text-gray-400">DEF {t.defense_strength}</p>
-              {t.owner && (
-                <p className="text-[8px] mt-0.5" style={{ color: ownerColor }}>
-                  {t.owner.icon} {ownedByMe ? '(tuya)' : ''}
-                </p>
-              )}
-              {!t.owner && (
-                <p className="text-[8px] text-gray-500 mt-0.5">Libre</p>
-              )}
+              <div className="flex items-start gap-2">
+                <span className="text-2xl leading-none">{TYPE_ICON[t.type] || '🗺️'}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-bold leading-tight truncate">{t.name}</p>
+                  <p className="text-[10px] text-gray-400">DEF {t.defense_strength}</p>
+                  {t.owner ? (
+                    <p className="text-[10px] mt-0.5 truncate" style={{ color: ownerColor }}>
+                      {t.owner.icon} {ownedByMe ? '(tuya)' : t.owner.name}
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-gray-500 mt-0.5">Libre</p>
+                  )}
+                </div>
+              </div>
             </button>
           );
         })}
