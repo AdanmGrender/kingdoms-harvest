@@ -1,15 +1,30 @@
 /**
  * Phaser 3 game configuration for Kingdoms Harvest.
+ * Fixed: proper touch/mobile input settings for Telegram Mini App.
  */
 import Phaser from 'phaser';
 import BootScene from './scenes/BootScene';
 import WorldScene from './scenes/WorldScene';
+import IsoScene from './scenes/IsoScene';
+import IsoWorldScene from './scenes/IsoWorldScene';
+
+// Feature flag for the new isometric pixel-art experiment (WiFOf branch).
+// PhaserGame stamps registry.isoMode = ISO_MODE on boot so BootScene knows
+// whether to land on IsoWorldScene. URL ?iso=1 falls back to the legacy IsoScene.
+export const ISO_MODE = false;
 
 const gameConfig = {
   type: Phaser.AUTO,
   pixelArt: true,
   antialias: false,
   roundPixels: true,
+  input: {
+    activePointers: 3,
+    touch: {
+      capture: true,
+    },
+    smoothFactor: 0,
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -23,9 +38,11 @@ const gameConfig = {
     width: '100%',
     height: '100%',
   },
-  scene: [BootScene, WorldScene],
+  scene: [BootScene, WorldScene, IsoScene, IsoWorldScene],
   parent: 'phaser-container',
-  backgroundColor: '#1a1a2e',
+  // Grass-tinted so any viewport area past the 32x32 world bounds blends with
+  // the terrain instead of looking like a broken render.
+  backgroundColor: '#6aab5c',
   audio: {
     disableWebAudio: false,
   },
@@ -33,6 +50,8 @@ const gameConfig = {
     pixelArt: true,
     antialias: false,
   },
+  // Prevent right-click context menu on desktop
+  disableContextMenu: true,
 };
 
 export default gameConfig;

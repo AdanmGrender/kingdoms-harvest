@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const { STARTER_RESOURCES, BUILDINGS, FACTIONS } = require('../../../shared/gameConfig');
 const { sanitizeDisplayText } = require('../utils/sanitize');
+const cache = require('../config/cache');
 
 // Lazy-loaded to avoid circular dependencies
 let _tokenService = null;
@@ -49,6 +50,7 @@ const playerService = {
       ];
 
       for (const b of starterBuildings) {
+        // QueryBuilder.insert() returns [lastId] — no Knex-style .returning().
         const [buildingId] = await db('player_buildings').insert({
           player_id: telegramId,
           building_id: b.building_id,
@@ -86,6 +88,7 @@ const playerService = {
       // Actualizar último login
       await db('players').where('telegram_id', telegramId).update({
         last_login: new Date().toISOString(),
+        last_login_at: new Date().toISOString(),
       });
     }
 
@@ -105,6 +108,10 @@ const playerService = {
    * Perfil completo con recursos, edificios, etc
    */
   async getFullProfile(playerId) {
+    const cacheKey = `player_profile:${playerId}`;
+    const cached = await cache.get(cacheKey);
+    if (cached) return cached;
+
     const player = await db('players').where('telegram_id', playerId).first();
     if (!player) return null;
 
@@ -125,7 +132,7 @@ const playerService = {
       resourceMap[r.resource_id] = { amount: r.amount, capacity: r.capacity };
     });
 
-    return {
+    const profile = {
       ...player,
       resources: resourceMap,
       buildings,
@@ -134,6 +141,14 @@ const playerService = {
       activeMissions,
       tokenBalance: tokenData?.balance || 0,
     };
+
+    await cache.set(cacheKey, profile, 30);
+    return profile;
+  },
+
+  // Invalidate cached profile — call after any write that changes player state
+  invalidateProfileCache(playerId) {
+    cache.del(`player_profile:${playerId}`, `player_resources:${playerId}`).catch(() => {});
   },
 
   async getResources(playerId) {
@@ -181,15 +196,15 @@ const playerService = {
       return resource.amount + delta;
     }
 
-    // Para sumas, usar increment atómico con cap en capacity
-    // UPDATE amount = MIN(amount + delta, capacity)
-    const cap = resource.capacity;
-    db.raw(
-      `UPDATE "player_resources" SET "amount" = MIN("amount" + ?, ?) WHERE "player_id" = ? AND "resource_id" = ?`,
-      [delta, cap, playerId, resourceId]
+    // Single atomic SQL: increment and clamp to capacity in one statement
+    await db.raw(
+      `UPDATE "player_resources" SET "amount" = LEAST("amount" + ?, "capacity")
+       WHERE "player_id" = ? AND "resource_id" = ?`,
+      [delta, playerId, resourceId]
     );
 
-    return Math.min(resource.amount + delta, cap);
+    this.invalidateProfileCache(playerId);
+    return Math.min(resource.amount + delta, resource.capacity);
   },
 
   /**
@@ -197,6 +212,7 @@ const playerService = {
    */
   async addXP(playerId, amount) {
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     const { LEVEL_XP_TABLE } = require('../../../shared/gameConfig');
 
     let newXP = player.xp + amount;
@@ -218,6 +234,16 @@ const playerService = {
       level: newLevel,
     });
 
+    if (newLevel > player.level) {
+      // Threshold-style achievement: pass the absolute level so multiple
+      // jumps in one call still count correctly.
+      const achievementService = require('./achievementService');
+      achievementService.checkAndUnlock(playerId, 'level_up', newLevel).catch(() => {});
+    }
+
+    if (typeof this.invalidateProfileCache === 'function') {
+      this.invalidateProfileCache(playerId);
+    }
     return { level: newLevel, xp: newXP, leveledUp: newLevel > player.level };
   },
 
@@ -227,6 +253,7 @@ const playerService = {
     }
 
     const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
     if (player.faction_id) {
       throw new Error('Ya pertenecés a una facción');
     }
@@ -246,6 +273,7 @@ const playerService = {
     });
 
     await db('factions').where('id', factionId).increment('total_members', 1);
+    this.invalidateProfileCache(playerId);
 
     return { success: true, faction: FACTIONS[factionId] };
   },
@@ -256,6 +284,20 @@ const playerService = {
       .orderBy('level', 'desc')
       .orderBy('xp', 'desc')
       .limit(50);
+  },
+
+  /**
+   * Toggle (or set) Telegram push notifications for a player.
+   * Pass `enabled` to set explicitly, or omit to flip the current value.
+   */
+  async setNotifEnabled(playerId, enabled) {
+    const player = await db('players').where('telegram_id', playerId).first();
+    if (!player) throw new Error('Jugador no encontrado');
+    const next = enabled === undefined
+      ? (player.notif_enabled ? 0 : 1)
+      : (enabled ? 1 : 0);
+    await db('players').where('telegram_id', playerId).update({ notif_enabled: next });
+    return { enabled: !!next };
   },
 };
 

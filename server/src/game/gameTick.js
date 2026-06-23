@@ -2,6 +2,40 @@ const cron = require('node-cron');
 const db = require('../config/database');
 const dailyTaskService = require('../services/dailyTaskService');
 const { BUILDINGS, DAY_CYCLE } = require('../../../shared/gameConfig');
+const { getBot } = require('../bot/telegramBot');
+
+// Cache of player_id → notif_enabled to avoid hammering the players table
+// on every push. Invalidates after 5 minutes — long enough that a player who
+// just toggled the setting picks it up on the next major tick.
+const NOTIF_PREF_TTL_MS = 5 * 60 * 1000;
+const notifPrefCache = new Map();
+
+async function isNotifEnabled(playerId) {
+  const cached = notifPrefCache.get(playerId);
+  if (cached && cached.expires > Date.now()) return cached.enabled;
+  try {
+    const row = await db('players')
+      .where('telegram_id', playerId)
+      .select('notif_enabled')
+      .first();
+    // Default to enabled if column is missing or NULL (pre-migration safety)
+    const enabled = row?.notif_enabled === undefined || row.notif_enabled === null
+      ? true
+      : !!row.notif_enabled;
+    notifPrefCache.set(playerId, { enabled, expires: Date.now() + NOTIF_PREF_TTL_MS });
+    return enabled;
+  } catch {
+    return true;
+  }
+}
+
+async function sendBotNotification(playerId, message) {
+  try {
+    if (!(await isNotifEnabled(playerId))) return;
+    const bot = getBot();
+    if (bot) bot.sendMessage(playerId, message).catch(() => {});
+  } catch {}
+}
 
 let ioRef = null;
 
@@ -20,13 +54,26 @@ async function processTick() {
 
   // 1. Cultivos listos para cosechar
   try {
-    const readyCrops = await db('farm_plots')
+    const justReady = await db('farm_plots')
       .where('state', 'growing')
-      .where('ready_at', '<=', now)
-      .update({ state: 'ready' });
+      .where('ready_at', '<=', now);
 
-    if (readyCrops > 0) {
-      console.log(`[Tick] ${readyCrops} cultivos listos para cosechar`);
+    if (justReady.length > 0) {
+      await db('farm_plots')
+        .where('state', 'growing')
+        .where('ready_at', '<=', now)
+        .update({ state: 'ready' });
+
+      // Notify each player how many crops are ready
+      const perPlayer = {};
+      for (const plot of justReady) {
+        perPlayer[plot.player_id] = (perPlayer[plot.player_id] || 0) + 1;
+      }
+      for (const [playerId, count] of Object.entries(perPlayer)) {
+        if (ioRef) ioRef.to(`player_${playerId}`).emit('crop_ready', { count });
+        sendBotNotification(playerId, `🌾 ¡${count} cultivo${count > 1 ? 's' : ''} listo${count > 1 ? 's' : ''} para cosechar! Volvé al juego.`);
+      }
+      console.log(`[Tick] ${justReady.length} cultivos listos para cosechar`);
     }
   } catch (error) {
     console.error('[Tick] Error procesando cultivos:', error.message);
@@ -58,6 +105,7 @@ async function processTick() {
             buildingType: building.building_id,
           });
         }
+        sendBotNotification(building.player_id, `🏗️ ¡Tu ${building.building_id} ha terminado de construirse! Volvé al juego para continuar.`);
       } catch (err) {
         console.error(`[Tick] Error completando edificio ${building.id}:`, err.message);
       }
@@ -102,23 +150,26 @@ async function processTick() {
         if (intAmount > 0) {
           productionAccumulators[key] -= intAmount;
           try {
-            // Cap at capacity to prevent overflow
-            db.raw(
+            // Cap at capacity to prevent overflow (db.raw is synchronous)
+            const result = db.raw(
               'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
               [intAmount, playerId, resource]
             );
-          } catch (e) {
-            // Resource row may not exist, insert it
-            try {
-              await db('player_resources').insert({
-                player_id: playerId,
-                resource_id: resource,
-                amount: intAmount,
-                capacity: 1000,
-              });
-            } catch (e2) {
-              // Already exists race condition, ignore
+            // If no row was updated, the resource row doesn't exist yet — insert it
+            if (!result || result.count === 0) {
+              try {
+                await db('player_resources').insert({
+                  player_id: playerId,
+                  resource_id: resource,
+                  amount: intAmount,
+                  capacity: 1000,
+                });
+              } catch (e2) {
+                // Race condition — row inserted by another path, ignore
+              }
             }
+          } catch (e) {
+            console.error('[Tick] Resource update error:', e.message);
           }
         }
       }
@@ -132,12 +183,14 @@ async function processTick() {
     console.error('[Tick] Error procesando producción de edificios:', error.message);
   }
 
-  // 3. Producción de animales
+  // 3. Producción de animales — fire ONCE per ready cycle (not every tick).
+  // `notified_at` is cleared by farmService when the player feeds or collects.
   try {
     const readyAnimals = await db('player_animals')
       .where('is_fed', true)
       .whereNotNull('next_production_at')
-      .where('next_production_at', '<=', now);
+      .where('next_production_at', '<=', now)
+      .whereNull('notified_at');
 
     for (const animal of readyAnimals) {
       if (ioRef) {
@@ -146,6 +199,11 @@ async function processTick() {
           animalType: animal.animal_id,
         });
       }
+      sendBotNotification(animal.player_id, `🐔 ¡Tu ${animal.animal_id} tiene producto listo para recolectar!`);
+      await db('player_animals').where('id', animal.id).update({ notified_at: now });
+    }
+    if (readyAnimals.length > 0) {
+      console.log(`[Tick] ${readyAnimals.length} animales notificados`);
     }
   } catch (error) {
     console.error('[Tick] Error procesando animales:', error.message);
@@ -173,6 +231,7 @@ async function processTick() {
             quantity: troop.training_quantity,
           });
         }
+        sendBotNotification(troop.player_id, `⚔️ ¡${troop.training_quantity}x ${troop.troop_id} están listos para la batalla!`);
       } catch (err) {
         console.error(`[Tick] Error completando tropa ${troop.id}:`, err.message);
       }
@@ -187,6 +246,54 @@ async function processTick() {
     await siegeService.processArrivedSieges(ioRef);
   } catch (error) {
     console.error('[Tick] Error procesando asedios:', error.message);
+  }
+
+  // 4b2. Expire stale marketplace listings (refunds remaining to seller)
+  try {
+    const marketplaceService = require('../services/marketplaceService');
+    const expired = await marketplaceService.expireListings();
+    if (expired > 0) console.log(`[Tick] ${expired} listados de mercado expirados`);
+  } catch (error) {
+    console.error('[Tick] Error expirando listados:', error.message);
+  }
+
+  // 4b3. Rotate seasonal events when active window expires
+  try {
+    const eventService = require('../services/eventService');
+    await eventService.tick();
+  } catch (error) {
+    console.error('[Tick] Error rotando eventos:', error.message);
+  }
+
+  // 4b4. Rotate tournaments — settle expired, kick off next per type
+  try {
+    const tournamentService = require('../services/tournamentService');
+    await tournamentService.tick();
+  } catch (error) {
+    console.error('[Tick] Error rotando torneos:', error.message);
+  }
+
+  // 4b5. Rotate faction wars (server-wide) + settle alliance wars (declared)
+  try {
+    const factionWarService = require('../services/factionWarService');
+    await factionWarService.tick();
+  } catch (error) {
+    console.error('[Tick] Error rotando faction war:', error.message);
+  }
+  try {
+    const allianceWarService = require('../services/allianceWarService');
+    await allianceWarService.tick();
+  } catch (error) {
+    console.error('[Tick] Error settling alliance wars:', error.message);
+  }
+
+  // 4b6. Expire stale alliance invitations (>7 days pending)
+  try {
+    const allianceService = require('../services/allianceService');
+    const expired = await allianceService.expireStaleInvitations();
+    if (expired > 0) console.log(`[Tick] ${expired} invitaciones de alianza expiradas`);
+  } catch (error) {
+    console.error('[Tick] Error expirando invitaciones:', error.message);
   }
 
   // 4c. Villager simulation
@@ -289,6 +396,19 @@ async function processWithdrawals() {
   }
 }
 
+/** Hourly: territory owner factions get passive resource tributes. */
+async function processTerritoryTribute() {
+  try {
+    const territoryService = require('../services/territoryService');
+    const beneficiaries = await territoryService.distributePassiveBonuses();
+    if (beneficiaries > 0) {
+      console.log(`[Tribute] ${beneficiaries} miembros recibieron tributo de territorio`);
+    }
+  } catch (error) {
+    console.error('[Tribute] Error:', error.message);
+  }
+}
+
 function startGameTick(io) {
   ioRef = io;
   // Ejecutar cada minuto
@@ -298,6 +418,10 @@ function startGameTick(io) {
   // Procesar retiros cada 5 minutos
   cron.schedule('*/5 * * * *', processWithdrawals);
   console.log('[Tick] Procesamiento de retiros cada 5 minutos');
+
+  // Tributo de territorios al inicio de cada hora
+  cron.schedule('0 * * * *', processTerritoryTribute);
+  console.log('[Tick] Tributo de territorios cada hora');
 }
 
 module.exports = { startGameTick, processTick };

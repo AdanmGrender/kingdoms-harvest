@@ -1,20 +1,30 @@
 /**
  * Building entity: Visual building sprite placed on the world map.
  * Supports ghost mode for placement preview and construction animation.
+ *
+ * Sprite source is the per-buildingId Kenney medieval-rts structure PNG (see
+ * buildingSprites.js). The old `buildings.png` spritesheet is no longer used.
  */
 import Phaser from 'phaser';
+import { getBuildingSprite } from '../config/buildingSprites';
 
 const BUILDING_SIZE = 64;
+const SCAFFOLD_SPRITE = 'iso_struct_18'; // ruins — stands in for construction
 
 export default class Building extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, buildingData) {
-    const tileIndex = buildingData.tileIndex ?? 0;
-    super(scene, x, y, 'buildings', tileIndex);
+    const spriteKey = buildingData.is_building
+      ? SCAFFOLD_SPRITE
+      : getBuildingSprite(buildingData.buildingId);
+    super(scene, x, y, spriteKey);
 
     this.buildingData = buildingData;
 
     scene.add.existing(this);
     this.setDepth(5);
+    // Origin near the base so the sprite "stands" on the tile; matches how
+    // decorations and world structures are drawn in WorldScene.
+    this.setOrigin(0.5, 0.7);
     this.setDisplaySize(BUILDING_SIZE, BUILDING_SIZE);
 
     // Level indicator text
@@ -28,9 +38,8 @@ export default class Building extends Phaser.GameObjects.Sprite {
       }).setDepth(20).setOrigin(0.5);
     }
 
-    // Construction indicator
+    // Construction indicator — hammer icon that wiggles overhead
     if (buildingData.is_building) {
-      this.setFrame(15); // Construction scaffold frame
       this.constructionText = scene.add.text(x, y - 36, '🔨', {
         fontSize: '16px',
       }).setDepth(20).setOrigin(0.5);
@@ -48,7 +57,9 @@ export default class Building extends Phaser.GameObjects.Sprite {
   updateData(buildingData) {
     this.buildingData = buildingData;
     if (!buildingData.is_building) {
-      this.setFrame(buildingData.tileIndex ?? 0);
+      // Swap scaffold → final sprite when construction finishes
+      this.setTexture(getBuildingSprite(buildingData.buildingId));
+      this.setDisplaySize(BUILDING_SIZE, BUILDING_SIZE);
       if (this.constructionText) {
         this.constructionText.destroy();
         this.constructionText = null;

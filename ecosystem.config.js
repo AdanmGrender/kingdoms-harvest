@@ -4,9 +4,9 @@ module.exports = {
     cwd: '/home/kingdoms/app/server',
     script: 'src/index.js',
     env: { NODE_ENV: 'production' },
-    instances: 1,
-    exec_mode: 'fork',
-    kill_timeout: 5000,
+    instances: 'max',
+    exec_mode: 'cluster',
+    kill_timeout: 20000,   // give workers time to drain in-flight requests on shutdown
     max_restarts: 10,
     min_uptime: '10s',
     restart_delay: 5000,

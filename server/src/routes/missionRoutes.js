@@ -16,7 +16,7 @@ router.get('/', telegramAuth, async (req, res) => {
 });
 
 // Generar nuevas misiones (refresh del tablón)
-router.post('/generate', telegramAuth, async (req, res) => {
+router.post('/generate', telegramAuth, validate({}), async (req, res) => {
   try {
     const missions = await missionService.generateMissions(req.playerId);
     res.json(missions);

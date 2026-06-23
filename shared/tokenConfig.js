@@ -29,8 +29,10 @@ const TOKEN_CONFIG = {
   // -- Referral --
   REFERRAL_SIGNUP_BONUS_INVITER: 25,
   REFERRAL_SIGNUP_BONUS_REFEREE: 10,
-  REFERRAL_COMMISSION_RATE: 0.05, // 5% of referee's token earnings
-  REFERRAL_MIN_LEVEL_FOR_COMMISSION: 3, // referee must be lvl 3+ for commission
+  REFERRAL_COMMISSION_RATE: 0.05,            // 5% of referee's token earnings
+  REFERRAL_MIN_LEVEL_FOR_COMMISSION: 3,      // referee must be lvl 3+ for commission
+  REFERRAL_COMMISSION_CAP_PER_REFEREE: 500,  // lifetime KH cap earned from any single referee
+  REFERRAL_DAILY_COMMISSION_CAP: 200,        // max KH/day from all referral commissions combined
 
   // -- Streak Multipliers --
   // Key = minimum streak day, Value = multiplier

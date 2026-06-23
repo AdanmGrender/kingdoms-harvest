@@ -1,10 +1,13 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { CROPS, ANIMALS, QUALITY, SEASON_DURATION_MS, DAY_CYCLE } = require('../../../shared/gameConfig');
+const { CROPS, ANIMALS, QUALITY, SEASON_DURATION_MS, DAY_CYCLE, FACTIONS } = require('../../../shared/gameConfig');
 const { sanitizeDisplayText } = require('../utils/sanitize');
 const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
+const techService = require('./techService');
+const achievementService = require('./achievementService');
+const eventService = require('./eventService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 function secureRandom() {
@@ -38,13 +41,17 @@ const farmService = {
     const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
     const currentSeason = SEASON_ORDER[seasonIndex];
 
-    if (!crop.season.includes(currentSeason)) {
+    // Tech: greenhouse bypasses the seasonal restriction
+    const completedTechs = await techService.getCompletedTechs(playerId);
+    if (!crop.season.includes(currentSeason) && !completedTechs.has('greenhouse')) {
       const seasonNames = { spring: 'Primavera', summer: 'Verano', autumn: 'Otoño', winter: 'Invierno' };
       throw new Error(`${crop.name} no crece en ${seasonNames[currentSeason] || currentSeason}`);
     }
 
     const now = new Date();
-    const readyAt = new Date(now.getTime() + crop.growthTime);
+    // Tech: irrigation cuts growth time by 15%
+    const growthMultiplier = completedTechs.has('irrigation') ? 0.85 : 1;
+    const readyAt = new Date(now.getTime() + crop.growthTime * growthMultiplier);
 
     // Cobrar semillas (atómico — lanza error si no hay suficiente)
     try {
@@ -89,7 +96,15 @@ const farmService = {
     const baseYield = Math.floor(
       secureRandom() * (crop.yield.max - crop.yield.min + 1) + crop.yield.min
     );
-    const finalYield = Math.floor(baseYield * quality.multiplier);
+    // Faction bonus: green_wardens +15% farming yield
+    const player = await db('players').where('telegram_id', playerId).first();
+    const factionBonus = FACTIONS[player?.faction_id]?.bonus?.farming || 0;
+    // Tech: fertile_soil +20% crop yield (multiplicative with quality + faction)
+    const completedTechs = await techService.getCompletedTechs(playerId);
+    const techYieldBonus = completedTechs.has('fertile_soil') ? 0.20 : 0;
+    // Seasonal event: spring_bloom adds farming bonus while active
+    const eventBonus = await eventService.getMultiplier('farming');
+    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus + techYieldBonus + eventBonus));
 
     // Dar recursos al jugador
     await playerService.modifyResource(playerId, plot.crop_id, finalYield);
@@ -100,6 +115,7 @@ const farmService = {
     // Dar KH Tokens + trackear tarea diaria
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_HARVEST, 'harvest');
     await dailyTaskService.trackProgress(playerId, 'harvest');
+    achievementService.checkAndUnlock(playerId, 'harvest', 1).catch(() => {});
 
     // Resetear parcela
     await db('farm_plots').where('id', plotId).update({
@@ -215,6 +231,7 @@ const farmService = {
     await db('player_animals').where('id', animalDbId).update({
       is_fed: true,
       next_production_at: nextProd.toISOString(),
+      notified_at: null, // reset so next ready-cycle pushes once
     });
 
     return {
@@ -239,9 +256,12 @@ const farmService = {
     }
 
     const animalType = ANIMALS[animal.animal_id];
-    const quantity = Math.floor(
+    const baseQuantity = Math.floor(
       secureRandom() * (animalType.yield.max - animalType.yield.min + 1) + animalType.yield.min
     );
+    // Tech: selective_breeding adds +1 product per collection
+    const completedTechs = await techService.getCompletedTechs(playerId);
+    const quantity = baseQuantity + (completedTechs.has('selective_breeding') ? 1 : 0);
 
     await playerService.modifyResource(playerId, animalType.product, quantity);
     const xpResult = await playerService.addXP(playerId, animalType.xp);
@@ -250,6 +270,7 @@ const farmService = {
       is_fed: false,
       last_collected_at: now.toISOString(),
       next_production_at: null,
+      notified_at: null, // clear so next feed→ready cycle pushes once
     });
 
     return {

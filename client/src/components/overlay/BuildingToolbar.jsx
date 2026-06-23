@@ -6,6 +6,41 @@ import { useState, useEffect, useCallback } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
+function QuickNavButtons() {
+  const setOverlay = useGameStore((s) => s.setOverlay);
+  const achievements = useGameStore((s) => s.achievements);
+  const claimableCount = achievements.filter((a) => a.unlocked && !a.claimed).length;
+
+  const btn = (label, type, style) => (
+    <button
+      key={type}
+      onClick={() => setOverlay(type, {})}
+      className="relative px-3 py-1 rounded-t-lg text-[11px] font-bold"
+      style={style}
+    >
+      {label}
+      {claimableCount > 0 && type === 'achievements' && (
+        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[8px] flex items-center justify-center font-bold">
+          {claimableCount}
+        </span>
+      )}
+    </button>
+  );
+
+  return (
+    <>
+      {btn('⚔️ Héroes',   'heroes',       { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(168,85,247,0.4)', borderBottom: 'none', color: '#d8b4fe' })}
+      {btn('🏆 Logros',   'achievements', { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(234,179,8,0.4)',  borderBottom: 'none', color: '#fde047' })}
+      {btn('🏷️ Mercado',  'marketplace',  { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(59,130,246,0.4)', borderBottom: 'none', color: '#93c5fd' })}
+      {btn('🛡️ Gremio',   'guild',        { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('🌸 Temporada','seasonal',     { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(74,222,128,0.4)', borderBottom: 'none', color: '#86efac' })}
+      {btn('⚔️ Guerra',   'combat',       { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('⭐ Prestige', 'prestige',     { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(250,204,21,0.4)', borderBottom: 'none', color: '#fbbf24' })}
+      {btn('💸 Retiro',   'withdrawal',   { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(253,224,71,0.4)', borderBottom: 'none', color: '#fde047' })}
+    </>
+  );
+}
+
 // Building categories with their building IDs
 const CATEGORIES = [
   {
@@ -72,20 +107,24 @@ export default function BuildingToolbar() {
   useEffect(() => {
     const handlePlacementStarted = () => setIsPlacing(true);
     const handlePlacementEnded = () => setIsPlacing(false);
+    const handleToggle = () => setIsExpanded((v) => !v);
 
     EventBridge.on('placement:started', handlePlacementStarted);
     EventBridge.on('placement:ended', handlePlacementEnded);
+    EventBridge.on('building:toolbar:toggle', handleToggle);
 
     return () => {
       EventBridge.off('placement:started', handlePlacementStarted);
       EventBridge.off('placement:ended', handlePlacementEnded);
+      EventBridge.off('building:toolbar:toggle', handleToggle);
     };
   }, []);
 
   const canAfford = useCallback((cost) => {
     if (!resources) return false;
     for (const [resource, amount] of Object.entries(cost)) {
-      const playerAmount = resources[resource] ?? 0;
+      // resources[key] is { amount, capacity }, not a bare number
+      const playerAmount = resources[resource]?.amount ?? 0;
       if (playerAmount < amount) return false;
     }
     return true;
@@ -133,21 +172,20 @@ export default function BuildingToolbar() {
 
   const category = CATEGORIES.find(c => c.id === activeCategory);
 
-  return (
-    <div className="absolute bottom-0 left-0 right-0 z-40 pointer-events-none">
-      {/* Toggle button */}
-      <div className="flex justify-center pointer-events-auto mb-1">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="px-4 py-1 rounded-t-lg text-xs text-yellow-300 font-bold"
-          style={{ background: 'rgba(22, 33, 62, 0.9)', border: '1px solid rgba(255, 215, 0, 0.3)', borderBottom: 'none' }}
-        >
-          {isExpanded ? '▼ Cerrar' : '▲ Construir'}
-        </button>
-      </div>
+  if (!isExpanded) return null;
 
-      {isExpanded && (
-        <div className="pointer-events-auto" style={{ background: 'rgba(22, 33, 62, 0.95)', borderTop: '1px solid rgba(255, 215, 0, 0.3)' }}>
+  return (
+    <div className="absolute bottom-20 left-0 right-0 z-40 pointer-events-none">
+      <div className="pointer-events-auto" style={{ background: 'rgba(22, 33, 62, 0.95)', borderTop: '1px solid rgba(255, 215, 0, 0.3)' }}>
+        <div className="flex items-center justify-between px-3 py-1 border-b border-yellow-900/30">
+          <span className="text-yellow-300 text-[11px] font-bold">🔨 Construir</span>
+          <button
+            onClick={() => setIsExpanded(false)}
+            className="text-gray-300 hover:text-white text-sm leading-none px-1"
+            aria-label="Cerrar"
+          >✕</button>
+        </div>
+        <div>
           {/* Category tabs */}
           <div className="flex border-b border-yellow-900/30">
             {CATEGORIES.map(cat => (
@@ -177,7 +215,7 @@ export default function BuildingToolbar() {
                   key={buildingId}
                   onClick={() => handleSelectBuilding(buildingId)}
                   disabled={!affordable}
-                  className={`flex-shrink-0 w-20 p-2 rounded-lg text-center transition-all ${
+                  className={`flex-shrink-0 w-[84px] p-2 rounded-lg text-center transition-all ${
                     affordable
                       ? 'hover:bg-yellow-900/30 active:scale-95'
                       : 'opacity-40'
@@ -185,7 +223,10 @@ export default function BuildingToolbar() {
                   style={{ border: '1px solid rgba(255, 215, 0, 0.15)' }}
                 >
                   <div className="text-2xl mb-1">{info.icon}</div>
-                  <div className="text-[10px] text-gray-200 font-bold truncate">{info.name}</div>
+                  <div className="text-[10px] text-gray-200 font-bold leading-tight"
+                    style={{ wordBreak: 'break-word', hyphens: 'auto' }}>
+                    {info.name}
+                  </div>
                   <div className="text-[9px] text-gray-400 mt-0.5">
                     {Object.entries(info.cost).map(([res, amt]) => (
                       <span key={res} className="mr-1">
@@ -198,7 +239,7 @@ export default function BuildingToolbar() {
             })}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

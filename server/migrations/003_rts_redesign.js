@@ -3,11 +3,10 @@
  * - Add villagers table
  * - Add villager_families table
  * - Add sieges table
- * - Add world time columns to players (via raw SQL)
+ * - Add world time columns to players
  */
-exports.up = function (db) {
-  // First create the new tables
-  db.schema
+exports.up = async function (db) {
+  await db.schema
     .createTable('villagers', (t) => {
       t.increments('id');
       t.bigInteger('player_id');
@@ -43,21 +42,20 @@ exports.up = function (db) {
       t.text('loot');
     });
 
-  // Add world time columns to players via raw SQL
-  try {
-    db.raw('ALTER TABLE players ADD COLUMN world_time REAL DEFAULT 0.20');
-  } catch (e) {
-    console.log('[Migration 003] world_time column may already exist');
+  // sql.js rejects ADD COLUMN IF NOT EXISTS — probe pragma first.
+  const cols = await db.raw('PRAGMA table_info("players")');
+  const colRows = Array.isArray(cols) ? cols : (cols?.rows || []);
+  const names = new Set(colRows.map((c) => c.name));
+  if (!names.has('world_time')) {
+    await db.raw('ALTER TABLE players ADD COLUMN world_time REAL DEFAULT 0.20');
   }
-  try {
-    db.raw('ALTER TABLE players ADD COLUMN world_day INTEGER DEFAULT 1');
-  } catch (e) {
-    console.log('[Migration 003] world_day column may already exist');
+  if (!names.has('world_day')) {
+    await db.raw('ALTER TABLE players ADD COLUMN world_day INTEGER DEFAULT 1');
   }
 };
 
-exports.down = function (db) {
-  return db.schema
+exports.down = async function (db) {
+  await db.schema
     .dropTableIfExists('sieges')
     .dropTableIfExists('villager_families')
     .dropTableIfExists('villagers');

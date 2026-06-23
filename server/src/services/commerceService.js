@@ -1,9 +1,12 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { CROPS, ANIMALS } = require('../../../shared/gameConfig');
+const { CROPS, ANIMALS, FACTIONS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
+const techService = require('./techService');
+const achievementService = require('./achievementService');
+const eventService = require('./eventService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 
 function secureRandom() {
@@ -155,7 +158,15 @@ const commerceService = {
     if (!offer) throw new Error('La caravana no compra ese recurso');
     if (quantity > offer.quantity) throw new Error(`La caravana solo acepta ${offer.quantity} más`);
 
-    const totalGold = offer.price * quantity;
+    // Faction bonus: shadow_merchants +15% sell price
+    const player = await db('players').where('telegram_id', playerId).first();
+    const commerceBonus = FACTIONS[player?.faction_id]?.bonus?.commerce || 0;
+    // Tech: haggling +10% sell price
+    const completedTechs = await techService.getCompletedTechs(playerId);
+    const techBonus = completedTechs.has('haggling') ? 0.10 : 0;
+    // Seasonal event: harvest_festival adds commerce bonus
+    const eventBonus = await eventService.getMultiplier('commerce');
+    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus + eventBonus));
 
     // Cobrar recurso (atómico)
     try {
@@ -168,6 +179,7 @@ const commerceService = {
     // Dar KH Tokens + trackear tarea diaria
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
     await dailyTaskService.trackProgress(playerId, 'sell');
+    achievementService.checkAndUnlock(playerId, 'sell', 1).catch(() => {});
 
     offer.quantity -= quantity;
     await db('caravans')
@@ -201,6 +213,7 @@ const commerceService = {
     // Dar KH Tokens + trackear tarea diaria
     const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_SALE, 'sell');
     await dailyTaskService.trackProgress(playerId, 'sell');
+    achievementService.checkAndUnlock(playerId, 'sell', 1).catch(() => {});
 
     return {
       success: true,

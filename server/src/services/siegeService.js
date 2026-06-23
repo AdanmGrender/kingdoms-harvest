@@ -2,6 +2,7 @@ const db = require('../config/database');
 const { TROOPS, SIEGE_CONFIG, SIEGE_ABILITIES } = require('../../../shared/gameConfig');
 const combatService = require('./combatService');
 const playerService = require('./playerService');
+const notificationService = require('./notificationService');
 
 const siegeService = {
   /**
@@ -10,60 +11,62 @@ const siegeService = {
   async declareWar(attackerId, defenderId, army) {
     if (attackerId === defenderId) throw new Error('No podés atacarte a vos mismo');
 
-    // Check no active siege from this attacker
-    const activeSiege = await db('sieges')
-      .where('attacker_id', attackerId)
-      .whereIn('status', ['marching', 'fighting'])
-      .first();
-    if (activeSiege) throw new Error('Ya tenés un asedio en curso');
-
-    // Validate and sanitize army
+    // Sanitize and validate army composition before entering transaction
     army = combatService.sanitizeArmy(army);
     await combatService.validateArmy(attackerId, army);
 
-    // Deduct troops from player (they're marching)
-    for (const [troopId, qty] of Object.entries(army)) {
-      await db('player_troops')
-        .where({ player_id: attackerId, troop_id: troopId })
-        .decrement('quantity', qty);
-    }
-
-    // Calculate march time based on army speed
+    // Calculate march time
     let slowestSpeed = Infinity;
     for (const [troopId] of Object.entries(army)) {
       const troop = TROOPS[troopId];
       if (troop && troop.speed < slowestSpeed) slowestSpeed = troop.speed;
     }
-
-    // March time inversely proportional to speed, clamped
     const marchTime = Math.min(
       SIEGE_CONFIG.maxMarchTime,
       Math.max(SIEGE_CONFIG.baseMarchTime, Math.floor(SIEGE_CONFIG.baseMarchTime * (10 / slowestSpeed)))
     );
-
     const now = new Date();
     const arrivesAt = new Date(now.getTime() + marchTime);
 
-    const [siegeId] = await db('sieges').insert({
-      attacker_id: attackerId,
-      defender_id: defenderId,
-      status: 'marching',
-      attacker_army: JSON.stringify(army),
-      defender_army: null,
-      march_started_at: now.toISOString(),
-      arrives_at: arrivesAt.toISOString(),
-      resolved_at: null,
-      result: null,
-      loot: null,
-    });
+    return db.transaction(async (trx) => {
+      // Check no active siege (inside transaction to prevent concurrent double-march)
+      const activeSiege = await trx('sieges')
+        .where('attacker_id', attackerId)
+        .whereIn('status', ['marching', 'fighting'])
+        .forUpdate()
+        .first();
+      if (activeSiege) throw new Error('Ya tenés un asedio en curso');
 
-    return {
-      siegeId,
-      marchTime,
-      arrivesAt: arrivesAt.toISOString(),
-      army,
-      message: `Tropas en marcha! Llegada en ${Math.ceil(marchTime / 60000)} min.`,
-    };
+      // Atomically deduct troops — roll back whole transaction if any unit is short
+      for (const [troopId, qty] of Object.entries(army)) {
+        const affected = await trx('player_troops')
+          .where({ player_id: attackerId, troop_id: troopId })
+          .where('quantity', '>=', qty)
+          .decrement('quantity', qty);
+        if (!affected) throw new Error(`No tenés suficientes ${TROOPS[troopId]?.name || troopId}`);
+      }
+
+      const [{ id: siegeId }] = await trx('sieges').insert({
+        attacker_id: attackerId,
+        defender_id: defenderId,
+        status: 'marching',
+        attacker_army: JSON.stringify(army),
+        defender_army: null,
+        march_started_at: now.toISOString(),
+        arrives_at: arrivesAt.toISOString(),
+        resolved_at: null,
+        result: null,
+        loot: null,
+      }).returning('id');
+
+      return {
+        siegeId,
+        marchTime,
+        arrivesAt: arrivesAt.toISOString(),
+        army,
+        message: `Tropas en marcha! Llegada en ${Math.ceil(marchTime / 60000)} min.`,
+      };
+    });
   },
 
   /**
@@ -79,7 +82,8 @@ const siegeService = {
     if (siege.status !== 'fighting') throw new Error('El asedio no está en combate');
 
     // Check requirements
-    const army = JSON.parse(siege.attacker_army);
+    let army;
+    try { army = JSON.parse(siege.attacker_army); } catch { army = {}; }
     for (const [troopId, minQty] of Object.entries(ability.requires)) {
       if (!army[troopId] || army[troopId] < minQty) {
         throw new Error(`Necesitás al menos ${minQty} ${TROOPS[troopId]?.name || troopId}`);
@@ -125,7 +129,8 @@ const siegeService = {
    * Resolve a siege battle.
    */
   async resolveSiege(siege, io) {
-    const attackerArmy = JSON.parse(siege.attacker_army);
+    let attackerArmy;
+    try { attackerArmy = JSON.parse(siege.attacker_army); } catch { attackerArmy = {}; }
 
     // Get defender's troops and buildings
     const defenderTroops = await db('player_troops').where('player_id', siege.defender_id);
@@ -139,7 +144,8 @@ const siegeService = {
     });
 
     // Apply used abilities as modifiers
-    const siegeResult = siege.result ? JSON.parse(siege.result) : {};
+    let siegeResult = {};
+    try { siegeResult = siege.result ? JSON.parse(siege.result) : {}; } catch { siegeResult = {}; }
     let attackModifier = 1;
     let defenseModifier = 1;
 
@@ -164,8 +170,21 @@ const siegeService = {
 
     // Re-determine winner with modifiers
     const totalPower = result.attackPower + result.defensePower;
+    const preModifierWinner = result.winner;
     const attackerWins = totalPower > 0 ? (result.attackPower / totalPower) > 0.5 : false;
     result.winner = attackerWins ? 'attacker' : 'defender';
+
+    // If modifiers flipped the winner, recalculate losses to reflect the new outcome
+    if (result.winner !== preModifierWinner) {
+      const winnerLossRate = 0.15;
+      const loserLossRate  = 0.45;
+      for (const [troopId, qty] of Object.entries(attackerArmy)) {
+        result.attackerLosses[troopId] = Math.floor(qty * (attackerWins ? winnerLossRate : loserLossRate));
+      }
+      for (const [troopId, qty] of Object.entries(defenderArmy)) {
+        result.defenderLosses[troopId] = Math.floor(qty * (attackerWins ? loserLossRate : winnerLossRate));
+      }
+    }
 
     // Apply defender losses
     for (const [troopId, losses] of Object.entries(result.defenderLosses)) {
@@ -220,7 +239,7 @@ const siegeService = {
       loot: JSON.stringify(loot),
     });
 
-    // Notify both players
+    // Notify both players via socket
     if (io) {
       const notification = {
         siegeId: siege.id,
@@ -231,6 +250,28 @@ const siegeService = {
       };
       io.to(`player_${siege.attacker_id}`).emit('siege_resolved', notification);
       io.to(`player_${siege.defender_id}`).emit('siege_resolved', notification);
+    }
+
+    // Push notifications (respects per-player preferences)
+    if (attackerWins) {
+      const lootSummary = Object.entries(loot).map(([r, v]) => `${v} ${r}`).join(', ');
+      notificationService.notify(
+        siege.attacker_id, 'sieges',
+        `⚔️ ¡Victoria en el asedio! Botín: ${lootSummary || 'ninguno'}. Volvé al juego.`
+      );
+      notificationService.notify(
+        siege.defender_id, 'sieges',
+        `🛡️ ¡Tu reino fue atacado y derrotado! Perdiste: ${lootSummary || 'ninguno'}. Reforzá tus defensas.`
+      );
+    } else {
+      notificationService.notify(
+        siege.attacker_id, 'sieges',
+        `⚔️ Tu asedio fue repelido. Tus tropas se retiran. Reforzá tu ejército e intentá de nuevo.`
+      );
+      notificationService.notify(
+        siege.defender_id, 'sieges',
+        `🛡️ ¡Defendiste tu reino con éxito! El atacante fue rechazado.`
+      );
     }
   },
 

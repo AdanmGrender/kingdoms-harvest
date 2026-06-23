@@ -56,11 +56,25 @@ export default class BootScene extends Phaser.Scene {
 
     // ─── Load tilesets ───
     this.load.image('terrain', '/assets/game/tilesets/terrain.png');
-    this.load.image('farm_tiles', '/assets/game/tilesets/farm_tiles.png');
-    this.load.spritesheet('buildings', '/assets/game/tilesets/buildings.png', {
-      frameWidth: 64,
-      frameHeight: 64,
+    this.load.spritesheet('farm_tiles', '/assets/game/tilesets/farm_tiles.png', {
+      frameWidth: 32,
+      frameHeight: 32,
     });
+    // buildings.png is superseded by Kenney's iso_struct_N PNGs (loaded below).
+    // Player buildings now pick a structure tile via config/buildingSprites.js.
+
+    // ─── Kenney medieval-rts top-down tileset (used by WorldScene + IsoScene) ───
+    const pad2 = (n) => String(n).padStart(2, '0');
+    const medievalBase = '/assets/kenney-medieval/PNG/Default size';
+    for (let i = 1; i <= 58; i++) {
+      this.load.image(`iso_tile_${i}`, `${medievalBase}/Tile/medievalTile_${pad2(i)}.png`);
+    }
+    for (let i = 1; i <= 21; i++) {
+      this.load.image(`iso_env_${i}`, `${medievalBase}/Environment/medievalEnvironment_${pad2(i)}.png`);
+    }
+    for (let i = 1; i <= 23; i++) {
+      this.load.image(`iso_struct_${i}`, `${medievalBase}/Structure/medievalStructure_${pad2(i)}.png`);
+    }
 
     // ─── Load characters ───
     // NPCs
@@ -77,6 +91,9 @@ export default class BootScene extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48,
     });
+
+    // Villagers reuse the per-role npc_<role> sheets (see entities/Villager.js
+    // ROLE_SPRITE_MAP). The legacy 'villager' sheet is not shipped.
 
     // ─── Load animals ───
     this.load.spritesheet('chicken', '/assets/game/animals/chicken.png', {
@@ -103,12 +120,126 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
+    // ─── Chroma-key: old spritesheets have solid white backgrounds that must
+    // be punched out to transparent before use. Terrain/Kenney tiles already
+    // have alpha and are skipped.
+    const chromaKeyTargets = [
+      'farm_tiles', 'troops', 'effects',
+      'npc_farmer', 'npc_baker', 'npc_princess', 'npc_wizard',
+      'npc_knight', 'npc_merchant', 'npc_ranger',
+      'chicken', 'cow', 'sheep',
+    ];
+    for (const key of chromaKeyTargets) this.makeWhiteTransparent(key);
+
     // ─── Create animations ───
     this.createNPCAnimations();
     this.createAnimalAnimations();
 
-    // Transition to world
-    this.scene.start('WorldScene');
+    // Scene selection: registry isoMode flag (set by IsoWorldScene experiment)
+    // or URL param ?iso=1 lands on the legacy IsoScene. Default is WorldScene.
+    const params = new URLSearchParams(window.location.search);
+    const isoModeFlag = this.game.registry.get('isoMode');
+    let target = 'WorldScene';
+    if (isoModeFlag) target = 'IsoWorldScene';
+    else if (params.get('iso') === '1') target = 'IsoScene';
+    this.scene.start(target);
+  }
+
+  /**
+   * Replace near-white pixels in a texture with transparent. Needed because the
+   * old asset batch was exported over solid white instead of alpha.
+   *
+   * Threshold 240 covers faint JPEG-y edge fringing without eating legit cream
+   * tones in small sprites. For sprites with lots of light-colored body pixels
+   * (roofs, walls, highlights) the flood-fill mode is safer: only the contiguous
+   * white region touching the frame edges is removed, so interior highlights
+   * survive.
+   *
+   * @param {string} key      texture key
+   * @param {object} opts     { threshold, floodFill, frameWidth, frameHeight }
+   */
+  makeWhiteTransparent(key, opts = {}) {
+    const { threshold = 240, floodFill = false } = typeof opts === 'number' ? { threshold: opts } : opts;
+    const texture = this.textures.get(key);
+    if (!texture || texture.key === '__MISSING') return;
+    const src = texture.getSourceImage();
+    if (!src || !src.width) return;
+
+    // Capture spritesheet frame dims before we destroy the texture.
+    const frame0 = texture.frames[0] || texture.frames['__BASE'];
+    const isSheet = frame0 && frame0.width > 0 && frame0.width < src.width;
+    const frameWidth = frame0?.width || src.width;
+    const frameHeight = frame0?.height || src.height;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = src.width;
+    canvas.height = src.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(src, 0, 0);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const px = imgData.data;
+
+    if (floodFill && isSheet) {
+      // Per-frame flood fill: treat each (frameWidth × frameHeight) cell independently
+      // so we only remove the background touching that frame's edges, not interior
+      // bright pixels. This preserves light-colored body art (like castle highlights).
+      const cols = Math.floor(src.width / frameWidth);
+      const rows = Math.floor(src.height / frameHeight);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          this._floodFillFrameWhite(
+            px, src.width,
+            c * frameWidth, r * frameHeight,
+            frameWidth, frameHeight,
+            threshold,
+          );
+        }
+      }
+    } else {
+      // Simple pixel threshold: every near-white pixel becomes transparent.
+      for (let i = 0; i < px.length; i += 4) {
+        if (px[i] >= threshold && px[i + 1] >= threshold && px[i + 2] >= threshold) {
+          px[i + 3] = 0;
+        }
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    this.textures.remove(key);
+    if (isSheet) {
+      this.textures.addSpriteSheet(key, canvas, { frameWidth, frameHeight });
+    } else {
+      this.textures.addCanvas(key, canvas);
+    }
+  }
+
+  /**
+   * Flood-fill from each frame edge inward, turning near-white pixels transparent.
+   * Stops at non-white pixels, leaving interior light tones intact.
+   */
+  _floodFillFrameWhite(px, stride, x0, y0, fw, fh, threshold) {
+    const visited = new Uint8Array(fw * fh);
+    const stack = [];
+    // Seed from all four frame edges
+    for (let i = 0; i < fw; i++) {
+      stack.push([i, 0]);
+      stack.push([i, fh - 1]);
+    }
+    for (let j = 0; j < fh; j++) {
+      stack.push([0, j]);
+      stack.push([fw - 1, j]);
+    }
+    while (stack.length) {
+      const [lx, ly] = stack.pop();
+      if (lx < 0 || ly < 0 || lx >= fw || ly >= fh) continue;
+      const localIdx = ly * fw + lx;
+      if (visited[localIdx]) continue;
+      const p = ((y0 + ly) * stride + (x0 + lx)) * 4;
+      if (px[p] < threshold || px[p + 1] < threshold || px[p + 2] < threshold) continue;
+      visited[localIdx] = 1;
+      px[p + 3] = 0;
+      stack.push([lx + 1, ly], [lx - 1, ly], [lx, ly + 1], [lx, ly - 1]);
+    }
   }
 
   createNPCAnimations() {
@@ -118,6 +249,13 @@ export default class BootScene extends Phaser.Scene {
         key: `npc_${name}_idle`,
         frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: 0, end: 1 }),
         frameRate: 2,
+        repeat: -1,
+      });
+      // The 32×48 NPC sheets pack 4 frames; 2-3 are the walk cycle.
+      this.anims.create({
+        key: `npc_${name}_walk`,
+        frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: 2, end: 3 }),
+        frameRate: 6,
         repeat: -1,
       });
     }

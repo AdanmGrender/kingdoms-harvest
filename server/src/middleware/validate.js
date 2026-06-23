@@ -64,6 +64,13 @@ function validate(schema) {
         req.body[field] = escapeHtml(value);
       }
 
+      if (rules.type === 'boolean') {
+        if (typeof value !== 'boolean') {
+          errors.push(`${field} debe ser verdadero o falso`);
+          continue;
+        }
+      }
+
       if (rules.type === 'object') {
         if (typeof value !== 'object' || value === null || Array.isArray(value)) {
           errors.push(`${field} debe ser un objeto`);

@@ -1,13 +1,13 @@
 /**
  * CameraSystem: God-view camera with drag-to-pan, pinch/wheel zoom, and WASD panning.
- * Replaces the old player-follow camera for RTS gameplay.
+ * Fixed: proper touch handling for mobile, no conflict with SelectionSystem.
  */
 import Phaser from 'phaser';
 
-const MIN_ZOOM = 0.5;
+const MIN_ZOOM = 0.4;
 const MAX_ZOOM = 3;
-const PAN_SPEED = 500; // pixels per second for keyboard panning
-const LERP_FACTOR = 0.1;
+const PAN_SPEED = 500;
+const DRAG_THRESHOLD = 8; // px - minimum movement to count as drag (not tap)
 
 export default class CameraSystem {
   constructor(scene) {
@@ -17,14 +17,17 @@ export default class CameraSystem {
 
     // Drag state
     this.isDragging = false;
+    this.hasDragged = false; // TRUE if pointer moved enough to be a drag (exposed for SelectionSystem)
     this.dragStartX = 0;
     this.dragStartY = 0;
     this.camStartScrollX = 0;
     this.camStartScrollY = 0;
 
     // Pinch zoom state
+    this.isPinching = false;
     this.pinchDistance = 0;
     this.pinchZoomStart = 1;
+    this.lastPointerCount = 0;
 
     // Keyboard
     this.cursors = scene.input.keyboard.createCursorKeys();
@@ -35,70 +38,136 @@ export default class CameraSystem {
       right: Phaser.Input.Keyboard.KeyCodes.D,
     });
 
+    // Store reference in scene for SelectionSystem to access
+    scene.cameraSystem = this;
+
     this.setupInput();
   }
 
   setupInput() {
     const scene = this.scene;
 
-    // Pointer down — start drag
+    // ─── Pointer down: start potential drag ───
     scene.input.on('pointerdown', (pointer) => {
       if (!this.enabled) return;
-      // Only start drag with single pointer
-      if (scene.input.pointer1.isDown && scene.input.pointer2.isDown) return;
+
+      const activeCount = this.getActivePointerCount();
+
+      // If second finger touches, switch to pinch mode
+      if (activeCount >= 2) {
+        this.isPinching = true;
+        this.isDragging = false;
+        this.pinchDistance = 0; // Reset to recalculate
+        return;
+      }
+
+      // Single finger: start drag tracking
       this.isDragging = true;
+      this.hasDragged = false;
       this.dragStartX = pointer.x;
       this.dragStartY = pointer.y;
       this.camStartScrollX = this.cam.scrollX;
       this.camStartScrollY = this.cam.scrollY;
     });
 
-    // Pointer move — drag camera
+    // ─── Pointer move: drag or pinch ───
     scene.input.on('pointermove', (pointer) => {
-      if (!this.enabled || !this.isDragging) return;
+      if (!this.enabled) return;
 
-      // If two pointers are down, handle pinch instead
-      if (scene.input.pointer1.isDown && scene.input.pointer2.isDown) {
+      const activeCount = this.getActivePointerCount();
+
+      // Handle pinch zoom (2+ fingers)
+      if (activeCount >= 2) {
+        this.isPinching = true;
+        this.isDragging = false;
         this.handlePinch();
         return;
       }
 
-      const dx = (this.dragStartX - pointer.x) / this.cam.zoom;
-      const dy = (this.dragStartY - pointer.y) / this.cam.zoom;
+      // Handle single-finger drag
+      if (!this.isDragging) return;
 
-      this.cam.scrollX = this.camStartScrollX + dx;
-      this.cam.scrollY = this.camStartScrollY + dy;
+      const dx = this.dragStartX - pointer.x;
+      const dy = this.dragStartY - pointer.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Only start actual camera movement after threshold
+      if (dist > DRAG_THRESHOLD) {
+        this.hasDragged = true;
+        this.cam.scrollX = this.camStartScrollX + dx / this.cam.zoom;
+        this.cam.scrollY = this.camStartScrollY + dy / this.cam.zoom;
+      }
     });
 
-    // Pointer up — end drag
+    // ─── Pointer up: end drag/pinch ───
     scene.input.on('pointerup', () => {
-      this.isDragging = false;
-      this.pinchDistance = 0;
+      const activeCount = this.getActivePointerCount();
+
+      if (activeCount < 2) {
+        this.isPinching = false;
+        this.pinchDistance = 0;
+      }
+
+      if (activeCount === 0) {
+        this.isDragging = false;
+        // NOTE: hasDragged stays true until next pointerdown
+        // so SelectionSystem can check it in pointerup
+      }
     });
 
-    // Mouse wheel zoom
+    // ─── Mouse wheel zoom ───
     scene.input.on('wheel', (_pointer, _gameObjects, _deltaX, deltaY) => {
       if (!this.enabled) return;
-      const zoomDelta = deltaY > 0 ? -0.1 : 0.1;
-      this.setZoom(this.cam.zoom + zoomDelta);
+      const zoomDelta = deltaY > 0 ? -0.15 : 0.15;
+      const newZoom = this.cam.zoom + zoomDelta;
+      this.setZoom(newZoom);
     });
+
+    // ─── Prevent default touch gestures on the canvas ───
+    const canvas = scene.game.canvas;
+    if (canvas) {
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+      }, { passive: false });
+
+      canvas.addEventListener('touchstart', (e) => {
+        // Prevent double-tap zoom on mobile
+        if (e.touches.length > 1) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    }
+  }
+
+  getActivePointerCount() {
+    const input = this.scene.input;
+    let count = 0;
+    if (input.pointer1?.isDown) count++;
+    if (input.pointer2?.isDown) count++;
+    if (input.pointer3?.isDown) count++;
+    return count;
   }
 
   handlePinch() {
     const pointer1 = this.scene.input.pointer1;
     const pointer2 = this.scene.input.pointer2;
 
+    if (!pointer1?.isDown || !pointer2?.isDown) return;
+
     const dist = Phaser.Math.Distance.Between(
       pointer1.x, pointer1.y,
       pointer2.x, pointer2.y
     );
 
-    if (this.pinchDistance === 0) {
+    if (this.pinchDistance === 0 || isNaN(this.pinchDistance)) {
+      // First pinch frame: record baseline
       this.pinchDistance = dist;
       this.pinchZoomStart = this.cam.zoom;
     } else {
+      // Subsequent frames: scale zoom proportionally
       const scale = dist / this.pinchDistance;
-      this.setZoom(this.pinchZoomStart * scale);
+      const newZoom = this.pinchZoomStart * scale;
+      this.setZoom(newZoom);
     }
   }
 

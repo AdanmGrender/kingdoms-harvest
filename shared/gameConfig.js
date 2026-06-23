@@ -676,6 +676,111 @@ const SIEGE_CONFIG = {
   resourceShield: 50, // can't steal below this per resource
 };
 
+// ---- SEASONAL EVENTS ----
+// Server-wide rotating buffs. gameTick activates one at a time and rotates
+// when its window expires. Each event lasts `durationMs`. Multipliers are
+// added to existing faction + tech stacks in the relevant service paths.
+const SEASONAL_EVENT_DURATION_MS = 24 * 60 * 60 * 1000; // 24h per event
+const SEASONAL_EVENTS = {
+  spring_bloom: {
+    id: 'spring_bloom',
+    name: 'Brote de Primavera',
+    icon: '🌱',
+    color: '#7ee87e',
+    description: '+25% rendimiento de cultivos durante 24h',
+    durationMs: SEASONAL_EVENT_DURATION_MS,
+    multipliers: { farming: 0.25 },
+  },
+  harvest_festival: {
+    id: 'harvest_festival',
+    name: 'Festival de Cosecha',
+    icon: '🍂',
+    color: '#ffac30',
+    description: '+20% precio de venta a caravanas y mercado',
+    durationMs: SEASONAL_EVENT_DURATION_MS,
+    multipliers: { commerce: 0.20 },
+  },
+  battle_frenzy: {
+    id: 'battle_frenzy',
+    name: 'Frenesí de Batalla',
+    icon: '⚔️',
+    color: '#ff6060',
+    description: '+15% botín en PvP y PvE',
+    durationMs: SEASONAL_EVENT_DURATION_MS,
+    multipliers: { battle_loot: 0.15 },
+  },
+  golden_caravan: {
+    id: 'golden_caravan',
+    name: 'Caravana Dorada',
+    icon: '🪙',
+    color: '#ffd750',
+    description: '+10% recompensa KH en cosecha + venta',
+    durationMs: SEASONAL_EVENT_DURATION_MS,
+    multipliers: { kh_bonus: 0.10 },
+  },
+};
+// Order in which events rotate. Change to taste; dropping one unschedules.
+const SEASONAL_EVENT_ROTATION = ['spring_bloom', 'harvest_festival', 'battle_frenzy', 'golden_caravan'];
+
+// ---- TOURNAMENTS ----
+// Timed competitions layered over the existing leaderboards. tournamentService
+// rotates through TOURNAMENT_ROTATION on a fixed cadence (one active per type
+// at a time). Each entry declares:
+//   metric  — column on `players` (or derived) used for the score
+//   prizes  — KH tokens awarded to top 3
+const TOURNAMENT_DURATION_MS = 24 * 60 * 60 * 1000; // 24h per tournament
+const TOURNAMENTS = {
+  kh_rush: {
+    id: 'kh_rush',
+    name: 'Carrera KH',
+    icon: '💎',
+    description: 'Quien gane más KH tokens en 24h',
+    durationMs: TOURNAMENT_DURATION_MS,
+    metric: 'kh',          // computed from player_tokens.total_earned
+    prizes: { 1: 100, 2: 60, 3: 30 },
+  },
+  xp_grind: {
+    id: 'xp_grind',
+    name: 'Sed de XP',
+    icon: '⭐',
+    description: 'Quien gane más XP en 24h',
+    durationMs: TOURNAMENT_DURATION_MS,
+    metric: 'xp',          // computed from players.xp + level synthesis
+    prizes: { 1: 80, 2: 50, 3: 25 },
+  },
+  faction_glory: {
+    id: 'faction_glory',
+    name: 'Gloria de Facción',
+    icon: '🛡️',
+    description: 'Quien sume más puntos de facción en 24h',
+    durationMs: TOURNAMENT_DURATION_MS,
+    metric: 'faction_points', // players.faction_points
+    prizes: { 1: 90, 2: 55, 3: 28 },
+  },
+};
+const TOURNAMENT_ROTATION = ['kh_rush', 'xp_grind', 'faction_glory'];
+
+// ---- ACHIEVEMENTS ----
+// `event` matches the verb passed to achievementService.checkAndUnlock(player, event, payload).
+// `goal` is the running counter target (e.g. 10 harvests). For one-shot
+// achievements (e.g. "first conquest") goal=1 and the trigger always passes 1.
+// `reward.kh` is paid out via tokenService when the player claims.
+const ACHIEVEMENTS = {
+  first_harvest:      { id: 'first_harvest',      name: 'Primera Cosecha',     icon: '🌾', desc: 'Cosechá tu primer cultivo',                event: 'harvest',     goal: 1,   reward: { kh: 5  } },
+  green_thumb:        { id: 'green_thumb',        name: 'Pulgar Verde',        icon: '🌱', desc: 'Cosechá 25 cultivos',                       event: 'harvest',     goal: 25,  reward: { kh: 30 } },
+  farm_master:        { id: 'farm_master',        name: 'Maestro Granjero',    icon: '🚜', desc: 'Cosechá 100 cultivos',                      event: 'harvest',     goal: 100, reward: { kh: 100 } },
+  builder_novice:     { id: 'builder_novice',     name: 'Aprendiz Constructor', icon: '🔨', desc: 'Construí 5 edificios',                     event: 'build',       goal: 5,   reward: { kh: 15 } },
+  city_planner:       { id: 'city_planner',       name: 'Urbanista',           icon: '🏘️', desc: 'Construí 15 edificios',                     event: 'build',       goal: 15,  reward: { kh: 60 } },
+  first_battle:       { id: 'first_battle',       name: 'Primer Combate',      icon: '⚔️', desc: 'Ganá tu primera batalla PvE',               event: 'battle_win',  goal: 1,   reward: { kh: 10 } },
+  warlord:            { id: 'warlord',            name: 'Señor de la Guerra',  icon: '🛡️', desc: 'Ganá 10 batallas (PvE o PvP)',              event: 'battle_win',  goal: 10,  reward: { kh: 50 } },
+  conqueror:          { id: 'conqueror',          name: 'Conquistador',        icon: '🏴', desc: 'Conquistá tu primer territorio',            event: 'conquest',    goal: 1,   reward: { kh: 25 } },
+  empire:             { id: 'empire',             name: 'Imperio',             icon: '👑', desc: 'Conquistá 5 territorios',                    event: 'conquest',    goal: 5,   reward: { kh: 150 } },
+  scholar:            { id: 'scholar',            name: 'Erudito',             icon: '🔬', desc: 'Completá 3 investigaciones',                event: 'research',    goal: 3,   reward: { kh: 40 } },
+  rich_merchant:      { id: 'rich_merchant',      name: 'Mercader Rico',       icon: '💰', desc: 'Hacé 20 ventas a caravanas',                event: 'sell',        goal: 20,  reward: { kh: 35 } },
+  level_5:            { id: 'level_5',            name: 'Veterano',            icon: '⭐', desc: 'Alcanzá nivel 5',                           event: 'level_up',    goal: 5,   reward: { kh: 25 } },
+  level_10:           { id: 'level_10',           name: 'Leyenda',             icon: '🌟', desc: 'Alcanzá nivel 10',                          event: 'level_up',    goal: 10,  reward: { kh: 100 } },
+};
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -694,4 +799,11 @@ module.exports = {
   DAY_CYCLE,
   SIEGE_ABILITIES,
   SIEGE_CONFIG,
+  ACHIEVEMENTS,
+  SEASONAL_EVENTS,
+  SEASONAL_EVENT_ROTATION,
+  SEASONAL_EVENT_DURATION_MS,
+  TOURNAMENTS,
+  TOURNAMENT_ROTATION,
+  TOURNAMENT_DURATION_MS,
 };

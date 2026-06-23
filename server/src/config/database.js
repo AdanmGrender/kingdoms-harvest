@@ -99,6 +99,19 @@ class QueryBuilder {
     return this;
   }
 
+  whereNull(col) {
+    this._wheres.push(`"${sanitizeIdentifier(col)}" IS NULL`);
+    return this;
+  }
+
+  whereNot(col, val) {
+    // Equivalent to .where(col, '!=', val) — small ergonomic helper used by
+    // routes that filter out the requesting player's own row.
+    this._wheres.push(`"${sanitizeIdentifier(col)}" != ?`);
+    this._whereParams.push(val);
+    return this;
+  }
+
   orWhereIn(col, values) {
     const safeName = sanitizeIdentifier(col);
     if (values.length === 0) {
@@ -190,14 +203,29 @@ class QueryBuilder {
     }
   }
 
-  // INSERT - returns [lastInsertRowId]
-  async insert(data) {
+  // INSERT — by default resolves to [lastInsertRowId].
+  // Chaining .returning(col) wraps the result as [{ [col]: lastInsertRowId }]
+  // so Knex-style call sites (`const [{ id }] = await db.insert(...).returning('id')`)
+  // keep working.
+  insert(data) {
     const cols = Object.keys(data).map(c => sanitizeIdentifier(c));
     const vals = Object.values(data);
     const placeholders = cols.map(() => '?').join(', ');
     const sql = `INSERT INTO "${this._table}" (${cols.map(c => `"${c}"`).join(', ')}) VALUES (${placeholders})`;
-    const result = dbRun(sql, vals);
-    return [result.lastId];
+    let returningCol = null;
+    const run = () => {
+      const result = dbRun(sql, vals);
+      return returningCol === null ? [result.lastId] : [{ [returningCol]: result.lastId }];
+    };
+    const thenable = {
+      returning(col) { returningCol = sanitizeIdentifier(col); return thenable; },
+      then(resolve, reject) {
+        try { return Promise.resolve(run()).then(resolve, reject); }
+        catch (e) { return reject ? reject(e) : Promise.reject(e); }
+      },
+      catch(reject) { return this.then(undefined, reject); },
+    };
+    return thenable;
   }
 
   // UPDATE - returns count of affected rows
@@ -356,9 +384,9 @@ db.fn = {
   },
 };
 
-// Run raw SQL
+// Run raw SQL (synchronous — returns { count, lastId })
 db.raw = function (sql, params = []) {
-  dbRun(sql, params);
+  return dbRun(sql, params);
 };
 
 // Migration support

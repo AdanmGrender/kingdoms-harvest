@@ -1,11 +1,46 @@
 const crypto = require('crypto');
 const db = require('../config/database');
-const { TROOPS, BUILDINGS } = require('../../../shared/gameConfig');
+const { TROOPS, BUILDINGS, FACTIONS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
 const buildingService = require('./buildingService');
 const tokenService = require('./tokenService');
 const dailyTaskService = require('./dailyTaskService');
+const techService = require('./techService');
+const achievementService = require('./achievementService');
+const eventService = require('./eventService');
+const notifyService = require('./notifyService');
+const allianceService = require('./allianceService');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
+
+// Tech-driven combat bonuses. Numbers must mirror the human-readable "effect"
+// strings in shared/gameConfig.js TECH_BRANCHES.military.
+const TECH_COMBAT_BONUSES = {
+  attacker: {
+    sharp_blades: { atk: 0.10 },
+  },
+  defender: {
+    reinforced_armor: { def: 0.10 },
+    tactics:          { def: 0.15 },  // only fires when player is defender
+  },
+};
+
+/**
+ * Returns { atk, def } multipliers for a player based on their completed techs,
+ * scoped to whether they're the attacker or defender in this battle.
+ */
+async function getTechCombatBonuses(playerId, role) {
+  if (!playerId) return { atk: 0, def: 0 };
+  const completed = await techService.getCompletedTechs(playerId);
+  const table = TECH_COMBAT_BONUSES[role] || {};
+  let atk = 0, def = 0;
+  for (const techId of Object.keys(table)) {
+    if (completed.has(techId)) {
+      atk += table[techId].atk || 0;
+      def += table[techId].def || 0;
+    }
+  }
+  return { atk, def };
+}
 
 // Secure random float [0, 1) — replaces secureRandom() for fairness
 function secureRandom() {
@@ -98,10 +133,26 @@ const combatService = {
   /**
    * Motor de combate: calcula el resultado de una batalla
    */
-  calculateBattle(attackerArmy, defenderArmy, defenderBuildings = []) {
+  calculateBattle(attackerArmy, defenderArmy, defenderBuildings = [], opts = {}) {
+    const { attackBonus = 0, defenseBonus = 0, abilityId = null, attackerArmy: rawArmy = attackerArmy } = opts;
     let attackPower = 0;
     let defensePower = 0;
     const battleLog = [];
+
+    // Siege ability effects applied before main calculation
+    let abilityAtkMult = 1;
+    let abilityDefMult = 1;
+    let abilityDefDebuff = 0;
+    if (abilityId === 'rally') {
+      abilityAtkMult = 1.15;
+      battleLog.push('📯 Reagrupar: +15% ATK');
+    } else if (abilityId === 'shield_wall') {
+      abilityDefMult = 1.25;
+      battleLog.push('🛡️ Muro de Escudos: +25% DEF');
+    } else if (abilityId === 'arrow_rain') {
+      abilityDefDebuff = 0.20;
+      battleLog.push('🏹 Lluvia de Flechas: -20% DEF enemiga');
+    }
 
     // Calcular poder de ataque
     for (const [troopId, qty] of Object.entries(attackerArmy)) {
@@ -109,21 +160,23 @@ const combatService = {
       if (!troop) continue;
 
       let atk = troop.atk * qty;
-      let def = troop.def * qty;
 
       // Bonus contra tipos específicos
-      for (const [defTroopId, defQty] of Object.entries(defenderArmy)) {
+      for (const defTroopId of Object.keys(defenderArmy)) {
         if (troop.strongVs.includes(defTroopId)) {
-          atk *= 1.3; // +30% vs tipo débil
+          atk *= 1.3;
         }
         if (troop.weakVs.includes(defTroopId)) {
-          atk *= 0.7; // -30% vs tipo fuerte
+          atk *= 0.7;
         }
       }
 
       attackPower += atk;
       battleLog.push(`${troop.icon} x${qty} aporta ${Math.floor(atk)} ATK`);
     }
+
+    // Apply faction atk bonus + ability multiplier
+    attackPower *= (1 + attackBonus) * abilityAtkMult;
 
     // Calcular poder de defensa
     for (const [troopId, qty] of Object.entries(defenderArmy)) {
@@ -135,6 +188,9 @@ const combatService = {
       battleLog.push(`Defensor: ${troop.icon} x${qty} aporta ${Math.floor(def)} DEF`);
     }
 
+    // Apply faction def bonus + ability multiplier, then arrow_rain debuff on enemy
+    defensePower *= (1 + defenseBonus) * abilityDefMult * (1 - abilityDefDebuff);
+
     // Bonus de edificios defensivos
     for (const building of defenderBuildings) {
       if (building.building_id === 'wall') {
@@ -144,7 +200,6 @@ const combatService = {
         defensePower += building.level * BUILDINGS.tower.atkPerLevel;
       }
       if (building.building_id === 'trap') {
-        // Daño inicial de trampas
         attackPower -= building.level * BUILDINGS.trap.trapDamage;
       }
     }
@@ -194,9 +249,18 @@ const combatService = {
   /**
    * Ataque PvE contra territorio neutral
    */
-  async attackPVE(playerId, army, territoryId) {
+  async attackPVE(playerId, army, territoryId, abilityId = null) {
     army = this.sanitizeArmy(army);
     await this.validateArmy(playerId, army);
+
+    // Apply faction + tech + alliance bonuses (tech: sharp_blades adds atk;
+    // reinforced_armor/tactics don't fire on PvE attacks since the player is
+    // the attacker. Alliance: +5% atk just for membership.)
+    const player = await db('players').where('telegram_id', playerId).first();
+    const factionAtkBonus = FACTIONS[player?.faction_id]?.bonus?.atk || 0;
+    const factionDefBonus = FACTIONS[player?.faction_id]?.bonus?.def || 0;
+    const techAttacker = await getTechCombatBonuses(playerId, 'attacker');
+    const allianceBonus = await allianceService.getCombatBonuses(playerId);
 
     // Generar ejército NPC basado en territorio
     const territory = territoryId
@@ -206,8 +270,13 @@ const combatService = {
     const npcStrength = territory ? territory.defense_strength : 50;
     const npcArmy = this.generateNPCArmy(npcStrength);
 
-    // Calcular batalla
-    const result = this.calculateBattle(army, npcArmy);
+    // Calcular batalla con bonuses de facción + tech + alianza + habilidad
+    const result = this.calculateBattle(army, npcArmy, [], {
+      attackBonus: factionAtkBonus + techAttacker.atk + allianceBonus.atk,
+      defenseBonus: factionDefBonus + techAttacker.def,
+      abilityId,
+      attackerArmy: army,
+    });
 
     // Aplicar pérdidas al atacante (clamped para evitar negativos)
     for (const [troopId, losses] of Object.entries(result.attackerLosses)) {
@@ -223,12 +292,14 @@ const combatService = {
       }
     }
 
-    // Generar botín si ganó
+    // Generar botín si ganó (battle_frenzy event + alliance bonus scale gold + xp)
     let loot = {};
     if (result.winner === 'attacker') {
+      const eventLoot = await eventService.getMultiplier('battle_loot');
+      const lootMult = 1 + eventLoot + allianceBonus.loot;
       loot = {
-        gold: Math.floor(npcStrength * (2 + secureRandom() * 3)),
-        xp: Math.floor(npcStrength * 1.5),
+        gold: Math.floor(npcStrength * (2 + secureRandom() * 3) * lootMult),
+        xp: Math.floor(npcStrength * 1.5 * lootMult),
       };
 
       // Chance de recurso raro
@@ -247,9 +318,10 @@ const combatService = {
         }
       }
 
-      // Dar KH Tokens + trackear tarea diaria
+      // Dar KH Tokens + trackear tarea diaria + achievement
       const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVE_WIN, 'pve');
       await dailyTaskService.trackProgress(playerId, 'battle_win');
+      achievementService.checkAndUnlock(playerId, 'battle_win', 1).catch(() => {});
       loot.tokensAwarded = tokenResult.awarded;
     }
 
@@ -282,7 +354,7 @@ const combatService = {
   /**
    * Ataque PvP contra otro jugador
    */
-  async attackPVP(playerId, army, defenderId) {
+  async attackPVP(playerId, army, defenderId, abilityId = null) {
     if (playerId === defenderId) throw new Error('No podés atacarte a vos mismo');
 
     // Cooldown: no atacar al mismo jugador dentro de 30 minutos
@@ -300,6 +372,19 @@ const combatService = {
       }
     }
 
+    // Anti-griefing: defenders below level 3 are protected; level differential
+    // capped at ±5 to prevent high-level players from farming low-level targets.
+    // Both players are fetched here for level comparison; reused below for bonuses.
+    const attacker = await db('players').where('telegram_id', playerId).first();
+    const defender = await db('players').where('telegram_id', defenderId).first();
+    if (!defender) throw new Error('El jugador defensor ya no existe');
+    if (defender.level < 3) {
+      throw new Error('Este jugador está bajo escudo de novato (nivel < 3)');
+    }
+    if (Math.abs((attacker?.level || 1) - defender.level) > 5) {
+      throw new Error('Diferencia de nivel demasiado grande (máx ±5)');
+    }
+
     army = this.sanitizeArmy(army);
     await this.validateArmy(playerId, army);
 
@@ -314,7 +399,23 @@ const combatService = {
       if (t.quantity > 0) defenderArmy[t.troop_id] = t.quantity;
     });
 
-    const result = this.calculateBattle(army, defenderArmy, defenderBuildings);
+    // attacker + defender already fetched above for the level-diff check
+    const attackerFactionAtk = FACTIONS[attacker?.faction_id]?.bonus?.atk || 0;
+    const defenderFactionDef = FACTIONS[defender?.faction_id]?.bonus?.def || 0;
+
+    // Tech bonuses: attacker contributes atk; defender contributes def + tactics
+    const attackerTech = await getTechCombatBonuses(playerId, 'attacker');
+    const defenderTech = await getTechCombatBonuses(defenderId, 'defender');
+
+    // Alliance bonuses: +5% atk attacker, +5% def defender (additive on stack)
+    const attackerAlliance = await allianceService.getCombatBonuses(playerId);
+    const defenderAlliance = await allianceService.getCombatBonuses(defenderId);
+
+    const result = this.calculateBattle(army, defenderArmy, defenderBuildings, {
+      attackBonus: attackerFactionAtk + attackerTech.atk + attackerAlliance.atk,
+      defenseBonus: defenderFactionDef + defenderTech.def + defenderAlliance.def,
+      abilityId,
+    });
 
     // Aplicar pérdidas a ambos (clamped para evitar negativos)
     for (const [troopId, losses] of Object.entries(result.attackerLosses)) {
@@ -343,11 +444,15 @@ const combatService = {
       }
     }
 
-    // Si el atacante gana, roba recursos (con escudo mínimo de 50 por recurso)
+    // Recompensas según quién ganó. Hasta ahora solo el atacante recibía
+    // XP+tokens; el defensor exitoso quedaba sin reward — fix asimetría.
     let loot = {};
+    let tokensAwarded = 0;
+    let defenderTokensAwarded = 0;
     if (result.winner === 'attacker') {
       const defResources = await db('player_resources').where('player_id', defenderId);
-      const stealRate = 0.1;
+      // Alliance loot bonus stacks on top of the base 10% steal rate
+      const stealRate = 0.1 * (1 + attackerAlliance.loot);
       const RESOURCE_SHIELD = 50; // No se puede robar por debajo de este mínimo
 
       for (const res of defResources) {
@@ -362,9 +467,40 @@ const combatService = {
 
       await playerService.addXP(playerId, 50);
 
-      // Dar KH Tokens + trackear tarea diaria
-      await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVP_WIN, 'pvp');
+      // Dar KH Tokens + trackear tarea diaria + achievement
+      const tokenResult = await tokenService.awardTokens(playerId, TOKEN_CONFIG.TOKENS_PER_PVP_WIN, 'pvp');
+      tokensAwarded = tokenResult.awarded;
       await dailyTaskService.trackProgress(playerId, 'battle_win');
+      achievementService.checkAndUnlock(playerId, 'battle_win', 1).catch(() => {});
+      // Alliance-war hook — credits hit if attacker and defender are in
+      // rival alliances mid-war
+      try {
+        const allianceWarService = require('./allianceWarService');
+        await allianceWarService.logPvpHit(playerId, defenderId);
+      } catch {}
+    } else if (result.winner === 'defender') {
+      // Successful defense: half the attacker's PvP win reward (XP + tokens)
+      // + counts toward the same battle_win achievement so defenders make
+      // progress too. Less than the attacker's haul because the defender
+      // didn't initiate; still rewards staying logged-in defensible.
+      await playerService.addXP(defenderId, 25);
+      const tokenResult = await tokenService.awardTokens(
+        defenderId,
+        Math.max(1, Math.floor(TOKEN_CONFIG.TOKENS_PER_PVP_WIN / 2)),
+        'pvp_defense',
+      );
+      defenderTokensAwarded = tokenResult.awarded;
+      await dailyTaskService.trackProgress(defenderId, 'battle_win');
+      achievementService.checkAndUnlock(defenderId, 'battle_win', 1).catch(() => {});
+      // Faction points for defending — also fires the faction_war hook so
+      // ongoing faction wars credit successful defenses.
+      if (defender?.faction_id) {
+        await db('players').where('telegram_id', defenderId).increment('faction_points', 15);
+        try {
+          const factionWarService = require('./factionWarService');
+          await factionWarService.logPoints(defenderId, defender.faction_id, 15, 'pvp_defense');
+        } catch {}
+      }
     }
 
     await db('battles').insert({
@@ -379,7 +515,25 @@ const combatService = {
       resolved_at: new Date().toISOString(),
     });
 
-    return { ...result, loot };
+    // Notify the defender — uses the shared opt-out helper.
+    const attackerName = attacker?.display_name || 'Un jugador';
+    if (result.winner === 'attacker') {
+      const lootStr = Object.keys(loot).length > 0
+        ? ` y robó ${Object.entries(loot).map(([k, v]) => `${v} ${k}`).join(', ')}`
+        : '';
+      notifyService.sendBotDM(
+        defenderId,
+        `⚔️ ¡${attackerName} te atacó y ganó${lootStr}! Volvé a defender tu reino.`,
+      );
+    } else {
+      // Successful defense — celebrate + surface the reward
+      notifyService.sendBotDM(
+        defenderId,
+        `🛡️ ¡Defendiste un ataque de ${attackerName}! +25 XP, +${defenderTokensAwarded} KH.`,
+      );
+    }
+
+    return { ...result, loot, tokensAwarded, defenderTokensAwarded };
   },
 
   /**

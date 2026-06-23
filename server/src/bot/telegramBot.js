@@ -12,7 +12,12 @@ function initBot() {
     return;
   }
 
-  bot = new TelegramBot(token, { polling: true });
+  // Set BOT_POLLING=false in .env when another instance (e.g. VPS PM2) already
+  // owns getUpdates — avoids the 409 Conflict that kills both pollers. The bot
+  // can still send messages via the API; only inbound /commands stop firing.
+  const polling = process.env.BOT_POLLING !== 'false';
+  bot = new TelegramBot(token, { polling });
+  if (!polling) console.log('Bot polling DESACTIVADO (BOT_POLLING=false)');
   const webAppUrl = process.env.WEBAPP_URL || 'https://tu-dominio.com';
 
   // Comando /start (con soporte para referidos: /start ref_123456)
@@ -73,6 +78,46 @@ function initBot() {
     });
   });
 
+  // Comando /notificaciones — muestra y gestiona preferencias con teclado inline
+  bot.onText(/\/notificaciones/, async (msg) => {
+    const chatId = msg.chat.id;
+    const playerId = msg.from.id;
+    try {
+      const notificationService = require('../services/notificationService');
+      const prefs = await notificationService.getPrefs(playerId);
+      await bot.sendMessage(chatId, notificationService.buildPrefsText(), {
+        parse_mode: 'Markdown',
+        reply_markup: notificationService.buildPrefsKeyboard(prefs),
+      });
+    } catch (err) {
+      bot.sendMessage(chatId, '❌ Error cargando preferencias. Intentá de nuevo.');
+    }
+  });
+
+  // Callback para toggle de notificaciones vía botones inline
+  bot.on('callback_query', async (query) => {
+    if (!query.data?.startsWith('notif_toggle_')) return;
+    const type = query.data.replace('notif_toggle_', '');
+    const playerId = query.from.id;
+    try {
+      const notificationService = require('../services/notificationService');
+      const newValue = await notificationService.togglePref(playerId, type);
+      const typeInfo = notificationService.TYPES[type];
+      const prefs = await notificationService.getPrefs(playerId);
+
+      await bot.answerCallbackQuery(query.id, {
+        text: `${typeInfo?.icon || ''} ${typeInfo?.label || type}: ${newValue ? '✅ Activado' : '❌ Desactivado'}`,
+      });
+      // Update the message in-place with new keyboard state
+      await bot.editMessageReplyMarkup(
+        notificationService.buildPrefsKeyboard(prefs),
+        { chat_id: query.message.chat.id, message_id: query.message.message_id }
+      );
+    } catch {
+      bot.answerCallbackQuery(query.id, { text: '❌ Error al actualizar' });
+    }
+  });
+
   // Comando /stats
   bot.onText(/\/stats/, async (msg) => {
     const db = require('../config/database');
@@ -105,6 +150,29 @@ function initBot() {
       `⚔️ *Tropas:*\n${troopText}`,
       { parse_mode: 'Markdown' }
     );
+  });
+
+  // Comando /notif — toggle push notifications on/off
+  bot.onText(/\/notif(?:\s+(on|off))?/, async (msg, match) => {
+    const db = require('../config/database');
+    const playerService = require('../services/playerService');
+    const player = await db('players').where('telegram_id', msg.from.id).first();
+    if (!player) {
+      return bot.sendMessage(msg.chat.id, '❌ No tenés cuenta. Usá /start para comenzar.');
+    }
+    const arg = (match[1] || '').toLowerCase();
+    const explicit = arg === 'on' ? true : arg === 'off' ? false : undefined;
+    try {
+      const { enabled } = await playerService.setNotifEnabled(msg.from.id, explicit);
+      bot.sendMessage(msg.chat.id,
+        enabled
+          ? '🔔 *Notificaciones activadas.* Te avisaré cuando tus cultivos, animales, edificios o tropas estén listos.'
+          : '🔕 *Notificaciones desactivadas.* No recibirás más DMs del juego. Volvé a usar /notif para activarlas.',
+        { parse_mode: 'Markdown' }
+      );
+    } catch (err) {
+      bot.sendMessage(msg.chat.id, '❌ Error: ' + (err.message || 'no se pudo cambiar la preferencia.'));
+    }
   });
 
   console.log('Bot de Telegram configurado');

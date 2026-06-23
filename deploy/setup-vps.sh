@@ -1,15 +1,36 @@
 #!/bin/bash
 set -e
 
+# ─── Args ─────────────────────────────────────────────────────────────────────
+DOMAIN=""
+for arg in "$@"; do
+  case $arg in
+    --domain=*) DOMAIN="${arg#*=}" ;;
+    --domain)   shift; DOMAIN="$1" ;;
+  esac
+done
+
 echo "========================================="
 echo "  Kingdoms Harvest - VPS Setup"
 echo "========================================="
 
 # Verificar que se ejecuta como root
 if [ "$EUID" -ne 0 ]; then
-  echo "ERROR: Ejecutar como root (sudo ./setup-vps.sh)"
+  echo "ERROR: Ejecutar como root (sudo ./setup-vps.sh --domain=myjame.com)"
   exit 1
 fi
+
+# Pedir dominio si no se pasó como argumento
+if [ -z "$DOMAIN" ]; then
+  read -rp "Dominio del servidor (ej: kingdoms.myjame.com): " DOMAIN
+fi
+
+if [ -z "$DOMAIN" ]; then
+  echo "ERROR: Se requiere un dominio. Uso: sudo ./setup-vps.sh --domain=myjame.com"
+  exit 1
+fi
+
+echo "  Dominio: $DOMAIN"
 
 echo ""
 echo "=== Actualizando sistema ==="
@@ -17,7 +38,7 @@ apt update && apt upgrade -y
 
 echo ""
 echo "=== Instalando dependencias del sistema ==="
-apt install -y curl git ufw nginx certbot python3-certbot-nginx
+apt install -y curl git ufw nginx certbot python3-certbot-nginx gettext-base
 
 echo ""
 echo "=== Instalando Node.js 20 LTS ==="
@@ -65,15 +86,16 @@ echo "  3. Instalar deps y build:"
 echo "     cd app/server && npm install --production"
 echo "     cd ../client && npm install && npm run build"
 echo ""
-echo "  4. Copiar config de Nginx:"
-echo "     cp /home/kingdoms/app/deploy/nginx.conf /etc/nginx/sites-available/kingdoms-harvest"
-echo "     ln -s /etc/nginx/sites-available/kingdoms-harvest /etc/nginx/sites-enabled/"
+echo "  4. Generar configuración de Nginx para $DOMAIN:"
+echo "     DOMAIN=$DOMAIN envsubst '\${DOMAIN}' \\"
+echo "       < /home/kingdoms/app/deploy/nginx.conf.template \\"
+echo "       > /etc/nginx/sites-available/kingdoms-harvest"
+echo "     ln -sf /etc/nginx/sites-available/kingdoms-harvest /etc/nginx/sites-enabled/"
 echo "     rm -f /etc/nginx/sites-enabled/default"
-echo "     # EDITAR el archivo y reemplazar TUDOMINIO.COM con tu dominio real"
 echo "     nginx -t && systemctl reload nginx"
 echo ""
 echo "  5. SSL con certbot:"
-echo "     certbot --nginx -d tudominio.com"
+echo "     certbot --nginx -d $DOMAIN -d www.$DOMAIN"
 echo ""
 echo "  6. Iniciar con PM2:"
 echo "     su - kingdoms"
@@ -84,3 +106,4 @@ echo "     pm2 save"
 echo "     # Como root:"
 echo "     sudo env PATH=\$PATH:/usr/bin pm2 startup systemd -u kingdoms --hp /home/kingdoms"
 echo ""
+

@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const { BUILDINGS } = require('../../../shared/gameConfig');
 const playerService = require('./playerService');
+const achievementService = require('./achievementService');
 
 const buildingService = {
   async getBuildings(playerId) {
@@ -86,6 +87,10 @@ const buildingService = {
       position_x: posX,
       position_y: posY,
     });
+
+    // Counts toward "build N buildings" achievement at start (cost is already
+    // paid; no cancel API exists, so the count won't drift).
+    achievementService.checkAndUnlock(playerId, 'build', 1).catch(() => {});
 
     return {
       success: true,

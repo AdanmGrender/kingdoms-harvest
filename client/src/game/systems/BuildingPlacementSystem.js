@@ -4,8 +4,9 @@
  * and taps to confirm placement. Validates against collision and existing buildings.
  */
 import Phaser from 'phaser';
-import { TILE_SIZE } from '../maps/MapGenerator';
+import { TILE_SIZE } from '../maps/tileConfig';
 import Building from '../entities/Building';
+import { getBuildingSprite } from '../config/buildingSprites';
 import EventBridge from '../EventBridge';
 
 const VALID_TINT = 0x00ff00;
@@ -64,7 +65,9 @@ export default class BuildingPlacementSystem {
     const px = this.currentTileX * TILE_SIZE + (this.tileW * TILE_SIZE) / 2;
     const py = this.currentTileY * TILE_SIZE + (this.tileH * TILE_SIZE) / 2;
 
-    this.ghostSprite = this.scene.add.sprite(px, py, 'buildings', tileIndex ?? 0);
+    const ghostKey = getBuildingSprite(buildingId);
+    this.ghostSprite = this.scene.add.sprite(px, py, ghostKey);
+    this.ghostSprite.setOrigin(0.5, 0.7);
     this.ghostSprite.setDisplaySize(this.tileW * TILE_SIZE, this.tileH * TILE_SIZE);
     this.ghostSprite.setAlpha(GHOST_ALPHA);
     this.ghostSprite.setDepth(100);

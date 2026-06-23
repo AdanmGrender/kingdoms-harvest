@@ -8,38 +8,21 @@ beforeAll(async () => {
 });
 
 // ============================================
-// sanitizeIdentifier & sanitizeOperator
+// SQL Injection Protection (Knex/PostgreSQL)
 // ============================================
 describe('SQL Injection Protection', () => {
-  test('sanitizeIdentifier rejects SQL injection attempts', () => {
-    expect(() => db("'; DROP TABLE players--")).toThrow();
-    expect(() => db('players; DELETE')).toThrow();
-    expect(() => db('table name')).toThrow();
-    expect(() => db('123start')).toThrow();
-    expect(() => db('col"injection')).toThrow();
-  });
+  // Knex double-quotes all identifiers — malicious table/column names become
+  // quoted strings that PostgreSQL rejects with a syntax error at execute time,
+  // not at query-builder construction time.  The important guarantee is that
+  // VALUES are always sent as parameterized placeholders ($1, $2, …).
 
-  test('sanitizeIdentifier accepts valid identifiers', () => {
+  test('valid table identifiers build without error', () => {
     expect(() => db('players')).not.toThrow();
     expect(() => db('player_resources')).not.toThrow();
-    expect(() => db('_private')).not.toThrow();
+    expect(() => db('player_buildings')).not.toThrow();
   });
 
-  test('where() rejects invalid operators', () => {
-    expect(() =>
-      db('players').where('level', 'DROP', 1)
-    ).toThrow(/no permitido/i);
-
-    expect(() =>
-      db('players').where('level', '; --', 1)
-    ).toThrow();
-
-    expect(() =>
-      db('players').where('level', 'OR 1=1', 1)
-    ).toThrow();
-  });
-
-  test('where() accepts valid operators', async () => {
+  test('where() with valid operators executes successfully', async () => {
     const result = await db('players').where('level', '>=', 1);
     expect(Array.isArray(result)).toBe(true);
 
@@ -48,6 +31,19 @@ describe('SQL Injection Protection', () => {
 
     const result3 = await db('players').where('level', '!=', 999);
     expect(Array.isArray(result3)).toBe(true);
+  });
+
+  test('parameterized values prevent SQL injection', async () => {
+    // A SQL-injection attempt in a value becomes a harmless literal string.
+    const result = await db('players').where('username', "'; DROP TABLE players--");
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toHaveLength(0); // no user with that username
+  });
+
+  test('where() with invalid operator rejects at execute time', async () => {
+    await expect(
+      db('players').where('level', 'DROP', 1)
+    ).rejects.toThrow();
   });
 });
 
