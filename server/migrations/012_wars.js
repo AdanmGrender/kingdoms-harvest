@@ -13,8 +13,8 @@
  *   total) so we can compute "this war only" easily without snapshots.
  */
 
-exports.up = function (db) {
-  db.raw(`CREATE TABLE IF NOT EXISTS alliance_wars (
+exports.up = async function (db) {
+  await db.raw(`CREATE TABLE IF NOT EXISTS alliance_wars (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     alliance_a_id INTEGER NOT NULL,
     alliance_b_id INTEGER NOT NULL,
@@ -25,9 +25,9 @@ exports.up = function (db) {
     score_a INTEGER DEFAULT 0,
     score_b INTEGER DEFAULT 0
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_alliance_wars_active ON alliance_wars (status, ends_at)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_alliance_wars_active ON alliance_wars (status, ends_at)');
 
-  db.raw(`CREATE TABLE IF NOT EXISTS faction_wars (
+  await db.raw(`CREATE TABLE IF NOT EXISTS faction_wars (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     started_at TEXT NOT NULL,
     ends_at TEXT NOT NULL,
@@ -35,9 +35,9 @@ exports.up = function (db) {
     winner_faction_id TEXT DEFAULT NULL,
     finalized_at TEXT DEFAULT NULL
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_faction_wars_active ON faction_wars (is_active, ends_at)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_faction_wars_active ON faction_wars (is_active, ends_at)');
 
-  db.raw(`CREATE TABLE IF NOT EXISTS faction_war_log (
+  await db.raw(`CREATE TABLE IF NOT EXISTS faction_war_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     faction_war_id INTEGER NOT NULL,
     faction_id TEXT NOT NULL,
@@ -46,14 +46,14 @@ exports.up = function (db) {
     source TEXT,
     created_at TEXT NOT NULL
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_faction_war_log_war ON faction_war_log (faction_war_id, faction_id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_faction_war_log_war ON faction_war_log (faction_war_id, faction_id)');
 };
 
-exports.down = function (db) {
-  db.raw('DROP INDEX IF EXISTS idx_faction_war_log_war');
-  db.raw('DROP TABLE IF EXISTS faction_war_log');
-  db.raw('DROP INDEX IF EXISTS idx_faction_wars_active');
-  db.raw('DROP TABLE IF EXISTS faction_wars');
-  db.raw('DROP INDEX IF EXISTS idx_alliance_wars_active');
-  db.raw('DROP TABLE IF EXISTS alliance_wars');
+exports.down = async function (db) {
+  await db.raw('DROP INDEX IF EXISTS idx_faction_war_log_war');
+  await db.raw('DROP TABLE IF EXISTS faction_war_log');
+  await db.raw('DROP INDEX IF EXISTS idx_faction_wars_active');
+  await db.raw('DROP TABLE IF EXISTS faction_wars');
+  await db.raw('DROP INDEX IF EXISTS idx_alliance_wars_active');
+  await db.raw('DROP TABLE IF EXISTS alliance_wars');
 };

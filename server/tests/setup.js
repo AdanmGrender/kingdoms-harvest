@@ -1,9 +1,9 @@
 /**
- * Test setup — connects to the PostgreSQL test database (kingdoms_test),
- * runs all migrations, and seeds base data for all test suites.
+ * Test setup — arranca una DB sql.js 100% en memoria, corre todas las
+ * migraciones y siembra datos base para todas las suites.
  *
- * NODE_ENV=test is set before any app module is loaded so database.js
- * picks up DB_NAME_TEST instead of DB_NAME.
+ * NODE_ENV=test se setea ANTES de requerir módulos de la app para que
+ * database.js use la DB en memoria y NUNCA toque data/kingdoms.db.
  */
 
 // Set env vars BEFORE any require of app modules

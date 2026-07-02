@@ -9,29 +9,29 @@
  * from marketplace_listings so cancellations/expirations don't pollute it.
  */
 
-exports.up = function (db) {
-  db.raw(`CREATE TABLE IF NOT EXISTS alliance_messages (
+exports.up = async function (db) {
+  await db.raw(`CREATE TABLE IF NOT EXISTS alliance_messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     alliance_id INTEGER NOT NULL,
     player_id BIGINT NOT NULL,
     content TEXT NOT NULL,
     created_at TEXT NOT NULL
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_alliance_messages_alliance ON alliance_messages (alliance_id, id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_alliance_messages_alliance ON alliance_messages (alliance_id, id)');
 
-  db.raw(`CREATE TABLE IF NOT EXISTS marketplace_price_log (
+  await db.raw(`CREATE TABLE IF NOT EXISTS marketplace_price_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     resource_id TEXT NOT NULL,
     price_per_unit INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
     sold_at TEXT NOT NULL
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_pricelog_resource_sold ON marketplace_price_log (resource_id, sold_at)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_pricelog_resource_sold ON marketplace_price_log (resource_id, sold_at)');
 };
 
-exports.down = function (db) {
-  db.raw('DROP INDEX IF EXISTS idx_alliance_messages_alliance');
-  db.raw('DROP TABLE IF EXISTS alliance_messages');
-  db.raw('DROP INDEX IF EXISTS idx_pricelog_resource_sold');
-  db.raw('DROP TABLE IF EXISTS marketplace_price_log');
+exports.down = async function (db) {
+  await db.raw('DROP INDEX IF EXISTS idx_alliance_messages_alliance');
+  await db.raw('DROP TABLE IF EXISTS alliance_messages');
+  await db.raw('DROP INDEX IF EXISTS idx_pricelog_resource_sold');
+  await db.raw('DROP TABLE IF EXISTS marketplace_price_log');
 };

@@ -13,8 +13,8 @@
  * Catalog of tournament types lives in shared/gameConfig.js.
  */
 
-exports.up = function (db) {
-  db.raw(`CREATE TABLE IF NOT EXISTS tournaments (
+exports.up = async function (db) {
+  await db.raw(`CREATE TABLE IF NOT EXISTS tournaments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT NOT NULL,
     starts_at TEXT NOT NULL,
@@ -22,9 +22,9 @@ exports.up = function (db) {
     is_active INTEGER DEFAULT 1,
     finalized_at TEXT DEFAULT NULL
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_tournaments_active ON tournaments (is_active, ends_at)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_tournaments_active ON tournaments (is_active, ends_at)');
 
-  db.raw(`CREATE TABLE IF NOT EXISTS tournament_entries (
+  await db.raw(`CREATE TABLE IF NOT EXISTS tournament_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     tournament_id INTEGER NOT NULL,
     player_id BIGINT NOT NULL,
@@ -32,12 +32,12 @@ exports.up = function (db) {
     score_now INTEGER DEFAULT 0,
     UNIQUE(tournament_id, player_id)
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_tournament_entries_tournament ON tournament_entries (tournament_id, score_now DESC)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_tournament_entries_tournament ON tournament_entries (tournament_id, score_now DESC)');
 };
 
-exports.down = function (db) {
-  db.raw('DROP INDEX IF EXISTS idx_tournament_entries_tournament');
-  db.raw('DROP TABLE IF EXISTS tournament_entries');
-  db.raw('DROP INDEX IF EXISTS idx_tournaments_active');
-  db.raw('DROP TABLE IF EXISTS tournaments');
+exports.down = async function (db) {
+  await db.raw('DROP INDEX IF EXISTS idx_tournament_entries_tournament');
+  await db.raw('DROP TABLE IF EXISTS tournament_entries');
+  await db.raw('DROP INDEX IF EXISTS idx_tournaments_active');
+  await db.raw('DROP TABLE IF EXISTS tournaments');
 };

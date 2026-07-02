@@ -197,8 +197,9 @@ const playerService = {
     }
 
     // Single atomic SQL: increment and clamp to capacity in one statement
+    // (SQLite: MIN escalar de 2 args — LEAST no existe en este dialecto)
     await db.raw(
-      `UPDATE "player_resources" SET "amount" = LEAST("amount" + ?, "capacity")
+      `UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity")
        WHERE "player_id" = ? AND "resource_id" = ?`,
       [delta, playerId, resourceId]
     );

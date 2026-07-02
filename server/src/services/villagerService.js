@@ -69,9 +69,9 @@ const villagerService = {
     // Single UPDATE for all N villagers — replaces N individual updates
     await db.raw(`
       UPDATE "villagers" SET
-        "hunger" = GREATEST(0, "hunger" - 1),
+        "hunger" = MAX(0, "hunger" - 1),
         "happiness" = CASE
-          WHEN ("hunger" - 1) <= 20 THEN GREATEST(0, "happiness" - 1)
+          WHEN ("hunger" - 1) <= 20 THEN MAX(0, "happiness" - 1)
           ELSE "happiness"
         END,
         "state" = CASE
@@ -102,10 +102,10 @@ const villagerService = {
         if (intAmount > 0) {
           villagerAccumulators[key] -= intAmount;
           const res = await db.raw(
-            'UPDATE "player_resources" SET "amount" = LEAST("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
+            'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
             [intAmount, playerId, resource]
           );
-          if (res.rowCount === 0) {
+          if (res.count === 0) {
             await db('player_resources').insert({
               player_id: playerId, resource_id: resource, amount: intAmount, capacity: 1000,
             });

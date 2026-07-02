@@ -13,12 +13,12 @@
  * firing, so they are inherently idempotent — no column needed there.
  */
 
-exports.up = function (db) {
-  db.raw('ALTER TABLE player_animals ADD COLUMN notified_at TEXT DEFAULT NULL');
-  db.raw('ALTER TABLE players ADD COLUMN notif_enabled INTEGER DEFAULT 1');
+exports.up = async function (db) {
+  await db.raw('ALTER TABLE player_animals ADD COLUMN notified_at TEXT DEFAULT NULL');
+  await db.raw('ALTER TABLE players ADD COLUMN notif_enabled INTEGER DEFAULT 1');
 };
 
-exports.down = function (db) {
-  db.raw('ALTER TABLE player_animals DROP COLUMN notified_at');
-  db.raw('ALTER TABLE players DROP COLUMN notif_enabled');
+exports.down = async function (db) {
+  await db.raw('ALTER TABLE player_animals DROP COLUMN notified_at');
+  await db.raw('ALTER TABLE players DROP COLUMN notif_enabled');
 };

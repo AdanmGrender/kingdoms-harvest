@@ -26,6 +26,13 @@
 - Mapa territorial con conquista (Phase 2)
 - Tech tree funcional en Library (Phase 2)
 
+**Entorno de ejecución actual (julio 2026):**
+- El VPS de Hostinger (`82.25.66.103`) está **apagado**. El servidor corre **localmente
+  en esta PC Windows** (ver §15 Dev Commands).
+- Con el VPS apagado, `BOT_POLLING=true` es seguro en local. Si el VPS vuelve a
+  encenderse con el bot activo, poner `BOT_POLLING=false` en local para no duplicar
+  el polling de Telegram (dos pollers con el mismo token se roban updates).
+
 ---
 
 ## 1. Spec: Estructura del Repositorio
@@ -144,8 +151,10 @@ const db = require('../config/database');
 db('tabla').where('columna', valor).first()          // → objeto | undefined
 db('tabla').where({ campo: valor, campo2: v2 })      // → array
 
-// INSERT → [lastInsertRowId]
+// INSERT → [lastInsertRowId]. Acepta objeto o ARRAY de objetos (bulk).
 db('tabla').insert({ campo: valor })
+db('tabla').insert([{...}, {...}])
+// Estilo Knex: const [{ id }] = await db('tabla').insert({...}).returning('id')
 
 // UPDATE
 db('tabla').where('id', id).update({ campo: valor })
@@ -158,6 +167,19 @@ const affected = await db('tabla')
   .where({ player_id: id, resource_id: 'gold' })
   .decrementIfEnough('amount', cost);
 if (!affected) throw new Error('Saldo insuficiente');
+
+// RAW — LAZY estilo Knex (desde 2026-07-02):
+await db.raw('UPDATE ...', [params])          // → { count, lastId }; SIN await NO ejecuta
+db('t').where(...).update({                    // como valor: fragmento SQL inline
+  balance: db.raw('balance + ?', [n]),
+})
+
+// TRANSACCIÓN (BEGIN/COMMIT/ROLLBACK; reentrante; trx === db)
+await db.transaction(async (trx) => { ...queries con trx()... });
+// .forUpdate() existe como no-op (compat Knex; SQLite es single-writer)
+
+// ⚠️ SQL crudo: dialecto SQLite — MIN/MAX escalares (NO LEAST/GREATEST),
+//    resultado de UPDATE → .count (NO .rowCount)
 ```
 
 ### 3.2 Invariantes Críticas de sql.js
@@ -172,6 +194,9 @@ if (!affected) throw new Error('Saldo insuficiente');
 
 ⚠️  sql.js es single-threaded in-process. A 1000+ jugadores migrar a
     better-sqlite3 o PostgreSQL.
+
+⚠️  NODE_ENV=test → DB in-memory fresca (no lee ni escribe data/kingdoms.db).
+    Los tests corren migraciones completas vía tests/setup.js.
 ```
 
 ### 3.3 Migrations
@@ -464,7 +489,21 @@ TILESETS (/public/assets/game/tilesets/):
   terrain.png    — 512×512, tiles 32×32 (19 tipos de terreno, 16/fila)
   farm_tiles.png — 256×256, stages 64×64 (4 etapas × 2 estados seco/regado)
 
-Generados por: scripts/generate_sprites.js (canvas Node.js)
+⚠️  Los assets bajo /public/assets/game/ están GITIGNOREADOS (no se commitean).
+    Tras un clone fresco, regenerar placeholders: node scripts/gen_placeholders.js
+    Specs completas para el artista: docs/art-spec.md + docs/SPRITE_SHOPPING_LIST.md
+```
+
+### 10.5 Modo Isométrico (experimento)
+
+```
+Escenas registradas en client/src/game/config.js:
+  WorldScene     — top-down, ACTIVA por defecto
+  IsoWorldScene  — experimento iso 2:1 (rama WiFOf); se activa con ISO_MODE=true
+                   (constante hardcodeada en config.js, ya no lee VITE_ISO_MODE)
+  IsoScene       — POC iso legacy (rama iso-rework); se activa con URL ?iso=1
+
+Decisión de estilo documentada en docs/art-style.md.
 ```
 
 ### 10.4 Clases CSS Canónicas
@@ -536,7 +575,7 @@ QUERIES:
 [ ] Ruta: endpoint en server/src/routes/ con telegramAuth + validate()
 [ ] Config compartida: constantes en shared/gameConfig.js o tokenConfig.js
 [ ] Migración: si hay cambio de schema, 00N_descripcion.js creado
-[ ] Tests: Jest tests en server/tests/ (mantener ≥ 104 tests pasando)
+[ ] Tests: Jest tests en server/tests/ (mantener 228/228 — DB in-memory, ver §3.2)
 [ ] Store: estado en gameStore.js si el cliente necesita persistencia
 [ ] Componente: UI en client/src/components/
 [ ] EventBridge: eventos documentados en §9.2 si hay comunicación Phaser↔React
@@ -558,46 +597,61 @@ QUERIES:
 | Economía KH Token (cap, streak, referral, retiro) | ✓ | ✅ |
 | Tareas diarias/sociales + streaks | ✓ | ✅ |
 | UI React + Phaser mobile-first | ✓ | ✅ |
-| Sprites isométricos canvas-generados | — | ✅ |
-| **Total tests** | **104/104** | ✅ |
+| Sprites: placeholders gitignoreados + brief de artista | — | ✅ |
+| **Total tests** | **228/228 pasando** | ✅ |
 
 ### Phase 2 — En Progreso
 
 | Feature | Spec | Implementado |
 |---------|------|-------------|
 | PvP combat completo | §6.2 | ⏳ esqueleto |
-| Sistema de facciones | — | ⏳ |
-| Mapa territorial + conquista | — | ⏳ |
+| Sistema de facciones | — | ✅ UI + seed en arranque |
+| Mapa territorial + conquista | — | ✅ TerritoryMapPanel + tributos |
 | Tech tree (Library) | — | ⏳ |
-| Push notifications bot (crop/troop ready) | — | ⏳ |
+| Push notifications bot (crop/troop ready) | — | ✅ notificationService + prefs (migración 019) |
+| Torneos, guilds, prestigio, marketplace P2P | — | ✅ migraciones 010–016 |
+| Experimento isométrico (2 escenas, flag-gated) | §10.5 | ⏳ en evaluación |
 
-### Bugs Conocidos
+### Bugs Conocidos (auditoría 2026-07-02, fixes aplicados el mismo día)
 
 | Issue | Severidad | Estado | Ubicación |
 |-------|-----------|--------|-----------|
+| Economía KH rota: `db.raw()` ejecutaba inmediato pero tokenService lo usaba estilo Knex como valor de `.update({...})` | CRITICAL | ✅ Resuelto: `db.raw` ahora es lazy (clase `Raw`) y `update()` inserta fragmentos raw | `database.js`, `tokenService.js` |
+| `LEAST`/`GREATEST`/`rowCount` (dialecto PostgreSQL) en SQL crudo → rompía TODA ganancia de recursos y el tick de aldeanos | CRITICAL | ✅ Resuelto: `MIN`/`MAX`/`count` | `playerService.js:201`, `villagerService.js:72-108` |
+| Upsert `ON CONFLICT` de marketService fallaba: `player_resources` no tenía UNIQUE(player_id, resource_id) | HIGH | ✅ Resuelto: migración 020 (dedupe + índice único) | `migrations/020_player_resources_unique.js` |
+| Infra de tests era Knex/PostgreSQL: sin `migrate.rollback()`, sin modo test (apuntaba a la DB real) | HIGH | ✅ Resuelto: modo test in-memory (`NODE_ENV=test`), `rollback()` implementado, `insert()` bulk | `database.js`, `tests/setup.js` |
+| Throttle de aldeanos (gate 5 min, `villager_last_tick`) perdido en el merge — se simulaba cada tick | MEDIUM | ✅ Resuelto: restaurado de rama WiFOf | `gameTick.js` §4c |
+| Config de héroes (HEROES, HERO_RARITIES, HERO_ITEMS) perdida en el merge — heroService crasheaba | HIGH | ✅ Resuelto: restaurada de rama WiFOf | `shared/gameConfig.js` |
+| `db.transaction`/`forUpdate` (Knex) no existían en el builder | MEDIUM | ✅ Resuelto: BEGIN/COMMIT/ROLLBACK reentrante; `forUpdate()` no-op (SQLite es single-writer) | `database.js` |
+| 8 migraciones llamaban `db.raw` sin `await` (rompería con raw lazy) | MEDIUM | ✅ Resuelto: `async` + `await` añadidos | `migrations/005–012` |
+| Deps huérfanas `knex` + `pg` en package.json (la migración a PostgreSQL de 24e7d7d fue revertida al builder sql.js, las deps quedaron) | LOW | ⚠️ Known | `server/package.json` |
+| Migraciones con números duplicados (005×2, 006×2 … 012×2) por merge de dos ramas. NO es bug funcional: el runner trackea por nombre de archivo completo y ordena lexicográficamente. Para nuevas migraciones usar 021+ | LOW | ⚠️ Known | `server/migrations/` |
 | TON tx hash es pseudo | LOW | ⚠️ Known | `tokenService.sendTON()` |
 | PvP no completamente implementado | MEDIUM | ⏳ Phase 2 | `combatService.js` |
 
 ---
 
-## 15. Dev Commands
+## 15. Dev Commands (local — PC Windows)
 
-```bash
-# Servidor
-cd server && npm run dev          # nodemon → :3001
-cd server && npm test             # Jest (104 tests)
+> El desarrollo y la ejecución ocurren en esta PC (PowerShell). El VPS está apagado.
 
-# Cliente
-cd client && npm run dev          # Vite → :5173
-cd client && npm run build        # Build prod → client/dist/
+```powershell
+# Servidor (Express → :3001)
+cd server; npm run dev            # nodemon
+cd server; node src/index.js      # arranque directo
+cd server; npm test               # Jest — ⚠️ infra rota, 45/228 pasan (ver §14)
 
-# Sprites (regenerar tilesets)
-node scripts/generate_sprites.js
+# Cliente (Vite → :5173)
+cd client; npm run dev
+cd client; npm run build          # Build prod → client/dist/
+
+# Sprites placeholder (tras clone fresco — assets/game/ está gitignoreado)
+node scripts/gen_placeholders.js
 
 # Screenshots UI (requiere servidor + Vite corriendo)
-SKIP_AUTH=true node server/src/index.js &
-cd client && node_modules/.bin/vite &
-node scripts/screenshot_ui.js
+$env:SKIP_AUTH = 'true'; node server/src/index.js   # terminal 1
+cd client; npm run dev                              # terminal 2
+node scripts/screenshot_ui.js                       # terminal 3
 ```
 
 **Variables de entorno** (`server/.env`):
@@ -606,8 +660,21 @@ node scripts/screenshot_ui.js
 |----------|-----------|-------------|
 | `BOT_TOKEN` | ✅ | Telegram bot token |
 | `WEBAPP_URL` | ✅ | URL de la Mini App (CORS) |
-| `TON_HOT_WALLET_MNEMONIC` | ✅ | Mnemónico 24 palabras del hot wallet |
+| `BOT_POLLING` | opcional | `false` desactiva el polling del bot (usar si otra instancia ya está polleando con el mismo token) |
+| `PORT` | opcional | Puerto del servidor (default: 3001) |
+| `TICK_INTERVAL_MS` | opcional | Intervalo del game tick (default: 60000) |
+| `TON_HOT_WALLET_MNEMONIC` | ✅ para retiros | Mnemónico 24 palabras del hot wallet (o archivo en `server/secrets/`) |
 | `TON_API_KEY` | opcional | TonCenter API key (evita rate limits) |
 | `TON_NETWORK` | opcional | `testnet` \| `mainnet` (default: testnet) |
+| `REDIS_URL` | opcional | Cache + rate limit compartido; sin Redis usa memoria local |
+| `SENTRY_DSN` | opcional | Monitoreo de errores |
 
-**Deploy:** PM2 (`ecosystem.config.js`) + Nginx (`deploy/nginx.conf`). El servidor Express sirve `client/dist/` como estáticos con SPA fallback.
+**Base de datos local:** `server/data/kingdoms.db` (sql.js). Las migraciones se aplican
+solas al arrancar. Los tests corren con `NODE_ENV=test` → DB in-memory, nunca tocan
+`data/kingdoms.db`.
+
+**Deploy (VPS — actualmente APAGADO, solo referencia):** PM2 (`ecosystem.config.js`) +
+Nginx (`deploy/nginx.conf.template`, ver `deploy/setup-vps.sh`). El servidor Express
+sirve `client/dist/` como estáticos con SPA fallback. Para exponer la Mini App desde
+esta PC usar un túnel (p. ej. cloudflared / ngrok) y actualizar `WEBAPP_URL` —
+ver `deploy/update-tunnel-url.sh`.

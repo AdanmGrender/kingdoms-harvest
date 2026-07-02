@@ -10,8 +10,8 @@
  * not in the DB — game-balance changes belong in code, not data.
  */
 
-exports.up = function (db) {
-  db.raw(`CREATE TABLE IF NOT EXISTS player_achievements (
+exports.up = async function (db) {
+  await db.raw(`CREATE TABLE IF NOT EXISTS player_achievements (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     player_id BIGINT NOT NULL,
     achievement_id TEXT NOT NULL,
@@ -20,10 +20,10 @@ exports.up = function (db) {
     reward_claimed_at TEXT DEFAULT NULL,
     UNIQUE(player_id, achievement_id)
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_player_achievements_player ON player_achievements (player_id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_player_achievements_player ON player_achievements (player_id)');
 };
 
-exports.down = function (db) {
-  db.raw('DROP INDEX IF EXISTS idx_player_achievements_player');
-  db.raw('DROP TABLE IF EXISTS player_achievements');
+exports.down = async function (db) {
+  await db.raw('DROP INDEX IF EXISTS idx_player_achievements_player');
+  await db.raw('DROP TABLE IF EXISTS player_achievements');
 };

@@ -13,8 +13,8 @@
  * time. Leader is the creator; only leader can disband.
  */
 
-exports.up = function (db) {
-  db.raw(`CREATE TABLE IF NOT EXISTS marketplace_listings (
+exports.up = async function (db) {
+  await db.raw(`CREATE TABLE IF NOT EXISTS marketplace_listings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     seller_id BIGINT NOT NULL,
     resource_id TEXT NOT NULL,
@@ -25,10 +25,10 @@ exports.up = function (db) {
     created_at TEXT NOT NULL,
     expires_at TEXT NOT NULL
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_market_status_expires ON marketplace_listings (status, expires_at)');
-  db.raw('CREATE INDEX IF NOT EXISTS idx_market_seller ON marketplace_listings (seller_id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_market_status_expires ON marketplace_listings (status, expires_at)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_market_seller ON marketplace_listings (seller_id)');
 
-  db.raw(`CREATE TABLE IF NOT EXISTS alliances (
+  await db.raw(`CREATE TABLE IF NOT EXISTS alliances (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     leader_id BIGINT NOT NULL,
@@ -37,21 +37,21 @@ exports.up = function (db) {
     created_at TEXT NOT NULL
   )`);
 
-  db.raw(`CREATE TABLE IF NOT EXISTS alliance_members (
+  await db.raw(`CREATE TABLE IF NOT EXISTS alliance_members (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     alliance_id INTEGER NOT NULL,
     player_id BIGINT NOT NULL UNIQUE,
     role TEXT NOT NULL DEFAULT 'member',
     joined_at TEXT NOT NULL
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_alliance_members_alliance ON alliance_members (alliance_id)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_alliance_members_alliance ON alliance_members (alliance_id)');
 };
 
-exports.down = function (db) {
-  db.raw('DROP INDEX IF EXISTS idx_alliance_members_alliance');
-  db.raw('DROP TABLE IF EXISTS alliance_members');
-  db.raw('DROP TABLE IF EXISTS alliances');
-  db.raw('DROP INDEX IF EXISTS idx_market_seller');
-  db.raw('DROP INDEX IF EXISTS idx_market_status_expires');
-  db.raw('DROP TABLE IF EXISTS marketplace_listings');
+exports.down = async function (db) {
+  await db.raw('DROP INDEX IF EXISTS idx_alliance_members_alliance');
+  await db.raw('DROP TABLE IF EXISTS alliance_members');
+  await db.raw('DROP TABLE IF EXISTS alliances');
+  await db.raw('DROP INDEX IF EXISTS idx_market_seller');
+  await db.raw('DROP INDEX IF EXISTS idx_market_status_expires');
+  await db.raw('DROP TABLE IF EXISTS marketplace_listings');
 };

@@ -13,8 +13,8 @@
  * new, no schema change needed.
  */
 
-exports.up = function (db) {
-  db.raw(`CREATE TABLE IF NOT EXISTS alliance_invitations (
+exports.up = async function (db) {
+  await db.raw(`CREATE TABLE IF NOT EXISTS alliance_invitations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     alliance_id INTEGER NOT NULL,
     invited_by_player_id BIGINT NOT NULL,
@@ -23,12 +23,12 @@ exports.up = function (db) {
     created_at TEXT NOT NULL,
     responded_at TEXT DEFAULT NULL
   )`);
-  db.raw('CREATE INDEX IF NOT EXISTS idx_invites_invited ON alliance_invitations (invited_player_id, status)');
-  db.raw('CREATE INDEX IF NOT EXISTS idx_invites_alliance ON alliance_invitations (alliance_id, status)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_invites_invited ON alliance_invitations (invited_player_id, status)');
+  await db.raw('CREATE INDEX IF NOT EXISTS idx_invites_alliance ON alliance_invitations (alliance_id, status)');
 };
 
-exports.down = function (db) {
-  db.raw('DROP INDEX IF EXISTS idx_invites_invited');
-  db.raw('DROP INDEX IF EXISTS idx_invites_alliance');
-  db.raw('DROP TABLE IF EXISTS alliance_invitations');
+exports.down = async function (db) {
+  await db.raw('DROP INDEX IF EXISTS idx_invites_invited');
+  await db.raw('DROP INDEX IF EXISTS idx_invites_alliance');
+  await db.raw('DROP TABLE IF EXISTS alliance_invitations');
 };

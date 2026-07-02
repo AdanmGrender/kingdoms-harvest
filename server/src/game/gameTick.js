@@ -150,8 +150,8 @@ async function processTick() {
         if (intAmount > 0) {
           productionAccumulators[key] -= intAmount;
           try {
-            // Cap at capacity to prevent overflow (db.raw is synchronous)
-            const result = db.raw(
+            // Cap at capacity to prevent overflow (db.raw es lazy — requiere await)
+            const result = await db.raw(
               'UPDATE "player_resources" SET "amount" = MIN("amount" + ?, "capacity") WHERE "player_id" = ? AND "resource_id" = ?',
               [intAmount, playerId, resource]
             );
@@ -296,13 +296,29 @@ async function processTick() {
     console.error('[Tick] Error expirando invitaciones:', error.message);
   }
 
-  // 4c. Villager simulation
+  // 4c. Villager simulation (throttled: at most once per 5 minutes per player)
   try {
     const villagerService = require('../services/villagerService');
-    // Get all unique player IDs that have villagers
-    const villagerPlayers = await db('villagers').select('player_id').groupBy('player_id');
-    for (const { player_id } of villagerPlayers) {
-      await villagerService.simulateTick(player_id);
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+
+    // Two queries instead of N+1: get players with villagers, then filter by throttle column
+    const villagerPlayerRows = await db('villagers').select('player_id').groupBy('player_id');
+    if (villagerPlayerRows.length > 0) {
+      const playerIds = villagerPlayerRows.map((r) => r.player_id);
+      const playerTicks = await db('players')
+        .whereIn('telegram_id', playerIds)
+        .select('telegram_id', 'villager_last_tick');
+
+      const toSimulate = playerTicks.filter(
+        (p) => !p.villager_last_tick || p.villager_last_tick < fiveMinAgo
+      );
+
+      for (const p of toSimulate) {
+        await villagerService.simulateTick(p.telegram_id);
+        await db('players')
+          .where('telegram_id', p.telegram_id)
+          .update({ villager_last_tick: new Date().toISOString() });
+      }
     }
   } catch (error) {
     console.error('[Tick] Error simulando aldeanos:', error.message);

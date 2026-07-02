@@ -4,6 +4,9 @@ require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const DB_PATH = path.resolve(__dirname, '../../data/kingdoms.db');
 
+// Modo test: DB 100% en memoria — nunca lee ni escribe data/kingdoms.db
+const IS_TEST = process.env.NODE_ENV === 'test';
+
 let sqlDb = null;
 let SQL = null;
 
@@ -63,8 +66,14 @@ class QueryBuilder {
       this._whereParams.push(args[1]);
     } else if (args.length === 3) {
       // .where('key', '<=', val)
-      this._wheres.push(`"${sanitizeIdentifier(args[0])}" ${sanitizeOperator(args[1])} ?`);
-      this._whereParams.push(args[2]);
+      // La validación del operador se difiere a la ejecución (estilo Knex):
+      // así `await expect(qb).rejects.toThrow()` funciona en vez de explotar sync.
+      try {
+        this._wheres.push(`"${sanitizeIdentifier(args[0])}" ${sanitizeOperator(args[1])} ?`);
+        this._whereParams.push(args[2]);
+      } catch (err) {
+        this._deferredError = this._deferredError || err;
+      }
     }
     return this;
   }
@@ -112,6 +121,12 @@ class QueryBuilder {
     return this;
   }
 
+  // No-op de compatibilidad Knex: SELECT ... FOR UPDATE no existe en SQLite
+  // (la DB entera es single-writer in-process, el lock por fila no aplica).
+  forUpdate() {
+    return this;
+  }
+
   orWhereIn(col, values) {
     const safeName = sanitizeIdentifier(col);
     if (values.length === 0) {
@@ -151,6 +166,9 @@ class QueryBuilder {
   }
 
   _buildWhereClause() {
+    // Error diferido de where() (p. ej. operador SQL no permitido) — explota
+    // recién al ejecutar la query, nunca silenciosamente.
+    if (this._deferredError) throw this._deferredError;
     if (this._wheres.length === 0) return { sql: '', params: [] };
 
     let clause = ' WHERE ';
@@ -206,12 +224,21 @@ class QueryBuilder {
   // INSERT — by default resolves to [lastInsertRowId].
   // Chaining .returning(col) wraps the result as [{ [col]: lastInsertRowId }]
   // so Knex-style call sites (`const [{ id }] = await db.insert(...).returning('id')`)
-  // keep working.
+  // keep working. Acepta objeto único o array de objetos (bulk insert multi-fila;
+  // las columnas se toman de la primera fila, faltantes → NULL).
   insert(data) {
-    const cols = Object.keys(data).map(c => sanitizeIdentifier(c));
-    const vals = Object.values(data);
-    const placeholders = cols.map(() => '?').join(', ');
-    const sql = `INSERT INTO "${this._table}" (${cols.map(c => `"${c}"`).join(', ')}) VALUES (${placeholders})`;
+    const rows = Array.isArray(data) ? data : [data];
+    if (rows.length === 0) throw new Error('insert() requiere al menos una fila');
+    const cols = Object.keys(rows[0]).map(c => sanitizeIdentifier(c));
+    const vals = [];
+    for (const row of rows) {
+      for (const c of cols) {
+        vals.push(row[c] === undefined ? null : row[c]);
+      }
+    }
+    const rowPlaceholders = `(${cols.map(() => '?').join(', ')})`;
+    const placeholders = rows.map(() => rowPlaceholders).join(', ');
+    const sql = `INSERT INTO "${this._table}" (${cols.map(c => `"${c}"`).join(', ')}) VALUES ${placeholders}`;
     let returningCol = null;
     const run = () => {
       const result = dbRun(sql, vals);
@@ -230,8 +257,19 @@ class QueryBuilder {
 
   // UPDATE - returns count of affected rows
   async update(data) {
-    const setClauses = Object.keys(data).map(k => `"${sanitizeIdentifier(k)}" = ?`);
-    const setParams = Object.values(data);
+    const setClauses = [];
+    const setParams = [];
+    for (const [key, value] of Object.entries(data)) {
+      const col = sanitizeIdentifier(key);
+      if (value instanceof Raw) {
+        // Fragmento raw estilo Knex: SET "col" = col + ? (params posicionales)
+        setClauses.push(`"${col}" = ${value.sql}`);
+        setParams.push(...value.params);
+      } else {
+        setClauses.push(`"${col}" = ?`);
+        setParams.push(value);
+      }
+    }
     const { sql: whereSQL, params: whereParams } = this._buildWhereClause();
     const sql = `UPDATE "${this._table}" SET ${setClauses.join(', ')}${whereSQL}`;
     return dbRun(sql, [...setParams, ...whereParams]).count;
@@ -305,6 +343,40 @@ class QueryBuilder {
 // Raw SQL helpers
 // ============================================
 
+// Knex-style lazy raw. Ejecuta al hacer await, o se inserta como fragmento SQL
+// cuando se pasa como valor a .update({ col: db.raw('col + ?', [n]) }).
+// El resultado se memoiza: await repetido NO re-ejecuta la query.
+class Raw {
+  constructor(sql, params = []) {
+    this.sql = sql;
+    this.params = params;
+    this._ran = false;
+    this._result = undefined;
+  }
+
+  _exec() {
+    if (!this._ran) {
+      this._result = dbRun(this.sql, this.params);
+      this._ran = true;
+    }
+    return this._result;
+  }
+
+  then(onFulfilled, onRejected) {
+    let result;
+    try {
+      result = this._exec();
+    } catch (err) {
+      return Promise.reject(err).then(onFulfilled, onRejected);
+    }
+    return Promise.resolve(result).then(onFulfilled, onRejected);
+  }
+
+  catch(onRejected) {
+    return this.then(undefined, onRejected);
+  }
+}
+
 function dbRun(sql, params = []) {
   sqlDb.run(sql, params);
   // Capture changes() and last_insert_rowid() BEFORE saveToDisk,
@@ -334,7 +406,7 @@ let _saving = false;
 const SAVE_DEBOUNCE_MS = 2000; // flush at most every 2 seconds
 
 function saveToDisk() {
-  if (!sqlDb) return;
+  if (!sqlDb || IS_TEST) return;
 
   // If a debounced save is already scheduled, let it handle this write too
   if (_saveTimer) return;
@@ -357,6 +429,7 @@ function saveToDisk() {
 
 // Flush synchronously on shutdown so no data is lost
 function saveToDiskSync() {
+  if (IS_TEST) return;
   if (sqlDb) {
     const data = sqlDb.export();
     const buffer = Buffer.from(data);
@@ -384,24 +457,55 @@ db.fn = {
   },
 };
 
-// Run raw SQL (synchronous — returns { count, lastId })
+// Raw SQL perezoso (estilo Knex): `await db.raw(sql, params)` → { count, lastId }.
+// Como valor en .update({ col: db.raw('col + ?', [n]) }) se inserta como fragmento.
+// ⚠️ Sin await en posición de statement NO se ejecuta.
 db.raw = function (sql, params = []) {
-  return dbRun(sql, params);
+  return new Raw(sql, params);
+};
+
+// Transacción estilo Knex sobre sql.js (single-connection, in-process).
+// trx === db: todo query dentro del callback participa del BEGIN/COMMIT.
+// Reentrante: si ya hay transacción activa, el callback corre dentro de ella
+// (SQLite no soporta BEGIN anidado). ⚠️ No intercalar awaits de I/O externo
+// dentro del callback — otros requests compartirían la transacción abierta.
+let _inTransaction = false;
+db.transaction = async function (fn) {
+  if (_inTransaction) return fn(db);
+
+  dbRun('BEGIN');
+  _inTransaction = true;
+  try {
+    const result = await fn(db);
+    dbRun('COMMIT');
+    return result;
+  } catch (err) {
+    try { dbRun('ROLLBACK'); } catch { /* ya revertida */ }
+    throw err;
+  } finally {
+    _inTransaction = false;
+  }
 };
 
 // Migration support
+const DEFAULT_MIGRATIONS_DIR = path.resolve(__dirname, '../../migrations');
+
+function ensureMigrationsTable() {
+  dbRun(`CREATE TABLE IF NOT EXISTS _migrations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    migrated_at TEXT DEFAULT (datetime('now'))
+  )`);
+}
+
 db.migrate = {
-  async latest({ directory }) {
-    const migrationFiles = fs.readdirSync(directory)
+  async latest({ directory } = {}) {
+    const dir = directory || DEFAULT_MIGRATIONS_DIR;
+    const migrationFiles = fs.readdirSync(dir)
       .filter(f => f.endsWith('.js'))
       .sort();
 
-    // Create migrations tracking table
-    dbRun(`CREATE TABLE IF NOT EXISTS _migrations (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL UNIQUE,
-      migrated_at TEXT DEFAULT (datetime('now'))
-    )`);
+    ensureMigrationsTable();
 
     const completed = dbAll('SELECT name FROM _migrations');
     const completedNames = new Set(completed.map(r => r.name));
@@ -409,11 +513,33 @@ db.migrate = {
     for (const file of migrationFiles) {
       if (completedNames.has(file)) continue;
 
-      const migration = require(path.join(directory, file));
+      const migration = require(path.join(dir, file));
       await migration.up(db);
 
       dbRun('INSERT INTO _migrations (name) VALUES (?)', [file]);
-      console.log(`[Migration] ${file} applied`);
+      if (!IS_TEST) console.log(`[Migration] ${file} applied`);
+    }
+  },
+
+  // Deshace migraciones aplicadas en orden inverso vía down().
+  // { all: true } → todas; default → solo la última.
+  async rollback({ directory, all = false } = {}) {
+    const dir = directory || DEFAULT_MIGRATIONS_DIR;
+    ensureMigrationsTable();
+
+    const applied = dbAll('SELECT name FROM _migrations ORDER BY name DESC');
+    const toRevert = all ? applied : applied.slice(0, 1);
+
+    for (const { name } of toRevert) {
+      const file = path.join(dir, name);
+      if (fs.existsSync(file)) {
+        const migration = require(file);
+        if (typeof migration.down === 'function') {
+          await migration.down(db);
+        }
+      }
+      dbRun('DELETE FROM _migrations WHERE name = ?', [name]);
+      if (!IS_TEST) console.log(`[Migration] ${name} rolled back`);
     }
   },
 };
@@ -590,17 +716,18 @@ async function initDatabase() {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  if (fs.existsSync(DB_PATH)) {
+  if (!IS_TEST && fs.existsSync(DB_PATH)) {
     const buffer = fs.readFileSync(DB_PATH);
     sqlDb = new SQL.Database(buffer);
   } else {
+    // Fresca en memoria (siempre en modo test)
     sqlDb = new SQL.Database();
   }
 
   // Enable foreign keys
   sqlDb.run('PRAGMA foreign_keys = ON');
 
-  console.log('Base de datos SQLite (sql.js) inicializada');
+  if (!IS_TEST) console.log('Base de datos SQLite (sql.js) inicializada');
   return db;
 }
 
