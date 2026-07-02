@@ -23,14 +23,14 @@ The reference games (Whiteout Survival, Castle & Dragon, similar mobile RTS) sha
 | Tile size     | 32×32 px |
 | Building size | 128×128 px |
 | Depth sort    | Flat layers (ground / objects / UI) |
-| Art source    | Programmatic canvas (scripts/generate_sprites.js) |
+| Art source    | Placeholders (scripts/gen_placeholders.js) → arte de artista según docs/art-spec.md |
 
 **Pros:** Simple coordinate math, easy pathfinding, no depth sorting ambiguity.  
 **Cons:** Less depth, harder to convey the "3D city" feel of the references.
 
 ---
 
-## Option B — Experiment: Isometric Pixel Art (VITE_ISO_MODE=true)
+## Option B — Experiment: Isometric Pixel Art (ISO_MODE=true)
 
 | Attribute     | Value |
 |---------------|-------|
@@ -38,7 +38,7 @@ The reference games (Whiteout Survival, Castle & Dragon, similar mobile RTS) sha
 | Tile size     | 64×32 px (diamond) |
 | Building size | 128×128 px (reused, anchor adjusted) |
 | Depth sort    | `depth = col + row + offset` per sprite |
-| Art source    | Programmatic pngjs (scripts/generate_iso_tiles.js) |
+| Art source    | Placeholders (scripts/gen_placeholders.js, sección iso) |
 | Grid          | 32×32 tiles → ~2048×1024 px world |
 
 **Pros:** Strong visual depth, matches reference game feel, classic strategy aesthetic.  
@@ -46,12 +46,13 @@ The reference games (Whiteout Survival, Castle & Dragon, similar mobile RTS) sha
 
 ### Enabling the experiment
 
-```bash
-# client/.env.local
-VITE_ISO_MODE=true
+```js
+// client/src/game/config.js — flag hardcodeado (ya NO se lee VITE_ISO_MODE)
+export const ISO_MODE = true;
 ```
 
-Then `cd client && npm run dev`. BootScene will route to `IsoWorldScene` instead of `WorldScene`.
+Then `cd client; npm run dev`. BootScene routes to `IsoWorldScene` instead of `WorldScene`.
+Alternatively, URL `?iso=1` loads the legacy `IsoScene` POC (iso-rework branch).
 
 ---
 
@@ -88,13 +89,13 @@ All objects use `setOrigin(0.5, 1.0)` — bottom-center anchored to tile foot.
 ## Key Implementation Files
 
 ```
-scripts/generate_iso_tiles.js          → generates iso_terrain.png + iso_objects.png
+scripts/gen_placeholders.js             → generates placeholder tiles (incl. iso/)
 client/src/game/scenes/IsoWorldScene.js → isometric scene (isolated experiment)
-client/src/game/scenes/BootScene.js    → reads isoMode flag, routes to correct scene
-client/src/game/config.js              → reads VITE_ISO_MODE, selects scene list
-client/src/game/PhaserGame.jsx         → sets isoMode in Phaser registry
-client/.env.local                      → VITE_ISO_MODE=false (flip to true to test)
-client/public/assets/game/iso/         → generated tile assets
+client/src/game/scenes/IsoScene.js      → legacy iso POC (URL ?iso=1)
+client/src/game/scenes/BootScene.js     → reads isoMode flag, routes to correct scene
+client/src/game/config.js               → ISO_MODE const (hardcoded), scene list
+client/src/game/PhaserGame.jsx          → sets isoMode in Phaser registry
+client/public/assets/game/iso/          → placeholder tile assets (gitignored)
 ```
 
 ---

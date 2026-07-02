@@ -79,6 +79,36 @@ function write(relPath, buf) {
   console.log(`  ✓  ${relPath}`);
 }
 
+function writeAbs(relToClientAssets, buf) {
+  const full = path.join(ROOT, 'client/public/assets', relToClientAssets);
+  fs.mkdirSync(path.dirname(full), { recursive: true });
+  fs.writeFileSync(full, buf);
+}
+
+// Sprite con fondo transparente y caja centrada (para objetos que se dibujan
+// SOBRE el terreno — un cuadrado opaco taparía el tile de abajo).
+function makeSprite(w, h, fillHex, borderHex = '#1a1a1a') {
+  const png = new PNG({ width: w, height: h, colorType: 6 });
+  const [fr, fg, fb] = hex(fillHex);
+  const [br, bg, bb] = hex(borderHex);
+  const x0 = Math.floor(w * 0.15), x1 = Math.ceil(w * 0.85);
+  const y0 = Math.floor(h * 0.15), y1 = Math.ceil(h * 0.85);
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      if (x >= x0 && x < x1 && y >= y0 && y < y1) {
+        const border = x < x0 + 2 || x >= x1 - 2 || y < y0 + 2 || y >= y1 - 2;
+        const [r, g, b] = border ? [br, bg, bb] : [fr, fg, fb];
+        png.data[i] = r; png.data[i+1] = g; png.data[i+2] = b; png.data[i+3] = 255;
+      } else {
+        png.data[i+3] = 0; // transparente
+      }
+    }
+  }
+  return PNG.sync.write(png);
+}
+
 // ─── Asset definitions ───────────────────────────────────────────────────────
 // Colors per category (muted, distinct)
 const C = {
@@ -137,12 +167,31 @@ write('ui/dialog_frame.png', makePng(256, 128, C.ui));
 write('ui/interact_btn.png', makePng(64,   64, C.ui));
 write('ui/joystick.png',     makePng(128,  64, C.ui));
 
-// ── ISO mode (only needed when VITE_ISO_MODE=true) ───────────────────────────
+// ── ISO mode (only needed when ISO_MODE=true in config.js) ───────────────────
 // iso_terrain.png: 7 tiles of 64×32
 write('iso/iso_terrain.png',  makeSheet(64, 32, 7, 1, C.iso_terrain));
 
 // iso_objects.png: 4 objects of 64×96
 write('iso/iso_objects.png',  makeSheet(64, 96, 4, 1, C.iso_objects));
+
+// ── Kenney medieval-rts stand-ins (WorldScene + IsoScene los cargan) ─────────
+// BootScene.js / IsoScene.js cargan estos 102 PNGs individuales de 64×64:
+//   Tile/medievalTile_01..58            — suelo (opaco)
+//   Environment/medievalEnvironment_01..21 — decoración (transparente)
+//   Structure/medievalStructure_01..23  — edificios (transparente)
+// El pack real CC0 se puede re-descargar de https://kenney.nl/assets/medieval-rts
+const pad2 = (n) => String(n).padStart(2, '0');
+const KENNEY = 'kenney-medieval/PNG/Default size';
+for (let i = 1; i <= 58; i++) {
+  writeAbs(`${KENNEY}/Tile/medievalTile_${pad2(i)}.png`, makePng(64, 64, C.terrain));
+}
+for (let i = 1; i <= 21; i++) {
+  writeAbs(`${KENNEY}/Environment/medievalEnvironment_${pad2(i)}.png`, makeSprite(64, 64, C.iso_objects));
+}
+for (let i = 1; i <= 23; i++) {
+  writeAbs(`${KENNEY}/Structure/medievalStructure_${pad2(i)}.png`, makeSprite(64, 64, C.buildings));
+}
+console.log(`  ✓  ${KENNEY}/ — 102 stand-ins (58 tiles, 21 env, 23 structs)`);
 
 console.log('\nDone. Drop real art files in the same paths to replace placeholders.');
 console.log('See docs/art-spec.md for the full artist brief.\n');
