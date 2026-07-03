@@ -176,6 +176,9 @@ export default class IsoWorldScene extends Phaser.Scene {
   // ─── Ground (RenderTexture — static, no per-tile depth sorting needed) ───────
   _renderGround() {
     this.groundRT = this.add.renderTexture(0, 0, WORLD_W, WORLD_H);
+    // Phaser ≥3.60: RenderTexture nace con origen 0.5 (centro) — sin esto el
+    // suelo entero se dibuja desplazado medio mundo hacia la esquina (0,0).
+    this.groundRT.setOrigin(0, 0);
     this.groundRT.setDepth(-1);
 
     for (let row = 0; row < ROWS; row++) {
