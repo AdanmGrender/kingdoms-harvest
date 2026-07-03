@@ -1,11 +1,55 @@
 # Kingdoms Harvest — Art Style Decision
 
-> Status: **Experimenting** — `IsoWorldScene` is a side-by-side proof of concept.
-> The current `WorldScene` (top-down grid) runs by default.
+> Status: **Dirección elegida (2026-07-03): GRIMDARK ISO PIXEL-ART con combate a
+> distancia (disparos).** Referencias recibidas del owner: marine con armadura
+> roja (retrato + sheet de poses), y dos escenas iso de fortaleza gótica-industrial
+> (velas, holo-mesa, muros con relieves, horda atacando). `IsoWorldScene` es el
+> vehículo; `WorldScene` (top-down) sigue activa hasta completar la transición.
 
 ---
 
-## Visual References
+## Dirección Grimdark (referencias 2026-07-03)
+
+**Lo que las referencias dictan técnicamente:**
+- Iso 2:1 con tiles de piedra grandes y muy texturizados (grietas, óxido, manchas)
+- Iluminación puntual dramática: velas naranjas, hologramas teal, LEDs rojos —
+  en Phaser se simula con sprites de glow + tint, no con luces reales
+- Personajes chunky ~1.5 tiles de alto, armadura voluminosa, hombreras enormes
+- Detalle ambiental: casquillos, sangre seca, cables, estandartes, calaveras
+- Cielo/fondo: púrpura-gris tormentoso, ruinas en silueta con humo
+
+**Paleta extraída de las referencias:**
+
+| Rol | Hex aprox. | Uso |
+|--------------|-----------|-----|
+| Piedra base | `#4a443e` | suelo, muros |
+| Piedra oscura | `#332f2b` | sombras, grietas |
+| Óxido/sangre seca | `#7a4a30` | manchas de suelo, metal viejo |
+| Rojo armadura | `#b32821` / sombra `#7f1d18` | unidad jugador, acentos |
+| Dorado sucio | `#d9a441` | relieves, iconografía, UI premium |
+| Teal holograma | `#4fd8c8` | pantallas, UI in-world, selección |
+| Naranja vela | `#e8933a` | fuentes de luz cálida |
+| Púrpura horda | `#7a5a8a` | enemigos tipo enjambre |
+| Verde horda | `#5a7a35` | enemigos tipo brutos |
+| Cielo tormenta | `#4a4550` | fondo, niebla |
+
+**⚠️ REGLA DE IP (juego monetizado con TON):** las referencias usan marcas de
+Games Workshop (águila imperial, diseño Space Marine, orks/tyranids). El arte
+FINAL debe ser **grimdark original**: calaveras/gótico-industrial genérico OK;
+águilas bicéfalas imperiales, siluetas exactas de marines y razas reconocibles
+de 40K NO. Mismo sabor, cero marcas.
+
+**"Con disparos" — impacto en specs:**
+- Nuevo estado de animación `shoot` (one-shot, no loop) además de idle/walk
+- Sheet por personaje pasa a 3 estados: `idle` (2-4f), `walk` (4-6f), `shoot` (3-4f)
+- Efectos nuevos en effects.png: fogonazo (muzzle flash 2f), trazador/proyectil,
+  impacto (3f), casquillos
+- El sheet de poses de referencia NO sigue nuestro layout — el brief del artista
+  manda: 5 filas (S, SE, E, NE, N) × N frames, lado W por flipX
+
+---
+
+## Referencias históricas (fase medieval, superadas)
 
 The reference games (Whiteout Survival, Castle & Dragon, similar mobile RTS) share these traits:
 - Semi-realistic painted buildings viewed from a fixed elevated angle (~45°)

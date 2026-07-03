@@ -49,7 +49,8 @@ export default class DirectionalAnimator {
             end:   row * cfg.frames + cfg.frames - 1,
           }),
           frameRate: cfg.frameRate,
-          repeat: -1,
+          // repeat: 0 → estado one-shot (p. ej. 'shoot'); default: loop infinito
+          repeat: cfg.repeat ?? -1,
         });
       }
     }
@@ -62,7 +63,28 @@ export default class DirectionalAnimator {
     this.sector = 6; // mirando al frente (S)
     this._pendingSector = null;
     this._pendingMs = 0;
+    this._oneShot = null; // estado one-shot en curso ('shoot') — congela la FSM
     this._apply();
+  }
+
+  /**
+   * Dispara un estado one-shot (registrado con repeat: 0), p. ej. 'shoot'.
+   * Congela dirección y FSM mientras dura; al terminar vuelve al estado normal
+   * y llama onComplete (para spawnear el proyectil, aplicar daño, etc.).
+   */
+  playOnce(state, onComplete) {
+    if (this._oneShot) return false; // ya hay uno en curso
+    this._oneShot = state;
+    const { row, flip } = SECTOR_TO_ROW[this.sector];
+    const key = `${this.texKey}_${state}_${row}`;
+    this.sprite.setFlipX(flip);
+    this.sprite.play(key);
+    this.sprite.once(`animationcomplete-${key}`, () => {
+      this._oneShot = null;
+      this._apply();
+      if (onComplete) onComplete();
+    });
+    return true;
   }
 
   /**
@@ -71,6 +93,8 @@ export default class DirectionalAnimator {
    * exactamente hacia donde el jugador lo ve moverse.
    */
   update(vx, vy, dt) {
+    if (this._oneShot) return; // one-shot en curso: FSM y dirección congeladas
+
     const speed = Math.hypot(vx, vy);
     this.state = speed > SPEED_EPSILON ? 'walk' : 'idle';
 

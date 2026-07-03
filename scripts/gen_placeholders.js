@@ -230,6 +230,13 @@ write('iso/iso_objects.png',  makeSheet(64, 96, 4, 1, C.iso_objects));
 write('iso/chars/villager_idle.png', makeCharSheet(32, 48, 2, C.villager));
 write('iso/chars/villager_walk.png', makeCharSheet(32, 48, 4, C.villager));
 
+// Trooper grimdark con disparo (dirección de arte 2026-07-03, docs/art-style.md)
+// idle=2f, walk=4f, shoot=3f (one-shot). Rojo armadura de la paleta de referencia.
+const TROOPER_RED = '#b32821';
+write('iso/chars/trooper_idle.png',  makeCharSheet(32, 48, 2, TROOPER_RED));
+write('iso/chars/trooper_walk.png',  makeCharSheet(32, 48, 4, TROOPER_RED));
+write('iso/chars/trooper_shoot.png', makeCharSheet(32, 48, 3, TROOPER_RED, '#4fd8c8'));
+
 // ── Kenney medieval-rts stand-ins (WorldScene + IsoScene los cargan) ─────────
 // BootScene.js / IsoScene.js cargan estos 102 PNGs individuales de 64×64:
 //   Tile/medievalTile_01..58            — suelo (opaco)

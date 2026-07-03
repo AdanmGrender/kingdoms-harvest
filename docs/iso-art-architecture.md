@@ -70,9 +70,14 @@ personaje_<estado>.png  — filas = dirección, columnas = frames
   fila 2: E    (→ W  por espejo)
   fila 3: NE   (→ NW por espejo)
   fila 4: N    (espalda)
-Frames por fila: idle = 2-4, walk = 4-6, work = 4
-Tamaño frame:    32×48 px (o 48×64 si el detalle lo pide — decidir con la imagen ref)
+Frames por fila: idle = 2-4, walk = 4-6, shoot = 3-4 (one-shot), work = 4
+Tamaño frame:    32×48 px (o 48×64 si el detalle lo pide — ver paleta grimdark
+                 en docs/art-style.md, dirección elegida 2026-07-03)
 ```
+
+Estados one-shot (`shoot`): registrar con `repeat: 0` y disparar con
+`DirectionalAnimator.playOnce('shoot', onComplete)` — congela dirección y FSM
+mientras dura, y el callback spawnea el proyectil/tracer al terminar.
 
 ### FSM recomendada: estado × dirección-como-parámetro
 

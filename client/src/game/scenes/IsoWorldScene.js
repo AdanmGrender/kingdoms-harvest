@@ -142,6 +142,12 @@ export default class IsoWorldScene extends Phaser.Scene {
     this.load.spritesheet('iso_villager_walk', '/assets/game/iso/chars/villager_walk.png', {
       frameWidth: 32, frameHeight: 48,
     });
+    // Trooper grimdark con estado shoot (one-shot) — dirección de arte 2026-07-03
+    for (const st of ['idle', 'walk', 'shoot']) {
+      this.load.spritesheet(`iso_trooper_${st}`, `/assets/game/iso/chars/trooper_${st}.png`, {
+        frameWidth: 32, frameHeight: 48,
+      });
+    }
     // Reuse building sprites from BootScene load
   }
 
@@ -272,6 +278,12 @@ export default class IsoWorldScene extends Phaser.Scene {
       walk: { frames: 4, frameRate: 8 },
     });
 
+    DirectionalAnimator.registerAnims(this, 'iso_trooper', {
+      idle:  { frames: 2, frameRate: 3 },
+      walk:  { frames: 4, frameRate: 8 },
+      shoot: { frames: 3, frameRate: 10, repeat: 0 }, // one-shot
+    });
+
     this.villagers = [];
     for (const [col, row] of [[14, 15], [17, 14], [15, 18]]) {
       const foot = isoFoot(col, row);
@@ -285,6 +297,37 @@ export default class IsoWorldScene extends Phaser.Scene {
         waitMs: 500 + Math.random() * 2000,
       });
     }
+
+    // Trooper: deambula y al llegar a destino dispara (valida playOnce + tracer)
+    const tFoot = isoFoot(20, 16);
+    const tSpr = this.add.sprite(tFoot.x, tFoot.y, 'iso_trooper_idle', 0);
+    tSpr.setOrigin(0.5, 1.0);
+    tSpr.setDepth(20 + 16 + 0.4);
+    this.villagers.push({
+      spr: tSpr,
+      anim: new DirectionalAnimator(tSpr, 'iso_trooper'),
+      target: null,
+      waitMs: 1000,
+      shootsOnArrival: true,
+    });
+  }
+
+  // Trazador de disparo: línea teal desde el "cañón" hacia donde mira el sprite
+  _spawnTracer(v) {
+    const angle = v.anim.sector * (Math.PI / 4);
+    const dx = Math.cos(angle), dy = -Math.sin(angle);
+    const x0 = v.spr.x + dx * 10, y0 = v.spr.y - 24 + dy * 5;
+
+    const g = this.add.graphics().setDepth(9000);
+    g.lineStyle(2, 0x4fd8c8, 1);
+    g.lineBetween(x0, y0, x0 + dx * 70, y0 + dy * 35);
+    g.fillStyle(0xffe08a, 1);
+    g.fillCircle(x0, y0, 3); // fogonazo
+
+    this.tweens.add({
+      targets: g, alpha: 0, duration: 160,
+      onComplete: () => g.destroy(),
+    });
   }
 
   _pickWalkableTile() {
@@ -317,7 +360,11 @@ export default class IsoWorldScene extends Phaser.Scene {
       if (dist < 2) {
         v.target = null;
         v.waitMs = 800 + Math.random() * 2500;
-        v.anim.update(0, 0, delta);
+        if (v.shootsOnArrival) {
+          v.anim.playOnce('shoot', () => this._spawnTracer(v));
+        } else {
+          v.anim.update(0, 0, delta);
+        }
         continue;
       }
 
