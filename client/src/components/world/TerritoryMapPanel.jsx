@@ -1,13 +1,21 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import useGameStore from '../../store/gameStore';
 
+// Tipos de terreno del páramo (re-theme grimdark — ver docs/art-style.md)
 const TYPE_ICON = {
   plains:   '🌾',
   forest:   '🌲',
   mountain: '⛰️',
-  swamp:    '🌫️',
+  swamp:    '☣️',
   coast:    '🌊',
   ruins:    '🏛️',
+  sand:     '🏜️',
+  snow:     '❄️',
+};
+
+const TYPE_LABEL = {
+  plains: 'Páramo', forest: 'Selva', mountain: 'Montaña', swamp: 'Zona Tóxica',
+  coast: 'Costa', ruins: 'Ruinas', sand: 'Dunas', snow: 'Tundra',
 };
 
 const FALLBACK_BORDER = '#3b3b5e';
@@ -60,30 +68,50 @@ export default function TerritoryMapPanel() {
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-gray-400 text-center">
-        Mapa del mundo — conquistá territorios para tu facción
-      </p>
+      {/* Cabecera estilo informe de campaña (ref: mapa de sistema, docs/art-style.md) */}
+      <div className="border border-yellow-700/40 rounded-md px-2 py-1.5 bg-black/40">
+        <p className="font-medieval text-[13px] text-kingdom-gold tracking-wide text-center uppercase">
+          Mapa de Campaña — Sector en Disputa
+        </p>
+        <p className="text-[10px] text-gray-400 text-center">
+          Conquistá territorios para tu facción · tributo pasivo por hora
+        </p>
+      </div>
+
+      {/* Leyenda (ref: recuadro LEGEND del mapa de sistema) */}
+      <div className="flex items-center justify-center gap-3 text-[9px] text-gray-400">
+        <span><span className="inline-block w-2 h-2 rounded-sm bg-gray-600 mr-1" />Libre</span>
+        <span><span className="inline-block w-2 h-2 rounded-sm bg-green-500 mr-1" />Tu facción</span>
+        <span><span className="inline-block w-2 h-2 rounded-sm bg-red-600 mr-1" />Rival</span>
+        <span>🛡️ Defensa</span>
+      </div>
 
       {/* 2-col card grid — sparse coords make a dense N×N matrix unusable */}
       <div className="grid grid-cols-2 gap-2">
-        {sorted.map((t) => {
+        {sorted.map((t, idx) => {
           const ownerColor = t.owner?.color || FALLBACK_BORDER;
           const ownedByMe = t.owner?.id === player?.faction_id;
           return (
             <button
               key={t.id}
               onClick={() => setSelected(t)}
-              className={`relative rounded-lg p-2 text-left transition-all
-                bg-kingdom-blue/30 hover:bg-kingdom-blue/50 ${
+              className={`relative rounded-md p-2 text-left transition-all border
+                bg-black/40 hover:bg-black/60 border-gray-700/60 ${
                 selected?.id === t.id ? 'ring-2 ring-yellow-400' : ''
               }`}
               style={{ borderTop: `3px solid ${ownerColor}` }}
             >
+              {/* POI numerado (ref: battle sites numerados del mapa) */}
+              <span className="absolute top-1 right-1.5 text-[9px] font-bold text-gray-500">
+                {String(idx + 1).padStart(2, '0')}
+              </span>
               <div className="flex items-start gap-2">
                 <span className="text-2xl leading-none">{TYPE_ICON[t.type] || '🗺️'}</span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] font-bold leading-tight truncate">{t.name}</p>
-                  <p className="text-[10px] text-gray-400">DEF {t.defense_strength}</p>
+                  <p className="text-[10px] text-gray-400">
+                    {TYPE_LABEL[t.type] || t.type} · 🛡️{t.defense_strength}
+                  </p>
                   {t.owner ? (
                     <p className="text-[10px] mt-0.5 truncate" style={{ color: ownerColor }}>
                       {t.owner.icon} {ownedByMe ? '(tuya)' : t.owner.name}
@@ -122,7 +150,7 @@ export default function TerritoryMapPanel() {
             disabled={selected.owner?.id === player?.faction_id}
             className="w-full py-2 rounded-lg bg-red-700 hover:bg-red-600 text-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            ⚔️ Atacar con todas las tropas
+            💥 Asaltar con todas las tropas
           </button>
           {!player?.faction_id && (
             <p className="text-[10px] text-gray-500 text-center">

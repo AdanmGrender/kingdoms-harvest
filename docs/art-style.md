@@ -47,6 +47,37 @@ de 40K NO. Mismo sabor, cero marcas.
 - El sheet de poses de referencia NO sigue nuestro layout — el brief del artista
   manda: 5 filas (S, SE, E, NE, N) × N frames, lado W por flipX
 
+## Segunda tanda de referencias (mapas y escenas, 2026-07-03)
+
+**1. Mapa de campaña / sistema** (estilo pergamino + grid oscuro):
+- Marco tipo informe militar: título stencil arriba, recuadro LEGEND abajo-izquierda
+- POIs numerados sobre el mapa (sitios de batalla, fortalezas, ruinas, puerto)
+- Planeta/disco central con zonas: ciudades colmena en ruinas, cordilleras,
+  fortaleza-monasterio, zona de aterrizaje, infestaciones (púrpura brillante)
+- → Aplicado a `TerritoryMapPanel` (cabecera de campaña, leyenda, POIs numerados).
+  Asset futuro del artista: `ui/campaign_map_bg.png` (pergamino oscuro + grid)
+
+**2. Diorama de misión PvE** (concepto Phase 2 — "escena de misión"):
+- Recorte de terreno flotante con la misión en título ("MISSION: ...")
+- Minimapa inset arriba-derecha con la zona marcada
+- Horda enemiga entrando por un borde, naves estrelladas, ruinas góticas
+- → Candidato a upgrade del flujo de combate PvE: pantalla de briefing con
+  diorama estático + resultado, en lugar del panel de texto actual
+
+**3. Anclas visuales de edificios (del interior de fortaleza):**
+| Edificio (id) | Ancla visual de la referencia |
+|---------------|-------------------------------|
+| throne_room (Bastión de Mando) | mesa holográfica teal con estrado |
+| embassy (Nexo de Comunicaciones) | antenas parabólicas sobre torre |
+| tower (Torreta Centinela) | torreta automática de doble cañón en muro |
+| smithy (Fundición) | santuario-tecno con tubos rojos brillantes |
+| siege_ram (Vehículo de Brecha) | tanque oruga chato con escotilla |
+
+⚠️ IP (recordatorio corto): las referencias nombran marcas de GW («Blood
+Angels», «Tyrannid Hive», águilas). En NUESTRO juego: facciones y hordas ya
+tienen nombres originales (Cruzada del Alba, Custodios del Páramo...) y la
+iconografía final evita águilas imperiales bicéfalas y siluetas calcadas.
+
 ---
 
 ## Referencias históricas (fase medieval, superadas)
