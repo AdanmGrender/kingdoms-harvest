@@ -7,7 +7,11 @@ dist/
 Thumbs.db
 server/data/
 server/secrets/
-.claude/
+# Ignore local Claude state (settings.local.json, locks) but SHARE skills.
+.claude/*
+!.claude/skills/
+server/.claude/
+client/.claude/
 *.tar.gz
 
 # Dev-only debug artifacts (committed screenshots live under scripts/screenshots/)
