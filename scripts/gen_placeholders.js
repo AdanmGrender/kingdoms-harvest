@@ -109,6 +109,57 @@ function makeSprite(w, h, fillHex, borderHex = '#1a1a1a') {
   return PNG.sync.write(png);
 }
 
+// Personaje 8-dir: 5 filas (S, SE, E, NE, N) × N frames. El lado W se obtiene
+// con flipX. Cada frame lleva un punto claro hacia donde "mira" la fila — así
+// la FSM de direcciones se valida A OJO antes de que exista arte real.
+function makeCharSheet(fw, fh, cols, fillHex, markerHex = '#ffe08a') {
+  const rows = 5;
+  const W = fw * cols, H = fh * rows;
+  const png = new PNG({ width: W, height: H, colorType: 6 });
+  const [fr, fg, fb] = hex(fillHex);
+  const [mr, mg, mb] = hex(markerHex);
+
+  // offset del marcador (px desde el centro del frame) por fila
+  const MARK = [
+    [0, 14],    // S  — abajo-centro
+    [10, 10],   // SE — abajo-derecha
+    [12, 0],    // E  — derecha
+    [10, -10],  // NE — arriba-derecha
+    [0, -14],   // N  — arriba-centro
+  ];
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const ox = col * fw, oy = row * fh;
+      // cuerpo: caja centrada, brillo levemente distinto por frame (anim visible)
+      const shade = 1 - col * 0.10;
+      const x0 = Math.floor(fw * 0.2), x1 = Math.ceil(fw * 0.8);
+      const y0 = Math.floor(fh * 0.15), y1 = Math.ceil(fh * 0.9);
+      for (let y = 0; y < fh; y++) {
+        for (let x = 0; x < fw; x++) {
+          const i = ((oy + y) * W + (ox + x)) * 4;
+          if (x >= x0 && x < x1 && y >= y0 && y < y1) {
+            png.data[i] = fr * shade; png.data[i+1] = fg * shade;
+            png.data[i+2] = fb * shade; png.data[i+3] = 255;
+          } else png.data[i+3] = 0;
+        }
+      }
+      // marcador de dirección: punto 6×6
+      const [mx, my] = MARK[row];
+      const cx = ox + fw / 2 + mx, cy = oy + fh / 2 + my;
+      for (let y = -3; y < 3; y++) {
+        for (let x = -3; x < 3; x++) {
+          const px = Math.round(cx + x), py = Math.round(cy + y);
+          if (px < ox || px >= ox + fw || py < oy || py >= oy + fh) continue;
+          const i = (py * W + px) * 4;
+          png.data[i] = mr; png.data[i+1] = mg; png.data[i+2] = mb; png.data[i+3] = 255;
+        }
+      }
+    }
+  }
+  return PNG.sync.write(png);
+}
+
 // ─── Asset definitions ───────────────────────────────────────────────────────
 // Colors per category (muted, distinct)
 const C = {
@@ -173,6 +224,11 @@ write('iso/iso_terrain.png',  makeSheet(64, 32, 7, 1, C.iso_terrain));
 
 // iso_objects.png: 4 objects of 64×96
 write('iso/iso_objects.png',  makeSheet(64, 96, 4, 1, C.iso_objects));
+
+// Personaje 8-dir del experimento iso (layout: docs/iso-art-architecture.md §2)
+// 5 filas × N frames de 32×48; idle=2 frames, walk=4 frames
+write('iso/chars/villager_idle.png', makeCharSheet(32, 48, 2, C.villager));
+write('iso/chars/villager_walk.png', makeCharSheet(32, 48, 4, C.villager));
 
 // ── Kenney medieval-rts stand-ins (WorldScene + IsoScene los cargan) ─────────
 // BootScene.js / IsoScene.js cargan estos 102 PNGs individuales de 64×64:

@@ -12,6 +12,7 @@
  */
 import Phaser from 'phaser';
 import CameraSystem from '../systems/CameraSystem';
+import DirectionalAnimator from '../systems/DirectionalAnimator';
 import EventBridge from '../EventBridge';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -113,11 +114,19 @@ export default class IsoWorldScene extends Phaser.Scene {
 
   // ─── Asset loading (isolated from BootScene) ────────────────────────────────
   preload() {
-    // Show a simple loading message
+    // Show a simple loading message (destroyed in create)
     const { width, height } = this.cameras.main;
-    this.add.text(width / 2, height / 2, 'Cargando modo isométrico...', {
+    this._loadingText = this.add.text(width / 2, height / 2, 'Cargando modo isométrico...', {
       fontFamily: 'serif', fontSize: '18px', color: '#ffd700',
     }).setOrigin(0.5).setScrollFactor(0);
+
+    // BootScene ya no carga buildings.png (WorldScene usa los iso_struct de
+    // Kenney) — esta escena lo carga por su cuenta.
+    if (!this.textures.exists('buildings')) {
+      this.load.spritesheet('buildings', '/assets/game/tilesets/buildings.png', {
+        frameWidth: 128, frameHeight: 128,
+      });
+    }
 
     this.load.spritesheet('iso_terrain', '/assets/game/iso/iso_terrain.png', {
       frameWidth: ISO_W, frameHeight: ISO_H,
@@ -125,16 +134,26 @@ export default class IsoWorldScene extends Phaser.Scene {
     this.load.spritesheet('iso_objects', '/assets/game/iso/iso_objects.png', {
       frameWidth: 64, frameHeight: 96,
     });
+    // Personaje 8-dir (5 filas S/SE/E/NE/N; lado W por flipX) — ver
+    // docs/iso-art-architecture.md §2. DirectionalAnimator espera `${key}_idle`/`_walk`.
+    this.load.spritesheet('iso_villager_idle', '/assets/game/iso/chars/villager_idle.png', {
+      frameWidth: 32, frameHeight: 48,
+    });
+    this.load.spritesheet('iso_villager_walk', '/assets/game/iso/chars/villager_walk.png', {
+      frameWidth: 32, frameHeight: 48,
+    });
     // Reuse building sprites from BootScene load
   }
 
   // ─── Scene setup ─────────────────────────────────────────────────────────────
   create() {
+    if (this._loadingText) { this._loadingText.destroy(); this._loadingText = null; }
     this.tiles = buildMap();
 
     this._renderGround();
     this._placeDecorations();
     this._placeStartingBuildings();
+    this._spawnDemoVillagers();
     this._setupCamera();
     this._setupInput();
     this._setupEventBridge();
@@ -242,6 +261,77 @@ export default class IsoWorldScene extends Phaser.Scene {
         y:           bldg.getData('row'),
       },
     });
+  }
+
+  // ─── Demo villagers — validación del sistema 8-dir con sheets placeholder ────
+  // Deambulan entre tiles caminables; el punto claro del placeholder marca hacia
+  // dónde "mira" cada frame, así la FSM se comprueba a simple vista.
+  _spawnDemoVillagers() {
+    DirectionalAnimator.registerAnims(this, 'iso_villager', {
+      idle: { frames: 2, frameRate: 3 },
+      walk: { frames: 4, frameRate: 8 },
+    });
+
+    this.villagers = [];
+    for (const [col, row] of [[14, 15], [17, 14], [15, 18]]) {
+      const foot = isoFoot(col, row);
+      const spr = this.add.sprite(foot.x, foot.y, 'iso_villager_idle', 0);
+      spr.setOrigin(0.5, 1.0);
+      spr.setDepth(col + row + 0.4);
+      this.villagers.push({
+        spr,
+        anim: new DirectionalAnimator(spr, 'iso_villager'),
+        target: null,
+        waitMs: 500 + Math.random() * 2000,
+      });
+    }
+  }
+
+  _pickWalkableTile() {
+    for (let tries = 0; tries < 20; tries++) {
+      const col = 8 + Math.floor(Math.random() * 16);
+      const row = 8 + Math.floor(Math.random() * 16);
+      if (this.tiles[row]?.[col] !== T.WATER) return { col, row };
+    }
+    return { col: 16, row: 16 };
+  }
+
+  _updateVillagers(delta) {
+    if (!this.villagers) return;
+    const SPEED = 40; // px/s en pantalla
+
+    for (const v of this.villagers) {
+      if (!v.target) {
+        v.waitMs -= delta;
+        v.anim.update(0, 0, delta);
+        if (v.waitMs <= 0) {
+          const t = this._pickWalkableTile();
+          v.target = isoFoot(t.col, t.row);
+        }
+        continue;
+      }
+
+      const dx = v.target.x - v.spr.x;
+      const dy = v.target.y - v.spr.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 2) {
+        v.target = null;
+        v.waitMs = 800 + Math.random() * 2500;
+        v.anim.update(0, 0, delta);
+        continue;
+      }
+
+      // Mover hacia el pie del tile destino (la compresión 2:1 ya viene en dy)
+      const step = Math.min((SPEED * delta) / 1000, dist);
+      v.spr.x += (dx / dist) * step;
+      v.spr.y += (dy / dist) * step;
+      v.anim.update((dx / dist) * SPEED, (dy / dist) * SPEED, delta);
+
+      // Depth solo al cruzar de tile (origin 1.0 → spr.y ES el pie)
+      const t = screenToIso(v.spr.x, v.spr.y - 1);
+      const d = t.col + t.row + 0.4;
+      if (v.spr.depth !== d) v.spr.setDepth(d);
+    }
   }
 
   // ─── Camera ───────────────────────────────────────────────────────────────────
@@ -373,6 +463,7 @@ export default class IsoWorldScene extends Phaser.Scene {
   // ─── Update loop ──────────────────────────────────────────────────────────────
   update(_time, delta) {
     if (this.cameraSystem) this.cameraSystem.update(delta);
+    this._updateVillagers(delta);
   }
 
   // ─── Cleanup ──────────────────────────────────────────────────────────────────
