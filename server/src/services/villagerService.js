@@ -30,7 +30,7 @@ const villagerService = {
       created_at: now,
     });
 
-    return { success: true, message: `${roleConfig.icon} ${name} se ha unido a tu reino como ${roleConfig.name}` };
+    return { success: true, message: `${roleConfig.icon} ${name} se ha unido a tu bastión como ${roleConfig.name}` };
   },
 
   async assignToBuilding(playerId, villagerId, buildingId) {

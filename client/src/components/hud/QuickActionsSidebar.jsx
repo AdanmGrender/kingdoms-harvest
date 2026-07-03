@@ -6,7 +6,7 @@ import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
 const ACTIONS = [
-  { id: 'castle', icon: '🏠', label: 'Castillo', color: '#ffd750' },
+  { id: 'castle', icon: '🏠', label: 'Bastión', color: '#ffd750' },
   { id: 'missions', icon: '📜', label: 'Misiones', color: '#8fd4ff', badge: 3 },
   { id: 'build', icon: '🔨', label: 'Construir', color: '#ffb070' },
   { id: 'explore', icon: '🗺️', label: 'Explorar', color: '#8fff9e' },

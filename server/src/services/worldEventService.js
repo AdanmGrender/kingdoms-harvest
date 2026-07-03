@@ -33,8 +33,8 @@ function coopMultiplier(participantCount) {
 
 const EVENT_TYPES = {
   travelers_camp: {
-    title: 'Campamento de Viajeros',
-    description: 'Un grupo de mercaderes pasó por aquí y dejó provisiones al partir.',
+    title: 'Campamento Abandonado',
+    description: 'Una columna de refugiados pasó por aquí y dejó suministros al partir.',
     icon: '🏕️',
     rarity: 'common',
     rewards: [
@@ -44,8 +44,8 @@ const EVENT_TYPES = {
     duration: 30,
   },
   wild_harvest: {
-    title: 'Cosecha Silvestre',
-    description: 'La tierra dio frutos en abundancia sin que nadie los sembrara.',
+    title: 'Brote Salvaje',
+    description: 'El suelo muerto dio frutos mutantes sin que nadie los sembrara.',
     icon: '🌾',
     rarity: 'common',
     rewards: [
@@ -55,8 +55,8 @@ const EVENT_TYPES = {
     duration: 25,
   },
   wandering_merchant: {
-    title: 'Mercader Errante',
-    description: 'Un comerciante solitario dejó mercancía al costado del camino.',
+    title: 'Traficante Errante',
+    description: 'Un contrabandista solitario dejó mercancía al costado de la ruta.',
     icon: '🧳',
     rarity: 'common',
     rewards: [
@@ -66,9 +66,9 @@ const EVENT_TYPES = {
     duration: 20,
   },
   forest_gifts: {
-    title: 'Dones del Bosque',
-    description: 'Los espíritus del bosque dejaron madera cortada para tu reino.',
-    icon: '🌲',
+    title: 'Restos del Naufragio',
+    description: 'Un transporte de carga se estrelló aquí. Su chatarra es tuya.',
+    icon: '🛰️',
     rarity: 'common',
     rewards: [
       { resource_id: 'wood', min: 50, max: 120 },
@@ -87,9 +87,9 @@ const EVENT_TYPES = {
     duration: 45,
   },
   abandoned_caravan: {
-    title: 'Caravana Abandonada',
-    description: 'Una caravana fue dejada atrás. Su carga te espera.',
-    icon: '🐪',
+    title: 'Convoy Abandonado',
+    description: 'Un convoy fue dejado atrás bajo fuego. Su carga te espera.',
+    icon: '🚚',
     rarity: 'uncommon',
     rewards: [
       { resource_id: 'gold', min: 100, max: 250 },
@@ -108,8 +108,8 @@ const EVENT_TYPES = {
     duration: 35,
   },
   cursed_chest: {
-    title: 'Cofre Maldito',
-    description: 'Un cofre oxidado yace abierto. Alguien ya tomó la maldición… y dejó el oro.',
+    title: 'Contenedor Maldito',
+    description: 'Un contenedor oxidado yace abierto. Alguien ya tomó la maldición… y dejó los créditos.',
     icon: '📦',
     rarity: 'uncommon',
     rewards: [
@@ -119,8 +119,8 @@ const EVENT_TYPES = {
     duration: 25,
   },
   royal_messenger: {
-    title: 'Mensajero Real',
-    description: 'El mensajero trae un tributo del reino vecino como señal de paz.',
+    title: 'Emisario del Alto Mando',
+    description: 'El emisario trae un tributo del bastión vecino como señal de tregua.',
     icon: '📜',
     rarity: 'rare',
     rewards: [
@@ -432,7 +432,7 @@ const worldEventService = {
       rewards: finalRewards,
       multiplier,
       participant_count: participantCount,
-      message: `¡Reclamaste "${event.title}"!${coopMsg} Recursos añadidos a tu reino.`,
+      message: `¡Reclamaste "${event.title}"!${coopMsg} Recursos añadidos a tu bastión.`,
     };
   },
 

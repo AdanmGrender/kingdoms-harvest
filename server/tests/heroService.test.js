@@ -91,7 +91,9 @@ describe('HeroService — getHeroes', () => {
     const hero = heroes.find((h) => h.dbId === insertedId);
     expect(hero).toBeDefined();
     expect(hero.heroId).toBe('aria');
-    expect(hero.name).toBe('Aria la Valiente');
+    // Nombre desde la config — los display names se re-tematizan sin tocar IDs
+    const { HEROES } = require('../../shared/gameConfig');
+    expect(hero.name).toBe(HEROES.aria.name);
     expect(hero.class).toBe('warrior');
     expect(hero.rarity).toBe('common');
     expect(hero.level).toBe(3);
@@ -405,7 +407,8 @@ describe('HeroService — equipItem', () => {
     const result = await heroService.equipItem(HERO_PLAYER_ID, heroDbId, 'iron_sword');
     expect(result.success).toBe(true);
     expect(result.equipment.weapon).toBe('iron_sword');
-    expect(result.message).toContain('iron_sword'.replace('iron_sword', 'Espada de Hierro') || 'equipado');
+    const { HERO_ITEMS } = require('../../shared/gameConfig');
+    expect(result.message).toContain(HERO_ITEMS.iron_sword.name);
   });
 
   test('removes item from inventory after equipping', async () => {

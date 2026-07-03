@@ -465,8 +465,8 @@ export function generateWorldMap(seed = 42) {
   }
 
   // ─── Other kingdom territories (visible but non-interactive for now) ───
-  objects.push({ type: 'rival_kingdom', x: 140, y: 40, name: 'Reino del Norte', faction: 'north' });
-  objects.push({ type: 'rival_kingdom', x: 15, y: 100, name: 'Reino del Sur', faction: 'south' });
+  objects.push({ type: 'rival_kingdom', x: 140, y: 40, name: 'Enclave del Norte', faction: 'north' });
+  objects.push({ type: 'rival_kingdom', x: 15, y: 100, name: 'Enclave del Sur', faction: 'south' });
 
   return {
     width: MAP_WIDTH,

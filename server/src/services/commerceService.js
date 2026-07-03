@@ -98,8 +98,8 @@ const commerceService = {
     const departs = new Date(now.getTime() + 4 * 60 * 60 * 1000); // 4 horas
 
     const caravanNames = [
-      'Caravana del Este', 'Mercaderes de Norheim', 'Comerciantes del Desierto',
-      'Caravana Imperial', 'Buhoneros Errantes', 'Feria Ambulante',
+      'Convoy del Este', 'Chatarreros de Norheim', 'Traficantes del Páramo',
+      'Convoy del Alto Mando', 'Buhoneros del Óxido', 'Zoco Ambulante',
     ];
 
     const [id] = await db('caravans').insert({
@@ -121,8 +121,8 @@ const commerceService = {
     const caravan = await this.getActiveCaravan();
     const offer = caravan.buy_offers.find((o) => o.resource_id === resourceId);
 
-    if (!offer) throw new Error('La caravana no vende ese recurso');
-    if (quantity > offer.quantity) throw new Error(`La caravana solo tiene ${offer.quantity}`);
+    if (!offer) throw new Error('El convoy no vende ese recurso');
+    if (quantity > offer.quantity) throw new Error(`El convoy solo tiene ${offer.quantity}`);
 
     const totalCost = offer.price * quantity;
 
@@ -155,8 +155,8 @@ const commerceService = {
     const caravan = await this.getActiveCaravan();
     const offer = caravan.sell_offers.find((o) => o.resource_id === resourceId);
 
-    if (!offer) throw new Error('La caravana no compra ese recurso');
-    if (quantity > offer.quantity) throw new Error(`La caravana solo acepta ${offer.quantity} más`);
+    if (!offer) throw new Error('El convoy no compra ese recurso');
+    if (quantity > offer.quantity) throw new Error(`El convoy solo acepta ${offer.quantity} más`);
 
     // Faction bonus: shadow_merchants +15% sell price
     const player = await db('players').where('telegram_id', playerId).first();

@@ -261,7 +261,7 @@ const siegeService = {
       );
       notificationService.notify(
         siege.defender_id, 'sieges',
-        `🛡️ ¡Tu reino fue atacado y derrotado! Perdiste: ${lootSummary || 'ninguno'}. Reforzá tus defensas.`
+        `🛡️ ¡Tu bastión fue atacado y derrotado! Perdiste: ${lootSummary || 'ninguno'}. Reforzá tus defensas.`
       );
     } else {
       notificationService.notify(
@@ -270,7 +270,7 @@ const siegeService = {
       );
       notificationService.notify(
         siege.defender_id, 'sieges',
-        `🛡️ ¡Defendiste tu reino con éxito! El atacante fue rechazado.`
+        `🛡️ ¡Defendiste tu bastión con éxito! El atacante fue rechazado.`
       );
     }
   },

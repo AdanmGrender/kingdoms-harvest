@@ -13,13 +13,13 @@ function secureRandom() {
 
 // NPCs que dan misiones
 const NPCS = [
-  { name: 'Tabernero Gordo', icon: '🍺', type: 'food' },
-  { name: 'Herrero del Rey', icon: '⚒️', type: 'materials' },
-  { name: 'Comerciante Errante', icon: '🧳', type: 'mixed' },
-  { name: 'Cocinera Real', icon: '👩‍🍳', type: 'food' },
+  { name: 'Cantinero Tuerto', icon: '🍺', type: 'food' },
+  { name: 'Maestro de Fundición', icon: '⚒️', type: 'materials' },
+  { name: 'Traficante Errante', icon: '🧳', type: 'mixed' },
+  { name: 'Cocinera del Bastión', icon: '👩‍🍳', type: 'food' },
   { name: 'Capitán de la Guardia', icon: '🛡️', type: 'military' },
-  { name: 'Aldeano Desesperado', icon: '🧑‍🌾', type: 'basic' },
-  { name: 'Princesa Caprichosa', icon: '👸', type: 'luxury' },
+  { name: 'Refugiado Desesperado', icon: '🧑‍🌾', type: 'basic' },
+  { name: 'Gobernadora Caprichosa', icon: '👸', type: 'luxury' },
 ];
 
 // Recursos que se pueden pedir en misiones

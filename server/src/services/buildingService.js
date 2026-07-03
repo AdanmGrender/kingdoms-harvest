@@ -54,7 +54,7 @@ const buildingService = {
 
     if (castleLevel < zoneRequirements[building.zone]) {
       throw new Error(
-        `Necesitás Salón del Trono nivel ${zoneRequirements[building.zone]} para construir en zona ${building.zone}`
+        `Necesitás Bastión de Mando nivel ${zoneRequirements[building.zone]} para construir en zona ${building.zone}`
       );
     }
 

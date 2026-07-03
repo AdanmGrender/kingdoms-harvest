@@ -523,7 +523,7 @@ const combatService = {
         : '';
       notifyService.sendBotDM(
         defenderId,
-        `⚔️ ¡${attackerName} te atacó y ganó${lootStr}! Volvé a defender tu reino.`,
+        `💥 ¡${attackerName} te atacó y ganó${lootStr}! Volvé a defender tu bastión.`,
       );
     } else {
       // Successful defense — celebrate + surface the reward

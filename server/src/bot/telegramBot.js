@@ -37,10 +37,10 @@ function initBot() {
       : '';
 
     bot.sendMessage(chatId,
-      `👑 *¡Bienvenido a Kingdoms Harvest, ${firstName}!*\n\n` +
-      `Construí tu castillo, cultivá tu granja, comerciá con caravanas y ` +
-      `conquistá territorios con tu facción.${referralMsg}\n` +
-      `🏰 Tocá el botón de abajo para comenzar tu aventura:`,
+      `💀 *¡Bienvenido a Kingdoms Harvest, ${firstName}!*\n\n` +
+      `Levantá tu bastión en un mundo en ruinas, cultivá tus vats, comerciá ` +
+      `con convoyes y conquistá territorios con tu facción.${referralMsg}\n` +
+      `🎖️ Tocá el botón de abajo para tomar el mando:`,
       {
         parse_mode: 'Markdown',
         reply_markup: {
@@ -56,11 +56,11 @@ function initBot() {
   bot.onText(/\/help/, (msg) => {
     bot.sendMessage(msg.chat.id,
       `📖 *Guía de Kingdoms Harvest*\n\n` +
-      `🌾 *Granja:* Plantá cultivos y criaá animales para obtener recursos.\n` +
-      `🏰 *Castillo:* Construí y mejorá edificios para desbloquear mecánicas.\n` +
-      `📋 *Misiones:* Completá pedidos de NPCs para ganar oro y XP.\n` +
-      `🏪 *Comercio:* Comprá y vendé con caravanas a precios variables.\n` +
-      `⚔️ *Guerra:* Entrená tropas, atacá aldeas NPC o a otros jugadores.\n` +
+      `🌾 *Cultivo:* Plantá en tus vats y criá bestias para obtener recursos.\n` +
+      `🏭 *Bastión:* Construí y mejorá edificios para desbloquear mecánicas.\n` +
+      `📋 *Misiones:* Completá pedidos de NPCs para ganar créditos y XP.\n` +
+      `🏪 *Comercio:* Comprá y vendé con convoyes a precios variables.\n` +
+      `💥 *Guerra:* Entrená tropas, atacá enclaves NPC o a otros jugadores.\n` +
       `🛡️ *Facciones:* Uníte a una facción y conquistá territorios.\n\n` +
       `Usá /play para abrir el juego.`,
       { parse_mode: 'Markdown' }
@@ -69,10 +69,10 @@ function initBot() {
 
   // Comando /play
   bot.onText(/\/play/, (msg) => {
-    bot.sendMessage(msg.chat.id, '🎮 ¡Abrí tu reino!', {
+    bot.sendMessage(msg.chat.id, '🎮 ¡Abrí tu bastión!', {
       reply_markup: {
         inline_keyboard: [[
-          { text: '👑 Abrir Kingdoms Harvest', web_app: { url: webAppUrl } },
+          { text: '💀 Abrir Kingdoms Harvest', web_app: { url: webAppUrl } },
         ]],
       },
     });

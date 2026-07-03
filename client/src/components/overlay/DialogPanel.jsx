@@ -6,13 +6,13 @@ import useGameStore from '../../store/gameStore';
 import { CharacterSprite } from '../ui/SpriteIcon';
 
 const NPC_GREETINGS = {
-  farmer: '¡Hola, aventurero! ¿Buscas trabajo en los campos?',
-  baker: '¡Bienvenido! El pan fresco está listo.',
-  merchant: '¿Interesado en hacer negocios? Tengo ofertas especiales.',
+  farmer: '¡Eh, superviviente! ¿Buscás trabajo en los vats?',
+  baker: '¡Bienvenido! Las raciones calientes están listas.',
+  merchant: '¿Interesado en hacer negocios? Tengo mercancía que no preguntes de dónde salió.',
   knight: '¡Soldado! ¿Estás listo para el combate?',
-  princess: 'Bienvenido al castillo. Hay asuntos que requieren tu atención.',
-  wizard: 'Los astros revelan grandes desafíos por delante...',
-  ranger: 'Ten cuidado en el bosque. No todo es lo que parece.',
+  princess: 'Bienvenido al bastión. Hay asuntos que requieren tu atención.',
+  wizard: 'El Vacío susurra grandes desafíos por delante...',
+  ranger: 'Cuidado en el páramo. No todo lo que se mueve está vivo.',
 };
 
 function parseRewards(rewards) {

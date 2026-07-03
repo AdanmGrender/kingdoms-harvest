@@ -985,7 +985,7 @@ const useGameStore = create((set, get) => ({
   executePrestige: async () => {
     try {
       const { data } = await api.post('/prestige/execute');
-      get().addNotification(data.message || '¡Prestige realizado! El reino renace.', 'success');
+      get().addNotification(data.message || '¡Prestige realizado! El bastión renace.', 'success');
       set({ prestigeInfo: null });
       get().loadPrestige();
       return data;

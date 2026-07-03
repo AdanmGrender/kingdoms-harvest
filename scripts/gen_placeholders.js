@@ -162,18 +162,19 @@ function makeCharSheet(fw, fh, cols, fillHex, markerHex = '#ffe08a') {
 
 // ─── Asset definitions ───────────────────────────────────────────────────────
 // Colors per category (muted, distinct)
+// Paleta grimdark (docs/art-style.md, dirección 2026-07-03)
 const C = {
-  terrain:    '#4a6030',  // olive green  — ground tiles
-  farm:       '#5a7a28',  // bright green — farm state tiles
-  buildings:  '#7a4a28',  // brown        — buildings
-  npc:        '#5a3a6a',  // purple       — NPC characters
-  troops:     '#2a4a6a',  // steel blue   — military units
-  villager:   '#2a6a5a',  // teal         — villagers
-  animals:    '#7a6a28',  // amber        — animals
-  effects:    '#6a6a28',  // yellow-gray  — particle effects
-  ui:         '#3a3a4a',  // dark blue    — UI chrome
-  iso_terrain:'#2a5a48',  // dark teal    — iso ground tiles
-  iso_objects:'#2a4828',  // forest       — iso decorations
+  terrain:    '#4a443e',  // piedra base    — ground tiles
+  farm:       '#5a7a35',  // verde tóxico   — farm state tiles (vats)
+  buildings:  '#332f2b',  // piedra oscura  — buildings
+  npc:        '#7a5a8a',  // púrpura        — NPC characters
+  troops:     '#7f1d18',  // rojo sombra    — military units
+  villager:   '#4fd8c8',  // teal holograma — villagers
+  animals:    '#7a4a30',  // óxido          — animals
+  effects:    '#e8933a',  // naranja vela   — particle effects
+  ui:         '#332f2b',  // piedra oscura  — UI chrome
+  iso_terrain:'#4a443e',  // piedra base    — iso ground tiles
+  iso_objects:'#332f2b',  // piedra oscura  — iso decorations
 };
 
 // ─── Generate ────────────────────────────────────────────────────────────────

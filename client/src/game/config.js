@@ -40,9 +40,9 @@ const gameConfig = {
   },
   scene: [BootScene, WorldScene, IsoScene, IsoWorldScene],
   parent: 'phaser-container',
-  // Grass-tinted so any viewport area past the 32x32 world bounds blends with
-  // the terrain instead of looking like a broken render.
-  backgroundColor: '#6aab5c',
+  // Tormenta grimdark (paleta docs/art-style.md) — el área fuera del mundo se
+  // funde con el cielo en vez de verse como render roto.
+  backgroundColor: '#4a4550',
   audio: {
     disableWebAudio: false,
   },
