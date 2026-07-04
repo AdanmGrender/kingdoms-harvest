@@ -160,6 +160,82 @@ function makeCharSheet(fw, fh, cols, fillHex, markerHex = '#ffe08a') {
   return PNG.sync.write(png);
 }
 
+// Cielo tormenta: degradado vertical + siluetas de ruinas + brasas.
+// Placeholder del backdrop de AmbientSystem; el arte IA final lo reemplaza.
+function makeSky(w, h) {
+  const png = new PNG({ width: w, height: h, colorType: 6 });
+  const top = hex('#4a4550'), bottom = hex('#2a262e');
+
+  for (let y = 0; y < h; y++) {
+    const t = y / h;
+    const r = Math.round(top[0] + (bottom[0] - top[0]) * t);
+    const g = Math.round(top[1] + (bottom[1] - top[1]) * t);
+    const b = Math.round(top[2] + (bottom[2] - top[2]) * t);
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      png.data[i] = r; png.data[i+1] = g; png.data[i+2] = b; png.data[i+3] = 255;
+    }
+  }
+
+  // Siluetas de ruinas en el horizonte (tercio inferior)
+  let seed = 99;
+  const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+  const [sr, sg, sb] = hex('#1f1c22');
+  for (let s = 0; s < 14; s++) {
+    const bw = 20 + Math.floor(rand() * 60);
+    const bh = 30 + Math.floor(rand() * (h * 0.28));
+    const bx = Math.floor(rand() * (w - bw));
+    for (let y = h - bh; y < h; y++) {
+      for (let x = bx; x < bx + bw; x++) {
+        const i = (y * w + x) * 4;
+        png.data[i] = sr; png.data[i+1] = sg; png.data[i+2] = sb;
+      }
+    }
+  }
+  // Brasas flotando
+  const [er, eg, eb] = hex('#e8933a');
+  for (let e = 0; e < 40; e++) {
+    const x = Math.floor(rand() * w), y = Math.floor(rand() * h * 0.8);
+    const i = (y * w + x) * 4;
+    png.data[i] = er; png.data[i+1] = eg; png.data[i+2] = eb;
+  }
+  return PNG.sync.write(png);
+}
+
+// Decals de suelo: manchas semi-transparentes (óxido, sangre seca, grietas,
+// casquillos) que las escenas estampan sobre el terreno — "suelo con historia".
+function makeDecals(fw, fh, frames) {
+  const W = fw * frames;
+  const png = new PNG({ width: W, height: fh, colorType: 6 });
+  const COLORS = ['#7a4a30', '#7f1d18', '#26221f', '#d9a441']; // óxido, sangre, grieta, casquillo
+  let seed = 7;
+  const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+
+  for (let f = 0; f < frames; f++) {
+    const [cr, cg, cb] = hex(COLORS[f % COLORS.length]);
+    const ox = f * fw, cx = fw / 2, cy = fh / 2;
+    const blobs = 4 + Math.floor(rand() * 5);
+    for (let bIdx = 0; bIdx < blobs; bIdx++) {
+      const bx = cx + (rand() - 0.5) * fw * 0.5;
+      const by = cy + (rand() - 0.5) * fh * 0.5;
+      const br = 2 + rand() * (fh * 0.22);
+      for (let y = 0; y < fh; y++) {
+        for (let x = 0; x < fw; x++) {
+          const d = Math.hypot(x - bx, (y - by) * 2); // elipse achatada iso
+          if (d < br) {
+            const i = ((y) * W + (ox + x)) * 4;
+            const a = Math.round(150 * (1 - d / br));
+            if (a > png.data[i+3]) {
+              png.data[i] = cr; png.data[i+1] = cg; png.data[i+2] = cb; png.data[i+3] = a;
+            }
+          }
+        }
+      }
+    }
+  }
+  return PNG.sync.write(png);
+}
+
 // ─── Asset definitions ───────────────────────────────────────────────────────
 // Colors per category (muted, distinct)
 // Paleta grimdark (docs/art-style.md, dirección 2026-07-03)
@@ -237,6 +313,25 @@ const TROOPER_RED = '#b32821';
 write('iso/chars/trooper_idle.png',  makeCharSheet(32, 48, 2, TROOPER_RED));
 write('iso/chars/trooper_walk.png',  makeCharSheet(32, 48, 4, TROOPER_RED));
 write('iso/chars/trooper_shoot.png', makeCharSheet(32, 48, 3, TROOPER_RED, '#4fd8c8'));
+
+// ── Ambiente grimdark (AmbientSystem + decals de suelo) ───────────────────────
+write('ambient/sky_storm.png', makeSky(1024, 512));
+write('iso/decals.png',        makeDecals(64, 32, 8));
+
+// ── Slots de arte por edificio (bld_<id> — el punto de goteo del arte IA) ────
+// El arte final sobrescribe assets/game/buildings/<id>.png y ambas escenas lo
+// muestran sin tocar código (getBuildingSprite prefiere bld_<id>).
+const { BUILDINGS } = require('../shared/gameConfig');
+const ZONE_COLOR = {
+  agricultural: '#5a7a35',
+  defensive:    '#4a443e',
+  social:       '#7a4a30',
+  noble:        '#332f2b',
+};
+for (const b of Object.values(BUILDINGS)) {
+  write(`buildings/${b.id}.png`, makeSprite(128, 128, ZONE_COLOR[b.zone] || C.buildings));
+}
+console.log(`  ✓  buildings/ — ${Object.keys(BUILDINGS).length} slots bld_<id>`);
 
 // ── Kenney medieval-rts stand-ins (WorldScene + IsoScene los cargan) ─────────
 // BootScene.js / IsoScene.js cargan estos 102 PNGs individuales de 64×64:

@@ -15,7 +15,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, buildingData) {
     const spriteKey = buildingData.is_building
       ? SCAFFOLD_SPRITE
-      : getBuildingSprite(buildingData.buildingId);
+      : getBuildingSprite(buildingData.buildingId, scene);
     super(scene, x, y, spriteKey);
 
     this.buildingData = buildingData;
@@ -58,7 +58,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
     this.buildingData = buildingData;
     if (!buildingData.is_building) {
       // Swap scaffold → final sprite when construction finishes
-      this.setTexture(getBuildingSprite(buildingData.buildingId));
+      this.setTexture(getBuildingSprite(buildingData.buildingId, this.scene));
       this.setDisplaySize(BUILDING_SIZE, BUILDING_SIZE);
       if (this.constructionText) {
         this.constructionText.destroy();

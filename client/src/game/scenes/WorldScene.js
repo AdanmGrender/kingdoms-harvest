@@ -25,7 +25,10 @@ import SelectionSystem from '../systems/SelectionSystem';
 import BuildingPlacementSystem from '../systems/BuildingPlacementSystem';
 import DayNightSystem from '../systems/DayNightSystem';
 import ParticleSystem from '../systems/ParticleSystem';
+import AmbientSystem from '../systems/AmbientSystem';
 import { addStaticShadow, addTrackedShadow } from '../systems/ShadowSystem';
+import { addGlow } from '../systems/GlowLights';
+import { BUILDING_LIGHTS } from '../config/buildingSprites';
 import EventBridge from '../EventBridge';
 
 const FOG_TINT = 0x202040;
@@ -53,6 +56,8 @@ export default class WorldScene extends Phaser.Scene {
     this.villagers = [];
     this.mapData = null;
     this.terrainSprites = new Map();
+    this.ambientSystem = null;
+    this.glows = [];
   }
 
   create() {
@@ -117,6 +122,24 @@ export default class WorldScene extends Phaser.Scene {
         tile.setOrigin(0.5, 0.5);
         tile.setDepth(0);
         this.terrainSprites.set(`${x},${y}`, tile);
+      }
+    }
+
+    // Decals: manchas de óxido/sangre/grietas sobre el terreno (seeded por
+    // mapa — mismo mundo, mismas cicatrices). "Suelo con historia" grimdark.
+    if (this.textures.exists('ground_decals')) {
+      let seed = (this.mapData.seed || 42) * 7 + 13;
+      const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+      const { terrain } = this.mapData;
+      for (let i = 0; i < 160; i++) {
+        const x = Math.floor(rand() * width);
+        const y = Math.floor(rand() * height);
+        // Nieve/hielo limpios — el óxido y la sangre viven en el resto
+        if (terrain[y]?.[x] === BIOMES.SNOW || terrain[y]?.[x] === BIOMES.ICE) continue;
+        const { px, py } = this.tileToPx(x, y);
+        this.add.image(px, py, 'ground_decals', Math.floor(rand() * 8))
+          .setDepth(1)
+          .setAlpha(0.8);
       }
     }
   }
@@ -386,11 +409,19 @@ export default class WorldScene extends Phaser.Scene {
     this.placementSystem = new BuildingPlacementSystem(this);
     this.dayNightSystem = new DayNightSystem(this);
     this.particleSystem = new ParticleSystem(this);
+    // Ambiente grimdark: viñeta de bordes + cielo tormenta de backdrop
+    this.ambientSystem = new AmbientSystem(this, { sky: true, vignette: true });
 
     for (const building of this.buildings) {
       const id = building.buildingData.buildingId;
       if (['mill', 'smithy', 'barn', 'tavern'].includes(id)) {
         this.particleSystem.addBuildingSmoke(building.x, building.y);
+      }
+      // Luces falsas por edificio (holo teal, velas, forja) — brillan de noche
+      for (const l of BUILDING_LIGHTS[id] || []) {
+        this.glows.push(addGlow(this, building.x + l.dx, building.y + l.dy, {
+          color: l.color, radius: l.radius, depth: 950,
+        }));
       }
     }
 
@@ -538,5 +569,8 @@ export default class WorldScene extends Phaser.Scene {
     if (this.particleSystem) this.particleSystem.destroy();
     if (this.dayNightSystem) this.dayNightSystem.destroy();
     if (this.placementSystem) this.placementSystem.destroy();
+    if (this.ambientSystem) this.ambientSystem.destroy();
+    for (const g of this.glows) g.destroy();
+    this.glows = [];
   }
 }

@@ -40,6 +40,31 @@ export const BUILDING_SPRITES = {
 
 const FALLBACK = 'iso_struct_16';
 
-export function getBuildingSprite(buildingId) {
+/**
+ * Slots de arte por edificio: BootScene carga assets/game/buildings/<id>.png
+ * como textura `bld_<id>` (gen_placeholders los genera siempre; el arte IA
+ * final sobrescribe el PNG). Si la textura existe se prefiere sobre el
+ * stand-in Kenney — así el arte gotea edificio por edificio sin tocar código.
+ * @param {Phaser.Scene} scene — opcional; sin escena devuelve el mapa legacy.
+ */
+export function getBuildingSprite(buildingId, scene) {
+  const slot = `bld_${buildingId}`;
+  if (scene?.textures?.exists(slot)) return slot;
   return BUILDING_SPRITES[buildingId] || FALLBACK;
 }
+
+/**
+ * Luces falsas por edificio (GlowLights.addGlow). dx/dy en píxeles desde el
+ * punto de anclaje del sprite del edificio. Colores de la paleta grimdark
+ * (docs/art-style.md): velas naranja, holo teal, forja roja.
+ */
+export const BUILDING_LIGHTS = {
+  throne_room: [{ dx: 0,  dy: -26, color: 0x4fd8c8, radius: 42 }], // mesa holográfica
+  smithy:      [{ dx: 0,  dy: -12, color: 0xff3a20, radius: 34 }], // tubos de forja
+  tavern:      [{ dx: -10, dy: -16, color: 0xe8933a, radius: 28 },
+                { dx: 12,  dy: -10, color: 0xe8933a, radius: 22 }], // velas
+  tower:       [{ dx: 0,  dy: -34, color: 0xff2020, radius: 16 }], // LED centinela
+  embassy:     [{ dx: 0,  dy: -22, color: 0x4fd8c8, radius: 24 }], // antenas
+  library:     [{ dx: 0,  dy: -14, color: 0xe8933a, radius: 24 }], // velas de archivo
+  mill:        [{ dx: 0,  dy: -10, color: 0xe8933a, radius: 20 }], // horno de raciones
+};

@@ -9,6 +9,12 @@ const MAX_ZOOM = 3;
 const PAN_SPEED = 500;
 const DRAG_THRESHOLD = 8; // px - minimum movement to count as drag (not tap)
 
+// Pixel-perfect: el zoom libre produce shimmering en pixel art (unos píxeles
+// de arte ocupan 1 físico y otros 2). Al TERMINAR el gesto se hace snap al
+// escalón más cercano (docs/iso-art-architecture.md §4).
+const ZOOM_STEPS = [0.5, 1, 1.5, 2, 3];
+const SNAP_DELAY_MS = 220;
+
 export default class CameraSystem {
   constructor(scene) {
     this.scene = scene;
@@ -104,6 +110,7 @@ export default class CameraSystem {
       const activeCount = this.getActivePointerCount();
 
       if (activeCount < 2) {
+        if (this.isPinching) this._scheduleZoomSnap();
         this.isPinching = false;
         this.pinchDistance = 0;
       }
@@ -121,6 +128,7 @@ export default class CameraSystem {
       const zoomDelta = deltaY > 0 ? -0.15 : 0.15;
       const newZoom = this.cam.zoom + zoomDelta;
       this.setZoom(newZoom);
+      this._scheduleZoomSnap();
     });
 
     // ─── Prevent default touch gestures on the canvas ───
@@ -175,6 +183,28 @@ export default class CameraSystem {
     this.cam.setZoom(Phaser.Math.Clamp(zoom, MIN_ZOOM, MAX_ZOOM));
   }
 
+  // Snap diferido al escalón de zoom más cercano — se agenda al soltar el
+  // pinch o tras una pausa de la rueda, y se re-agenda si el gesto sigue.
+  _scheduleZoomSnap() {
+    if (this._snapTimer) this._snapTimer.remove();
+    this._snapTimer = this.scene.time.delayedCall(SNAP_DELAY_MS, () => {
+      this._snapTimer = null;
+      const z = this.cam.zoom;
+      let best = ZOOM_STEPS[0];
+      for (const step of ZOOM_STEPS) {
+        if (Math.abs(step - z) < Math.abs(best - z)) best = step;
+      }
+      if (Math.abs(best - z) > 0.001) {
+        this.scene.tweens.add({
+          targets: this.cam,
+          zoom: best,
+          duration: 120,
+          ease: 'Sine.easeOut',
+        });
+      }
+    });
+  }
+
   setBounds(x, y, width, height) {
     this.cam.setBounds(x, y, width, height);
   }
@@ -207,6 +237,7 @@ export default class CameraSystem {
   }
 
   destroy() {
+    if (this._snapTimer) { this._snapTimer.remove(); this._snapTimer = null; }
     this.scene.input.off('pointerdown');
     this.scene.input.off('pointermove');
     this.scene.input.off('pointerup');

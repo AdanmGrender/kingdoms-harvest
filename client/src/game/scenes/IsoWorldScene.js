@@ -13,6 +13,12 @@
 import Phaser from 'phaser';
 import CameraSystem from '../systems/CameraSystem';
 import DirectionalAnimator from '../systems/DirectionalAnimator';
+import AmbientSystem from '../systems/AmbientSystem';
+import DayNightSystem from '../systems/DayNightSystem';
+import ParticleSystem from '../systems/ParticleSystem';
+import { addStaticShadow, addTrackedShadow } from '../systems/ShadowSystem';
+import { addGlow } from '../systems/GlowLights';
+import { BUILDING_LIGHTS } from '../config/buildingSprites';
 import EventBridge from '../EventBridge';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -104,6 +110,7 @@ export default class IsoWorldScene extends Phaser.Scene {
     this.groundRT   = null;    // RenderTexture for static ground
     this.buildings  = [];      // Phaser.GameObjects.Image[]
     this.decorations = [];     // Phaser.GameObjects.Image[]
+    this.glows      = [];      // handles de GlowLights por edificio
 
     this.ghostSprite     = null;
     this.pendingBuildId  = null;
@@ -164,6 +171,16 @@ export default class IsoWorldScene extends Phaser.Scene {
     this._setupInput();
     this._setupEventBridge();
 
+    // Ambiente grimdark: cielo + viñeta, ciclo día/noche, humo de chimeneas
+    this.ambient = new AmbientSystem(this, { sky: true, vignette: true });
+    this.dayNight = new DayNightSystem(this);
+    this.particles = new ParticleSystem(this);
+    for (const b of this.buildings) {
+      if (['mill', 'smithy'].includes(b.getData('buildingId'))) {
+        this.particles.addBuildingSmoke(b.x, b.y - 30);
+      }
+    }
+
     // Start centered on settlement
     const center = isoToScreen(16, 16);
     this.cameras.main.centerOn(center.x, center.y);
@@ -189,6 +206,20 @@ export default class IsoWorldScene extends Phaser.Scene {
         this.groundRT.drawFrame('iso_terrain', frame, x - ISO_W / 2, y);
       }
     }
+
+    // Decals: manchas de óxido/sangre/grietas estampadas sobre el suelo —
+    // el "suelo con historia" de las referencias. Seeded para ser estable.
+    if (this.textures.exists('ground_decals')) {
+      let seed = 4242;
+      const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+      for (let i = 0; i < 90; i++) {
+        const col = Math.floor(rand() * COLS);
+        const row = Math.floor(rand() * ROWS);
+        if (this.tiles[row]?.[col] === T.WATER) continue;
+        const { x, y } = isoToScreen(col, row);
+        this.groundRT.drawFrame('ground_decals', Math.floor(rand() * 8), x - ISO_W / 2, y);
+      }
+    }
   }
 
   // ─── Decorations ─────────────────────────────────────────────────────────────
@@ -206,6 +237,10 @@ export default class IsoWorldScene extends Phaser.Scene {
       // Only place on non-water, non-building tiles
       if (this.tiles[row]?.[col] === T.WATER) continue;
       const foot = isoFoot(col, row);
+      addStaticShadow(this, foot.x, foot.y, {
+        width: 34, height: 10, alpha: 0.35, depth: col + row + 0.1,
+        offsetX: 8, offsetY: -4, rotation: 0.15,
+      });
       const dec = this.add.image(foot.x, foot.y, 'iso_objects', frame);
       dec.setOrigin(0.5, 1.0);
       dec.setDepth(col + row + 0.2);
@@ -241,13 +276,35 @@ export default class IsoWorldScene extends Phaser.Scene {
   _addBuilding(col, row, frame, buildingId, interactive = true) {
     const foot = isoFoot(col, row);
 
-    const bldg = this.add.image(foot.x, foot.y, 'buildings', frame);
+    // Slot de arte por edificio (bld_<id>, cargado en BootScene) — el arte IA
+    // sobrescribe el PNG y aparece aquí. Fallback: sheet legacy por frame.
+    const slot = `bld_${buildingId}`;
+    const useSlot = this.textures.exists(slot);
+
+    addStaticShadow(this, foot.x, foot.y, {
+      width: 64, height: 20, alpha: 0.45, depth: col + row + 0.5,
+      offsetX: 14, offsetY: -6, rotation: 0.18,
+    });
+
+    const bldg = useSlot
+      ? this.add.image(foot.x, foot.y, slot)
+      : this.add.image(foot.x, foot.y, 'buildings', frame);
     // Anchor at ~85% height so base of drawn building sits at foot point
     bldg.setOrigin(0.5, 0.88);
     bldg.setDepth(col + row + 0.6);
     bldg.setData('buildingId', buildingId);
     bldg.setData('col', col);
     bldg.setData('row', row);
+
+    // Luces falsas por edificio (holo teal, velas, forja) — sobre el tinte
+    // nocturno para que "brillen" de noche.
+    const lights = BUILDING_LIGHTS[buildingId] || [];
+    for (const l of lights) {
+      const glow = addGlow(this, foot.x + l.dx, foot.y - 26 + l.dy, {
+        color: l.color, radius: l.radius, depth: 950,
+      });
+      this.glows.push(glow);
+    }
 
     if (interactive) {
       bldg.setInteractive();
@@ -295,6 +352,9 @@ export default class IsoWorldScene extends Phaser.Scene {
       spr.setDepth(col + row + 0.4);
       this.villagers.push({
         spr,
+        shadow: addTrackedShadow(this, spr, {
+          width: 18, height: 6, alpha: 0.35, offsetX: 4, offsetY: -2, depth: 0.05,
+        }),
         anim: new DirectionalAnimator(spr, 'iso_villager'),
         target: null,
         waitMs: 500 + Math.random() * 2000,
@@ -308,6 +368,9 @@ export default class IsoWorldScene extends Phaser.Scene {
     tSpr.setDepth(20 + 16 + 0.4);
     this.villagers.push({
       spr: tSpr,
+      shadow: addTrackedShadow(this, tSpr, {
+        width: 20, height: 7, alpha: 0.4, offsetX: 4, offsetY: -2, depth: 0.05,
+      }),
       anim: new DirectionalAnimator(tSpr, 'iso_trooper'),
       target: null,
       waitMs: 1000,
@@ -375,6 +438,12 @@ export default class IsoWorldScene extends Phaser.Scene {
       const step = Math.min((SPEED * delta) / 1000, dist);
       v.spr.x += (dx / dist) * step;
       v.spr.y += (dy / dist) * step;
+      if (v.shadow) {
+        v.shadow.setPosition(
+          v.spr.x + v.shadow._shadowOffsetX,
+          v.spr.y + v.shadow._shadowOffsetY,
+        );
+      }
       v.anim.update((dx / dist) * SPEED, (dy / dist) * SPEED, delta);
 
       // Depth solo al cruzar de tile (origin 1.0 → spr.y ES el pie)
@@ -513,6 +582,7 @@ export default class IsoWorldScene extends Phaser.Scene {
   // ─── Update loop ──────────────────────────────────────────────────────────────
   update(_time, delta) {
     if (this.cameraSystem) this.cameraSystem.update(delta);
+    if (this.dayNight) this.dayNight.update(delta);
     this._updateVillagers(delta);
   }
 
@@ -522,5 +592,10 @@ export default class IsoWorldScene extends Phaser.Scene {
     EventBridge.off('building:cancelPlacement');
     EventBridge.off('building:confirmPlacement');
     EventBridge.off('building:addToScene');
+    if (this.ambient) { this.ambient.destroy(); this.ambient = null; }
+    if (this.dayNight) { this.dayNight.destroy(); this.dayNight = null; }
+    if (this.particles) { this.particles.destroy(); this.particles = null; }
+    for (const g of this.glows) g.destroy();
+    this.glows = [];
   }
 }

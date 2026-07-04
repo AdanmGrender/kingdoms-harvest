@@ -117,6 +117,26 @@ export default class BootScene extends Phaser.Scene {
 
     // ─── Load UI ───
     this.load.image('dialog_frame', '/assets/game/ui/dialog_frame.png');
+
+    // ─── Ambiente grimdark (AmbientSystem + decals de suelo) ───
+    this.load.image('sky_storm', '/assets/game/ambient/sky_storm.png');
+    this.load.spritesheet('ground_decals', '/assets/game/iso/decals.png', {
+      frameWidth: 64,
+      frameHeight: 32,
+    });
+
+    // ─── Slots de arte por edificio (bld_<id>) ───
+    // Mirror de shared/gameConfig.js BUILDINGS — keep in sync. El arte IA
+    // sobrescribe assets/game/buildings/<id>.png; getBuildingSprite() prefiere
+    // bld_<id> cuando la textura existe.
+    const BUILDING_IDS = [
+      'farm_plot', 'barn', 'mill', 'sawmill', 'smithy', 'stable', 'house',
+      'mine', 'wall', 'tower', 'barracks', 'trap', 'tavern', 'market',
+      'embassy', 'throne_room', 'library',
+    ];
+    for (const id of BUILDING_IDS) {
+      this.load.image(`bld_${id}`, `/assets/game/buildings/${id}.png`);
+    }
   }
 
   create() {
