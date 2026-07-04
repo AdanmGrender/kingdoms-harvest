@@ -1,0 +1,19 @@
+GIMP Palette
+Name: KH Grimdark
+Columns: 7
+# Kingdoms Harvest — paleta grimdark oficial (docs/art-style.md, 2026-07-03)
+# Funciona en GIMP, Aseprite, LibreSprite, Krita; importable en Pixelorama.
+ 51  47  43	piedra-oscura
+ 74  68  62	piedra-base
+ 74  69  80	cielo-tormenta
+122  74  48	oxido-sangre-seca
+127  29  24	rojo-armadura-sombra
+179  40  33	rojo-armadura
+217 164  65	dorado-sucio
+232 147  58	naranja-vela
+255 224 138	luz-marcador
+ 79 216 200	teal-holograma
+122  90 138	purpura-horda
+ 90 122  53	verde-horda-toxico
+ 26  26  26	negro-borde
+255 255 255	blanco-brillo
