@@ -526,8 +526,8 @@ const TECH_BRANCHES = {
     icon: '💰',
     techs: {
       haggling: { name: 'Negociación Dura', effect: '+10% precio de venta', cost: { gold: 100 }, level: 1 },
-      trade_routes: { name: 'Rutas de Convoy', effect: 'Desbloquea rutas lejanas', cost: { gold: 250 }, level: 2 },
-      caravan_master: { name: 'Maestro de Convoyes', effect: 'Convoyes más frecuentes', cost: { gold: 400 }, level: 3 },
+      trade_routes: { name: 'Rutas de Convoy', effect: '+10% precio de venta adicional', cost: { gold: 250 }, level: 2 },
+      caravan_master: { name: 'Maestro de Convoyes', effect: '+50% de cupo de venta al convoy', cost: { gold: 400 }, level: 3 },
       merchant_guild: { name: 'Sindicato Mercante', effect: '+2 misiones simultáneas', cost: { gold: 600, relic: 1 }, level: 5 },
     },
   },
@@ -906,6 +906,17 @@ const HEROES = {
   vex:    { id: 'vex',    name: 'Vex el Veloz',             class: 'rogue',   rarity: 'rare',      sprite: 'farmer',     baseStats: { atk: 20, def: 6,  hp: 60,  spd: 20, mgk: 6  }, passive: 'Ráfaga Doble: 25% de golpear dos veces por turno' },
 };
 
+// Habilidades activas por clase (F4 idle). 100% automáticas: en la simulación
+// de oleadas cada héroe gana energía por ronda y dispara su skill al llegar a
+// 100. `mult` multiplica el ATK efectivo del héroe para el golpe.
+const HERO_SKILLS = {
+  warrior: { id: 'golpe_sismico',     name: 'Golpe Sísmico',      icon: '💢', type: 'damage',  mult: 2.2 },
+  mage:    { id: 'descarga_psiquica', name: 'Descarga Psíquica',  icon: '🧠', type: 'damage',  mult: 3.5 },
+  ranger:  { id: 'disparo_perforante',name: 'Disparo Perforante', icon: '🎯', type: 'damage',  mult: 2.8 },
+  paladin: { id: 'escudo_grupal',     name: 'Escudo Grupal',      icon: '🛡️', type: 'shield',  mult: 0.30 }, // reduce 30% el golpe de la ronda siguiente
+  rogue:   { id: 'ejecucion',         name: 'Ejecución',          icon: '🗡️', type: 'execute', mult: 4.0 },  // ×4 contra jefes, ×2 al resto
+};
+
 const HERO_ITEMS = {
   iron_sword:    { id: 'iron_sword',    name: 'Cuchilla de Combate',   slot: 'weapon',    icon: '⚔️', bonuses: { atk: 6 },                    rarity: 'common', description: 'Hoja sierra estándar, forjada en la fundición del bastión' },
   magic_staff:   { id: 'magic_staff',   name: 'Báculo Psíquico',       slot: 'weapon',    icon: '🪄', bonuses: { mgk: 10, atk: 2 },           rarity: 'rare',   description: 'Canaliza el poder mental del portador en un flujo devastador' },
@@ -951,4 +962,5 @@ module.exports = {
   STORM_MEAN_GAP_MS,
   WAVE_CONFIG,
   WAVE_ENEMIES,
+  HERO_SKILLS,
 };

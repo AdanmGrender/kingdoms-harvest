@@ -20,6 +20,27 @@ router.get('/', telegramAuth, async (req, res) => {
   }
 });
 
+// ── Escuadras (F4 idle) ──
+router.get('/squad', telegramAuth, async (req, res) => {
+  try {
+    res.json(await heroService.getSquad(req.playerId));
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+router.post('/squad/set', telegramAuth, validate({
+  slot: { type: 'number', required: true, min: 1, max: 5 },
+  heroDbId: { type: 'number' },
+}), async (req, res) => {
+  try {
+    const heroDbId = typeof req.body.heroDbId === 'number' ? req.body.heroDbId : null;
+    res.json(await heroService.setSquadSlot(req.playerId, req.body.slot, heroDbId));
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
 // Get player item inventory
 router.get('/items', telegramAuth, async (req, res) => {
   try {

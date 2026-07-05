@@ -164,14 +164,20 @@ const commerceService = {
     const offer = caravan.sell_offers.find((o) => o.resource_id === resourceId);
 
     if (!offer) throw new Error('El convoy no compra ese recurso');
-    if (quantity > offer.quantity) throw new Error(`El convoy solo acepta ${offer.quantity} más`);
 
     // Faction bonus: shadow_merchants +15% sell price
     const player = await db('players').where('telegram_id', playerId).first();
     const commerceBonus = FACTIONS[player?.faction_id]?.bonus?.commerce || 0;
     // Tech: haggling +10% sell price
     const completedTechs = await techService.getCompletedTechs(playerId);
-    const techBonus = completedTechs.has('haggling') ? 0.10 : 0;
+
+    // Tech F5: caravan_master — el maestro de convoyes consigue +50% de cupo
+    const quotaMult = completedTechs.has('caravan_master') ? 1.5 : 1;
+    const maxQty = Math.floor(offer.quantity * quotaMult);
+    if (quantity > maxQty) throw new Error(`El convoy solo acepta ${maxQty} más`);
+    // Tech F5: haggling +10%, trade_routes +10% adicional (rutas lejanas pagan más)
+    const techBonus = (completedTechs.has('haggling') ? 0.10 : 0)
+      + (completedTechs.has('trade_routes') ? 0.10 : 0);
     // Seasonal event: harvest_festival adds commerce bonus
     const eventBonus = await eventService.getMultiplier('commerce');
     const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus + eventBonus));

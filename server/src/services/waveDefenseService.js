@@ -19,6 +19,7 @@
 const db = require('../config/database');
 const {
   WAVE_CONFIG, WAVE_ENEMIES, BUILDINGS, TROOPS, HEROES, HERO_RARITIES, HERO_ITEMS,
+  HERO_SKILLS,
 } = require('../../../shared/gameConfig');
 
 const BOSS_ROTATION = ['boss_devorador', 'boss_heraldo'];
@@ -84,25 +85,32 @@ async function computeDefense(playerId) {
     if (cfg && t.quantity > 0) garrisonDps += cfg.atk * t.quantity * 0.35;
   }
 
-  // Héroe desplegado (F4 traerá escuadras; por ahora el single deploy)
-  let hero = null;
-  const player = await db('players').where('telegram_id', playerId).first();
-  if (player?.deployed_hero_id) {
-    const row = await db('player_heroes').where('id', player.deployed_hero_id).first();
-    const cfg = row ? HEROES[row.hero_id] : null;
-    if (row && cfg) {
-      const mult = (HERO_RARITIES[cfg.rarity]?.statMultiplier || 1) * (1 + (row.level - 1) * 0.05);
-      hero = {
-        name: cfg.name,
-        icon: '🦸',
-        dps: Math.floor(cfg.baseStats.atk * mult),
-        skillDamage: Math.floor(cfg.baseStats.atk * mult * 3),
-        energy: 0,
-      };
+  // Escuadra (F4): hasta 5 héroes con energía y skill de clase propios.
+  // Fallback: el deployed_hero_id single si la escuadra está vacía.
+  const heroes = [];
+  const heroService = require('./heroService');
+  const squad = (await heroService.getSquad(playerId)).filter((h) => !h.recovering);
+
+  const toFighter = (name, cls, atk) => {
+    const skill = HERO_SKILLS[cls] || HERO_SKILLS.warrior;
+    return { name, class: cls, skill, dps: atk, energy: 0 };
+  };
+
+  if (squad.length > 0) {
+    for (const h of squad) heroes.push(toFighter(h.name, h.class, h.stats.atk));
+  } else {
+    const player = await db('players').where('telegram_id', playerId).first();
+    if (player?.deployed_hero_id) {
+      const row = await db('player_heroes').where('id', player.deployed_hero_id).first();
+      const cfg = row ? HEROES[row.hero_id] : null;
+      if (row && cfg) {
+        const mult = (HERO_RARITIES[cfg.rarity]?.statMultiplier || 1) * (1 + (row.level - 1) * 0.05);
+        heroes.push(toFighter(cfg.name, cfg.class, Math.floor(cfg.baseStats.atk * mult)));
+      }
     }
   }
 
-  return { hpPool, towerDps, trapBurst, garrisonDps, hero, troops };
+  return { hpPool, towerDps, trapBurst, garrisonDps, heroes, troops };
 }
 
 /** Simula UNA oleada contra la defensa. Muta defense.hpPool y devuelve log. */
@@ -128,6 +136,8 @@ function simulateWave(waveNumber, enemies, defense, log) {
     log.push({ type: 'traps', text: `💣 Campo de minas: ${defense.trapBurst} de daño inicial` });
   }
 
+  let shieldNextRound = 0; // Escudo Grupal del paladín (reduce el próximo golpe)
+
   for (let round = 1; round <= WAVE_CONFIG.roundCap; round++) {
     const alive = enemies.filter((e) => e.hp > 0);
     if (alive.length === 0) {
@@ -135,19 +145,35 @@ function simulateWave(waveNumber, enemies, defense, log) {
       return true;
     }
 
-    // Horrores golpean el pool
-    const waveAtk = alive.reduce((s, e) => s + e.atk, 0);
+    // Horrores golpean el pool (el escudo del paladín amortigua si está activo)
+    let waveAtk = alive.reduce((s, e) => s + e.atk, 0);
+    if (shieldNextRound > 0) {
+      waveAtk = Math.floor(waveAtk * (1 - shieldNextRound));
+      shieldNextRound = 0;
+    }
     defense.hpPool -= waveAtk;
 
     // Defensa golpea (chusma primero — las torres barren lo débil)
     let dps = defense.towerDps + defense.garrisonDps;
-    if (defense.hero) {
-      dps += defense.hero.dps;
-      defense.hero.energy += WAVE_CONFIG.heroEnergyPerRound;
-      if (defense.hero.energy >= 100) {
-        defense.hero.energy = 0;
-        dps += defense.hero.skillDamage;
-        log.push({ type: 'hero_skill', text: `⚡ ${defense.hero.name} descarga su golpe (+${defense.hero.skillDamage})` });
+    for (const hero of defense.heroes) {
+      dps += hero.dps;
+      hero.energy += WAVE_CONFIG.heroEnergyPerRound;
+      if (hero.energy >= 100) {
+        hero.energy = 0;
+        const skill = hero.skill;
+        if (skill.type === 'shield') {
+          shieldNextRound = Math.max(shieldNextRound, skill.mult);
+          log.push({ type: 'hero_skill', text: `${skill.icon} ${hero.name}: ${skill.name} — amortigua el próximo golpe` });
+        } else if (skill.type === 'execute') {
+          const boss = alive.find((e) => e.boss && e.hp > 0);
+          const dmg = Math.floor(hero.dps * (boss ? skill.mult : skill.mult / 2));
+          if (boss) { boss.hp -= dmg; } else { dps += dmg; }
+          log.push({ type: 'hero_skill', text: `${skill.icon} ${hero.name}: ${skill.name} (${dmg} de daño${boss ? ' al JEFE' : ''})` });
+        } else {
+          const dmg = Math.floor(hero.dps * skill.mult);
+          dps += dmg;
+          log.push({ type: 'hero_skill', text: `${skill.icon} ${hero.name}: ${skill.name} (+${dmg})` });
+        }
       }
     }
     alive.sort((a, b) => a.hp - b.hp);
@@ -207,7 +233,8 @@ const waveDefenseService = {
     const status = await this.getStatus(playerId);
     const defense = await computeDefense(playerId);
 
-    if (defense.towerDps + defense.garrisonDps + (defense.hero?.dps || 0) <= 0) {
+    const heroDps = defense.heroes.reduce((s, h) => s + h.dps, 0);
+    if (defense.towerDps + defense.garrisonDps + heroDps <= 0) {
       throw new Error('Sin defensas: entrená tropas o construí torretas antes de desafiar la Marea');
     }
 
@@ -244,14 +271,22 @@ const waveDefenseService = {
         rewards.kh = res.awarded;
       } catch { /* economía no bloquea el run */ }
 
-      // XP del héroe desplegado
-      if (defense.hero) {
+      // XP para la escuadra (o el héroe single de fallback)
+      if (defense.heroes.length > 0) {
         rewards.heroXp = wavesCleared * WAVE_CONFIG.rewards.heroXpPerWave;
-        const player = await db('players').where('telegram_id', playerId).first();
-        if (player?.deployed_hero_id) {
-          await db('player_heroes')
-            .where('id', player.deployed_hero_id)
-            .increment('xp', rewards.heroXp);
+        const heroService = require('./heroService');
+        const squad = await heroService.getSquad(playerId);
+        if (squad.length > 0) {
+          for (const h of squad) {
+            await db('player_heroes').where('id', h.dbId).increment('xp', rewards.heroXp);
+          }
+        } else {
+          const player = await db('players').where('telegram_id', playerId).first();
+          if (player?.deployed_hero_id) {
+            await db('player_heroes')
+              .where('id', player.deployed_hero_id)
+              .increment('xp', rewards.heroXp);
+          }
         }
       }
 
@@ -275,7 +310,7 @@ const waveDefenseService = {
       } catch { /* no bloquea */ }
     }
 
-    // Derrota: pequeñas bajas de guarnición
+    // Derrota: pequeñas bajas de guarnición + la escuadra a recuperación breve
     if (!victory) {
       for (const t of defense.troops) {
         const losses = Math.floor(t.quantity * WAVE_CONFIG.garrisonLossOnDefeat);
@@ -284,6 +319,13 @@ const waveDefenseService = {
           log.push({ type: 'losses', text: `⚰️ ${losses}x ${TROOPS[t.troop_id]?.name || t.troop_id} caídos` });
         }
       }
+      try {
+        const heroService = require('./heroService');
+        const rec = await heroService.applySquadRecovery(playerId, 0.5);
+        if (rec.count > 0) {
+          log.push({ type: 'losses', text: `🏥 La escuadra se retira a recuperación (30 min)` });
+        }
+      } catch { /* sin escuadra */ }
     }
 
     // ── Persistir progreso + run ──

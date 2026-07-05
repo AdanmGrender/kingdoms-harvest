@@ -273,13 +273,27 @@ const combatService = {
     // Marea Carmesí (tormenta disforme F2): +ATK global mientras dura
     const stormAtk = await require('./stormService').getModifier('atk');
 
+    // Escuadra de héroes (F4): CLASS_BONUSES apilados — por fin pegan de verdad
+    let squadBonus = { attackBonus: 0, defDebuff: 0, lossReduction: 0 };
+    try {
+      squadBonus = await require('./heroService').getSquadCombatBonus(playerId);
+    } catch { /* sin escuadra */ }
+
     // Calcular batalla con bonuses de facción + tech + alianza + habilidad
     const result = this.calculateBattle(army, npcArmy, [], {
-      attackBonus: factionAtkBonus + techAttacker.atk + allianceBonus.atk + stormAtk,
-      defenseBonus: factionDefBonus + techAttacker.def,
+      attackBonus: factionAtkBonus + techAttacker.atk + allianceBonus.atk + stormAtk
+        + squadBonus.attackBonus,
+      defenseBonus: factionDefBonus + techAttacker.def - squadBonus.defDebuff,
       abilityId,
       attackerArmy: army,
     });
+
+    // Paladín en escuadra: reduce bajas propias al ganar
+    if (result.winner === 'attacker' && squadBonus.lossReduction > 0) {
+      for (const k of Object.keys(result.attackerLosses || {})) {
+        result.attackerLosses[k] = Math.floor(result.attackerLosses[k] * (1 - squadBonus.lossReduction));
+      }
+    }
 
     // Aplicar pérdidas al atacante (clamped para evitar negativos)
     for (const [troopId, losses] of Object.entries(result.attackerLosses)) {

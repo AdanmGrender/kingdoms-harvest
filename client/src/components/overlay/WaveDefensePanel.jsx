@@ -66,7 +66,15 @@ export default function WaveDefensePanel({ onClose }) {
           </h3>
           <p className="text-[10px] text-gray-500">Los horrores prueban tus muros — preparate y resistí</p>
         </div>
-        <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => useGameStore.getState().setOverlay('squad', {})}
+            className="text-[10px] px-2 py-1 rounded bg-black/40 border border-yellow-700/40 text-yellow-300"
+          >
+            🪖 Escuadra
+          </button>
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
+        </div>
       </div>
 
       <div className="px-4 py-3 space-y-3 overflow-y-auto flex-1">

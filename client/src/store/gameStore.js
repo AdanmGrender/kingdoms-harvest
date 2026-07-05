@@ -95,6 +95,26 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // Idle F4: Escuadra de héroes
+  squad: [],
+  loadSquad: async () => {
+    try {
+      const { data } = await api.get('/heroes/squad');
+      set({ squad: data || [] });
+    } catch { /* panel muestra slots vacíos */ }
+  },
+  setSquadSlot: async (slot, heroDbId) => {
+    try {
+      const { data } = await api.post('/heroes/squad/set', { slot, heroDbId });
+      get().addNotification(data.message, 'success');
+      get().loadSquad();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo asignar', 'error');
+      return null;
+    }
+  },
+
   // Notificaciones del juego
   notifications: [],
 

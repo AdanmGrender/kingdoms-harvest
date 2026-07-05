@@ -172,6 +172,100 @@ const heroService = {
    * Put a hero into recovery after losing a battle. Clears deployment.
    * recoveryHours: 24 for PvE loss, 48 for PvP loss.
    */
+  // ── Escuadras (F4 idle) ─────────────────────────────────────────────────────
+
+  /** Escuadra completa (hasta 5 slots) con stats calculadas y recovery. */
+  async getSquad(playerId) {
+    const rows = await db('player_squads')
+      .where('player_id', playerId)
+      .orderBy('slot', 'asc');
+
+    const squad = [];
+    const now = new Date().toISOString();
+    for (const s of rows) {
+      const heroRow = await db('player_heroes').where('id', s.hero_db_id).first();
+      const cfg = heroRow ? HEROES[heroRow.hero_id] : null;
+      if (!heroRow || !cfg) continue;
+      squad.push({
+        slot: s.slot,
+        dbId: heroRow.id,
+        heroId: heroRow.hero_id,
+        name: cfg.name,
+        class: cfg.class,
+        rarity: cfg.rarity,
+        sprite: cfg.sprite,
+        level: heroRow.level,
+        stats: computeStats(cfg, heroRow),
+        recovering: !!(heroRow.recovery_until && heroRow.recovery_until > now),
+        recoveryUntil: heroRow.recovery_until,
+      });
+    }
+    return squad;
+  },
+
+  /** Asigna/limpia un slot (1-5). heroDbId null → vaciar slot. */
+  async setSquadSlot(playerId, slot, heroDbId) {
+    if (slot < 1 || slot > 5) throw new Error('Slot inválido (1-5)');
+
+    await db('player_squads').where({ player_id: playerId, slot }).delete();
+    if (heroDbId === null || heroDbId === undefined) {
+      return { success: true, message: `Slot ${slot} liberado` };
+    }
+
+    const heroRow = await db('player_heroes')
+      .where({ id: heroDbId, player_id: playerId }).first();
+    if (!heroRow) throw new Error('Héroe no encontrado');
+    if (heroRow.recovery_until && heroRow.recovery_until > new Date().toISOString()) {
+      throw new Error('Ese héroe está en recuperación');
+    }
+
+    // Si ya estaba en otro slot, moverlo (liberar el anterior)
+    await db('player_squads')
+      .where({ player_id: playerId, hero_db_id: heroDbId }).delete();
+    await db('player_squads').insert({ player_id: playerId, slot, hero_db_id: heroDbId });
+
+    const cfg = HEROES[heroRow.hero_id];
+    return { success: true, message: `${cfg?.name || 'Héroe'} asignado al slot ${slot}` };
+  },
+
+  /**
+   * Agregado de combate de la escuadra (para calculateBattle y oleadas):
+   * suma de ATK efectivo + CLASS_BONUSES apilados de héroes NO en recuperación.
+   */
+  async getSquadCombatBonus(playerId) {
+    const squad = await this.getSquad(playerId);
+    const ready = squad.filter((h) => !h.recovering);
+
+    let attackBonus = 0;
+    let defDebuff = 0;
+    let lossReduction = 0;
+    let flatAtk = 0;
+    for (const h of ready) {
+      const cb = CLASS_BONUSES[h.class] || {};
+      attackBonus += cb.attackBonus || 0;
+      defDebuff += cb.defDebuff || 0;
+      lossReduction += cb.lossReduction || 0;
+      flatAtk += h.stats.atk || 0;
+    }
+    return {
+      heroes: ready,
+      attackBonus: Math.min(attackBonus, 0.5),       // caps sanos
+      defDebuff: Math.min(defDebuff, 0.4),
+      lossReduction: Math.min(lossReduction, 0.5),
+      flatAtk,
+    };
+  },
+
+  /** Manda a recuperación a toda la escuadra (derrota grave). */
+  async applySquadRecovery(playerId, recoveryHours = 0.5) {
+    const squad = await this.getSquad(playerId);
+    const until = new Date(Date.now() + recoveryHours * 3600000).toISOString();
+    for (const h of squad) {
+      await db('player_heroes').where('id', h.dbId).update({ recovery_until: until });
+    }
+    return { recoveryUntil: until, count: squad.length };
+  },
+
   async applyHeroRecovery(playerId, heroDbId, recoveryHours = 24) {
     const recoveryUntil = new Date(Date.now() + recoveryHours * 3600000).toISOString();
     await db('player_heroes').where('id', heroDbId).update({ recovery_until: recoveryUntil });

@@ -612,6 +612,17 @@ QUERIES:
 | Torneos, guilds, prestigio, marketplace P2P | — | ✅ migraciones 010–016 |
 | Experimento isométrico (2 escenas, flag-gated) | §10.5 | ⏳ en evaluación |
 
+### Phase 3 — Capa Idle (2026-07-04, "juego idle grimdark")
+
+| Feature | Implementado |
+|---------|-------------|
+| F1: Menú de inicio + Settings v2 (9 prefs notif + audio + gráficos) | ✅ |
+| F1: Reporte offline "Mientras no estabas" (snapshots + catch-up 12h por caída del server, heartbeat + server_downtime, migración 021) | ✅ `idleService` |
+| F2: Tormentas Disformes — 5 tipos aleatorios (WARP_STORMS), modificadores en farm/KH/ATK/research, convoyes sellados, banner + viñeta reactiva, socket + bot (migración 022) | ✅ `stormService` |
+| F3: Marea Disforme — defensa por oleadas 100% automática, sim por rondas server-side, boss cada 5, replay log, recompensas KH source `wave_defense` (migración 023) | ✅ `waveDefenseService` |
+| F4: Escuadras (5 slots, migración 024) + HERO_SKILLS auto-disparadas por energía + CLASS_BONUSES por fin en el combate real + recovery | ✅ |
+| F5: techs de comercio conectadas (trade_routes, caravan_master) + research 30min×tier | ✅ |
+
 ### Bugs Conocidos (auditoría 2026-07-02, fixes aplicados el mismo día)
 
 | Issue | Severidad | Estado | Ubicación |

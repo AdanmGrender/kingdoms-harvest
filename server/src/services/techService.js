@@ -2,7 +2,9 @@ const db = require('../config/database');
 const { TECH_BRANCHES } = require('../../../shared/gameConfig');
 const buildingService = require('./buildingService');
 
-const RESEARCH_TIME_MS = 2 * 60 * 1000; // 2 minutes per tech
+// F5 idle: tiempo real por tier — base 30 min × nivel de la tech (nivel 1 =
+// 30 min … nivel 5 = 2.5 h). La biblioteca y los Susurros del Vacío lo acortan.
+const RESEARCH_BASE_MS = 30 * 60 * 1000;
 
 const techService = {
   async getResearch(playerId) {
@@ -90,7 +92,7 @@ const techService = {
     const levelBonus = library.level * 0.1; // 10% faster per library level
     // Susurros del Vacío (tormenta disforme F2): la investigación se acelera
     const stormSpeed = await require('./stormService').getModifier('research_speed');
-    const researchTime = Math.floor(RESEARCH_TIME_MS / (1 + levelBonus + stormSpeed));
+    const researchTime = Math.floor((RESEARCH_BASE_MS * tech.level) / (1 + levelBonus + stormSpeed));
     const completeAt = new Date(now.getTime() + researchTime);
 
     if (existing) {
