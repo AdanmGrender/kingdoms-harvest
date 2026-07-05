@@ -849,6 +849,40 @@ const WARP_STORMS = {
   },
 };
 
+// ---- MAREA DISFORME (F3 idle — defensa por oleadas, 100% automática) ----
+// El jugador PREPARA (muros, torres, trampas, guarnición, escuadra) y el
+// server resuelve el run por rondas. Boss cada BOSS_EVERY oleadas = puerta
+// de progresión con recompensas mayores.
+const WAVE_CONFIG = {
+  wavesPerRun: 3,            // oleadas por desafío
+  bossEvery: 5,              // oleada jefe cada N
+  roundCap: 30,              // rondas máximas por oleada (corta empates)
+  basePower: 60,             // presupuesto de poder de la oleada 1
+  powerGrowth: 1.18,         // crecimiento exponencial suave por oleada
+  bossMultiplier: 2.2,       // poder extra del jefe
+  garrisonLossOnDefeat: 0.06,// fracción de guarnición perdida al caer
+  heroEnergyPerRound: 25,    // energía que gana cada héroe por ronda (skill a 100)
+  rewards: {
+    goldPerPower: 0.8,       // créditos por punto de poder derrotado
+    khBase: 2,               // KH por oleada superada (vía awardTokens)
+    khBossBonus: 6,          // KH extra por jefe derribado
+    heroXpPerWave: 12,
+    itemDropChance: 0.08,    // drop de HERO_ITEMS al superar un jefe
+  },
+};
+
+// Horrores de la Marea — composición por peso; el presupuesto de poder de la
+// oleada se gasta comprando unidades (power = coste). Nombres 100% originales.
+const WAVE_ENEMIES = {
+  carroneros: { id: 'carroneros', name: 'Carroñeros del Velo', icon: '🐀', power: 4,  hp: 12,  atk: 3,  weight: 50 },
+  brutos:     { id: 'brutos',     name: 'Brutos Retorcidos',   icon: '🧟', power: 12, hp: 45,  atk: 8,  weight: 30 },
+  aullador:   { id: 'aullador',   name: 'Aullador del Vacío',  icon: '👁️', power: 25, hp: 70,  atk: 18, weight: 15 },
+  coloso:     { id: 'coloso',     name: 'Coloso de Ceniza',    icon: '🗿', power: 60, hp: 220, atk: 30, weight: 5 },
+  // Jefes (solo en oleadas boss, elegido por rotación de oleada)
+  boss_devorador: { id: 'boss_devorador', name: 'Devorador de Auroras', icon: '💀', power: 0, hp: 500, atk: 45, boss: true },
+  boss_heraldo:   { id: 'boss_heraldo',   name: 'Heraldo de la Estática', icon: '🌩️', power: 0, hp: 380, atk: 60, boss: true },
+};
+
 // ---- HÉROES ----
 // Restaurado tras el merge iso-rework (venía de la rama WiFOf; el merge lo perdió).
 // heroService indexa por id: HEROES[hero_id]. `sprite` mapea a CharacterSprite.
@@ -915,4 +949,6 @@ module.exports = {
   HERO_ITEMS,
   WARP_STORMS,
   STORM_MEAN_GAP_MS,
+  WAVE_CONFIG,
+  WAVE_ENEMIES,
 };

@@ -75,6 +75,26 @@ const useGameStore = create((set, get) => ({
     } catch { /* silencioso — el banner simplemente no aparece */ }
   },
 
+  // Idle F3: Marea Disforme (defensa por oleadas)
+  waveStatus: null,
+  loadWaveStatus: async () => {
+    try {
+      const { data } = await api.get('/waves/status');
+      set({ waveStatus: data });
+    } catch { /* panel muestra vacío */ }
+  },
+  startWaveRun: async () => {
+    try {
+      const { data } = await api.post('/waves/start');
+      get().refreshResources();
+      get().loadTokenInfo();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'La Marea no respondió', 'error');
+      return null;
+    }
+  },
+
   // Notificaciones del juego
   notifications: [],
 

@@ -166,7 +166,14 @@ const stormService = {
     const started = await this.forceStorm(type.id, { intensity, io });
     console.log(`[Storm] ${type.name} (i${intensity}) por ${started.minutes} min`);
 
-    // 5) F3 hook: marea_carmesi invade — se conecta en la fase de oleadas
+    // 5) F3 hook: la Marea Carmesí trae horrores — run de defensa gratis
+    if (type.spawnsWave) {
+      try {
+        await require('./waveDefenseService').grantFreeRuns();
+      } catch (e) {
+        console.error('[Storm] Error otorgando runs gratis:', e.message);
+      }
+    }
     return started;
   },
 };

@@ -7,6 +7,7 @@ import EventBridge from '../../game/EventBridge';
 
 const ACTIONS = [
   { id: 'castle', icon: '🏠', label: 'Bastión', color: '#ffd750' },
+  { id: 'waves', icon: '🌊', label: 'Marea Disforme', color: '#b32821' },
   { id: 'missions', icon: '📜', label: 'Misiones', color: '#8fd4ff', badge: 3 },
   { id: 'build', icon: '🔨', label: 'Construir', color: '#ffb070' },
   { id: 'explore', icon: '🗺️', label: 'Explorar', color: '#8fff9e' },
@@ -24,6 +25,9 @@ export default function QuickActionsSidebar() {
     switch (id) {
       case 'castle':
         EventBridge.emit('camera:centerOnCastle');
+        break;
+      case 'waves':
+        setOverlay('waves', {});
         break;
       case 'missions':
         setOverlay('missions', {});

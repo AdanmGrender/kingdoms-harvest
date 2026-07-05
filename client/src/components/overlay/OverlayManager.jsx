@@ -13,6 +13,7 @@ import TroopManagementPanel from './TroopManagementPanel';
 import MetaPanel from '../meta/MetaPanel';
 import MissionsPanel from './MissionsPanel';
 import SettingsPanel from './SettingsPanel';
+import WaveDefensePanel from './WaveDefensePanel';
 // Parallel panels from WiFOf merge
 import CraftingPanel from './CraftingPanel';
 import HeroPanel from './HeroPanel';
@@ -151,6 +152,8 @@ function renderPanel(overlayState, onClose) {
       return <MissionsPanel onClose={onClose} />;
     case 'settings':
       return <SettingsPanel onClose={onClose} />;
+    case 'waves':
+      return <WaveDefensePanel onClose={onClose} />;
     case 'crafting':
       return <CraftingPanel onClose={onClose} />;
     case 'heroes':
