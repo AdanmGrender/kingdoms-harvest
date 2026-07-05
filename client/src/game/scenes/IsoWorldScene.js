@@ -184,6 +184,12 @@ export default class IsoWorldScene extends Phaser.Scene {
     }
     this.dayNight = new DayNightSystem(this);
 
+    // Tormenta Disforme (F2): la viñeta pulsa del color de la tormenta
+    this._onStormStarted = (storm) => this.ambient?.setStormMode(true, storm?.color);
+    this._onStormEnded = () => this.ambient?.setStormMode(false);
+    EventBridge.on('storm:started', this._onStormStarted);
+    EventBridge.on('storm:ended', this._onStormEnded);
+
     // Start centered on settlement
     const center = isoToScreen(16, 16);
     this.cameras.main.centerOn(center.x, center.y);
@@ -595,6 +601,8 @@ export default class IsoWorldScene extends Phaser.Scene {
     EventBridge.off('building:cancelPlacement');
     EventBridge.off('building:confirmPlacement');
     EventBridge.off('building:addToScene');
+    if (this._onStormStarted) EventBridge.off('storm:started', this._onStormStarted);
+    if (this._onStormEnded) EventBridge.off('storm:ended', this._onStormEnded);
     if (this.ambient) { this.ambient.destroy(); this.ambient = null; }
     if (this.dayNight) { this.dayNight.destroy(); this.dayNight = null; }
     if (this.particles) { this.particles.destroy(); this.particles = null; }

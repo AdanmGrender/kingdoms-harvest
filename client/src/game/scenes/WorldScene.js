@@ -415,6 +415,12 @@ export default class WorldScene extends Phaser.Scene {
       this.ambientSystem = new AmbientSystem(this, { sky: true, vignette: true });
     }
 
+    // Tormenta Disforme (F2): la viñeta pulsa del color de la tormenta
+    this._onStormStarted = (storm) => this.ambientSystem?.setStormMode(true, storm?.color);
+    this._onStormEnded = () => this.ambientSystem?.setStormMode(false);
+    EventBridge.on('storm:started', this._onStormStarted);
+    EventBridge.on('storm:ended', this._onStormEnded);
+
     for (const building of this.buildings) {
       const id = building.buildingData.buildingId;
       if (['mill', 'smithy', 'barn', 'tavern'].includes(id)) {
@@ -572,6 +578,8 @@ export default class WorldScene extends Phaser.Scene {
     if (this.particleSystem) this.particleSystem.destroy();
     if (this.dayNightSystem) this.dayNightSystem.destroy();
     if (this.placementSystem) this.placementSystem.destroy();
+    if (this._onStormStarted) EventBridge.off('storm:started', this._onStormStarted);
+    if (this._onStormEnded) EventBridge.off('storm:ended', this._onStormEnded);
     if (this.ambientSystem) this.ambientSystem.destroy();
     for (const g of this.glows) g.destroy();
     this.glows = [];

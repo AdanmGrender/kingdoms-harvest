@@ -52,6 +52,20 @@ export function connectSocket(initData) {
     useGameStore.getState().appendAllianceMessage(msg);
   });
 
+  // Tormentas Disformes (F2 idle) — broadcast global del server
+  socket.on('storm_started', (storm) => {
+    useGameStore.getState().setActiveStorm(storm);
+    EventBridge.emit('storm:started', storm);
+    EventBridge.emit('game:notification', {
+      text: `${storm.icon} ¡${storm.name}! ${storm.description}`,
+      type: 'warning',
+    });
+  });
+  socket.on('storm_ended', () => {
+    useGameStore.getState().setActiveStorm(null);
+    EventBridge.emit('storm:ended');
+  });
+
   return socket;
 }
 

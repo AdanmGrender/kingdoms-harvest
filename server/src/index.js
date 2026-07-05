@@ -162,6 +162,8 @@ app.use('/api/market', marketRoutes);
 app.use('/api/seasonal', seasonalRoutes);
 app.use('/api/prestige', prestigeRoutes);
 app.use('/api/guilds', guildRoutes);
+// Idle F2: Tormentas Disformes
+app.use('/api/storms', require('./routes/stormRoutes'));
 
 // Sentry error handler — must come after all routes so it can capture Express errors
 setupExpressErrorHandler(app);

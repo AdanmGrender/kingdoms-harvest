@@ -104,7 +104,11 @@ const farmService = {
     const techYieldBonus = completedTechs.has('fertile_soil') ? 0.20 : 0;
     // Seasonal event: spring_bloom adds farming bonus while active
     const eventBonus = await eventService.getMultiplier('farming');
-    const finalYield = Math.floor(baseYield * quality.multiplier * (1 + factionBonus + techYieldBonus + eventBonus));
+    // Tormenta disforme (F2): puede penalizar la producción (p. ej. Velo Estático −25%)
+    const stormBonus = await require('./stormService').getModifier('farming');
+    const finalYield = Math.max(0, Math.floor(
+      baseYield * quality.multiplier * (1 + factionBonus + techYieldBonus + eventBonus + stormBonus)
+    ));
 
     // Dar recursos al jugador
     await playerService.modifyResource(playerId, plot.crop_id, finalYield);

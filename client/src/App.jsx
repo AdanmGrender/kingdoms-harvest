@@ -18,6 +18,7 @@ import TutorialOverlay from './components/overlay/TutorialOverlay';
 import StreakBanner from './components/overlay/StreakBanner';
 import MainMenu from './components/menu/MainMenu';
 import OfflineReportModal from './components/overlay/OfflineReportModal';
+import StormBanner from './components/hud/StormBanner';
 
 // Browser preview modes (skip Telegram auth):
 //   ?iso=1         → IsoScene
@@ -198,6 +199,7 @@ function App() {
       {!overlayActive && <BuildingToolbar />}
       <BottomNavBar />
       <StreakBanner />
+      <StormBanner />
       <NotificationToast />
       <TutorialOverlay />
       <OfflineReportModal />

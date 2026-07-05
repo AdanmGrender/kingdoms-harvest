@@ -95,6 +95,8 @@ const tokenService = {
     try {
       const eventService = require('./eventService');
       eventBonus = await eventService.getMultiplier('kh_bonus');
+      // Lluvia de Energía (tormenta disforme F2): +KH mientras dura
+      eventBonus += await require('./stormService').getModifier('kh_bonus');
     } catch {}
     const boostedAmount = Math.floor(baseAmount * multiplier * (1 + eventBonus));
 

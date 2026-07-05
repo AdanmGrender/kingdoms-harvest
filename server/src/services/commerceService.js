@@ -118,6 +118,10 @@ const commerceService = {
    * Comprar recurso de la caravana
    */
   async buyFromCaravan(playerId, resourceId, quantity) {
+    // Tormenta disforme (F2): Velo Estático sella los convoyes
+    if (await require('./stormService').convoysSealed()) {
+      throw new Error('La tormenta disforme selló las rutas — el convoy no responde');
+    }
     const caravan = await this.getActiveCaravan();
     const offer = caravan.buy_offers.find((o) => o.resource_id === resourceId);
 
@@ -152,6 +156,10 @@ const commerceService = {
    * Vender recurso a la caravana
    */
   async sellToCaravan(playerId, resourceId, quantity) {
+    // Tormenta disforme (F2): Velo Estático sella los convoyes
+    if (await require('./stormService').convoysSealed()) {
+      throw new Error('La tormenta disforme selló las rutas — el convoy no responde');
+    }
     const caravan = await this.getActiveCaravan();
     const offer = caravan.sell_offers.find((o) => o.resource_id === resourceId);
 

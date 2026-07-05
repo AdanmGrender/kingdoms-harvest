@@ -270,9 +270,12 @@ const combatService = {
     const npcStrength = territory ? territory.defense_strength : 50;
     const npcArmy = this.generateNPCArmy(npcStrength);
 
+    // Marea Carmesí (tormenta disforme F2): +ATK global mientras dura
+    const stormAtk = await require('./stormService').getModifier('atk');
+
     // Calcular batalla con bonuses de facción + tech + alianza + habilidad
     const result = this.calculateBattle(army, npcArmy, [], {
-      attackBonus: factionAtkBonus + techAttacker.atk + allianceBonus.atk,
+      attackBonus: factionAtkBonus + techAttacker.atk + allianceBonus.atk + stormAtk,
       defenseBonus: factionDefBonus + techAttacker.def,
       abilityId,
       attackerArmy: army,

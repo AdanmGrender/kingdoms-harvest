@@ -65,6 +65,16 @@ const useGameStore = create((set, get) => ({
   enterGame: () => set({ menuDismissed: true }),
   dismissOfflineReport: () => set({ offlineReport: null }),
 
+  // Idle F2: Tormenta Disforme activa (socket push + poll de respaldo)
+  activeStorm: null,
+  setActiveStorm: (storm) => set({ activeStorm: storm }),
+  loadActiveStorm: async () => {
+    try {
+      const { data } = await api.get('/storms/active');
+      set({ activeStorm: data || null });
+    } catch { /* silencioso — el banner simplemente no aparece */ }
+  },
+
   // Notificaciones del juego
   notifications: [],
 

@@ -786,6 +786,69 @@ const ACHIEVEMENTS = {
   level_10:           { id: 'level_10',           name: 'Leyenda',             icon: '🌟', desc: 'Alcanzá nivel 10',                          event: 'level_up',    goal: 10,  reward: { kh: 100 } },
 };
 
+// ---- TORMENTAS DISFORMES (F2 idle) ----
+// Sucesos aleatorios globales. stormService las programa con jitter (sin
+// rotación fija): al no haber tormenta activa, cada tick tira un dado; la
+// media de aparición es ~1 cada STORM_MEAN_GAP_MS. `modifiers` son deltas
+// aditivos consumidos junto a eventService.getMultiplier en los mismos hot
+// paths. `sealsConvoys` bloquea el comercio de convoyes mientras dura.
+const STORM_MEAN_GAP_MS = 4 * 60 * 60 * 1000;   // media: una tormenta cada ~4h
+const WARP_STORMS = {
+  velo_estatico: {
+    id: 'velo_estatico',
+    name: 'Velo Estático',
+    icon: '🌫️',
+    color: '#7a5a8a',
+    description: 'Interferencia disforme: −25% producción y convoyes sellados.',
+    weight: 30,
+    durationMs: [45, 90],          // minutos [min, max]
+    modifiers: { farming: -0.25 },
+    sealsConvoys: true,
+  },
+  marea_carmesi: {
+    id: 'marea_carmesi',
+    name: 'Marea Carmesí',
+    icon: '🩸',
+    color: '#b32821',
+    description: 'La disformidad hierve: +30% ATK para todos… y algo se acerca.',
+    weight: 20,
+    durationMs: [30, 60],
+    modifiers: { atk: 0.30 },
+    spawnsWave: true,              // F3: dispara una defensa de oleada gratis
+  },
+  lluvia_de_energia: {
+    id: 'lluvia_de_energia',
+    name: 'Lluvia de Energía',
+    icon: '⚡',
+    color: '#4fd8c8',
+    description: 'Fragmentos de energía pura: +50% KH en cosecha y venta.',
+    weight: 20,
+    durationMs: [30, 60],
+    modifiers: { kh_bonus: 0.50 },
+  },
+  susurros_del_vacio: {
+    id: 'susurros_del_vacio',
+    name: 'Susurros del Vacío',
+    icon: '👁️',
+    color: '#4a4550',
+    description: 'Voces en la estática: los aldeanos sufren, la investigación se acelera +50%.',
+    weight: 20,
+    durationMs: [60, 120],
+    modifiers: { research_speed: 0.50, happiness: -10 },
+  },
+  calma_falsa: {
+    id: 'calma_falsa',
+    name: 'Calma Falsa',
+    icon: '🕯️',
+    color: '#d9a441',
+    description: 'Nada ocurre. Eso es exactamente lo que preocupa a los augures…',
+    weight: 10,
+    durationMs: [20, 40],
+    modifiers: {},
+    hastensNext: true,             // la siguiente tormenta llega antes (½ gap)
+  },
+};
+
 // ---- HÉROES ----
 // Restaurado tras el merge iso-rework (venía de la rama WiFOf; el merge lo perdió).
 // heroService indexa por id: HEROES[hero_id]. `sprite` mapea a CharacterSprite.
@@ -850,4 +913,6 @@ module.exports = {
   HERO_RARITIES,
   HEROES,
   HERO_ITEMS,
+  WARP_STORMS,
+  STORM_MEAN_GAP_MS,
 };

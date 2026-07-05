@@ -88,7 +88,9 @@ const techService = {
 
     const now = new Date();
     const levelBonus = library.level * 0.1; // 10% faster per library level
-    const researchTime = Math.floor(RESEARCH_TIME_MS / (1 + levelBonus));
+    // Susurros del Vacío (tormenta disforme F2): la investigación se acelera
+    const stormSpeed = await require('./stormService').getModifier('research_speed');
+    const researchTime = Math.floor(RESEARCH_TIME_MS / (1 + levelBonus + stormSpeed));
     const completeAt = new Date(now.getTime() + researchTime);
 
     if (existing) {

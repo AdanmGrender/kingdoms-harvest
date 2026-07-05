@@ -79,8 +79,36 @@ export default class AmbientSystem {
     if (this.vignette) this.vignette.setDisplaySize(width, height);
   }
 
+  /**
+   * Modo tormenta (F2): tiñe la viñeta del color de la tormenta y la hace
+   * pulsar. `colorHex` acepta '#rrggbb' (del catálogo WARP_STORMS) o número.
+   */
+  setStormMode(active, colorHex = '#7a5a8a') {
+    if (!this.vignette) return;
+    if (this._stormTween) { this._stormTween.remove(); this._stormTween = null; }
+
+    if (active) {
+      const color = typeof colorHex === 'string'
+        ? parseInt(colorHex.replace('#', ''), 16)
+        : colorHex;
+      this.vignette.setTint(color);
+      this._stormTween = this.scene.tweens.add({
+        targets: this.vignette,
+        alpha: { from: 0.85, to: 1 },
+        duration: 900,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    } else {
+      this.vignette.clearTint();
+      this.vignette.setAlpha(0.9);
+    }
+  }
+
   destroy() {
     this.scene.scale.off('resize', this._onResize);
+    if (this._stormTween) { this._stormTween.remove(); this._stormTween = null; }
     if (this.sky) { this.sky.destroy(); this.sky = null; }
     if (this.vignette) { this.vignette.destroy(); this.vignette = null; }
   }

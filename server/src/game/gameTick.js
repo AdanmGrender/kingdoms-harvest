@@ -274,6 +274,14 @@ async function processTick() {
     console.error('[Tick] Error rotando eventos:', error.message);
   }
 
+  // 4b3½. Tormentas Disformes (F2 idle) — cierre de vencidas + dado de aparición
+  try {
+    const stormService = require('../services/stormService');
+    await stormService.tick(ioRef);
+  } catch (error) {
+    console.error('[Tick] Error en tormentas disformes:', error.message);
+  }
+
   // 4b4. Rotate tournaments — settle expired, kick off next per type
   try {
     const tournamentService = require('../services/tournamentService');
