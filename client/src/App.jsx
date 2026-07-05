@@ -16,6 +16,8 @@ import OverlayManager from './components/overlay/OverlayManager';
 import BuildingToolbar from './components/overlay/BuildingToolbar';
 import TutorialOverlay from './components/overlay/TutorialOverlay';
 import StreakBanner from './components/overlay/StreakBanner';
+import MainMenu from './components/menu/MainMenu';
+import OfflineReportModal from './components/overlay/OfflineReportModal';
 
 // Browser preview modes (skip Telegram auth):
 //   ?iso=1         → IsoScene
@@ -30,6 +32,7 @@ const COOP_DEEP_LINK_RE = /^event_(\d+)_s(\d+)$/;
 function App() {
   const { initGame, isLoading, error } = useGameStore();
   const overlayActive = useGameStore((s) => !!s.overlayState?.type);
+  const menuDismissed = useGameStore((s) => s.menuDismissed);
 
   useEffect(() => {
     if (window.Telegram?.WebApp) {
@@ -150,6 +153,8 @@ function App() {
   }, []);
 
   if (ISO_PREVIEW) {
+    // ?menu=1 → previsualizar el MainMenu sin auth (screenshots del driver)
+    if (URL_PARAMS.get('menu') === '1') return <MainMenu />;
     return (
       <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
         <PhaserGame />
@@ -176,6 +181,9 @@ function App() {
     );
   }
 
+  // Menú de inicio (F1 idle) — una vez por sesión, antes de entrar al juego
+  if (!menuDismissed) return <MainMenu />;
+
   // RTS Mode — always Phaser game with React overlays
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
@@ -192,6 +200,7 @@ function App() {
       <StreakBanner />
       <NotificationToast />
       <TutorialOverlay />
+      <OfflineReportModal />
     </div>
   );
 }

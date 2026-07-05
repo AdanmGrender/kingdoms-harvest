@@ -410,7 +410,10 @@ export default class WorldScene extends Phaser.Scene {
     this.dayNightSystem = new DayNightSystem(this);
     this.particleSystem = new ParticleSystem(this);
     // Ambiente grimdark: viñeta de bordes + cielo tormenta de backdrop
-    this.ambientSystem = new AmbientSystem(this, { sky: true, vignette: true });
+    // (desactivable en Configuración para teléfonos lentos)
+    if (AmbientSystem.enabledInSettings()) {
+      this.ambientSystem = new AmbientSystem(this, { sky: true, vignette: true });
+    }
 
     for (const building of this.buildings) {
       const id = building.buildingData.buildingId;

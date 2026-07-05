@@ -172,14 +172,17 @@ export default class IsoWorldScene extends Phaser.Scene {
     this._setupEventBridge();
 
     // Ambiente grimdark: cielo + viñeta, ciclo día/noche, humo de chimeneas
-    this.ambient = new AmbientSystem(this, { sky: true, vignette: true });
-    this.dayNight = new DayNightSystem(this);
-    this.particles = new ParticleSystem(this);
-    for (const b of this.buildings) {
-      if (['mill', 'smithy'].includes(b.getData('buildingId'))) {
-        this.particles.addBuildingSmoke(b.x, b.y - 30);
+    // (desactivable en Configuración para teléfonos lentos)
+    if (AmbientSystem.enabledInSettings()) {
+      this.ambient = new AmbientSystem(this, { sky: true, vignette: true });
+      this.particles = new ParticleSystem(this);
+      for (const b of this.buildings) {
+        if (['mill', 'smithy'].includes(b.getData('buildingId'))) {
+          this.particles.addBuildingSmoke(b.x, b.y - 30);
+        }
       }
     }
+    this.dayNight = new DayNightSystem(this);
 
     // Start centered on settlement
     const center = isoToScreen(16, 16);

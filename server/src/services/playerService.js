@@ -101,7 +101,18 @@ const playerService = {
       // Non-critical, don't block login
     }
 
-    return this.getFullProfile(telegramId);
+    // Reporte offline "Mientras no estabas" (F1 idle) — no bloquea el login
+    let offlineReport = null;
+    try {
+      const idleService = require('./idleService');
+      offlineReport = await idleService.buildOfflineReport(telegramId);
+    } catch {
+      // Non-critical
+    }
+
+    const profile = await this.getFullProfile(telegramId);
+    if (profile) profile.offlineReport = offlineReport;
+    return profile;
   },
 
   /**

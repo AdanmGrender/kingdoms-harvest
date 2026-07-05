@@ -35,6 +35,18 @@ function ensureVignetteTexture(scene) {
 }
 
 export default class AmbientSystem {
+  /**
+   * Preferencia del jugador (SettingsPanel → localStorage 'kh_ambient_fx').
+   * Las escenas la consultan al crear ambiente/glows; el toggle en caliente
+   * pide recarga (el aviso lo da SettingsPanel).
+   */
+  static enabledInSettings() {
+    try {
+      const v = localStorage.getItem('kh_ambient_fx');
+      return v === null ? true : JSON.parse(v) === true;
+    } catch { return true; }
+  }
+
   constructor(scene, { sky = true, vignette = true } = {}) {
     this.scene = scene;
     this.sky = null;

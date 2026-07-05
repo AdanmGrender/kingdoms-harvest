@@ -52,6 +52,15 @@ const productionAccumulators = {};
 async function processTick() {
   const now = new Date().toISOString();
 
+  // 0. Heartbeat idle (F1): último instante "vivo" del server para detectar
+  // caídas al arrancar (catch-up del reporte offline)
+  try {
+    const idleService = require('../services/idleService');
+    await idleService.recordHeartbeat();
+  } catch (error) {
+    console.error('[Tick] Heartbeat error:', error.message);
+  }
+
   // 1. Cultivos listos para cosechar
   try {
     const justReady = await db('farm_plots')
@@ -427,6 +436,16 @@ async function processTerritoryTribute() {
 
 function startGameTick(io) {
   ioRef = io;
+
+  // Idle F1: si el server estuvo caído, registrar el hueco para el catch-up
+  // del reporte offline (idleService.buildOfflineReport).
+  const idleService = require('../services/idleService');
+  idleService.recordBootGap()
+    .then((gap) => {
+      if (gap) console.log(`[Tick] Caída registrada: ${gap.started_at} → ${gap.ended_at}`);
+    })
+    .catch((e) => console.error('[Tick] Error registrando boot gap:', e.message));
+
   // Ejecutar cada minuto
   cron.schedule('* * * * *', processTick);
   console.log('[Tick] Game tick programado cada 60 segundos');

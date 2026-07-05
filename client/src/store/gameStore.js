@@ -59,6 +59,12 @@ const useGameStore = create((set, get) => ({
   // Overlay state for RTS mode
   overlayState: null, // { type: string, data: object } or null
 
+  // Idle F1: menú de inicio + reporte offline "Mientras no estabas"
+  menuDismissed: false,   // false → MainMenu visible; enterGame() lo despacha
+  offlineReport: null,    // reporte del server en /player/init, null si no hay
+  enterGame: () => set({ menuDismissed: true }),
+  dismissOfflineReport: () => set({ offlineReport: null }),
+
   // Notificaciones del juego
   notifications: [],
 
@@ -91,6 +97,7 @@ const useGameStore = create((set, get) => ({
         troops: data.troops || [],
         animals: data.animals || [],
         missions: data.activeMissions || [],
+        offlineReport: data.offlineReport || null,
         isLoading: false,
       });
       // Cargar parcelas, animales, aldeanos y eventos del mundo
