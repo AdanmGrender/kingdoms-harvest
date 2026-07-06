@@ -19,6 +19,8 @@ import StreakBanner from './components/overlay/StreakBanner';
 import MainMenu from './components/menu/MainMenu';
 import OfflineReportModal from './components/overlay/OfflineReportModal';
 import StormBanner from './components/hud/StormBanner';
+import SystemMapPanel from './components/overlay/SystemMapPanel';
+import GalaxyMapPanel from './components/overlay/GalaxyMapPanel';
 
 // Browser preview modes (skip Telegram auth):
 //   ?iso=1         → IsoScene
@@ -156,6 +158,19 @@ function App() {
   if (ISO_PREVIEW) {
     // ?menu=1 → previsualizar el MainMenu sin auth (screenshots del driver)
     if (URL_PARAMS.get('menu') === '1') return <MainMenu />;
+    // ?panel=system|galaxy → previsualizar un overlay standalone (dev/screenshots)
+    const previewPanel = URL_PARAMS.get('panel');
+    if (previewPanel) {
+      const Panel = { system: SystemMapPanel, galaxy: GalaxyMapPanel }[previewPanel];
+      if (Panel) {
+        return (
+          <div className="w-screen h-screen bg-kingdom-bg flex items-end">
+            <div className="w-full"><Panel onClose={() => {}} /></div>
+            <NotificationToast />
+          </div>
+        );
+      }
+    }
     return (
       <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
         <PhaserGame />

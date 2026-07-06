@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import StarMap from './StarMap';
 
 const RES_ICON = {
   gold: '🪙', iron: '⛏️', stone: '🪨', water: '💧', wheat: '🌾', crystal: '💎', relic: '⚱️',
@@ -114,36 +115,16 @@ export default function GalaxyMapPanel({ onClose }) {
           </div>
         )}
 
-        {/* Sistemas */}
+        {/* Mapa espacial de la galaxia */}
         {g && (
-          <div className="grid grid-cols-2 gap-2">
-            {g.systems.map((s) => {
-              const st = STATE_STYLE[s.state] || STATE_STYLE.locked;
-              const trib = tributeLabel(s.tribute);
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => s.state !== 'locked' && setSelected(s.id)}
-                  disabled={s.state === 'locked'}
-                  className={`relative rounded-lg p-2 text-left border bg-black/40 transition-all ${
-                    selected === s.id ? 'ring-2 ring-purple-400' : ''
-                  } ${s.state === 'locked' ? 'opacity-50' : 'hover:bg-black/60'}`}
-                  style={{ borderTop: `3px solid ${st.ring}` }}
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-2xl leading-none">{s.state === 'locked' ? '🔒' : s.icon}</span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-bold leading-tight truncate">{s.name}</p>
-                      <p className="text-[9px]" style={{ color: st.tagColor }}>{st.tag}</p>
-                      {trib && s.state === 'claimed' && (
-                        <p className="text-[9px] text-green-400 truncate">{trib}</p>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          <StarMap
+            nodes={g.systems}
+            selectedId={selected}
+            onSelect={setSelected}
+            ship={g.warp}
+            shipIcon="🌀"
+            theme="#a855f7"
+          />
         )}
 
         {/* Detalle */}

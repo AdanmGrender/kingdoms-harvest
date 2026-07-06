@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import StarMap from './StarMap';
 
 const RES_ICON = {
   gold: '🪙', iron: '⛏️', stone: '🪨', water: '💧', wheat: '🌾', crystal: '💎',
@@ -125,36 +126,16 @@ export default function SystemMapPanel({ onClose }) {
           </div>
         )}
 
-        {/* Planetas */}
+        {/* Mapa espacial del sistema */}
         {sys && (
-          <div className="grid grid-cols-2 gap-2">
-            {sys.planets.map((p) => {
-              const st = STATE_STYLE[p.state] || STATE_STYLE.locked;
-              const trib = tributeLabel(p.tribute);
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => p.state !== 'locked' && setSelected(p.id)}
-                  disabled={p.state === 'locked'}
-                  className={`relative rounded-lg p-2 text-left border bg-black/40 transition-all ${
-                    selected === p.id ? 'ring-2 ring-cyan-400' : ''
-                  } ${p.state === 'locked' ? 'opacity-50' : 'hover:bg-black/60'}`}
-                  style={{ borderTop: `3px solid ${st.ring}` }}
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-2xl leading-none">{p.state === 'locked' ? '🔒' : p.icon}</span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-bold leading-tight truncate">{p.name}</p>
-                      <p className="text-[9px]" style={{ color: st.tagColor }}>{st.tag}</p>
-                      {trib && p.state === 'claimed' && (
-                        <p className="text-[9px] text-green-400 truncate">{trib}</p>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          <StarMap
+            nodes={sys.planets}
+            selectedId={selected}
+            onSelect={setSelected}
+            ship={sys.ship}
+            shipIcon="🚀"
+            theme="#4fd8c8"
+          />
         )}
 
         {/* Detalle del planeta seleccionado */}
