@@ -10,7 +10,7 @@ const ACTIONS = [
   { id: 'waves', icon: '🌊', label: 'Marea Disforme', color: '#b32821' },
   { id: 'missions', icon: '📜', label: 'Misiones', color: '#8fd4ff', badge: 3 },
   { id: 'build', icon: '🔨', label: 'Construir', color: '#ffb070' },
-  { id: 'explore', icon: '🗺️', label: 'Explorar', color: '#8fff9e' },
+  { id: 'explore', icon: '🛰️', label: 'Sistema', color: '#4fd8c8' },
   { id: 'settings', icon: '⚙️', label: 'Ajustes', color: '#cccccc' },
 ];
 
@@ -36,7 +36,7 @@ export default function QuickActionsSidebar() {
         EventBridge.emit('building:toolbar:toggle');
         break;
       case 'explore':
-        addNotification('🗺️ Exploración llega pronto', 'info');
+        setOverlay('system', {});
         break;
       case 'settings':
         setOverlay('settings', {});

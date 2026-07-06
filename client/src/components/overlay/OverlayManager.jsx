@@ -15,6 +15,7 @@ import MissionsPanel from './MissionsPanel';
 import SettingsPanel from './SettingsPanel';
 import WaveDefensePanel from './WaveDefensePanel';
 import SquadPanel from './SquadPanel';
+import SystemMapPanel from './SystemMapPanel';
 // Parallel panels from WiFOf merge
 import CraftingPanel from './CraftingPanel';
 import HeroPanel from './HeroPanel';
@@ -157,6 +158,8 @@ function renderPanel(overlayState, onClose) {
       return <WaveDefensePanel onClose={onClose} />;
     case 'squad':
       return <SquadPanel onClose={onClose} />;
+    case 'system':
+      return <SystemMapPanel onClose={onClose} />;
     case 'crafting':
       return <CraftingPanel onClose={onClose} />;
     case 'heroes':

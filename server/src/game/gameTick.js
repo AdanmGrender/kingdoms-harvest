@@ -313,6 +313,23 @@ async function processTick() {
     console.error('[Tick] Error expirando invitaciones:', error.message);
   }
 
+  // 4b7. Escala Sistema (G1 idle): reclamar planetas cuya nave ya llegó
+  // (aunque el jugador esté offline — así el tributo empieza a correr)
+  try {
+    const systemService = require('../services/systemService');
+    const arrived = await db('player_ship')
+      .where('status', 'traveling')
+      .where('arrives_at', '<=', now);
+    for (const ship of arrived) {
+      const planetId = await systemService.resolveArrival(ship.player_id);
+      if (planetId && ioRef) {
+        ioRef.to(`player_${ship.player_id}`).emit('ship_arrived', { planetId });
+      }
+    }
+  } catch (error) {
+    console.error('[Tick] Error resolviendo arribos de nave:', error.message);
+  }
+
   // 4c. Villager simulation (throttled: at most once per 5 minutes per player)
   try {
     const villagerService = require('../services/villagerService');
@@ -429,7 +446,7 @@ async function processWithdrawals() {
   }
 }
 
-/** Hourly: territory owner factions get passive resource tributes. */
+/** Hourly: territory owner factions + claimed planets pay passive tribute. */
 async function processTerritoryTribute() {
   try {
     const territoryService = require('../services/territoryService');
@@ -439,6 +456,14 @@ async function processTerritoryTribute() {
     }
   } catch (error) {
     console.error('[Tribute] Error:', error.message);
+  }
+  // Escala Sistema (G1 idle): tributo pasivo de planetas reclamados
+  try {
+    const systemService = require('../services/systemService');
+    const planets = await systemService.distributeTribute();
+    if (planets > 0) console.log(`[Tribute] ${planets} planetas rindieron tributo`);
+  } catch (error) {
+    console.error('[Tribute] Error planetas:', error.message);
   }
 }
 

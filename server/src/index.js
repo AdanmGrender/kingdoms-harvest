@@ -166,6 +166,8 @@ app.use('/api/guilds', guildRoutes);
 app.use('/api/storms', require('./routes/stormRoutes'));
 // Idle F3: Marea Disforme (defensa por oleadas)
 app.use('/api/waves', require('./routes/waveRoutes'));
+// Idle G1: Escala Sistema (meta-mapa de planetas)
+app.use('/api/system', require('./routes/systemRoutes'));
 
 // Sentry error handler — must come after all routes so it can capture Express errors
 setupExpressErrorHandler(app);

@@ -66,6 +66,15 @@ export function connectSocket(initData) {
     EventBridge.emit('storm:ended');
   });
 
+  // Escala Sistema (G1 idle) — la Nave llegó a un planeta
+  socket.on('ship_arrived', ({ planetId }) => {
+    useGameStore.getState().loadSystem();
+    EventBridge.emit('game:notification', {
+      text: `🛰️ ¡La Nave llegó y reclamó un nuevo planeta! (${planetId})`,
+      type: 'success',
+    });
+  });
+
   return socket;
 }
 

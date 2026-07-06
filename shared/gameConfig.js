@@ -883,6 +883,47 @@ const WAVE_ENEMIES = {
   boss_heraldo:   { id: 'boss_heraldo',   name: 'Heraldo de la Estática', icon: '🌩️', power: 0, hp: 380, atk: 60, boss: true },
 };
 
+// ---- ESCALA SISTEMA (G1 idle — meta-mapa de planetas) ----
+// La escala Sistema se abre cuando el Bastión de Mando (throne_room) llega a
+// SYSTEM_UNLOCK_LEVEL. Planeta 1 = tu mundo natal (auto-reclamado). Los demás
+// se desbloquean en orden (cada uno pide el anterior reclamado). Mandás la Nave
+// → viaje idle (travelMin) + costo → al llegar, tributo pasivo por hora para
+// siempre (reusa el cron horario de tributo de territorios). Nombres 100%
+// propios (nada de mundos de Games Workshop).
+const SYSTEM_UNLOCK_LEVEL = 3; // nivel de throne_room para abrir la escala
+const SYSTEM_PLANETS = [
+  {
+    id: 'cadmion', name: 'Bastión Cadmion', icon: '🏰', type: 'homeworld',
+    homeworld: true, desc: 'Tu mundo natal. El corazón de tu dominio.',
+    travelMin: 0, cost: {}, tribute: {},
+  },
+  {
+    id: 'ferryn', name: 'Ferryn', icon: '⚙️', type: 'forge',
+    desc: 'Mundo-fundición sofocado por el humo de mil forjas.',
+    travelMin: 30, cost: { gold: 200, iron: 20 }, tribute: { iron: 8 },
+  },
+  {
+    id: 'cineria', name: 'Cineria', icon: '🌋', type: 'ash',
+    desc: 'Yermo de ceniza volcánica; la piedra abunda entre las brasas.',
+    travelMin: 45, cost: { gold: 400, stone: 40 }, tribute: { stone: 12 },
+  },
+  {
+    id: 'saltus', name: 'Saltus', icon: '🏜️', type: 'salt',
+    desc: 'Llanuras de sal donde el agua filtrada vale más que el oro.',
+    travelMin: 60, cost: { gold: 600, water: 30 }, tribute: { water: 15 },
+  },
+  {
+    id: 'umbral', name: 'Umbral', icon: '🌑', type: 'dark',
+    desc: 'Mundo oscuro y rico; sus mercados nunca duermen.',
+    travelMin: 90, cost: { gold: 1000 }, tribute: { gold: 20 },
+  },
+  {
+    id: 'nexo7', name: 'Estación Nexo-7', icon: '🛰️', type: 'station',
+    desc: 'Estación orbital olvidada; extrae cristal de energía del vacío.',
+    travelMin: 120, cost: { gold: 2000, iron: 100 }, tribute: { crystal: 1 },
+  },
+];
+
 // ---- HÉROES ----
 // Restaurado tras el merge iso-rework (venía de la rama WiFOf; el merge lo perdió).
 // heroService indexa por id: HEROES[hero_id]. `sprite` mapea a CharacterSprite.
@@ -963,4 +1004,6 @@ module.exports = {
   WAVE_CONFIG,
   WAVE_ENEMIES,
   HERO_SKILLS,
+  SYSTEM_PLANETS,
+  SYSTEM_UNLOCK_LEVEL,
 };

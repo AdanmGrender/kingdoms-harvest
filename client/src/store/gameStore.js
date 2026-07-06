@@ -95,6 +95,27 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // Idle G1: Escala Sistema (meta-mapa de planetas)
+  systemMap: null,
+  loadSystem: async () => {
+    try {
+      const { data } = await api.get('/system');
+      set({ systemMap: data });
+    } catch { /* panel muestra vacío */ }
+  },
+  launchShip: async (planetId) => {
+    try {
+      const { data } = await api.post('/system/launch', { planetId });
+      get().addNotification(data.message, 'success');
+      get().refreshResources();
+      get().loadSystem();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'La Nave no pudo partir', 'error');
+      return null;
+    }
+  },
+
   // Idle F4: Escuadra de héroes
   squad: [],
   loadSquad: async () => {
