@@ -23,3 +23,7 @@ client/.claude/
 # Regenerar tras clone fresco: node scripts/gen_placeholders.js
 client/public/assets/game/
 client/public/assets/kenney-medieval/
+
+# Buzón de arte IA sin procesar (el owner tira aquí lo generado; Claude lo
+# recorta e integra a client/public/assets/). No se commitea.
+/art-inbox/
