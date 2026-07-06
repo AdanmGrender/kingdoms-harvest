@@ -35,7 +35,9 @@ const PRESETS = {
   sky: {
     aspect: '16:9',
     out: 'art-inbox/sky_storm.png',
-    prompt: 'stormy purple-grey sky over a ruined wasteland horizon, distant gothic ruins silhouettes, smoke columns, floating embers, wide panoramic landscape',
+    // Lámina de FONDO (background matte), no un edificio: cielo dominante,
+    // ruinas diminutas en el horizonte. Se combate el sesgo a "fortaleza".
+    prompt: 'a background sky matte painting, NOT a building: a turbulent stormy purple-grey overcast sky filling the top three quarters of the frame, only a thin low strip of tiny distant ruined city silhouettes along the very bottom horizon, faint smoke wisps and floating orange embers, mostly empty atmospheric sky, wide panoramic wallpaper, no large structures, no foreground detail, minimalist desolate',
     finalPath: 'client/public/assets/game/ambient/sky_storm.png',
   },
   decals: {
