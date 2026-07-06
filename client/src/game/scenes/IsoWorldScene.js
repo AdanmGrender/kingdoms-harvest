@@ -300,6 +300,14 @@ export default class IsoWorldScene extends Phaser.Scene {
       : this.add.image(foot.x, foot.y, 'buildings', frame);
     // Anchor at ~85% height so base of drawn building sits at foot point
     bldg.setOrigin(0.5, 0.88);
+    // El arte IA (bld_<id>) viene recortado a alturas variables (~128px alto,
+    // ancho angosto). Normalizar a una altura fija en pantalla para que todos
+    // los edificios luzcan a la misma escala sobre los tiles de 64×32.
+    if (useSlot) {
+      const img = this.textures.get(slot).getSourceImage();
+      const TARGET_H = 108;
+      bldg.setScale(TARGET_H / img.height);
+    }
     bldg.setDepth(col + row + 0.6);
     bldg.setData('buildingId', buildingId);
     bldg.setData('col', col);

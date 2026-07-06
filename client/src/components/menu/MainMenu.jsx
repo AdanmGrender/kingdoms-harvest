@@ -21,23 +21,24 @@ export default function MainMenu() {
     <div
       className="relative w-screen h-screen overflow-hidden flex flex-col items-center justify-center"
       style={{
-        background:
-          'radial-gradient(ellipse at 50% 30%, #4a4550 0%, #2a262e 55%, #17151a 100%)',
+        backgroundColor: '#17151a',
+        backgroundImage: 'url(/assets/game/ambient/menu_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
       }}
     >
+      {/* Capa oscura para legibilidad del texto sobre la fortaleza */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse at 50% 42%, rgba(23,21,26,0.35) 0%, rgba(23,21,26,0.72) 60%, rgba(10,8,12,0.92) 100%)',
+        }}
+      />
       {/* Viñeta */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ boxShadow: 'inset 0 0 180px 60px rgba(5,4,8,0.9)' }}
-      />
-
-      {/* Siluetas de ruinas */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none opacity-70"
-        style={{
-          background:
-            'linear-gradient(to top, #17151a 30%, transparent), repeating-linear-gradient(90deg, transparent 0 40px, #1f1c22 40px 70px, transparent 70px 130px, #241f28 130px 160px)',
-          clipPath: 'polygon(0 100%, 0 55%, 8% 60%, 12% 30%, 18% 65%, 26% 50%, 33% 70%, 41% 40%, 50% 62%, 58% 35%, 66% 68%, 75% 45%, 83% 60%, 90% 25%, 96% 55%, 100% 45%, 100% 100%)',
-        }}
+        style={{ boxShadow: 'inset 0 0 200px 70px rgba(5,4,8,0.95)' }}
       />
 
       <div className="relative z-10 text-center px-6">
