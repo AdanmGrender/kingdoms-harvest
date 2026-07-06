@@ -21,6 +21,7 @@ import OfflineReportModal from './components/overlay/OfflineReportModal';
 import StormBanner from './components/hud/StormBanner';
 import SystemMapPanel from './components/overlay/SystemMapPanel';
 import GalaxyMapPanel from './components/overlay/GalaxyMapPanel';
+import TerritoryMapPanel from './components/world/TerritoryMapPanel';
 
 // Browser preview modes (skip Telegram auth):
 //   ?iso=1         → IsoScene
@@ -166,6 +167,14 @@ function App() {
         return (
           <div className="w-screen h-screen bg-kingdom-bg flex items-end">
             <div className="w-full"><Panel onClose={() => {}} /></div>
+            <NotificationToast />
+          </div>
+        );
+      }
+      if (previewPanel === 'territory') {
+        return (
+          <div className="w-screen h-screen bg-kingdom-bg overflow-y-auto p-3">
+            <TerritoryMapPanel />
             <NotificationToast />
           </div>
         );

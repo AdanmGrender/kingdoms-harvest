@@ -67,13 +67,25 @@ export default function TerritoryMapPanel() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="relative space-y-3">
+      {/* Fondo aéreo de la megaciudad arruinada (arte original grimdark) */}
+      <div
+        className="absolute inset-0 -m-2 rounded-lg pointer-events-none"
+        style={{
+          backgroundImage: 'url(/assets/game/ambient/world_map_bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.5,
+          maskImage: 'linear-gradient(to bottom, black 55%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent)',
+        }}
+      />
       {/* Cabecera estilo informe de campaña (ref: mapa de sistema, docs/art-style.md) */}
-      <div className="border border-yellow-700/40 rounded-md px-2 py-1.5 bg-black/40">
+      <div className="relative border border-yellow-700/40 rounded-md px-2 py-1.5 bg-black/60">
         <p className="font-medieval text-[13px] text-kingdom-gold tracking-wide text-center uppercase">
           Mapa de Campaña — Sector en Disputa
         </p>
-        <p className="text-[10px] text-gray-400 text-center">
+        <p className="text-[10px] text-gray-300 text-center">
           Conquistá territorios para tu facción · tributo pasivo por hora
         </p>
       </div>
