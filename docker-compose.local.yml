@@ -1,0 +1,32 @@
+# Deploy LOCAL en esta PC (sin Traefik/SSL del VPS).
+# El server Express sirve el cliente estático (client/dist) + SPA fallback en
+# NODE_ENV=production, así que un solo contenedor = juego completo en :3001.
+#
+#   docker compose -f docker-compose.local.yml up -d --build
+#   → http://localhost:3001
+#
+# Para exponerlo a Telegram hace falta HTTPS público: correr un túnel
+# (cloudflared / ngrok) contra 127.0.0.1:3001 y poner esa URL en WEBAPP_URL.
+services:
+  kingdoms:
+    build: .
+    image: kingdoms-harvest:latest
+    container_name: kingdoms-harvest
+    restart: unless-stopped
+    env_file:
+      - server/.env
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      # VPS apagado → seguro que este contenedor sea el único que pollea el bot
+      - BOT_POLLING=true
+    volumes:
+      - kingdoms-data:/data
+    ports:
+      # Accesible desde la LAN y para un túnel; cambiá a 127.0.0.1:3001 si
+      # querés que solo escuche en loopback.
+      - "3001:3001"
+
+volumes:
+  kingdoms-data:
+    driver: local
