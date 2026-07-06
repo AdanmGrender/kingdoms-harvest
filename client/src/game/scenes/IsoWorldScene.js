@@ -17,7 +17,7 @@ import AmbientSystem from '../systems/AmbientSystem';
 import DayNightSystem from '../systems/DayNightSystem';
 import ParticleSystem from '../systems/ParticleSystem';
 import { addStaticShadow, addTrackedShadow } from '../systems/ShadowSystem';
-import { addGlow } from '../systems/GlowLights';
+import { addGlow, addGroundGlow } from '../systems/GlowLights';
 import { BUILDING_LIGHTS } from '../config/buildingSprites';
 import EventBridge from '../EventBridge';
 
@@ -317,10 +317,13 @@ export default class IsoWorldScene extends Phaser.Scene {
     // nocturno para que "brillen" de noche.
     const lights = BUILDING_LIGHTS[buildingId] || [];
     for (const l of lights) {
-      const glow = addGlow(this, foot.x + l.dx, foot.y - 26 + l.dy, {
+      // Luz elevada + charco que derrama color al piso (mood grimdark)
+      this.glows.push(addGlow(this, foot.x + l.dx, foot.y - 26 + l.dy, {
         color: l.color, radius: l.radius, depth: 950,
-      });
-      this.glows.push(glow);
+      }));
+      this.glows.push(addGroundGlow(this, foot.x + l.dx, foot.y - 4, {
+        color: l.color, radius: l.radius * 1.3, depth: col + row + 0.1,
+      }));
     }
 
     if (interactive) {

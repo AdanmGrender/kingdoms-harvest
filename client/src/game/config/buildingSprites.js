@@ -59,12 +59,19 @@ export function getBuildingSprite(buildingId, scene) {
  * (docs/art-style.md): velas naranja, holo teal, forja roja.
  */
 export const BUILDING_LIGHTS = {
-  throne_room: [{ dx: 0,  dy: -26, color: 0x4fd8c8, radius: 42 }], // mesa holográfica
-  smithy:      [{ dx: 0,  dy: -12, color: 0xff3a20, radius: 34 }], // tubos de forja
-  tavern:      [{ dx: -10, dy: -16, color: 0xe8933a, radius: 28 },
-                { dx: 12,  dy: -10, color: 0xe8933a, radius: 22 }], // velas
-  tower:       [{ dx: 0,  dy: -34, color: 0xff2020, radius: 16 }], // LED centinela
-  embassy:     [{ dx: 0,  dy: -22, color: 0x4fd8c8, radius: 24 }], // antenas
-  library:     [{ dx: 0,  dy: -14, color: 0xe8933a, radius: 24 }], // velas de archivo
-  mill:        [{ dx: 0,  dy: -10, color: 0xe8933a, radius: 20 }], // horno de raciones
+  throne_room: [{ dx: 0,  dy: -26, color: 0x4fd8c8, radius: 46 },
+                { dx: -18, dy: -6, color: 0xe8933a, radius: 16 },
+                { dx: 18,  dy: -6, color: 0xe8933a, radius: 16 }], // holo + antorchas
+  smithy:      [{ dx: 0,  dy: -12, color: 0xff3a20, radius: 38 }], // tubos de forja
+  tavern:      [{ dx: -10, dy: -16, color: 0xe8933a, radius: 30 },
+                { dx: 12,  dy: -10, color: 0xe8933a, radius: 24 }], // velas
+  tower:       [{ dx: 0,  dy: -34, color: 0xff2020, radius: 18 }], // LED centinela
+  embassy:     [{ dx: 0,  dy: -22, color: 0x4fd8c8, radius: 28 }], // antenas
+  library:     [{ dx: 0,  dy: -14, color: 0x4fd8c8, radius: 26 }], // pantallas teal
+  mill:        [{ dx: 0,  dy: -10, color: 0xe8933a, radius: 22 }], // horno de raciones
+  barracks:    [{ dx: -14, dy: -10, color: 0xe8933a, radius: 18 },
+                { dx: 14,  dy: -10, color: 0xe8933a, radius: 18 }], // antorchas del patio
+  market:      [{ dx: 0,  dy: -8,  color: 0xe8933a, radius: 22 }], // faroles del bazar
+  house:       [{ dx: 0,  dy: -12, color: 0xe8933a, radius: 16 }], // ventana encendida
+  barn:        [{ dx: 0,  dy: -8,  color: 0xff3a20, radius: 14 }], // luz roja de puerta
 };

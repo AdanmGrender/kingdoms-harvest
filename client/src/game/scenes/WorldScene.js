@@ -27,7 +27,7 @@ import DayNightSystem from '../systems/DayNightSystem';
 import ParticleSystem from '../systems/ParticleSystem';
 import AmbientSystem from '../systems/AmbientSystem';
 import { addStaticShadow, addTrackedShadow } from '../systems/ShadowSystem';
-import { addGlow } from '../systems/GlowLights';
+import { addGlow, addGroundGlow } from '../systems/GlowLights';
 import { BUILDING_LIGHTS } from '../config/buildingSprites';
 import EventBridge from '../EventBridge';
 
@@ -426,10 +426,14 @@ export default class WorldScene extends Phaser.Scene {
       if (['mill', 'smithy', 'barn', 'tavern'].includes(id)) {
         this.particleSystem.addBuildingSmoke(building.x, building.y);
       }
-      // Luces falsas por edificio (holo teal, velas, forja) — brillan de noche
+      // Luces falsas por edificio (holo teal, velas, forja) — brillan de noche.
+      // Cada luz: el punto elevado + un charco que derrama color al piso.
       for (const l of BUILDING_LIGHTS[id] || []) {
         this.glows.push(addGlow(this, building.x + l.dx, building.y + l.dy, {
           color: l.color, radius: l.radius, depth: 950,
+        }));
+        this.glows.push(addGroundGlow(this, building.x + l.dx, building.y + 18, {
+          color: l.color, radius: l.radius * 1.35, depth: 2,
         }));
       }
     }

@@ -25,13 +25,44 @@ function ensureGlowTexture(scene) {
     size / 2, size / 2, 0,
     size / 2, size / 2, size / 2,
   );
-  // Blanco al centro → transparente al borde; el tint pone el color
-  g.addColorStop(0, 'rgba(255,255,255,0.9)');
-  g.addColorStop(0.35, 'rgba(255,255,255,0.35)');
-  g.addColorStop(1, 'rgba(255,255,255,0)');
+  // Núcleo brillante compacto + halo suave largo → lee como "luz" real, no
+  // como una mancha uniforme. El tint pone el color.
+  g.addColorStop(0.0,  'rgba(255,255,255,1.0)');
+  g.addColorStop(0.12, 'rgba(255,255,255,0.85)');
+  g.addColorStop(0.35, 'rgba(255,255,255,0.30)');
+  g.addColorStop(0.7,  'rgba(255,255,255,0.08)');
+  g.addColorStop(1.0,  'rgba(255,255,255,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, size, size);
   canvas.refresh();
+}
+
+/**
+ * Charco de luz en el SUELO — elipse achatada (2:1 iso) con blend ADD que
+ * derrama el color de la luz sobre el piso, como en las referencias grimdark.
+ * Depth bajo (sobre el terreno, bajo edificios/personajes).
+ * @returns {{ sprite, destroy() }}
+ */
+export function addGroundGlow(scene, x, y, opts = {}) {
+  const { color = 0xe8933a, radius = 46, depth = 2, alpha = 0.4, flicker = true } = opts;
+  ensureGlowTexture(scene);
+  const sprite = scene.add.image(x, y, GLOW_KEY)
+    .setDisplaySize(radius * 2, radius)   // achatado 2:1 → charco iso en el piso
+    .setTint(color)
+    .setAlpha(alpha)
+    .setBlendMode(Phaser.BlendModes.ADD)
+    .setDepth(depth);
+
+  let tween = null;
+  if (flicker) {
+    tween = scene.tweens.add({
+      targets: sprite,
+      alpha: { from: alpha * 0.7, to: alpha },
+      duration: 900 + Math.random() * 600,
+      yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+    });
+  }
+  return { sprite, destroy() { if (tween) tween.remove(); sprite.destroy(); } };
 }
 
 /**

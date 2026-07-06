@@ -17,14 +17,15 @@ const DAY_CYCLE = {
   },
 };
 
-// Tints grimdark (paleta docs/art-style.md): noche púrpura-tormenta profunda,
-// atardecer óxido, amanecer pálido enfermizo. Ni el mediodía es del todo limpio.
+// Tints grimdark (paleta docs/art-style.md): noche púrpura-tormenta MUY
+// profunda para que las luces puntuales corten la oscuridad, atardecer óxido,
+// amanecer pálido enfermizo. Ni el mediodía es del todo limpio.
 const PERIOD_TINTS = {
-  dawn:    { r: 180, g: 150, b: 170, alpha: 0.15 },
-  morning: { r: 255, g: 255, b: 255, alpha: 0.0 },
-  midday:  { r: 255, g: 250, b: 235, alpha: 0.04 },
-  evening: { r: 200, g: 110, b: 60,  alpha: 0.28 },
-  night:   { r: 34,  g: 30,  b: 48,  alpha: 0.52 },
+  dawn:    { r: 150, g: 120, b: 150, alpha: 0.22 },
+  morning: { r: 220, g: 210, b: 220, alpha: 0.08 },
+  midday:  { r: 255, g: 248, b: 230, alpha: 0.06 },
+  evening: { r: 190, g: 95,  b: 45,  alpha: 0.34 },
+  night:   { r: 20,  g: 18,  b: 34,  alpha: 0.68 },
 };
 
 const PERIOD_ICONS = {
