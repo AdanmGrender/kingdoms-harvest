@@ -153,10 +153,12 @@ export default class BootScene extends Phaser.Scene {
     // ─── Chroma-key: old spritesheets have solid white backgrounds that must
     // be punched out to transparent before use. Terrain/Kenney tiles already
     // have alpha and are skipped.
+    // npc_<rol> ya NO se chroma-keyan: el arte IA (gen_chars.sh) trae alpha
+    // propio; el white-punch les haría agujeros en zonas claras (harina del
+    // panadero, piel pálida de la princesa). Solo los sheets legacy con fondo
+    // blanco sólido necesitan el punch.
     const chromaKeyTargets = [
       'farm_tiles', 'troops', 'effects',
-      'npc_farmer', 'npc_baker', 'npc_princess', 'npc_wizard',
-      'npc_knight', 'npc_merchant', 'npc_ranger',
       'chicken', 'cow', 'sheep',
     ];
     for (const key of chromaKeyTargets) this.makeWhiteTransparent(key);

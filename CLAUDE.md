@@ -501,6 +501,14 @@ ANCLAS DE TERRENO POR ZONA (/public/assets/game/zones/, WorldScene top-down):
   gameplay); flipX/flipY por zona rompe la repetición. Familias (2 variantes
   grass/dirt, 1 sand/snow/ice): zone_<familia>_<n>.png. Genera: gen_zones.sh
   (Nano Banana → downscale 512px). No-op si el arte falta → fallback a tiles.
+
+PERSONAJES NPC (/public/assets/game/characters/npc_<rol>.png):
+  Sheet 32×48, 4 frames (idle 0-1, walk 2-3). 7 roles grimdark ORIGINALES
+  (farmer/baker/princess/wizard/knight/merchant/ranger) via gen_chars.sh:
+  Nano Banana (1 sprite full-body) -> process_art (bg + recorte) ->
+  make_char_sheet.js (encaja en frame 32x48, apoya en piso, repite 4x). El
+  arte IA trae alpha propio -> NO se chroma-keya (BootScene los sacó de
+  chromaKeyTargets). Diseños sin marcas de terceros (regla IP art-style.md).
 ```
 
 ### 10.5 Modo Isométrico (experimento)
