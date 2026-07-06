@@ -137,6 +137,16 @@ export default class BootScene extends Phaser.Scene {
     for (const id of BUILDING_IDS) {
       this.load.image(`bld_${id}`, `/assets/game/buildings/${id}.png`);
     }
+
+    // ─── Anclas de terreno por zona (zone_<familia>_<n>) ───
+    // Piso de fondo grimdark por bioma (systems/ZoneAnchors.js). Si faltan,
+    // WorldScene cae a los tiles planos. Familia → nº de variantes.
+    const ZONE_ANCHORS = { grass: 2, dirt: 2, sand: 1, snow: 1, ice: 1 };
+    for (const [fam, n] of Object.entries(ZONE_ANCHORS)) {
+      for (let i = 0; i < n; i++) {
+        this.load.image(`zone_${fam}_${i}`, `/assets/game/zones/zone_${fam}_${i}.png`);
+      }
+    }
   }
 
   create() {

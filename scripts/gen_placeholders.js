@@ -333,6 +333,23 @@ for (const b of Object.values(BUILDINGS)) {
 }
 console.log(`  ✓  buildings/ — ${Object.keys(BUILDINGS).length} slots bld_<id>`);
 
+// ── Anclas de terreno por zona (zone_<familia>_<n>) ──────────────────────────
+// Piso grimdark por bioma (systems/ZoneAnchors.js). gen_zones.sh sobrescribe
+// con arte IA; estos stand-ins evitan 404 tras un clone y dan color de bioma.
+const ZONE_ANCHORS = {
+  grass: { n: 2, color: '#3a4a2e' }, // blight verde-gris apagado
+  dirt:  { n: 2, color: '#3d362e' }, // ceniza/tierra
+  sand:  { n: 1, color: '#5a5040' }, // polvo pálido
+  snow:  { n: 1, color: '#565b60' }, // nieve sucia
+  ice:   { n: 1, color: '#2e3a42' }, // hielo negro
+};
+for (const [fam, { n, color }] of Object.entries(ZONE_ANCHORS)) {
+  for (let i = 0; i < n; i++) {
+    write(`zones/zone_${fam}_${i}.png`, makePng(256, 256, color, color));
+  }
+}
+console.log('  ✓  zones/ — 7 anclas de terreno por bioma');
+
 // ── Kenney medieval-rts stand-ins (WorldScene + IsoScene los cargan) ─────────
 // BootScene.js / IsoScene.js cargan estos 102 PNGs individuales de 64×64:
 //   Tile/medievalTile_01..58            — suelo (opaco)

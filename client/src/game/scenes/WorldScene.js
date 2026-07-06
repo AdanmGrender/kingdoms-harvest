@@ -28,6 +28,7 @@ import ParticleSystem from '../systems/ParticleSystem';
 import AmbientSystem from '../systems/AmbientSystem';
 import { addStaticShadow, addTrackedShadow } from '../systems/ShadowSystem';
 import { addGlow, addGroundGlow } from '../systems/GlowLights';
+import { drawZoneAnchors } from '../systems/ZoneAnchors';
 import { BUILDING_LIGHTS } from '../config/buildingSprites';
 import EventBridge from '../EventBridge';
 
@@ -72,6 +73,9 @@ export default class WorldScene extends Phaser.Scene {
     this.wang = bakeWangTiles(this);
 
     this.drawTerrain();
+    // Anclas de zona: piso de terreno IA por bioma sobre los tiles planos
+    // (§ ZoneAnchors). No-op si el arte no está cargado → fallback a los tiles.
+    this.zoneAnchorSprites = drawZoneAnchors(this, this.mapData, { tileSize: TILE_SIZE });
     this.drawDecorations();
     this.drawResourceMarkers();
     this.markStructureSlots();
