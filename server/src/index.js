@@ -168,6 +168,8 @@ app.use('/api/storms', require('./routes/stormRoutes'));
 app.use('/api/waves', require('./routes/waveRoutes'));
 // Idle G1: Escala Sistema (meta-mapa de planetas)
 app.use('/api/system', require('./routes/systemRoutes'));
+// Idle G2: Escala Galaxia (surcar la Disformidad entre sistemas)
+app.use('/api/galaxy', require('./routes/galaxyRoutes'));
 
 // Sentry error handler — must come after all routes so it can capture Express errors
 setupExpressErrorHandler(app);

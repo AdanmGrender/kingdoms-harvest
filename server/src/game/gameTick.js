@@ -330,6 +330,22 @@ async function processTick() {
     console.error('[Tick] Error resolviendo arribos de nave:', error.message);
   }
 
+  // 4b8. Escala Galaxia (G2 idle): reclamar sistemas cuyo Crucero ya llegó
+  try {
+    const galaxyService = require('../services/galaxyService');
+    const arrived = await db('player_warp')
+      .where('status', 'traveling')
+      .where('arrives_at', '<=', now);
+    for (const w of arrived) {
+      const systemId = await galaxyService.resolveWarpArrival(w.player_id);
+      if (systemId && ioRef) {
+        ioRef.to(`player_${w.player_id}`).emit('warp_arrived', { systemId });
+      }
+    }
+  } catch (error) {
+    console.error('[Tick] Error resolviendo arribos de warp:', error.message);
+  }
+
   // 4c. Villager simulation (throttled: at most once per 5 minutes per player)
   try {
     const villagerService = require('../services/villagerService');
@@ -464,6 +480,14 @@ async function processTerritoryTribute() {
     if (planets > 0) console.log(`[Tribute] ${planets} planetas rindieron tributo`);
   } catch (error) {
     console.error('[Tribute] Error planetas:', error.message);
+  }
+  // Escala Galaxia (G2 idle): tributo pasivo de sistemas reclamados
+  try {
+    const galaxyService = require('../services/galaxyService');
+    const systems = await galaxyService.distributeTribute();
+    if (systems > 0) console.log(`[Tribute] ${systems} sistemas rindieron tributo`);
+  } catch (error) {
+    console.error('[Tribute] Error sistemas:', error.message);
   }
 }
 

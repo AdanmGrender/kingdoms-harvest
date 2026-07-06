@@ -75,6 +75,15 @@ export function connectSocket(initData) {
     });
   });
 
+  // Escala Galaxia (G2 idle) — el Crucero emergió de la Disformidad
+  socket.on('warp_arrived', ({ systemId }) => {
+    useGameStore.getState().loadGalaxy();
+    EventBridge.emit('game:notification', {
+      text: `🌌 ¡El Crucero emergió y reclamó un nuevo sistema! (${systemId})`,
+      type: 'success',
+    });
+  });
+
   return socket;
 }
 

@@ -116,6 +116,27 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // Idle G2: Escala Galaxia (surcar la Disformidad)
+  galaxyMap: null,
+  loadGalaxy: async () => {
+    try {
+      const { data } = await api.get('/galaxy');
+      set({ galaxyMap: data });
+    } catch { /* panel muestra vacío */ }
+  },
+  launchWarp: async (systemId) => {
+    try {
+      const { data } = await api.post('/galaxy/warp', { systemId });
+      get().addNotification(data.message, 'success');
+      get().refreshResources();
+      get().loadGalaxy();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'El Crucero no pudo zarpar', 'error');
+      return null;
+    }
+  },
+
   // Idle F4: Escuadra de héroes
   squad: [],
   loadSquad: async () => {

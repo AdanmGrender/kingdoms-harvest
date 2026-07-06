@@ -924,6 +924,41 @@ const SYSTEM_PLANETS = [
   },
 ];
 
+// ---- ESCALA GALAXIA (G2 idle — surcar la Disformidad entre sistemas) ----
+// Se abre al DOMINAR la escala Sistema (todos los planetas no-natales
+// reclamados). El Crucero Disforme viaja entre sistemas: viajes de HORAS a
+// través de la Disformidad. Si hay una Tormenta Disforme activa al zarpar, la
+// travesía se vuelve turbulenta y tarda WARP_TURBULENCE_MULT más. Sistema 1 =
+// tu sistema natal (auto-reclamado). Nombres 100% propios.
+const WARP_TURBULENCE_MULT = 1.5; // ×tiempo si zarpás con tormenta activa
+const GALAXY_SYSTEMS = [
+  {
+    id: 'natal', name: 'Sistema Cadmion', icon: '⭐', type: 'home',
+    homeSystem: true, desc: 'Tu sistema natal, donde orbita tu dominio.',
+    warpMin: 0, cost: {}, tribute: {},
+  },
+  {
+    id: 'verglobo', name: 'Cúmulo Verglobo', icon: '🌱', type: 'verdant',
+    desc: 'Cúmulo de mundos-jardín; sus cosechas alimentan flotas enteras.',
+    warpMin: 180, cost: { gold: 3000, crystal: 2 }, tribute: { wheat: 40, gold: 25 },
+  },
+  {
+    id: 'kthar', name: 'Abismo de Kthar', icon: '🕳️', type: 'abyss',
+    desc: 'Grieta estelar rica en cristal de energía… y en malos augurios.',
+    warpMin: 300, cost: { gold: 6000, crystal: 5 }, tribute: { crystal: 3, gold: 30 },
+  },
+  {
+    id: 'vok', name: 'Fragua Estelar Vok', icon: '🔥', type: 'forge',
+    desc: 'Estrella-fundición que escupe acero y ferrocreto sin fin.',
+    warpMin: 420, cost: { gold: 10000, crystal: 8 }, tribute: { iron: 50, stone: 50 },
+  },
+  {
+    id: 'ojo_muerto', name: 'El Ojo Muerto', icon: '💀', type: 'warpscar',
+    desc: 'Sistema devorado por la Disformidad; quien lo domina, domina la ruina.',
+    warpMin: 600, cost: { gold: 20000, crystal: 15 }, tribute: { gold: 80, relic: 1 },
+  },
+];
+
 // ---- HÉROES ----
 // Restaurado tras el merge iso-rework (venía de la rama WiFOf; el merge lo perdió).
 // heroService indexa por id: HEROES[hero_id]. `sprite` mapea a CharacterSprite.
@@ -1006,4 +1041,6 @@ module.exports = {
   HERO_SKILLS,
   SYSTEM_PLANETS,
   SYSTEM_UNLOCK_LEVEL,
+  GALAXY_SYSTEMS,
+  WARP_TURBULENCE_MULT,
 };

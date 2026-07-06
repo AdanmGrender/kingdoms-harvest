@@ -40,8 +40,12 @@ export default function SystemMapPanel({ onClose }) {
   const systemMap = useGameStore((s) => s.systemMap);
   const loadSystem = useGameStore((s) => s.loadSystem);
   const launchShip = useGameStore((s) => s.launchShip);
+  const setOverlay = useGameStore((s) => s.setOverlay);
   const [selected, setSelected] = useState(null);
   const [, tick] = useState(0);
+
+  // La escala Galaxia se abre al dominar todos los planetas del sistema
+  const allClaimed = systemMap?.planets?.every((p) => p.state === 'claimed');
 
   useEffect(() => {
     loadSystem();
@@ -74,11 +78,29 @@ export default function SystemMapPanel({ onClose }) {
           </h3>
           <p className="text-[10px] text-gray-500">Extendé tu dominio planeta a planeta</p>
         </div>
-        <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
+        <div className="flex items-center gap-1">
+          {allClaimed && (
+            <button
+              onClick={() => setOverlay('galaxy', {})}
+              className="text-[10px] px-2 py-1 rounded bg-black/40 border border-purple-700/40 text-purple-300"
+            >
+              🌌 Galaxia
+            </button>
+          )}
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
+        </div>
       </div>
 
       <div className="px-4 py-3 space-y-3 overflow-y-auto flex-1">
         {!sys && <p className="text-center text-gray-500 text-xs py-6">Cargando cartografía…</p>}
+        {allClaimed && (
+          <div className="rounded-lg bg-purple-900/20 border border-purple-600/40 p-2 text-center">
+            <p className="text-[11px] text-purple-300">
+              🌌 ¡Sistema dominado! La <b>Disformidad</b> está abierta —
+              <button onClick={() => setOverlay('galaxy', {})} className="underline ml-1">surcá la Galaxia</button>
+            </p>
+          </div>
+        )}
 
         {sys && !sys.unlocked && (
           <div className="rounded-lg bg-black/40 border border-cyan-800/40 p-3 text-center">
