@@ -509,6 +509,11 @@ PERSONAJES NPC (/public/assets/game/characters/npc_<rol>.png):
   make_char_sheet.js (encaja en frame 32x48, apoya en piso, repite 4x). El
   arte IA trae alpha propio -> NO se chroma-keya (BootScene los sacó de
   chromaKeyTargets). Diseños sin marcas de terceros (regla IP art-style.md).
+  CICLO DE CAMINADO real: gen_walks.sh genera UNA tira de 4 poses del MISMO
+  personaje (1 sola generación IA -> diseño consistente, vence el "cambia de
+  cara") y assemble_walk.js la corta, limpia el negro por celda, y arma el
+  sheet con ESCALA COMPARTIDA + pies al piso (sin jitter). Bestias de granja
+  (chicken/cow/sheep 32x32) por gen_animals.sh, misma tubería.
 ```
 
 ### 10.5 Modo Isométrico (experimento)
