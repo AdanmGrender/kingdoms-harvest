@@ -159,7 +159,6 @@ export default class BootScene extends Phaser.Scene {
     // blanco sólido necesitan el punch.
     const chromaKeyTargets = [
       'farm_tiles', 'troops', 'effects',
-      'chicken', 'cow', 'sheep',
     ];
     for (const key of chromaKeyTargets) this.makeWhiteTransparent(key);
 
