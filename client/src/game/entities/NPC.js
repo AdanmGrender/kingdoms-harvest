@@ -42,7 +42,11 @@ export default class NPC extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
     this.setDepth(9);
 
-    try { this.play(`npc_${npcId}_idle`); } catch (_) { /* animation may not exist */ }
+    // Dirección de encaramiento para el sheet direccional 4×3 (down/up/side).
+    // El sheet dibuja 'side' mirando a la derecha; W = flipX.
+    this.facing = 'down';
+    this._animKey = null;
+    this._applyAnim(false);
 
     this.nameText = scene.add.text(x, y - 32, name, {
       fontFamily: 'MedievalSharp, serif',
@@ -170,11 +174,15 @@ export default class NPC extends Phaser.GameObjects.Sprite {
       this.questIcon.setPosition(this.x, this.y - 44);
     }
 
-    if (this.state === 'walking' || this.state === 'returning') {
+    const moving = this.state === 'walking' || this.state === 'returning';
+    if (moving) {
       this._stepMovement(delta);
     } else if (this.state === 'idle') {
       this._idleWander(delta);
     }
+    // Anim direccional: caminar mientras se mueve, quieto mirando la última
+    // dirección cuando no. (entering/inside/exiting conservan su tween propio.)
+    if (this.state === 'idle' || moving) this._applyAnim(moving);
   }
 
   _stepMovement(delta) {
@@ -201,7 +209,30 @@ export default class NPC extends Phaser.GameObjects.Sprite {
     const step = SPEED * (delta / 1000);
     this.x += (dx / dist) * step;
     this.y += (dy / dist) * step;
-    this.setFlipX(dx < 0);
+    this._faceFromDelta(dx, dy);
+  }
+
+  /**
+   * Elige la dirección de encaramiento a partir del vector de movimiento.
+   * Eje dominante manda; las diagonales caen a la cardinal más cercana.
+   * 'side' se dibuja mirando a la derecha → flipX cuando va a la izquierda.
+   */
+  _faceFromDelta(dx, dy) {
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      this.facing = 'side';
+      this.setFlipX(dx < 0);
+    } else {
+      this.facing = dy >= 0 ? 'down' : 'up';
+      this.setFlipX(false);
+    }
+  }
+
+  /** Reproduce walk_<dir>/idle_<dir> según la dirección actual (idempotente). */
+  _applyAnim(moving) {
+    const key = `npc_${this.npcId}_${moving ? 'walk' : 'idle'}_${this.facing}`;
+    if (key === this._animKey) return;
+    this._animKey = key;
+    try { this.play(key, true); } catch (_) { /* animation may not exist */ }
   }
 
   _idleWander(delta) {

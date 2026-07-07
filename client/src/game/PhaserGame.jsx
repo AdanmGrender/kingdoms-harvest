@@ -62,6 +62,10 @@ export default function PhaserGame() {
 
     gameRef.current = game;
 
+    // DEV-only handle for tooling/screenshots (Vite lo elimina en build prod,
+    // igual que window.__gameStore). Permite forzar escenas/entidades en tests.
+    if (import.meta.env.DEV) window.__phaserGame = game;
+
     // Handle window resize
     const handleResize = () => {
       game.scale.resize(window.innerWidth, window.innerHeight);

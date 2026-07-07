@@ -275,19 +275,36 @@ export default class BootScene extends Phaser.Scene {
 
   createNPCAnimations() {
     const npcNames = ['farmer', 'baker', 'princess', 'wizard', 'knight', 'merchant', 'ranger'];
+    // Sheets DIRECCIONALES 4×3 (scripts/assemble_dirs.js): fila 0 = down (frente,
+    // frames 0-3), fila 1 = up (espalda, 4-7), fila 2 = side (perfil derecho,
+    // 8-11; izquierda = flipX). NPC.js elige la dirección por el vector de
+    // movimiento y reproduce walk_<dir>/idle_<dir>.
+    const DIRS = { down: 0, up: 4, side: 8 };
     for (const name of npcNames) {
+      for (const [dir, base] of Object.entries(DIRS)) {
+        this.anims.create({
+          key: `npc_${name}_walk_${dir}`,
+          frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: base, end: base + 3 }),
+          frameRate: 6,
+          repeat: -1,
+        });
+        this.anims.create({
+          key: `npc_${name}_idle_${dir}`,
+          frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: base, end: base }),
+          frameRate: 1,
+          repeat: -1,
+        });
+      }
+      // Alias legacy: Villager.js y código viejo esperan `_idle`/`_walk` → down.
       this.anims.create({
         key: `npc_${name}_idle`,
-        frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: 0, end: 1 }),
-        frameRate: 2,
-        repeat: -1,
+        frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: 0, end: 0 }),
+        frameRate: 1, repeat: -1,
       });
-      // The 32×48 NPC sheets pack 4 frames; 2-3 are the walk cycle.
       this.anims.create({
         key: `npc_${name}_walk`,
-        frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: 2, end: 3 }),
-        frameRate: 6,
-        repeat: -1,
+        frames: this.anims.generateFrameNumbers(`npc_${name}`, { start: 0, end: 3 }),
+        frameRate: 6, repeat: -1,
       });
     }
   }

@@ -503,17 +503,19 @@ ANCLAS DE TERRENO POR ZONA (/public/assets/game/zones/, WorldScene top-down):
   (Nano Banana → downscale 512px). No-op si el arte falta → fallback a tiles.
 
 PERSONAJES NPC (/public/assets/game/characters/npc_<rol>.png):
-  Sheet 32×48, 4 frames (idle 0-1, walk 2-3). 7 roles grimdark ORIGINALES
-  (farmer/baker/princess/wizard/knight/merchant/ranger) via gen_chars.sh:
-  Nano Banana (1 sprite full-body) -> process_art (bg + recorte) ->
-  make_char_sheet.js (encaja en frame 32x48, apoya en piso, repite 4x). El
-  arte IA trae alpha propio -> NO se chroma-keya (BootScene los sacó de
-  chromaKeyTargets). Diseños sin marcas de terceros (regla IP art-style.md).
-  CICLO DE CAMINADO real: gen_walks.sh genera UNA tira de 4 poses del MISMO
-  personaje (1 sola generación IA -> diseño consistente, vence el "cambia de
-  cara") y assemble_walk.js la corta, limpia el negro por celda, y arma el
-  sheet con ESCALA COMPARTIDA + pies al piso (sin jitter). Bestias de granja
-  (chicken/cow/sheep 32x32) por gen_animals.sh, misma tubería.
+  Sheet DIRECCIONAL 4×3 (128×144, frame 32×48): fila 0 = down (frente, 0-3),
+  fila 1 = up (espalda, 4-7), fila 2 = side (perfil der., 8-11; izq = flipX).
+  7 roles grimdark ORIGINALES (farmer/baker/princess/wizard/knight/merchant/
+  ranger). El arte IA trae alpha propio -> NO se chroma-keya (BootScene los
+  sacó de chromaKeyTargets). Diseños sin marcas de terceros (IP art-style.md).
+  Tubería (todo one-image-por-dirección para consistencia; process_art limpia
+  bg): gen_chars.sh (sprite estático) -> gen_walks.sh (tira 4 poses side,
+  assemble_walk.js) -> gen_dirs.sh (tiras front/back/side, assemble_dirs.js
+  apila con ESCALA COMPARTIDA + pies al piso). NPC.js elige la dirección por el
+  vector de movimiento (diagonales -> cardinal más cercana) y reproduce
+  walk_<dir>/idle_<dir>; alias legacy `_idle`/`_walk` (down) para Villager.
+  Bestias de granja (chicken/cow/sheep 32×32) por gen_animals.sh.
+  Handle de test: window.__phaserGame (solo DEV, PhaserGame.jsx).
 ```
 
 ### 10.5 Modo Isométrico (experimento)
