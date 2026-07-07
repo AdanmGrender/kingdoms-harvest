@@ -5,6 +5,7 @@
  */
 import Phaser from 'phaser';
 import { addContainerShadow } from '../systems/ShadowSystem';
+import { addRimGlow } from '../systems/GlowLights';
 
 const VILLAGER_SPEED = 40; // pixels per second
 
@@ -48,6 +49,7 @@ export default class Villager extends Phaser.GameObjects.Container {
     if (scene.textures.exists(spriteKey)) {
       this.sprite = scene.add.sprite(0, 0, spriteKey, 0);
       this.sprite.setDisplaySize(28, 42);
+      addRimGlow(this.sprite); // contorno claro → resalta del piso oscuro
       if (scene.anims.exists(animKey)) {
         try { this.sprite.play(animKey); } catch (_) { /* anim missing frames */ }
       }

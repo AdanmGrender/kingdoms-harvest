@@ -66,6 +66,22 @@ export function addGroundGlow(scene, x, y, opts = {}) {
 }
 
 /**
+ * Contorno/rim-glow fino para que un personaje resalte del piso oscuro
+ * grimdark. Usa el pipeline FX (WebGL) sobre el propio sprite → sigue la
+ * silueta animada sola. No-op si no hay preFX (fallback canvas).
+ * @param {Phaser.GameObjects.Sprite} sprite
+ * @param {object} opts { color, strength, quality, distance }
+ * @returns {Phaser.FX.Glow|null}
+ */
+export function addRimGlow(sprite, opts = {}) {
+  // distance corto + strength moderado → rim ceñido a la silueta (no un halo
+  // ancho). Color cálido pálido que casa con la paleta de velas grimdark.
+  const { color = 0xffe6b8, strength = 4, quality = 0.4, distance = 6 } = opts;
+  if (!sprite || !sprite.preFX) return null;
+  return sprite.preFX.addGlow(color, strength, 0, false, quality, distance);
+}
+
+/**
  * @param {Phaser.Scene} scene
  * @param {number} x — mundo
  * @param {number} y — mundo

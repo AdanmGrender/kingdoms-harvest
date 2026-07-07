@@ -4,6 +4,7 @@
  * State machine: idle → walking → entering → inside → exiting → returning → idle
  */
 import Phaser from 'phaser';
+import { addRimGlow } from '../systems/GlowLights';
 
 const SPEED = 40; // px/s
 
@@ -41,6 +42,9 @@ export default class NPC extends Phaser.GameObjects.Sprite {
 
     scene.add.existing(this);
     this.setDepth(9);
+
+    // Contorno claro fino → el personaje resalta del piso grimdark oscuro.
+    addRimGlow(this);
 
     // Dirección de encaramiento para el sheet direccional 4×3 (down/up/side).
     // El sheet dibuja 'side' mirando a la derecha; W = flipX.

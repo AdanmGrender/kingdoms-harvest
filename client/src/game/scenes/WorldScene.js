@@ -273,13 +273,15 @@ export default class WorldScene extends Phaser.Scene {
     // NPCs scattered — offsets chosen to AVOID occupying the same tile as any
     // starter building above. Each NPC stands one tile adjacent to their
     // home/work building, never on it.
+    // Nombres grimdark (títulos ominosos, IP-safe — solo strings de display;
+    // los npcId internos siguen intactos).
     const npcSpots = [
-      { npcId: 'farmer',   dx:  2, dy:  5, name: 'Granjero' },     // east of farm_plots
-      { npcId: 'baker',    dx:  4, dy:  0, name: 'Panadero' },     // NE of mill
-      { npcId: 'merchant', dx: -4, dy: -1, name: 'Comerciante' },  // east of market
-      { npcId: 'knight',   dx: -5, dy:  4, name: 'Capitán' },      // east of barracks
-      { npcId: 'princess', dx:  2, dy: -2, name: 'Princesa' },     // east of throne_room
-      { npcId: 'wizard',   dx:  6, dy:  0, name: 'Mago' },         // SE of tavern
+      { npcId: 'farmer',   dx:  2, dy:  5, name: 'Siervo' },       // east of farm_plots
+      { npcId: 'baker',    dx:  4, dy:  0, name: 'Racionero' },    // NE of mill
+      { npcId: 'merchant', dx: -4, dy: -1, name: 'Chatarrero' },  // east of market
+      { npcId: 'knight',   dx: -5, dy:  4, name: 'Centinela' },    // east of barracks
+      { npcId: 'princess', dx:  2, dy: -2, name: 'La Heredera' },  // east of throne_room
+      { npcId: 'wizard',   dx:  6, dy:  0, name: 'El Augur' },     // SE of tavern
     ];
     for (const n of npcSpots) {
       const x = spawn.x + n.dx, y = spawn.y + n.dy;
@@ -380,9 +382,9 @@ export default class WorldScene extends Phaser.Scene {
 
   createVillagers() {
     const defaults = [
-      { id: 1, name: 'Aldric', role: 'farmer',  state: 'idle' },
-      { id: 2, name: 'Brynn',  role: 'builder', state: 'idle' },
-      { id: 3, name: 'Cedric', role: 'soldier', state: 'idle' },
+      { id: 1, name: 'Korvath', role: 'farmer',  state: 'idle' },
+      { id: 2, name: 'Draust',  role: 'builder', state: 'idle' },
+      { id: 3, name: 'Vael',    role: 'soldier', state: 'idle' },
     ];
     const spawn = this.mapData.spawn;
     const cx = spawn.x * TILE_SIZE + TILE_SIZE / 2;
