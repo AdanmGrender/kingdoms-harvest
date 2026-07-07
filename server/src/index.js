@@ -10,6 +10,10 @@ const crypto = require('crypto');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
+// Falla ruidoso al arrancar si falta config crítica en producción (secretos,
+// bypass de auth encendido por error). Mejor no arrancar que servir inseguro.
+require('./config/env').validateEnv();
+
 // Sentry must be initialized before any other requires so auto-instrumentation works
 const { initSentry, captureException, setupExpressErrorHandler } = require('./config/sentry');
 initSentry();
@@ -61,8 +65,12 @@ const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
 const server = http.createServer(app);
 
-// Determinar orígenes permitidos
-const allowedOrigins = [process.env.WEBAPP_URL, 'http://localhost:5173'].filter(Boolean);
+// Determinar orígenes permitidos. localhost solo fuera de producción — en prod
+// el único origen válido es la Mini App (WEBAPP_URL).
+const allowedOrigins = [
+  process.env.WEBAPP_URL,
+  process.env.NODE_ENV !== 'production' ? 'http://localhost:5173' : null,
+].filter(Boolean);
 
 const io = new Server(server, {
   cors: { origin: allowedOrigins, methods: ['GET', 'POST'] },

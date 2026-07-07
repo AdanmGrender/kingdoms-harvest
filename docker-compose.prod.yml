@@ -1,0 +1,57 @@
+# Deploy de PRODUCCIÓN estable y seguro para esta PC (o cualquier host Docker),
+# SIN túnel efímero y SIN abrir puertos al internet.
+#
+# Un named Cloudflare Tunnel da:
+#   • URL/hostname ESTABLE (no cambia al reiniciar, a diferencia del quick tunnel)
+#   • TLS terminado por Cloudflare (HTTPS real, requisito de la Mini App)
+#   • CERO puertos entrantes abiertos — cloudflared alcanza la app por la red
+#     interna de Docker (kingdoms:3001), nunca se publica al host/LAN
+#   • Protección DDoS/WAF de Cloudflare por delante
+#
+# Puesta en marcha: ver docs/deploy-prod.md
+#   docker compose -f docker-compose.prod.yml up -d --build
+services:
+  kingdoms:
+    build: .
+    image: kingdoms-harvest:latest
+    container_name: kingdoms-harvest
+    restart: unless-stopped
+    env_file:
+      - server/.env            # BOT_TOKEN, WEBAPP_URL (=https://tu-hostname), TON_*, etc.
+    environment:
+      - PORT=3001
+      - NODE_ENV=production    # activa CSP/HSTS, static, y el guard de env.js
+      - BOT_POLLING=true       # este contenedor es el único poller del bot
+    volumes:
+      - kingdoms-data:/data
+    # NO ports: — la app NO se publica al host. Solo cloudflared la alcanza por
+    # la red interna. (Para depurar en local podés añadir "127.0.0.1:3001:3001".)
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: kingdoms-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      # Token del named tunnel (Cloudflare Zero Trust → Networks → Tunnels).
+      # Ponelo en server/.env o en el entorno; NO lo commitees.
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      kingdoms:
+        condition: service_healthy   # espera el HEALTHCHECK del Dockerfile
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  kingdoms-data:
+    driver: local
