@@ -100,15 +100,24 @@ const tokenService = {
     } catch {}
     const boostedAmount = Math.floor(baseAmount * multiplier * (1 + eventBonus));
 
-    // Clamp to daily remaining
-    const awarded = Math.min(boostedAmount, remaining);
-
-    // Atomic update — avoids read-modify-write race when concurrent requests arrive
+    // Mint con clamp del cap DENTRO del UPDATE atómico. Antes el monto se
+    // recortaba contra un `remaining` leído arriba, con varios `await` de por
+    // medio: dos awardTokens concurrentes podían leer el mismo
+    // daily_earned_today y ambos otorgar hasta `remaining`, superando el cap
+    // (TOCTOU). Ahora el recorte se evalúa contra el valor VIVO de la fila.
+    // SQLite evalúa el RHS de todos los SET con el valor PREVIO de la fila, así
+    // que los tres MIN() otorgan el mismo monto. MIN/MAX escalares (SQLite).
+    const clamp = 'MIN(?, MAX(0, ? - daily_earned_today))';
     await db('player_tokens').where('player_id', playerId).update({
-      balance:            db.raw('balance + ?', [awarded]),
-      total_earned:       db.raw('total_earned + ?', [awarded]),
-      daily_earned_today: db.raw('daily_earned_today + ?', [awarded]),
+      balance:            db.raw(`balance + ${clamp}`, [boostedAmount, dailyCap]),
+      total_earned:       db.raw(`total_earned + ${clamp}`, [boostedAmount, dailyCap]),
+      daily_earned_today: db.raw(`daily_earned_today + ${clamp}`, [boostedAmount, dailyCap]),
     });
+
+    // Releer para el monto realmente otorgado (exacto salvo carrera; el cap ya
+    // quedó garantizado por el UPDATE atómico de arriba).
+    const after = await db('player_tokens').where('player_id', playerId).first();
+    const awarded = Math.max(0, after.daily_earned_today - tokenData.daily_earned_today);
 
     // Pay referral commission (async, don't block)
     this.payReferralCommission(playerId, awarded).catch((err) => {
@@ -120,8 +129,8 @@ const tokenService = {
 
     return {
       awarded,
-      balance: tokenData.balance + awarded,
-      dailyRemaining: remaining - awarded,
+      balance: after.balance,
+      dailyRemaining: Math.max(0, dailyCap - after.daily_earned_today),
       capped: awarded < boostedAmount,
     };
   },
