@@ -43,6 +43,12 @@ export default class NPC extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
     this.setDepth(9);
 
+    // Sombra de contacto: elipse oscura bajo los pies para que el personaje
+    // "se apoye" en el piso y se separe del terreno (combina con el rim claro:
+    // base oscura + borde claro = máximo pop). Sigue al NPC en update().
+    this.shadow = scene.add.ellipse(x, y + 20, 22, 8, 0x000000, 0.38)
+      .setDepth(8);
+
     // Contorno claro fino → el personaje resalta del piso grimdark oscuro.
     addRimGlow(this);
 
@@ -167,7 +173,8 @@ export default class NPC extends Phaser.GameObjects.Sprite {
   update(delta) {
     this.questBounceT += delta;
 
-    // Keep labels following NPC
+    // Keep labels + contact shadow following NPC
+    if (this.shadow) this.shadow.setPosition(this.x, this.y + 20);
     this.nameText.setPosition(this.x, this.y - 32);
     if (this.questIcon.visible) {
       this.questIcon.setPosition(
@@ -252,6 +259,7 @@ export default class NPC extends Phaser.GameObjects.Sprite {
   }
 
   destroy(fromScene) {
+    if (this.shadow)    this.shadow.destroy();
     if (this.nameText)  this.nameText.destroy();
     if (this.questIcon) this.questIcon.destroy();
     super.destroy(fromScene);

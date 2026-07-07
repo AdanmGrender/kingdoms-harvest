@@ -74,9 +74,10 @@ export function addGroundGlow(scene, x, y, opts = {}) {
  * @returns {Phaser.FX.Glow|null}
  */
 export function addRimGlow(sprite, opts = {}) {
-  // distance corto + strength moderado → rim ceñido a la silueta (no un halo
-  // ancho). Color cálido pálido que casa con la paleta de velas grimdark.
-  const { color = 0xffe6b8, strength = 4, quality = 0.4, distance = 6 } = opts;
+  // Rim MUY sutil: la separación pesada la hacen la sombra de contacto + el piso
+  // atenuado. El glow solo insinúa un borde; con strength alto el personaje se
+  // volvía una mancha blanca (additive blend sobre fondo oscuro florece fuerte).
+  const { color = 0xffe6b8, strength = 1.6, quality = 0.4, distance = 4 } = opts;
   if (!sprite || !sprite.preFX) return null;
   return sprite.preFX.addGlow(color, strength, 0, false, quality, distance);
 }

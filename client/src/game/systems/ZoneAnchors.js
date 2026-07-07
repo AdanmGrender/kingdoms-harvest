@@ -90,6 +90,11 @@ export function drawZoneAnchors(scene, mapData, opts = {}) {
       const img = scene.add.image(x0 * tileSize, y0 * tileSize, key)
         .setOrigin(0, 0)
         .setDisplaySize(w, hgt)
+        // Oscurecer/atenuar el piso para que RETROCEDA: el terreno IA es muy
+        // detallado y en el mismo rango de valor que los sprites, así que
+        // edificios y personajes se fundían. Un tinte gris oscuro lo empuja al
+        // fondo y hace que el gameplay resalte.
+        .setTint(0x6b6b73)
         .setDepth(depth);
 
       // Voltear por zona rompe la repetición cuando el mismo bioma abarca

@@ -17,15 +17,15 @@ const DAY_CYCLE = {
   },
 };
 
-// Tints grimdark (paleta docs/art-style.md): noche púrpura-tormenta MUY
-// profunda para que las luces puntuales corten la oscuridad, atardecer óxido,
-// amanecer pálido enfermizo. Ni el mediodía es del todo limpio.
+// Tints grimdark atenuados para LEGIBILIDAD: la noche 0.68 dejaba todo ilegible
+// (personajes y edificios se fundían con el piso). Se conserva el humor
+// grimdark pero el mundo se lee a cualquier hora.
 const PERIOD_TINTS = {
-  dawn:    { r: 150, g: 120, b: 150, alpha: 0.22 },
-  morning: { r: 220, g: 210, b: 220, alpha: 0.08 },
-  midday:  { r: 255, g: 248, b: 230, alpha: 0.06 },
-  evening: { r: 190, g: 95,  b: 45,  alpha: 0.34 },
-  night:   { r: 20,  g: 18,  b: 34,  alpha: 0.68 },
+  dawn:    { r: 150, g: 120, b: 150, alpha: 0.16 },
+  morning: { r: 220, g: 210, b: 220, alpha: 0.06 },
+  midday:  { r: 255, g: 248, b: 230, alpha: 0.04 },
+  evening: { r: 190, g: 95,  b: 45,  alpha: 0.24 },
+  night:   { r: 30,  g: 28,  b: 46,  alpha: 0.46 },
 };
 
 const PERIOD_ICONS = {
