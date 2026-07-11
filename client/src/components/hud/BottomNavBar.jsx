@@ -9,9 +9,9 @@ export default function BottomNavBar() {
   const setOverlay = useGameStore((s) => s.setOverlay);
 
   const openHeroes = () => {
-    // TroopManagementPanel = barracks training + standing army view.
-    // Closest existing surface to "héroes" until a proper hero system lands.
-    setOverlay('troops', {});
+    // El sistema de héroes ya existe (HeroPanel: roster + gacha + escuadra con
+    // retratos grimdark). Antes abría 'troops' como stand-in del juego viejo.
+    setOverlay('heroes', {});
   };
 
   const openWorldMap = () => {

@@ -33,6 +33,30 @@ const STAT_CAPS  = { atk: 50,  def: 50,  hp: 200, spd: 20, mgk: 50  };
 
 const SLOT_LABELS = { weapon: '⚔️ Arma', armor: '🛡️ Armadura', accessory: '💍 Accesorio' };
 
+/**
+ * Retrato de héroe: intenta primero el PNG generado por el agente de arte en
+ * /assets/game/heroes/<id>.png (puede no existir todavía) y cae al
+ * CharacterSprite legacy si el archivo falta (onError, estado por héroe).
+ * Borde según rareza — misma convención RARITY_COLORS del panel.
+ */
+function HeroPortrait({ hero, height }) {
+  const rc = RARITY_COLORS[hero.rarity] || RARITY_COLORS.common;
+  const heroId = hero.heroId || hero.id;
+  const [failed, setFailed] = useState(false);
+  useEffect(() => { setFailed(false); }, [heroId]);
+  if (failed || !heroId) return <CharacterSprite name={hero.sprite} height={height} />;
+  return (
+    <img
+      src={`/assets/game/heroes/${heroId}.png`}
+      alt={hero.name}
+      onError={() => setFailed(true)}
+      className={`object-contain rounded-md border ${rc.border} shrink-0 bg-black/30`}
+      style={{ height, width: height }}
+      draggable={false}
+    />
+  );
+}
+
 function StatBar({ stat, value }) {
   const pct = Math.min(100, Math.round((value / STAT_CAPS[stat]) * 100));
   const color = { atk: '#ef4444', def: '#3b82f6', hp: '#22c55e', spd: '#f59e0b', mgk: '#a855f7' }[stat];
@@ -72,7 +96,7 @@ function HeroCard({ hero, selected, onClick }) {
       className={`p-2.5 rounded-lg border text-left transition-all w-full ${rc.border} ${rc.bg} ${selected ? 'ring-2 ring-yellow-400' : ''}`}
     >
       <div className="flex items-center gap-2">
-        <CharacterSprite name={hero.sprite} height={40} />
+        <HeroPortrait hero={hero} height={40} />
         <div className="flex-1 min-w-0">
           <p className={`text-xs font-bold truncate ${rc.text}`}>{hero.name}</p>
           <p className="text-gray-500 text-[10px]">
@@ -110,7 +134,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
       {/* Hero header */}
       <div className={`p-3 rounded-lg border ${rc.border} ${rc.bg}`}>
         <div className="flex items-center gap-3">
-          <CharacterSprite name={hero.sprite} height={64} />
+          <HeroPortrait hero={hero} height={64} />
           <div className="flex-1">
             <p className={`text-sm font-bold ${rc.text}`} style={{ fontFamily: 'MedievalSharp, serif' }}>{hero.name}</p>
             <div className="flex items-center gap-2 mt-0.5">

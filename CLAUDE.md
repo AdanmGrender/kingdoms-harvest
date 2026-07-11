@@ -498,7 +498,27 @@ ANCLAS DE TERRENO POR ZONA (/public/assets/game/zones/, WorldScene top-down):
   hace) o una lámina gigante, el mapa 32×32 se parte en grilla de 8×8 tiles y
   cada zona ancla UNA imagen IA de terreno grimdark según su bioma dominante.
   systems/ZoneAnchors.js dibuja a depth 0.5 (sobre tiles planos, bajo decals y
-  gameplay); flipX/flipY por zona rompe la repetición. Familias (2 variantes
+  gameplay); flipX/flipY por zona rompe la repetición. STREAMING: el mundo NO
+  vive entero en memoria de render — systems/ZoneStreamer.js construye cada
+  zona (tiles+ancla+decals+decoraciones vía WorldScene.buildZone) cuando entra
+  a cámara (+1 zona de margen) y la destruye al salir (~4 checks/s). Las
+  entidades de gameplay (edificios/NPCs/cultivos/animales) no se streamean.
+
+ÍCONOS UI GRIMDARK (/public/assets/sprites/grim_icons.png):
+  Sheet 8 col × celdas 128px con ~54 íconos originales; generado por
+  gen_icons.sh + assemble_icon_sheet.js, que también escribe el manifiesto
+  client/src/config/grimIconSheet.generated.js (GRIM_ICONS nombre→col/row).
+  spriteMap.getSprite resuelve PRIMERO contra el set grim (tabla GRIM_ALIASES
+  re-mapea alias legacy: militia→sword, nav_farm→farmhouse, streak→flame...)
+  y cae a los sheets medievales viejos si falta. TopResourceBar usa SpriteIcon
+  con fallback emoji.
+
+RETRATOS DE HÉROE (/public/assets/game/heroes/<id>.png, 160px):
+  18 retratos (10 héroes base + 8 nuevos 40k-INSPIRADOS originales: varok,
+  morghal, azyra, fenn, kryx, serafina, gorr, nyx — ver HEROES en
+  gameConfig.js). gen_heroes.sh los genera; HeroPanel los muestra con
+  fallback onError al CharacterSprite legacy. Botón Héroes del BottomNavBar
+  abre el overlay 'heroes' (antes abría 'troops' como stand-in). Familias (2 variantes
   grass/dirt, 1 sand/snow/ice): zone_<familia>_<n>.png. Genera: gen_zones.sh
   (Nano Banana → downscale 512px). No-op si el arte falta → fallback a tiles.
 

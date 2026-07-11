@@ -980,6 +980,15 @@ const HEROES = {
   seraph: { id: 'seraph', name: 'Serafín, Capellán de Guerra', class: 'paladin', rarity: 'epic',   sprite: 'adventurer', baseStats: { atk: 12, def: 20, hp: 130, spd: 7,  mgk: 14 }, passive: 'Letanía de Hierro: restaura 8% HP al inicio de cada ronda' },
   shadow: { id: 'shadow', name: 'Sombra, Infiltradora',     class: 'rogue',   rarity: 'common',    sprite: 'traveler',   baseStats: { atk: 16, def: 5,  hp: 55,  spd: 16, mgk: 5  }, passive: 'Golpe Silencioso: primer ataque hace +40% daño' },
   vex:    { id: 'vex',    name: 'Vex el Veloz',             class: 'rogue',   rarity: 'rare',      sprite: 'farmer',     baseStats: { atk: 20, def: 6,  hp: 60,  spd: 20, mgk: 6  }, passive: 'Ráfaga Doble: 25% de golpear dos veces por turno' },
+  // ── Segunda camada (arquetipos grimdark originales, 2026-07-07) ──
+  varok:    { id: 'varok',    name: 'Varok, Puño del Bastión',    class: 'warrior', rarity: 'epic',      sprite: 'knight',     baseStats: { atk: 21, def: 16, hp: 115, spd: 7,  mgk: 1  }, passive: 'Asalto Imparable: +25% ATK durante la primera ronda de cada combate' },
+  morghal:  { id: 'morghal',  name: 'Morghal el Putrefacto',      class: 'warrior', rarity: 'rare',      sprite: 'guard',      baseStats: { atk: 16, def: 15, hp: 105, spd: 5,  mgk: 2  }, passive: 'Carne Putrefacta: regenera 5% HP por ronda; quien lo golpea queda envenenado (−5% ATK)' },
+  azyra:    { id: 'azyra',    name: 'Azyra, Vidente del Vacío',   class: 'mage',    rarity: 'epic',      sprite: 'wizard',     baseStats: { atk: 9,  def: 6,  hp: 60,  spd: 10, mgk: 24 }, passive: 'Presciencia del Vacío: prevé los golpes — 20% de esquivar y +10% de probabilidad de crítico' },
+  fenn:     { id: 'fenn',     name: 'Fenn Colmillo Gris',         class: 'rogue',   rarity: 'rare',      sprite: 'warrior',    baseStats: { atk: 19, def: 6,  hp: 62,  spd: 18, mgk: 3  }, passive: 'Frenesí Feral: +8% ATK acumulativo por ronda de combate (máx +40%)' },
+  kryx:     { id: 'kryx',     name: 'Kryx-9, Forjasacro',         class: 'mage',    rarity: 'rare',      sprite: 'mage',       baseStats: { atk: 10, def: 7,  hp: 58,  spd: 8,  mgk: 21 }, passive: 'Sobrecarga del Reactor: cada 3 rondas su siguiente descarga hace +60% daño' },
+  serafina: { id: 'serafina', name: 'Serafina, Vestal de Guerra', class: 'paladin', rarity: 'legendary', sprite: 'adventurer', baseStats: { atk: 14, def: 24, hp: 150, spd: 8,  mgk: 18 }, passive: 'Fe Inquebrantable: escudo de fe grupal que absorbe 15% del daño recibido cada ronda' },
+  gorr:     { id: 'gorr',     name: 'Gorr el Demoledor',          class: 'warrior', rarity: 'common',    sprite: 'guard',      baseStats: { atk: 15, def: 10, hp: 95,  spd: 6,  mgk: 1  }, passive: 'Golpe Aplastante: 20% de aturdir al objetivo, que pierde su siguiente ataque' },
+  nyx:      { id: 'nyx',      name: 'Nyx, Hoja del Silencio',     class: 'rogue',   rarity: 'legendary', sprite: 'traveler',   baseStats: { atk: 24, def: 7,  hp: 70,  spd: 20, mgk: 8  }, passive: 'Sentencia Silenciosa: ejecuta enemigos bajo 15% HP y hace +50% daño a objetivos heridos' },
 };
 
 // Habilidades activas por clase (F4 idle). 100% automáticas: en la simulación

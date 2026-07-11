@@ -68,8 +68,11 @@ export default class Villager extends Phaser.GameObjects.Container {
       this.add(body);
     }
 
-    // Name label
-    this.nameText = scene.add.text(0, -26, data.name || 'Aldeano', {
+    // Name label. Altura alternada por id: cuando dos aldeanos se juntan (p.ej.
+    // en el spawn) las etiquetas a la MISMA altura se pisaban y quedaban
+    // ilegibles ("KorvathDraust"); el escalonado de 8px las separa.
+    const labelDy = -26 - ((data.id ?? 0) % 2) * 8;
+    this.nameText = scene.add.text(0, labelDy, data.name || 'Aldeano', {
       fontSize: '8px',
       color: '#ffffff',
       stroke: '#000000',

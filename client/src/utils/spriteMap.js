@@ -10,6 +10,14 @@
  * NOT used: UI_00007_ (has decorative border frame, unreliable positions)
  */
 
+import {
+  GRIM_SHEET,
+  GRIM_SHEET_W,
+  GRIM_SHEET_H,
+  GRIM_CELL,
+  GRIM_ICONS,
+} from '../config/grimIconSheet.generated';
+
 const SPRITE_BASE = '/assets/sprites';
 
 const SHEETS = {
@@ -191,15 +199,91 @@ const GAME_SPRITE_ALIASES = {
 };
 
 /**
+ * Game element ID → nombre del set de íconos GRIMDARK (grimIconSheet.generated).
+ * Solo IDs que tienen equivalente grim; el resto sigue cayendo al legacy.
+ * Los nombres del set grim (gold, wood, wheat, sword, castle, …) también
+ * resuelven directo sin alias. Mientras GRIM_SHEET sea null este mapa es
+ * inerte y todo usa GAME_SPRITE_ALIASES + SPRITE_MAP como siempre.
+ */
+const GRIM_ALIASES = {
+  // ── Crops ──
+  crop_wheat:   'wheat',
+  crop_carrot:  'carrot',
+  crop_potato:  'potato',
+  crop_tomato:  'tomato',
+  crop_corn:    'corn',
+  crop_pumpkin: 'pumpkin',
+  crop_grape:   'grape',
+
+  // ── Animal products ──
+  product_egg:  'egg',
+  product_milk: 'milk',
+  product_wool: 'wool',
+
+  // ── Buildings ──
+  farm_plot:     'farmhouse',
+  barn_building: 'barn',
+  throne_room:   'castle',
+  smithy:        'sword',   // forja de armas
+  embassy:       'scroll',  // diplomacia
+  library:       'scroll',
+
+  // ── Troops ──
+  militia:   'sword',
+  archer:    'bow',
+  cavalry:   'horse',
+  spearman:  'spear',
+  siege_ram: 'ram',
+
+  // ── Navigation ──
+  nav_farm:     'farmhouse',
+  nav_castle:   'castle',
+  nav_token:    'kh_token',
+  nav_commerce: 'market',
+  nav_combat:   'tower',
+
+  // ── UI / token system ──
+  settings_icon: 'gear',
+  settings:      'gear',
+  streak:        'flame',
+  burn:          'flame',
+  daily_task:    'check',
+  social_task:   'star',
+  mission_board: 'scroll',
+  reward:        'reward_bag',
+  trophy:        'medal',
+};
+
+/** Resuelve un nombre contra el sheet grim. Devuelve null si no hay arte. */
+function getGrimSprite(id) {
+  if (!GRIM_SHEET) return null; // arte aún no generado → legacy
+  const grimName = GRIM_ICONS[id] ? id : GRIM_ALIASES[id];
+  const cell = grimName && GRIM_ICONS[grimName];
+  if (!cell) return null;
+  return {
+    sheet: GRIM_SHEET,
+    x: cell.col * GRIM_CELL,
+    y: cell.row * GRIM_CELL,
+    w: GRIM_CELL,
+    h: GRIM_CELL,
+    sheetW: GRIM_SHEET_W,
+    sheetH: GRIM_SHEET_H,
+  };
+}
+
+/**
  * Get sprite data for a game element.
- * Tries direct match first, then alias lookup.
+ * Resolves against the grimdark icon sheet FIRST (once its art exists),
+ * then falls back to the legacy sheets: direct match, then alias lookup.
  */
 function getSprite(id) {
+  const grim = getGrimSprite(id);
+  if (grim) return grim;
   if (SPRITE_MAP[id]) return SPRITE_MAP[id];
   const alias = GAME_SPRITE_ALIASES[id];
   if (alias && SPRITE_MAP[alias]) return SPRITE_MAP[alias];
   return null;
 }
 
-export { SPRITE_MAP, GAME_SPRITE_ALIASES, SHEETS, getSprite };
+export { SPRITE_MAP, GAME_SPRITE_ALIASES, GRIM_ALIASES, SHEETS, getSprite };
 export default SPRITE_MAP;

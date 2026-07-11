@@ -5,7 +5,10 @@
 import { useMemo, useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
 
+// Íconos del set grimdark (spriteMap resuelve contra grim_icons.png); el emoji
+// queda solo como fallback si el sheet no está generado.
 const MAIN_RESOURCES = [
   { key: 'wood', icon: '🪵', color: '#c89770' },
   { key: 'stone', icon: '🪨', color: '#b8b8b8' },
@@ -121,7 +124,7 @@ export default function TopResourceBar() {
               className="flex items-center gap-0.5 px-1.5 py-1 rounded-md"
               style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
             >
-              <span className="text-[11px]">{r.icon}</span>
+              <SpriteIcon name={r.key} size={14} fallback={r.icon} />
               <span className="text-white text-[10px] font-semibold tabular-nums">
                 {formatNumber(getAmount(r.key))}
               </span>
@@ -137,7 +140,7 @@ export default function TopResourceBar() {
               border: '1px solid rgba(255,215,80,0.5)',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 0 6px rgba(255,215,80,0.25)',
             }}>
-            <span className="text-[11px]">🪙</span>
+            <SpriteIcon name="gold" size={14} fallback="🪙" />
             <span className="text-yellow-200 text-[10px] font-bold tabular-nums">
               {formatNumber(goldAmount)}
             </span>
@@ -149,7 +152,7 @@ export default function TopResourceBar() {
                 border: '1px solid rgba(100,200,255,0.5)',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 0 6px rgba(100,200,255,0.25)',
               }}>
-              <span className="text-[11px]">💎</span>
+              <SpriteIcon name="kh_token" size={14} fallback="💎" />
               <span className="text-cyan-200 text-[10px] font-bold tabular-nums">
                 {tokenInfo.balance || 0}
               </span>

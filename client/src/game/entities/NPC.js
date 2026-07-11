@@ -58,7 +58,10 @@ export default class NPC extends Phaser.GameObjects.Sprite {
     this._animKey = null;
     this._applyAnim(false);
 
-    this.nameText = scene.add.text(x, y - 32, name, {
+    // Altura de etiqueta escalonada por hash del nombre: NPCs que se cruzan no
+    // pisan sus etiquetas a la misma altura (mismo fix que Villager).
+    this._labelDy = -32 - (String(name).length % 2) * 8;
+    this.nameText = scene.add.text(x, y + this._labelDy, name, {
       fontFamily: 'MedievalSharp, serif',
       fontSize: '11px',
       color: '#ffd700',
@@ -175,7 +178,7 @@ export default class NPC extends Phaser.GameObjects.Sprite {
 
     // Keep labels + contact shadow following NPC
     if (this.shadow) this.shadow.setPosition(this.x, this.y + 20);
-    this.nameText.setPosition(this.x, this.y - 32);
+    this.nameText.setPosition(this.x, this.y + this._labelDy);
     if (this.questIcon.visible) {
       this.questIcon.setPosition(
         this.x,

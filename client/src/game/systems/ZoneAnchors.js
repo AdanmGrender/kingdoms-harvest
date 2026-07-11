@@ -44,65 +44,82 @@ function hash(a, b, seed) {
 }
 
 /**
- * Dibuja las anclas de terreno por zona sobre la escena top-down.
+ * Construye el ancla de UNA zona (zx, zy). Extraído de drawZoneAnchors para
+ * que ZoneStreamer pueda crear/destruir anclas por zona según la cámara.
+ * Determinista: misma zona + mismo seed → misma familia/variante/flip.
+ *
+ * @param {Phaser.Scene} scene
+ * @param {object} mapData — { terrain[y][x], width, height, seed }
+ * @param {number} zx — columna de zona
+ * @param {number} zy — fila de zona
+ * @param {object} opts — { tileSize, depth }
+ * @returns {Phaser.GameObjects.Image|null} sprite creado, o null si no hay arte
+ */
+export function buildZoneAnchor(scene, mapData, zx, zy, opts = {}) {
+  const { terrain, width, height, seed = 42 } = mapData;
+  const tileSize = opts.tileSize ?? 64;
+  const depth = opts.depth ?? 0.5;
+
+  const x0 = zx * ZONE_TILES;
+  const y0 = zy * ZONE_TILES;
+  const x1 = Math.min(x0 + ZONE_TILES, width);
+  const y1 = Math.min(y0 + ZONE_TILES, height);
+  if (x0 >= width || y0 >= height) return null;
+
+  // Bioma dominante de la zona (voto por mayoría, agrupado por familia).
+  const votes = {};
+  let best = null, bestN = -1;
+  for (let y = y0; y < y1; y++) {
+    for (let x = x0; x < x1; x++) {
+      const fam = BIOME_TO_FAMILY[terrain[y]?.[x]] || 'dirt';
+      votes[fam] = (votes[fam] || 0) + 1;
+      if (votes[fam] > bestN) { bestN = votes[fam]; best = fam; }
+    }
+  }
+
+  const nVar = FAMILY_VARIANTS[best] || 1;
+  const h = hash(zx, zy, seed);
+  const variant = h % nVar;
+  const key = `zone_${best}_${variant}`;
+  if (!scene.textures.exists(key)) return null; // sin arte → no dibuja (fallback)
+
+  // Cobertura real (recorta la zona del borde para no pisar fuera del mapa).
+  const w = (x1 - x0) * tileSize;
+  const hgt = (y1 - y0) * tileSize;
+  const img = scene.add.image(x0 * tileSize, y0 * tileSize, key)
+    .setOrigin(0, 0)
+    .setDisplaySize(w, hgt)
+    // Oscurecer/atenuar el piso para que RETROCEDA: el terreno IA es muy
+    // detallado y en el mismo rango de valor que los sprites, así que
+    // edificios y personajes se fundían. Un tinte gris oscuro lo empuja al
+    // fondo y hace que el gameplay resalte.
+    .setTint(0x6b6b73)
+    .setDepth(depth);
+
+  // Voltear por zona rompe la repetición cuando el mismo bioma abarca
+  // varias zonas contiguas (4 orientaciones × variantes de imagen).
+  if ((h >> 3) & 1) img.setFlipX(true);
+  if ((h >> 4) & 1) img.setFlipY(true);
+
+  return img;
+}
+
+/**
+ * Dibuja las anclas de terreno de TODAS las zonas sobre la escena top-down.
+ * (Camino no-streameado; WorldScene ahora usa buildZoneAnchor vía ZoneStreamer.)
  * @param {Phaser.Scene} scene
  * @param {object} mapData — { terrain[y][x], width, height, seed }
  * @param {object} opts — { tileSize, depth }
  * @returns {Phaser.GameObjects.Image[]} sprites creados (para limpieza)
  */
 export function drawZoneAnchors(scene, mapData, opts = {}) {
-  const { terrain, width, height, seed = 42 } = mapData;
-  const tileSize = opts.tileSize ?? 64;
-  const depth = opts.depth ?? 0.5;
-  const zonePx = ZONE_TILES * tileSize;
   const sprites = [];
-
-  const zonesX = Math.ceil(width / ZONE_TILES);
-  const zonesY = Math.ceil(height / ZONE_TILES);
-
+  const zonesX = Math.ceil(mapData.width / ZONE_TILES);
+  const zonesY = Math.ceil(mapData.height / ZONE_TILES);
   for (let zy = 0; zy < zonesY; zy++) {
     for (let zx = 0; zx < zonesX; zx++) {
-      const x0 = zx * ZONE_TILES;
-      const y0 = zy * ZONE_TILES;
-      const x1 = Math.min(x0 + ZONE_TILES, width);
-      const y1 = Math.min(y0 + ZONE_TILES, height);
-
-      // Bioma dominante de la zona (voto por mayoría, agrupado por familia).
-      const votes = {};
-      let best = null, bestN = -1;
-      for (let y = y0; y < y1; y++) {
-        for (let x = x0; x < x1; x++) {
-          const fam = BIOME_TO_FAMILY[terrain[y]?.[x]] || 'dirt';
-          votes[fam] = (votes[fam] || 0) + 1;
-          if (votes[fam] > bestN) { bestN = votes[fam]; best = fam; }
-        }
-      }
-
-      const nVar = FAMILY_VARIANTS[best] || 1;
-      const h = hash(zx, zy, seed);
-      const variant = h % nVar;
-      const key = `zone_${best}_${variant}`;
-      if (!scene.textures.exists(key)) continue; // sin arte → no dibuja (fallback)
-
-      // Cobertura real (recorta la zona del borde para no pisar fuera del mapa).
-      const w = (x1 - x0) * tileSize;
-      const hgt = (y1 - y0) * tileSize;
-      const img = scene.add.image(x0 * tileSize, y0 * tileSize, key)
-        .setOrigin(0, 0)
-        .setDisplaySize(w, hgt)
-        // Oscurecer/atenuar el piso para que RETROCEDA: el terreno IA es muy
-        // detallado y en el mismo rango de valor que los sprites, así que
-        // edificios y personajes se fundían. Un tinte gris oscuro lo empuja al
-        // fondo y hace que el gameplay resalte.
-        .setTint(0x6b6b73)
-        .setDepth(depth);
-
-      // Voltear por zona rompe la repetición cuando el mismo bioma abarca
-      // varias zonas contiguas (4 orientaciones × variantes de imagen).
-      if ((h >> 3) & 1) img.setFlipX(true);
-      if ((h >> 4) & 1) img.setFlipY(true);
-
-      sprites.push(img);
+      const img = buildZoneAnchor(scene, mapData, zx, zy, opts);
+      if (img) sprites.push(img);
     }
   }
   return sprites;

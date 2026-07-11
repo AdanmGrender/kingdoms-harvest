@@ -28,12 +28,21 @@ import ParticleSystem from '../systems/ParticleSystem';
 import AmbientSystem from '../systems/AmbientSystem';
 import { addStaticShadow, addTrackedShadow } from '../systems/ShadowSystem';
 import { addGlow, addGroundGlow } from '../systems/GlowLights';
-import { drawZoneAnchors } from '../systems/ZoneAnchors';
+import { buildZoneAnchor, ZONE_TILES } from '../systems/ZoneAnchors';
+import ZoneStreamer from '../systems/ZoneStreamer';
 import { BUILDING_LIGHTS } from '../config/buildingSprites';
 import EventBridge from '../EventBridge';
 
 const FOG_TINT = 0x202040;
 const FOG_ALPHA = 0.55;
+
+// Shadow profile per decoration type — rocks/flowers are too flat to cast
+// shadows. SE-direction sun: offsetX/offsetY both positive, scaled by
+// the object's perceived height; subtle CW rotation on tall things.
+const DECOR_SHADOW_PROFILE = {
+  tree: { width: 32, height: 8, alpha: 0.35, offsetX: 10, offsetY: 14, rotation: 0.18 },
+  bush: { width: 18, height: 5, alpha: 0.3,  offsetX: 4,  offsetY: 8,  rotation: 0 },
+};
 
 const RESOURCE_BADGE_COLORS = {
   [RESOURCE_TYPES.WOOD]:  0x8b5a2b,
@@ -57,6 +66,8 @@ export default class WorldScene extends Phaser.Scene {
     this.villagers = [];
     this.mapData = null;
     this.terrainSprites = new Map();
+    this.zoneStreamer = null;
+    this.decalSpots = [];
     this.ambientSystem = null;
     this.glows = [];
   }
@@ -70,13 +81,19 @@ export default class WorldScene extends Phaser.Scene {
     this.mapData.objects = this.deriveObjects(this.mapData);
 
     // Bake biome-edge transition textures (Wang tiles) before terrain draws.
+    // MUST exist before the first buildZone() call (wang.resolve is per-tile).
     this.wang = bakeWangTiles(this);
 
-    this.drawTerrain();
-    // Anclas de zona: piso de terreno IA por bioma sobre los tiles planos
-    // (§ ZoneAnchors). No-op si el arte no está cargado → fallback a los tiles.
-    this.zoneAnchorSprites = drawZoneAnchors(this, this.mapData, { tileSize: TILE_SIZE });
-    this.drawDecorations();
+    // Streaming por zonas: terreno + decals + decoraciones + anclas de zona se
+    // construyen SOLO para las zonas visibles (+1 de margen) y se destruyen al
+    // salir de cámara. El gameplay (edificios, NPCs, cultivos, animales,
+    // aldeanos, marcadores de recursos, estructuras) NO se streamea.
+    this.decalSpots = this.computeDecalSpots();
+    this.zoneStreamer = new ZoneStreamer(this, this.mapData, {
+      tileSize: TILE_SIZE,
+      buildZone: (zx, zy) => this.buildZone(zx, zy),
+    });
+
     this.drawResourceMarkers();
     this.markStructureSlots();
 
@@ -89,6 +106,10 @@ export default class WorldScene extends Phaser.Scene {
     this.createAnimals();
     this.createVillagers();
     this.setupCamera();
+    // Primer stream inmediato: la cámara ya está centrada en el spawn, así el
+    // jugador nunca ve el piso vacío (worldView aún no existe → ZoneStreamer
+    // deriva el rect desde scroll/zoom).
+    this.zoneStreamer.update(true);
     this.setupSystems();
     this.setupEventBridge();
 
@@ -109,10 +130,47 @@ export default class WorldScene extends Phaser.Scene {
     return { px: gx * TILE_SIZE + TILE_SIZE / 2, py: gy * TILE_SIZE + TILE_SIZE / 2 };
   }
 
-  drawTerrain() {
+  /**
+   * Decals: manchas de óxido/sangre/grietas sobre el terreno (seeded por
+   * mapa — mismo mundo, mismas cicatrices). "Suelo con historia" grimdark.
+   * Solo DATA (posiciones + frame) — los sprites los crea buildZone() cuando
+   * la zona del decal entra a cámara. La secuencia del PRNG replica el orden
+   * de consumo original (x, y, [frame]) para que el mundo no cambie.
+   */
+  computeDecalSpots() {
+    const spots = [];
+    if (!this.textures.exists('ground_decals')) return spots;
+    const { terrain, width, height } = this.mapData;
+    let seed = (this.mapData.seed || 42) * 7 + 13;
+    const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (let i = 0; i < 160; i++) {
+      const x = Math.floor(rand() * width);
+      const y = Math.floor(rand() * height);
+      // Nieve/hielo limpios — el óxido y la sangre viven en el resto
+      if (terrain[y]?.[x] === BIOMES.SNOW || terrain[y]?.[x] === BIOMES.ICE) continue;
+      spots.push({ x, y, frame: Math.floor(rand() * 8) });
+    }
+    return spots;
+  }
+
+  /**
+   * Construye TODOS los objetos de render de una zona de 8×8 tiles:
+   * tiles de terreno (Wang/camino), ancla de zona, decals y decoraciones.
+   * Llamado por ZoneStreamer cuando la zona entra a cámara; los objetos
+   * devueltos se destruyen cuando sale. Determinista e idempotente.
+   * @returns {Phaser.GameObjects.GameObject[]}
+   */
+  buildZone(zx, zy) {
+    const objs = [];
     const { tileVariants, terrain, width, height } = this.mapData;
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
+    const x0 = zx * ZONE_TILES;
+    const y0 = zy * ZONE_TILES;
+    const x1 = Math.min(x0 + ZONE_TILES, width);
+    const y1 = Math.min(y0 + ZONE_TILES, height);
+
+    // ── Terreno (tiles 64px, Wang autotile per-tile) ──
+    for (let y = y0; y < y1; y++) {
+      for (let x = x0; x < x1; x++) {
         const { px, py } = this.tileToPx(x, y);
         let textureKey;
         if (terrain[y][x] === BIOMES.ROAD) {
@@ -125,27 +183,46 @@ export default class WorldScene extends Phaser.Scene {
         const tile = this.add.image(px, py, textureKey);
         tile.setOrigin(0.5, 0.5);
         tile.setDepth(0);
-        this.terrainSprites.set(`${x},${y}`, tile);
+        // terrainSprites se mantiene coherente con lo streameado: entra al
+        // crear la zona, sale cuando ZoneStreamer destruye el tile.
+        const mapKey = `${x},${y}`;
+        this.terrainSprites.set(mapKey, tile);
+        tile.once('destroy', () => {
+          if (this.terrainSprites.get(mapKey) === tile) this.terrainSprites.delete(mapKey);
+        });
+        objs.push(tile);
       }
     }
 
-    // Decals: manchas de óxido/sangre/grietas sobre el terreno (seeded por
-    // mapa — mismo mundo, mismas cicatrices). "Suelo con historia" grimdark.
-    if (this.textures.exists('ground_decals')) {
-      let seed = (this.mapData.seed || 42) * 7 + 13;
-      const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-      const { terrain } = this.mapData;
-      for (let i = 0; i < 160; i++) {
-        const x = Math.floor(rand() * width);
-        const y = Math.floor(rand() * height);
-        // Nieve/hielo limpios — el óxido y la sangre viven en el resto
-        if (terrain[y]?.[x] === BIOMES.SNOW || terrain[y]?.[x] === BIOMES.ICE) continue;
-        const { px, py } = this.tileToPx(x, y);
-        this.add.image(px, py, 'ground_decals', Math.floor(rand() * 8))
-          .setDepth(1)
-          .setAlpha(0.8);
-      }
+    // ── Ancla de zona: piso de terreno IA por bioma sobre los tiles planos
+    // (§ ZoneAnchors). Null si el arte no está cargado → fallback a los tiles.
+    const anchor = buildZoneAnchor(this, this.mapData, zx, zy, { tileSize: TILE_SIZE });
+    if (anchor) objs.push(anchor);
+
+    // ── Decals cuyo tile cae dentro de la zona ──
+    for (const d of this.decalSpots) {
+      if (d.x < x0 || d.x >= x1 || d.y < y0 || d.y >= y1) continue;
+      const { px, py } = this.tileToPx(d.x, d.y);
+      objs.push(
+        this.add.image(px, py, 'ground_decals', d.frame).setDepth(1).setAlpha(0.8)
+      );
     }
+
+    // ── Decoraciones (árboles/arbustos/rocas) dentro de la zona ──
+    for (const d of this.mapData.decorations) {
+      if (d.x < x0 || d.x >= x1 || d.y < y0 || d.y >= y1) continue;
+      const { px, py } = this.tileToPx(d.x, d.y);
+      const profile = DECOR_SHADOW_PROFILE[d.type];
+      if (profile) {
+        objs.push(addStaticShadow(this, px, py, { ...profile, depth: 1 }));
+      }
+      const sprite = this.add.image(px, py, `iso_env_${d.tileId}`);
+      sprite.setOrigin(0.5, 0.7);
+      sprite.setDepth(50 + d.y * 10 + d.x); // below buildings (buildings start at y*100)
+      objs.push(sprite);
+    }
+
+    return objs;
   }
 
   pickRoadTile(x, y) {
@@ -160,27 +237,6 @@ export default class WorldScene extends Phaser.Scene {
     if (isRoad(x - 1, y)) mask |= 0b1000; // W
     const pool = ROAD_CONNECTORS.ON_GRASS;
     return pool[mask] ?? pool['*'];
-  }
-
-  drawDecorations() {
-    const { decorations } = this.mapData;
-    // Shadow profile per decoration type — rocks/flowers are too flat to cast
-    // shadows. SE-direction sun: offsetX/offsetY both positive, scaled by
-    // the object's perceived height; subtle CW rotation on tall things.
-    const SHADOW_PROFILE = {
-      tree: { width: 32, height: 8, alpha: 0.35, offsetX: 10, offsetY: 14, rotation: 0.18 },
-      bush: { width: 18, height: 5, alpha: 0.3,  offsetX: 4,  offsetY: 8,  rotation: 0 },
-    };
-    for (const d of decorations) {
-      const { px, py } = this.tileToPx(d.x, d.y);
-      const profile = SHADOW_PROFILE[d.type];
-      if (profile) {
-        addStaticShadow(this, px, py, { ...profile, depth: 1 });
-      }
-      const sprite = this.add.image(px, py, `iso_env_${d.tileId}`);
-      sprite.setOrigin(0.5, 0.7);
-      sprite.setDepth(50 + d.y * 10 + d.x); // below buildings (buildings start at y*100)
-    }
   }
 
   drawResourceMarkers() {
@@ -550,6 +606,8 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   update(time, delta) {
+    // Streaming de zonas: throttled internamente (~4 checks/s vía scene.time.now)
+    if (this.zoneStreamer) this.zoneStreamer.update();
     this.cameraSystem.update(delta);
     this.dayNightSystem.update(delta);
     this.selectionSystem.update();
@@ -583,6 +641,7 @@ export default class WorldScene extends Phaser.Scene {
     EventBridge.removeAllListeners('game:animalsUpdated');
     EventBridge.removeAllListeners('token:earned');
 
+    if (this.zoneStreamer) { this.zoneStreamer.destroy(); this.zoneStreamer = null; }
     if (this.cameraSystem) this.cameraSystem.destroy();
     if (this.selectionSystem) this.selectionSystem.destroy();
     if (this.particleSystem) this.particleSystem.destroy();
