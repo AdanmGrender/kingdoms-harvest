@@ -15,6 +15,10 @@ function getNotifService() {
   return _notificationService;
 }
 
+// Single-flight del procesador de retiros (ver processPendingWithdrawals): evita
+// que dos corridas del cron se solapen compartiendo el seqno del hot wallet.
+let _wdRunning = false;
+
 const tokenService = {
   /**
    * Crear registro de tokens si no existe (llamado en initPlayer)
@@ -375,8 +379,23 @@ const tokenService = {
    * Procesar retiros pendientes (llamado desde cron cada 5 min)
    */
   async processPendingWithdrawals() {
-    // Kill-switch operativo: pausar payouts sin apagar el server.
-    if (process.env.WITHDRAWALS_ENABLED === 'false') return;
+    // Kill-switch operativo (parseo laxo: false/0/no/off pausan; default on).
+    const sw = String(process.env.WITHDRAWALS_ENABLED ?? '').toLowerCase();
+    if (['false', '0', 'no', 'off'].includes(sw)) return;
+    // Single-flight a nivel proceso: node-cron NO impide reentradas y una corrida
+    // dura hasta ~5min (poll de confirmación). Dos corridas solapadas leerían el
+    // MISMO seqno del hot wallet → una podría marcar 'completed' un retiro cuyo
+    // TON no salió, y ambas duplicarían el baseline del tope diario. Serializar.
+    if (_wdRunning) { console.warn('[TON] payout ya en curso; se saltea esta corrida'); return; }
+    _wdRunning = true;
+    try {
+      await this._processWithdrawalsInner();
+    } finally {
+      _wdRunning = false;
+    }
+  },
+
+  async _processWithdrawalsInner() {
     const nowIso = () => new Date().toISOString();
 
     // 0) 'processing' colgados (crash entre broadcast y confirmación): NUNCA se
@@ -397,8 +416,11 @@ const tokenService = {
     // 1) Tope diario de payout on-chain (acota el daño ante exploit/robo del
     //    hot wallet). Suma el TON de completados en las últimas 24h.
     const dayAgo = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+    // Contar completados Y needs_review: un 'needs_review' pudo haber ENVIADO
+    // el TON (envío incierto), así que se cuenta de forma conservadora contra el
+    // tope diario para que el kill-switch económico no se deflacte.
     const doneToday = await db('withdrawal_requests')
-      .where('status', 'completed')
+      .whereIn('status', ['completed', 'needs_review'])
       .where('processed_at', '>', dayAgo);
     let tonToday = (Array.isArray(doneToday) ? doneToday : [])
       .reduce((s, r) => s + (parseFloat(r.ton_amount) || 0), 0);
@@ -452,8 +474,10 @@ const tokenService = {
           await db('withdrawal_requests').where('id', request.id).update({
             status: 'failed', admin_note: err.message, processed_at: nowIso(),
           });
+          // Mensaje genérico al jugador (no filtrar err.message interno del
+          // preflight/RPC); el detalle queda en admin_note + logs server-side.
           getNotifService().notify(request.player_id, 'withdrawals',
-            `⚠️ Tu retiro de ${request.amount} KH no se procesó (${err.message}). El balance fue reintegrado; probá de nuevo.`);
+            `⚠️ Tu retiro de ${request.amount} KH no se pudo procesar. El balance fue reintegrado; probá de nuevo más tarde.`);
           console.error(`[TON] Withdrawal #${request.id} pre-send fail (reintegrado):`, err.message);
         } else {
           // INCIERTO: el envío pudo salir. NO completar, NO reintegrar (evita

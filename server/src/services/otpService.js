@@ -82,7 +82,15 @@ async function verifyWithdrawalOTP(playerId, otpId, otp, amount) {
     throw new Error(`Código incorrecto. ${remaining} intento(s) restante(s).`);
   }
 
-  await db('withdrawal_otps').where('id', otpId).update({ used: true });
+  // Consumo ATÓMICO de un solo uso: un único UPDATE condicional (used=0→1).
+  // El check `if (row.used)` de arriba es un fast-fail; ESTE es el guard real
+  // contra reuso concurrente de la misma OTP (dos requests con el código
+  // correcto interleavados → solo uno obtiene affected=1). Evita saltar el
+  // 2FA-un-solo-uso y el cooldown de 24h disparando N retiros en paralelo.
+  const claimed = await db('withdrawal_otps')
+    .where({ id: otpId, player_id: playerId, used: 0 })
+    .update({ used: 1 });
+  if (!claimed) throw new Error('Este código ya fue usado');
 
   return true;
 }

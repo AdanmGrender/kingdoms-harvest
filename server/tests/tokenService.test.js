@@ -284,6 +284,21 @@ describe('tokenService — withdrawal payout safety', () => {
     expect(balAfter).toBe(balBefore);
   });
 
+  test('needs_review cuenta para el tope diario (M3)', async () => {
+    await db('withdrawal_requests').insert({
+      player_id: TOKEN_PLAYER_ID, amount: 999999, ton_amount: String(TOKEN_CONFIG.MAX_DAILY_TON_PAYOUT),
+      wallet_address: TEST_WALLET, status: 'needs_review',
+      created_at: new Date().toISOString(), processed_at: new Date().toISOString(),
+    });
+    await db('withdrawal_requests').insert({
+      player_id: TOKEN_PLAYER_ID, amount: 500, ton_amount: '0.047500',
+      wallet_address: TEST_WALLET, status: 'pending', created_at: new Date().toISOString(),
+    });
+    await tokenService.processPendingWithdrawals();
+    const req = await db('withdrawal_requests').where({ player_id: TOKEN_PLAYER_ID, status: 'pending' }).first();
+    expect(req).toBeDefined(); // diferido: el needs_review ya consumió el tope
+  });
+
   test('processing colgado → needs_review y SIN reintegro', async () => {
     const old = new Date(Date.now() - (TOKEN_CONFIG.WITHDRAWAL_PROCESSING_STALE_MIN + 5) * 60 * 1000).toISOString();
     await db('withdrawal_requests').insert({
