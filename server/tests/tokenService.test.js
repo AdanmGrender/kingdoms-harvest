@@ -247,6 +247,72 @@ describe('tokenService.processPendingWithdrawals', () => {
 
 // ─── sendTON validation ───────────────────────────────────────────────────────
 
+describe('tokenService — withdrawal payout safety', () => {
+  beforeEach(async () => {
+    await db('withdrawal_requests').where('player_id', TOKEN_PLAYER_ID).delete();
+    await db('player_tokens').where('player_id', TOKEN_PLAYER_ID).update({ balance: 2000, total_withdrawn: 0 });
+    delete process.env.WITHDRAWALS_ENABLED;
+    delete process.env.TON_HOT_WALLET_MNEMONIC;
+  });
+
+  test('kill-switch: WITHDRAWALS_ENABLED=false deja el pending intacto', async () => {
+    await db('withdrawal_requests').insert({
+      player_id: TOKEN_PLAYER_ID, amount: 500, ton_amount: '0.047500',
+      wallet_address: TEST_WALLET, status: 'pending', created_at: new Date().toISOString(),
+    });
+    process.env.WITHDRAWALS_ENABLED = 'false';
+    await tokenService.processPendingWithdrawals();
+    const req = await db('withdrawal_requests').where('player_id', TOKEN_PLAYER_ID).first();
+    expect(req.status).toBe('pending');
+  });
+
+  test('tope diario: difiere el pending si excede MAX_DAILY_TON_PAYOUT', async () => {
+    await db('withdrawal_requests').insert({
+      player_id: TOKEN_PLAYER_ID, amount: 999999, ton_amount: String(TOKEN_CONFIG.MAX_DAILY_TON_PAYOUT),
+      wallet_address: TEST_WALLET, status: 'completed',
+      created_at: new Date().toISOString(), processed_at: new Date().toISOString(),
+    });
+    await db('withdrawal_requests').insert({
+      player_id: TOKEN_PLAYER_ID, amount: 500, ton_amount: '0.047500',
+      wallet_address: TEST_WALLET, status: 'pending', created_at: new Date().toISOString(),
+    });
+    const balBefore = (await db('player_tokens').where('player_id', TOKEN_PLAYER_ID).first()).balance;
+    await tokenService.processPendingWithdrawals();
+    const req = await db('withdrawal_requests').where({ player_id: TOKEN_PLAYER_ID, status: 'pending' }).first();
+    expect(req).toBeDefined(); // sigue pending (diferido, no fallado)
+    const balAfter = (await db('player_tokens').where('player_id', TOKEN_PLAYER_ID).first()).balance;
+    expect(balAfter).toBe(balBefore);
+  });
+
+  test('processing colgado → needs_review y SIN reintegro', async () => {
+    const old = new Date(Date.now() - (TOKEN_CONFIG.WITHDRAWAL_PROCESSING_STALE_MIN + 5) * 60 * 1000).toISOString();
+    await db('withdrawal_requests').insert({
+      player_id: TOKEN_PLAYER_ID, amount: 500, ton_amount: '0.047500',
+      wallet_address: TEST_WALLET, status: 'processing', seqno: 7,
+      created_at: old, claimed_at: old,
+    });
+    const balBefore = (await db('player_tokens').where('player_id', TOKEN_PLAYER_ID).first()).balance;
+    await tokenService.processPendingWithdrawals();
+    const req = await db('withdrawal_requests').where('player_id', TOKEN_PLAYER_ID).first();
+    expect(req.status).toBe('needs_review');
+    const balAfter = (await db('player_tokens').where('player_id', TOKEN_PLAYER_ID).first()).balance;
+    expect(balAfter).toBe(balBefore); // el TON pudo salir → nunca reintegrar
+  });
+
+  test('fallo pre-envío (sin mnemonic) reintegra y marca failed', async () => {
+    await db('withdrawal_requests').insert({
+      player_id: TOKEN_PLAYER_ID, amount: 500, ton_amount: '0.047500',
+      wallet_address: TEST_WALLET, status: 'pending', created_at: new Date().toISOString(),
+    });
+    const balBefore = (await db('player_tokens').where('player_id', TOKEN_PLAYER_ID).first()).balance;
+    await tokenService.processPendingWithdrawals();
+    const req = await db('withdrawal_requests').where('player_id', TOKEN_PLAYER_ID).first();
+    expect(req.status).toBe('failed');
+    const balAfter = (await db('player_tokens').where('player_id', TOKEN_PLAYER_ID).first()).balance;
+    expect(balAfter).toBe(balBefore + 500);
+  });
+});
+
 describe('tokenService.sendTON — input validation', () => {
   test('throws on invalid TON address (bad checksum)', async () => {
     await expect(
@@ -266,7 +332,7 @@ describe('tokenService.sendTON — input validation', () => {
     delete process.env.TON_HOT_WALLET_MNEMONIC;
     await expect(
       tokenService.sendTON('EQCVMAPI3VhY8ZRh9wYKWWpE_jCGcQFYCXTRBetyrmfPZ5cV', '0.05')
-    ).rejects.toThrow(/wallet not configured|mnemonic/i);
+    ).rejects.toThrow(/wallet.*config|mnemonic/i);
     if (prev !== undefined) process.env.TON_HOT_WALLET_MNEMONIC = prev;
   });
 });

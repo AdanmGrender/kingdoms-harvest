@@ -375,60 +375,96 @@ const tokenService = {
    * Procesar retiros pendientes (llamado desde cron cada 5 min)
    */
   async processPendingWithdrawals() {
+    // Kill-switch operativo: pausar payouts sin apagar el server.
+    if (process.env.WITHDRAWALS_ENABLED === 'false') return;
+    const nowIso = () => new Date().toISOString();
+
+    // 0) 'processing' colgados (crash entre broadcast y confirmación): NUNCA se
+    //    reenvían (el TON pudo salir) → a needs_review para revisión humana.
+    const staleCutoff = Date.now() - TOKEN_CONFIG.WITHDRAWAL_PROCESSING_STALE_MIN * 60 * 1000;
+    const processing = await db('withdrawal_requests').where('status', 'processing');
+    for (const r of (Array.isArray(processing) ? processing : [])) {
+      const claimedMs = r.claimed_at ? new Date(r.claimed_at).getTime() : 0;
+      if (!claimedMs || claimedMs >= staleCutoff) continue;
+      const moved = await db('withdrawal_requests')
+        .where({ id: r.id, status: 'processing' })
+        .update({ status: 'needs_review', processed_at: nowIso(),
+          admin_note: `processing colgado; revisar cadena por seqno=${r.seqno ?? '?'}` });
+      if (moved) getNotifService().notify(r.player_id, 'withdrawals',
+        '⏳ Tu retiro quedó en revisión manual. Te avisamos apenas se confirme.');
+    }
+
+    // 1) Tope diario de payout on-chain (acota el daño ante exploit/robo del
+    //    hot wallet). Suma el TON de completados en las últimas 24h.
+    const dayAgo = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+    const doneToday = await db('withdrawal_requests')
+      .where('status', 'completed')
+      .where('processed_at', '>', dayAgo);
+    let tonToday = (Array.isArray(doneToday) ? doneToday : [])
+      .reduce((s, r) => s + (parseFloat(r.ton_amount) || 0), 0);
+
     const pending = await db('withdrawal_requests')
       .where('status', 'pending')
       .orderBy('id', 'asc')
       .limit(5);
 
     for (const request of pending) {
+      const reqTon = parseFloat(request.ton_amount) || 0;
+
+      // Diferir (NO fallar) si excede el tope diario — se reintenta después.
+      if (tonToday + reqTon > TOKEN_CONFIG.MAX_DAILY_TON_PAYOUT) {
+        console.warn(`[TON] Tope diario alcanzado (${tonToday}/${TOKEN_CONFIG.MAX_DAILY_TON_PAYOUT} TON); difiriendo retiro #${request.id}`);
+        continue;
+      }
+
+      // Claim atómico pending→processing (evita doble envío entre cron/workers).
+      const claimed = await db('withdrawal_requests')
+        .where({ id: request.id, status: 'pending' })
+        .update({ status: 'processing', claimed_at: nowIso() });
+      if (!claimed) continue;
+      await db('withdrawal_requests').where('id', request.id).increment('attempts', 1);
+
       try {
-        // Atomic status claim — only proceeds if status is still 'pending'.
-        // Returns 0 if another process already claimed it, preventing duplicate TON sends.
-        const claimed = await db('withdrawal_requests')
-          .where({ id: request.id, status: 'pending' })
-          .update({ status: 'processing' });
-        if (!claimed) continue;
+        // Persistir el seqno usado ANTES del broadcast (reconciliación si el
+        // proceso muere entre el envío y la confirmación).
+        const persistSeqno = (seqno) =>
+          db('withdrawal_requests').where('id', request.id).update({ seqno });
 
-        // Send TON via hot wallet
-        const txHash = await this.sendTON(request.wallet_address, request.ton_amount);
+        const txHash = await this.sendTON(request.wallet_address, request.ton_amount, persistSeqno);
 
-        // Mark completed
         await db('withdrawal_requests').where('id', request.id).update({
-          status: 'completed',
-          tx_hash: txHash,
-          processed_at: new Date().toISOString(),
+          status: 'completed', tx_hash: txHash, processed_at: nowIso(),
         });
+        tonToday += reqTon;
 
-        const network    = process.env.TON_NETWORK || 'testnet';
+        const network = process.env.TON_NETWORK || 'testnet';
         const explorerBase = network === 'mainnet'
-          ? 'https://tonscan.org/tx'
-          : 'https://testnet.tonscan.org/tx';
-        getNotifService().notify(
-          request.player_id, 'withdrawals',
-          `💰 ¡Retiro completado! ${request.amount} KH → ${request.ton_amount} TON enviados.\n🔗 ${explorerBase}/${txHash}`
-        );
+          ? 'https://tonscan.org/tx' : 'https://testnet.tonscan.org/tx';
+        getNotifService().notify(request.player_id, 'withdrawals',
+          `💰 ¡Retiro completado! ${request.amount} KH → ${request.ton_amount} TON enviados.\n🔗 ${explorerBase}/${txHash}`);
         console.log(`[TON] Withdrawal #${request.id} completed: ${txHash}`);
+
       } catch (err) {
-        console.error(`[TON] Withdrawal #${request.id} failed:`, err.message);
-
-        // Refund balance atomically — no read-modify-write
-        await db('player_tokens')
-          .where('player_id', request.player_id)
-          .increment('balance', request.amount);
-        await db('player_tokens')
-          .where('player_id', request.player_id)
-          .decrement('total_withdrawn', request.amount);
-
-        await db('withdrawal_requests').where('id', request.id).update({
-          status: 'failed',
-          admin_note: err.message,
-          processed_at: new Date().toISOString(),
-        });
-
-        getNotifService().notify(
-          request.player_id, 'withdrawals',
-          `⚠️ Tu retiro de ${request.amount} KH Tokens falló. El balance fue reintegrado a tu cuenta. Intentá de nuevo más tarde.`
-        );
+        if (err && err.presend) {
+          // Falló ANTES de broadcastear (el TON NO se movió): seguro reintegrar.
+          await db('player_tokens').where('player_id', request.player_id).increment('balance', request.amount);
+          await db('player_tokens').where('player_id', request.player_id).decrement('total_withdrawn', request.amount);
+          await db('withdrawal_requests').where('id', request.id).update({
+            status: 'failed', admin_note: err.message, processed_at: nowIso(),
+          });
+          getNotifService().notify(request.player_id, 'withdrawals',
+            `⚠️ Tu retiro de ${request.amount} KH no se procesó (${err.message}). El balance fue reintegrado; probá de nuevo.`);
+          console.error(`[TON] Withdrawal #${request.id} pre-send fail (reintegrado):`, err.message);
+        } else {
+          // INCIERTO: el envío pudo salir. NO completar, NO reintegrar (evita
+          // doble pago) → needs_review; lo resuelve un humano con el seqno.
+          await db('withdrawal_requests').where('id', request.id).update({
+            status: 'needs_review', admin_note: err.message, processed_at: nowIso(),
+          });
+          getNotifService().notify(request.player_id, 'withdrawals',
+            '⏳ Tu retiro quedó en revisión manual. Te avisamos apenas se confirme.');
+          console.error(`[TON] Withdrawal #${request.id} INCIERTO (needs_review, sin reintegro):`, err.message);
+        }
       }
     }
   },
@@ -437,17 +473,24 @@ const tokenService = {
    * Enviar TON desde hot wallet usando @ton/ton (SDK oficial).
    * Retorna el hash real de la transacción on-chain obtenido por polling.
    */
-  async sendTON(toAddress, tonAmountStr) {
-    const { TonClient, WalletContractV4, internal, toNano, fromNano, Address, SendMode } = require('@ton/ton');
+  async sendTON(toAddress, tonAmountStr, onSeqno) {
+    const { TonClient, WalletContractV4, internal, toNano, Address, SendMode } = require('@ton/ton');
     const { mnemonicToWalletKey } = require('@ton/crypto');
     const { loadSecret } = require('../config/secrets');
 
-    // Validate and normalize address (throws if invalid)
-    const parsedAddress = Address.parse(toAddress);
+    // presend(err): marca que el fallo ocurrió ANTES de broadcastear → el TON no
+    // se movió y el caller puede reintegrar el balance con seguridad. Todo lo
+    // que ocurre después del sendTransfer NO lleva este flag (incierto).
+    const presend = (msg) => { const e = new Error(msg); e.presend = true; return e; };
+
+    // ── PREFLIGHT (seguro de fallar: no se movió dinero) ──
+    let parsedAddress;
+    try { parsedAddress = Address.parse(toAddress); }
+    catch { throw presend('Dirección TON inválida'); }
 
     const tonAmount = parseFloat(tonAmountStr);
     if (isNaN(tonAmount) || tonAmount < 0.01) {
-      throw new Error('Monto TON demasiado pequeño (mínimo 0.01 TON)');
+      throw presend('Monto TON demasiado pequeño (mínimo 0.01 TON)');
     }
 
     const network  = process.env.TON_NETWORK || 'testnet';
@@ -456,17 +499,33 @@ const tokenService = {
       ? 'https://toncenter.com/api/v2/jsonRPC'
       : 'https://testnet.toncenter.com/api/v2/jsonRPC';
 
-    const client = new TonClient({ endpoint, apiKey });
-
     const mnemonic = loadSecret('TON_HOT_WALLET_MNEMONIC');
-    if (!mnemonic) throw new Error('Hot wallet not configured');
+    if (!mnemonic) throw presend('Hot wallet no configurado');
 
-    const key      = await mnemonicToWalletKey(mnemonic.trim().split(/\s+/));
-    const wallet   = WalletContractV4.create({ publicKey: key.publicKey, workchain: 0 });
-    const contract = client.open(wallet);
+    let contract, key, wallet, seqnoBefore;
+    try {
+      const client = new TonClient({ endpoint, apiKey });
+      key      = await mnemonicToWalletKey(mnemonic.trim().split(/\s+/));
+      wallet   = WalletContractV4.create({ publicKey: key.publicKey, workchain: 0 });
+      contract = client.open(wallet);
 
-    const seqnoBefore = await contract.getSeqno();
+      // Balance del hot wallet ≥ monto + colchón de gas. Si no alcanza, NO
+      // arriesgamos el envío (y es seguro reintegrar: aún no se envió nada).
+      const balance = await contract.getBalance();
+      const needed  = toNano(tonAmountStr) + toNano(String(TOKEN_CONFIG.WITHDRAWAL_GAS_BUFFER_TON));
+      if (balance < needed) throw presend('Saldo del hot wallet insuficiente para el envío');
 
+      seqnoBefore = await contract.getSeqno();
+    } catch (e) {
+      // Cualquier fallo de red/lectura en el preflight es pre-envío → seguro.
+      throw e.presend ? e : presend(`preflight: ${e.message}`);
+    }
+
+    // Persistir el seqno ANTES de broadcastear (reconciliación post-crash).
+    if (onSeqno) { try { await onSeqno(seqnoBefore); } catch { /* best-effort */ } }
+
+    // ── PUNTO DE NO RETORNO: a partir de acá el TON puede estar en vuelo. Un
+    //    fallo aquí NO lleva el flag presend → el caller va a needs_review. ──
     await contract.sendTransfer({
       secretKey: key.secretKey,
       seqno:     seqnoBefore,
@@ -481,9 +540,10 @@ const tokenService = {
       sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
     });
 
-    // Poll until seqno increments (tx confirmed on-chain), max 60s
-    const txHash = await this._waitForTx(contract, wallet.address, seqnoBefore, 60_000);
-    return txHash;
+    // Confirmación por incremento de seqno (máx 60s). SIN pseudo-hash: si no
+    // confirma, _waitForTx lanza y el retiro va a needs_review (jamás se marca
+    // completado con un hash inventado).
+    return this._waitForTx(contract, wallet.address, seqnoBefore, 60_000);
   },
 
   /**
@@ -491,7 +551,6 @@ const tokenService = {
    * Returns a tonscan-compatible hash string.
    */
   async _waitForTx(contract, walletAddress, seqnoBefore, timeoutMs) {
-    const { TonClient } = require('@ton/ton'); // already cached by Node module system
     const deadline = Date.now() + timeoutMs;
     const POLL_INTERVAL_MS = 3000;
 
@@ -500,27 +559,23 @@ const tokenService = {
       try {
         const seqnoNow = await contract.getSeqno();
         if (seqnoNow > seqnoBefore) {
-          // Fetch the most recent transaction of the wallet
+          // El seqno avanzó → el tx se incluyó. Traemos el hash real.
           const txs = await contract.getTransactions({ limit: 1 });
           if (txs && txs.length > 0) {
-            const rawHash = txs[0].hash();
-            // hash() returns a Buffer — encode as base64url (standard TON explorer format)
-            return Buffer.from(rawHash).toString('base64url');
+            // hash() → Buffer; base64url es el formato de los exploradores TON.
+            return Buffer.from(txs[0].hash()).toString('base64url');
           }
-          break; // seqno advanced but couldn't fetch tx — fall through to fallback
+          // Confirmado pero no pudimos leer el hash → INCIERTO para el registro
+          // (el dinero salió). Lanzamos → needs_review (nunca hash inventado).
+          throw new Error('tx confirmada (seqno avanzó) pero no se pudo leer el hash');
         }
-      } catch (_) {
-        // Transient network error — keep polling
+      } catch (e) {
+        if (/no se pudo leer el hash/.test(e.message)) throw e;
+        // Error de red transitorio en el polling → seguir intentando.
       }
     }
-
-    // Fallback: deterministic pseudo-hash (rare — only if TonCenter is unresponsive)
-    console.warn('[TON] Could not fetch on-chain tx hash, using deterministic fallback');
-    return require('crypto')
-      .createHash('sha256')
-      .update(`${walletAddress.toString()}:${seqnoBefore}:${Date.now()}`)
-      .digest('base64url')
-      .slice(0, 44);
+    // Sin confirmación dentro del tiempo límite: el envío pudo salir igual.
+    throw new Error('confirmación on-chain no obtenida dentro del tiempo límite');
   },
 
   /**

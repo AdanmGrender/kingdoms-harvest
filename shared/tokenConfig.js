@@ -72,6 +72,17 @@ const TOKEN_CONFIG = {
   WITHDRAWAL_FEE_RATE: 0.05, // 5% fee
   MIN_ACCOUNT_AGE_DAYS: 7,
   MIN_LEVEL_FOR_WITHDRAWAL: 5,
+
+  // -- Safety de payout on-chain (dinero real) --
+  // Tope de TON pagado por ventana de 24h a través del hot wallet: acota el
+  // radio de daño si la economía es explotada o el wallet se compromete. Al
+  // superarlo, el procesador difiere (deja los requests en 'pending').
+  MAX_DAILY_TON_PAYOUT: 50,
+  // Colchón de gas que debe quedar en el hot wallet además del monto a enviar.
+  WITHDRAWAL_GAS_BUFFER_TON: 0.05,
+  // Minutos tras los cuales un request 'processing' se considera colgado (crash
+  // entre broadcast y confirmación) y pasa a 'needs_review' (nunca se reenvía).
+  WITHDRAWAL_PROCESSING_STALE_MIN: 15,
 };
 
 // Helper: get daily cap for a player level

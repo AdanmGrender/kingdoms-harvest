@@ -367,8 +367,21 @@ PROCESO:
   - Tasa: 1 KH = 0.0001 TON
   - Procesado en background cada 5 minutos desde hot wallet
 
-INVARIANTE: El hash de tx actual es pseudo (no real on-chain).
-            Marcar como ⚠️ Known en tracker hasta integrar TonCenter API real.
+ENVÍO ON-CHAIN (tokenService.sendTON + processPendingWithdrawals):
+  - Envío real con @ton/ton (WalletContractV4, TonCenter). Confirma por
+    incremento de seqno y devuelve el hash real (base64url). SIN pseudo-hash:
+    si no confirma → needs_review (jamás se completa con hash inventado).
+  - Seguridad de payout (dinero real):
+    · presend flag → un fallo ANTES del broadcast (addr inválida, wallet sin
+      configurar, balance del hot wallet insuficiente) reintegra el balance.
+      Un fallo DESPUÉS del broadcast (incierto) → estado 'needs_review': NO
+      reintegra (evita doble pago) y NO completa; lo resuelve un humano con el
+      seqno persistido (migración 027: seqno/attempts/claimed_at).
+    · Tope diario MAX_DAILY_TON_PAYOUT (difiere, no falla).
+    · 'processing' colgado > WITHDRAWAL_PROCESSING_STALE_MIN → needs_review.
+    · Kill-switch env WITHDRAWALS_ENABLED=false pausa payouts.
+  - Requiere TON_HOT_WALLET_MNEMONIC (secrets/ o env) + TON_NETWORK=mainnet
+    para producción. Probar SIEMPRE en testnet primero.
 ```
 
 ### 7.3 Spec de Quema de Recursos
@@ -681,7 +694,7 @@ QUERIES:
 | 8 migraciones llamaban `db.raw` sin `await` (rompería con raw lazy) | MEDIUM | ✅ Resuelto: `async` + `await` añadidos | `migrations/005–012` |
 | Deps huérfanas `knex` + `pg` en package.json (la migración a PostgreSQL de 24e7d7d fue revertida al builder sql.js, las deps quedaron) | LOW | ⚠️ Known | `server/package.json` |
 | Migraciones con números duplicados (005×2, 006×2 … 012×2) por merge de dos ramas. NO es bug funcional: el runner trackea por nombre de archivo completo y ordena lexicográficamente. Para nuevas migraciones usar 021+ | LOW | ⚠️ Known | `server/migrations/` |
-| TON tx hash es pseudo | LOW | ⚠️ Known | `tokenService.sendTON()` |
+| TON tx hash era pseudo | LOW | ✅ Resuelto: envío real @ton/ton + confirmación por seqno + hash real; sin confirmar → needs_review (nunca hash inventado). Safety de payout: presend→refund / incierto→needs_review, cap diario, kill-switch, recuperación de processing colgado (migración 027) | `tokenService.sendTON/processPendingWithdrawals` |
 | PvP no completamente implementado | MEDIUM | ⏳ Phase 2 | `combatService.js` |
 
 ---
