@@ -355,12 +355,18 @@ describe('tokenService.sendTON — input validation', () => {
 // ─── linkWallet validation ────────────────────────────────────────────────────
 
 describe('tokenService.linkWallet — address validation', () => {
-  test('accepts a correctly formatted TON address', async () => {
+  test('accepts a valid basechain TON address (checksum OK, workchain 0)', async () => {
     const result = await tokenService.linkWallet(
       TOKEN_PLAYER_ID,
-      'EQAbcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJ'
+      'EQCVMAPI3VhY8ZRh9wYKWWpE_jCGcQFYCXTRBetyrmfPZ5cV'
     );
     expect(result.success).toBe(true);
+  });
+
+  test('rejects a bad-checksum address (L4: real validation, not just format)', async () => {
+    await expect(
+      tokenService.linkWallet(TOKEN_PLAYER_ID, 'EQAbcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJ')
+    ).rejects.toThrow(/inválid/i);
   });
 
   test('rejects an address with wrong prefix', async () => {

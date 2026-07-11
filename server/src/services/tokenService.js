@@ -277,6 +277,18 @@ const tokenService = {
     if (!walletAddress || !/^(EQ|UQ)[A-Za-z0-9_-]{46,48}$/.test(walletAddress)) {
       throw new Error('Dirección de wallet TON inválida');
     }
+    // Validar checksum real + restringir a basechain (workchain 0): los payouts
+    // van a wallets normales; una address de masterchain (-1) sería un error.
+    // (L4: la titularidad real NO se prueba acá — requeriría TON Connect
+    // ton_proof; si el jugador vincula una address que no controla, solo se
+    // perjudica a sí mismo. Documentado como mejora futura.)
+    const { Address } = require('@ton/ton');
+    let parsed;
+    try { parsed = Address.parse(walletAddress); }
+    catch { throw new Error('Dirección de wallet TON inválida'); }
+    if (parsed.workChain !== 0) {
+      throw new Error('La dirección debe ser de la basechain (workchain 0)');
+    }
 
     await this.ensureTokenRecord(playerId);
     await db('player_tokens').where('player_id', playerId).update({
@@ -335,25 +347,29 @@ const tokenService = {
     const netAmount = amount - fee;
     const tonAmount = (netAmount * TOKEN_CONFIG.TOKEN_TO_TON_RATE).toFixed(6);
 
-    // Atomically deduct balance — safe against concurrent withdrawal requests.
-    // decrementIfEnough only updates if balance >= amount (single SQL statement).
-    const affected = await db('player_tokens')
-      .where('player_id', playerId)
-      .decrementIfEnough('balance', amount);
-    if (!affected) throw new Error('Balance insuficiente');
-    await db('player_tokens')
-      .where('player_id', playerId)
-      .increment('total_withdrawn', amount);
+    // Descuento de balance + registro del retiro en UNA transacción (L1): si el
+    // proceso muere entre el descuento y el insert, la transacción revierte y el
+    // jugador NO queda con el balance descontado sin request. decrementIfEnough
+    // sigue siendo atómico (un solo statement con guard balance>=amount).
+    const requestId = await db.transaction(async (trx) => {
+      const affected = await trx('player_tokens')
+        .where('player_id', playerId)
+        .decrementIfEnough('balance', amount);
+      if (!affected) throw new Error('Balance insuficiente');
+      await trx('player_tokens')
+        .where('player_id', playerId)
+        .increment('total_withdrawn', amount);
 
-    // Create withdrawal request
-    const [{ id: requestId }] = await db('withdrawal_requests').insert({
-      player_id: playerId,
-      amount,
-      ton_amount: tonAmount,
-      wallet_address: tokenData.wallet_address,
-      status: 'pending',
-      created_at: new Date().toISOString(),
-    }).returning('id');
+      const [{ id }] = await trx('withdrawal_requests').insert({
+        player_id: playerId,
+        amount,
+        ton_amount: tonAmount,
+        wallet_address: tokenData.wallet_address,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      }).returning('id');
+      return id;
+    });
 
     return {
       success: true,
@@ -567,14 +583,14 @@ const tokenService = {
     // Confirmación por incremento de seqno (máx 60s). SIN pseudo-hash: si no
     // confirma, _waitForTx lanza y el retiro va a needs_review (jamás se marca
     // completado con un hash inventado).
-    return this._waitForTx(contract, wallet.address, seqnoBefore, 60_000);
+    return this._waitForTx(contract, wallet.address, seqnoBefore, parsedAddress, 60_000);
   },
 
   /**
    * Poll until seqno increments then fetch the real tx hash from TonCenter.
    * Returns a tonscan-compatible hash string.
    */
-  async _waitForTx(contract, walletAddress, seqnoBefore, timeoutMs) {
+  async _waitForTx(contract, walletAddress, seqnoBefore, toAddress, timeoutMs) {
     const deadline = Date.now() + timeoutMs;
     const POLL_INTERVAL_MS = 3000;
 
@@ -583,15 +599,18 @@ const tokenService = {
       try {
         const seqnoNow = await contract.getSeqno();
         if (seqnoNow > seqnoBefore) {
-          // El seqno avanzó → el tx se incluyó. Traemos el hash real.
-          const txs = await contract.getTransactions({ limit: 1 });
-          if (txs && txs.length > 0) {
-            // hash() → Buffer; base64url es el formato de los exploradores TON.
-            return Buffer.from(txs[0].hash()).toString('base64url');
+          // El seqno avanzó → el tx se incluyó. Traemos varias tx recientes y
+          // elegimos la que ENVÍA a nuestra dirección destino (L3): evita
+          // registrar el hash de otro egreso del hot wallet (top-up de gas,
+          // envío manual). Si no se puede emparejar, cae al más reciente.
+          const txs = await contract.getTransactions({ limit: 5 });
+          if (!txs || txs.length === 0) {
+            throw new Error('tx confirmada (seqno avanzó) pero no se pudo leer el hash');
           }
-          // Confirmado pero no pudimos leer el hash → INCIERTO para el registro
-          // (el dinero salió). Lanzamos → needs_review (nunca hash inventado).
-          throw new Error('tx confirmada (seqno avanzó) pero no se pudo leer el hash');
+          const match = this._pickTxToDest(txs, toAddress);
+          if (!match) console.warn('[TON] no se pudo emparejar el tx por destino; usando el más reciente');
+          // hash() → Buffer; base64url es el formato de los exploradores TON.
+          return Buffer.from((match || txs[0]).hash()).toString('base64url');
         }
       } catch (e) {
         if (/no se pudo leer el hash/.test(e.message)) throw e;
@@ -600,6 +619,23 @@ const tokenService = {
     }
     // Sin confirmación dentro del tiempo límite: el envío pudo salir igual.
     throw new Error('confirmación on-chain no obtenida dentro del tiempo límite');
+  },
+
+  /** Elige el tx cuyo mensaje saliente interno va a `toAddress` (L3). Tolerante
+   *  al shape del SDK: cualquier error → null (el caller cae al más reciente). */
+  _pickTxToDest(txs, toAddress) {
+    if (!toAddress) return null;
+    for (const tx of txs) {
+      try {
+        const outs = tx.outMessages;
+        const msgs = outs && typeof outs.values === 'function' ? outs.values() : [];
+        for (const m of msgs) {
+          const dest = m && m.info && m.info.dest;
+          if (dest && typeof dest.equals === 'function' && dest.equals(toAddress)) return tx;
+        }
+      } catch { /* shape inesperado → siguiente tx */ }
+    }
+    return null;
   },
 
   /**
