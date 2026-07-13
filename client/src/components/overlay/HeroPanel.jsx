@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import { CharacterSprite } from '../ui/SpriteIcon';
+import { HERO_LORE } from '../../config/heroLore';
 
 const RARITY_COLORS = {
   common:    { text: 'text-gray-300',   border: 'border-gray-500',   bg: 'bg-gray-800/60',    badge: 'bg-gray-700'   },
@@ -123,6 +124,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
   const xpPct = Math.min(100, Math.round((hero.xp / hero.xpNeeded) * 100));
   const goldCost = 50 * hero.level;
   const [activeTab, setActiveTab] = useState('stats');
+  const lore = HERO_LORE[hero.heroId || hero.id] || null;
 
   const itemsBySlot = {};
   for (const slot of ['weapon', 'armor', 'accessory']) {
@@ -137,6 +139,9 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
           <HeroPortrait hero={hero} height={64} />
           <div className="flex-1">
             <p className={`text-sm font-bold ${rc.text}`} style={{ fontFamily: 'MedievalSharp, serif' }}>{hero.name}</p>
+            {lore?.title && (
+              <p className="text-gray-400 text-[10px] italic -mt-0.5">«{lore.title}»</p>
+            )}
             <div className="flex items-center gap-2 mt-0.5">
               <span className={`text-[10px] px-1.5 py-0.5 rounded ${rc.badge} ${rc.text}`}>{hero.rarity}</span>
               <span className="text-gray-400 text-[10px]">Nv.{hero.level} / 20</span>
@@ -151,6 +156,11 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
           </div>
         </div>
         <p className="text-gray-400 text-[10px] mt-2 italic">{hero.passive}</p>
+        {lore?.bio && (
+          <p className="text-gray-500 text-[10px] mt-2 leading-relaxed border-t border-gray-700/40 pt-2">
+            {lore.bio}
+          </p>
+        )}
       </div>
 
       {/* Combat deployment */}
