@@ -402,7 +402,6 @@ function dbAll(sql, params = []) {
 
 // Debounced save — batches writes to avoid blocking on every DB mutation
 let _saveTimer = null;
-let _saving = false;
 const SAVE_DEBOUNCE_MS = 2000; // flush at most every 2 seconds
 
 function saveToDisk() {
@@ -411,34 +410,32 @@ function saveToDisk() {
   // If a debounced save is already scheduled, let it handle this write too
   if (_saveTimer) return;
 
-  _saveTimer = setTimeout(async () => {
+  _saveTimer = setTimeout(() => {
     _saveTimer = null;
-    if (_saving || !sqlDb) return;
-    _saving = true;
+    // Escritura SINCRÓNICA (no async): así JS single-thread garantiza que el
+    // flush debounceado y flushNow() NUNCA se solapan sobre kingdoms.db. Antes
+    // el writer era `await fs.promises.writeFile` y un flushNow() del camino del
+    // dinero podía correr en paralelo → dos writers al mismo archivo =
+    // corrupción de TODA la base (gemas + ledger de retiros TON).
     try {
-      const data = sqlDb.export();
-      const buffer = Buffer.from(data);
-      await fs.promises.writeFile(DB_PATH, buffer);
+      saveToDiskSync();
     } catch (err) {
       console.error('Error saving database to disk:', err);
-    } finally {
-      _saving = false;
     }
   }, SAVE_DEBOUNCE_MS);
 }
 
-// Flush synchronously on shutdown so no data is lost.
-// También se expone como db.flushNow() para el CAMINO DEL DINERO (créditos de
-// gemas, ledger de retiros TON): saveToDisk() está debounceado 2s, así que un
-// kill duro (SIGKILL/OOM) dentro de esa ventana perdería un pago YA cobrado.
-// Tras un COMMIT que toca dinero se fuerza el flush inmediato.
+// Flush sincrónico. Usado en shutdown y expuesto como db.flushNow() para el
+// CAMINO DEL DINERO (crédito de gemas, ledger de retiros TON): saveToDisk() está
+// debounceado 2s, así que un kill duro (SIGKILL/OOM) dentro de esa ventana
+// perdería un pago YA cobrado. Al ser sincrónico y cancelar el debounce
+// pendiente, es el ÚNICO writer posible en su ejecución.
 function saveToDiskSync() {
-  if (IS_TEST) return;
-  if (sqlDb) {
-    const data = sqlDb.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(DB_PATH, buffer);
-  }
+  if (IS_TEST || !sqlDb) return;
+  // Cancelar cualquier flush debounceado pendiente: ya persistimos acá.
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  const data = sqlDb.export();
+  fs.writeFileSync(DB_PATH, Buffer.from(data));
 }
 
 // Ensure data is flushed before process exits

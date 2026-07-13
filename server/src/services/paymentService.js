@@ -193,13 +193,21 @@ const paymentService = {
       console.warn(`[Pay] refund de un charge desconocido: ${chargeId}`);
       return { ignored: true };
     }
-    if (row.status === 'refunded') return { duplicate: true }; // idempotente
 
     const gemsToClaw = row.gems_credited || 0;
+    let flipped = 0;
     await db.transaction(async () => {
-      await db('star_payments')
+      // Flip ATÓMICO y condicional (idempotencia real, sin TOCTOU): el UPDATE
+      // solo afecta filas cuyo status NO es 'refunded'. Dos reembolsos del mismo
+      // charge (redelivery de Telegram / batch) → solo el primero obtiene
+      // affected=1; el segundo ve 0 y NO debita de nuevo. El chequeo previo
+      // read-then-act permitía doble clawback.
+      flipped = await db('star_payments')
         .where({ telegram_payment_charge_id: chargeId })
+        .whereNot('status', 'refunded')
         .update({ status: 'refunded' });
+      if (!flipped) return; // ya reembolsado → no debitar
+
       if (gemsToClaw > 0) {
         // Débito directo (permite negativo a propósito): el saldo negativo
         // bloquea gastar hasta saldar la deuda; getBalance lo refleja.
@@ -210,6 +218,7 @@ const paymentService = {
         });
       }
     });
+    if (!flipped) return { duplicate: true }; // otro proceso/replay ya reembolsó
     // Camino del dinero: persistir ya (ver M1 arriba).
     try { db.flushNow(); } catch (e) { console.error('[Pay] flushNow falló:', e.message); }
 

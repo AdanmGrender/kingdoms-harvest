@@ -235,6 +235,25 @@ describe('paymentService.handleRefund — abuso comprar/gastar/reembolsar', () =
     await expect(gemService.spend(PID, 1, 'post-refund')).rejects.toThrow(/suficientes/i);
   });
 
+  test('reembolsos CONCURRENTES del mismo charge: solo UNO debita (Finding 1)', async () => {
+    await paymentService.handleSuccessfulPayment(
+      paymentMsg({ productId: 'chest', chargeId: 'charge_REF_RACE' }),
+    );
+    const gems = packGems('chest');
+    expect((await gemService.getBalance(PID)).balance).toBe(gems);
+
+    const results = await Promise.allSettled([
+      paymentService.handleRefund(refundMsg('charge_REF_RACE')),
+      paymentService.handleRefund(refundMsg('charge_REF_RACE')),
+      paymentService.handleRefund(refundMsg('charge_REF_RACE')),
+    ]);
+    const debited = results.filter((r) => r.status === 'fulfilled' && r.value.refunded).length;
+    expect(debited).toBe(1); // el flip atómico deja pasar solo a uno
+
+    // Debitado UNA sola vez (gems − gems = 0), NO −2·gems por doble clawback.
+    expect((await gemService.getBalance(PID)).balance).toBe(0);
+  });
+
   test('el reembolso es idempotente (no debita dos veces)', async () => {
     await paymentService.handleSuccessfulPayment(
       paymentMsg({ productId: 'pouch', chargeId: 'charge_REF_IDEM' }),
