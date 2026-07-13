@@ -27,6 +27,11 @@ export default function TopResourceBar() {
   const resources = useGameStore((s) => s.resources);
   const troops = useGameStore((s) => s.troops);
   const tokenInfo = useGameStore((s) => s.tokenInfo);
+  const gems = useGameStore((s) => s.gems);
+  const setOverlay = useGameStore((s) => s.setOverlay);
+  const loadGems = useGameStore((s) => s.loadGems);
+
+  useEffect(() => { loadGems(); }, [loadGems]);
 
   const [timeInfo, setTimeInfo] = useState({ icon: '☀️', dayCount: 1 });
 
@@ -152,12 +157,28 @@ export default function TopResourceBar() {
                 border: '1px solid rgba(100,200,255,0.5)',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 0 6px rgba(100,200,255,0.25)',
               }}>
-              <SpriteIcon name="kh_token" size={14} fallback="💎" />
+              <SpriteIcon name="kh_token" size={14} fallback="💠" />
               <span className="text-cyan-200 text-[10px] font-bold tabular-nums">
                 {tokenInfo.balance || 0}
               </span>
             </div>
           )}
+          {/* Gemas (premium, se compran con Stars) — toca para abrir la tienda.
+              Es el CTA de INGRESO de dinero, por eso lleva el "+". */}
+          <button
+            onClick={() => setOverlay('shop', {})}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-md transition-transform active:scale-95"
+            style={{
+              background: 'linear-gradient(180deg, rgba(168,85,247,0.25) 0%, rgba(109,40,217,0.20) 100%)',
+              border: '1px solid rgba(192,132,252,0.55)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 0 6px rgba(168,85,247,0.30)',
+            }}>
+            <span className="text-[11px]">💎</span>
+            <span className="text-purple-200 text-[10px] font-bold tabular-nums">
+              {gems?.balance ?? 0}
+            </span>
+            <span className="text-purple-300 text-[10px] font-bold leading-none">+</span>
+          </button>
         </div>
 
         {/* Day indicator */}

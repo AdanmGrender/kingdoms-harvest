@@ -174,6 +174,9 @@ app.use('/api/guilds', guildRoutes);
 app.use('/api/storms', require('./routes/stormRoutes'));
 // Idle F3: Marea Disforme (defensa por oleadas)
 app.use('/api/waves', require('./routes/waveRoutes'));
+// Tienda: INGRESO de dinero real (Telegram Stars → Gemas). El crédito de gemas
+// NO pasa por acá — ocurre en el handler successful_payment del bot.
+app.use('/api/shop', require('./routes/shopRoutes'));
 // Idle G1: Escala Sistema (meta-mapa de planetas)
 app.use('/api/system', require('./routes/systemRoutes'));
 // Idle G2: Escala Galaxia (surcar la Disformidad entre sistemas)

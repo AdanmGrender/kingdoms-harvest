@@ -42,6 +42,8 @@ const useGameStore = create((set, get) => ({
 
   // Token system
   tokenInfo: null,
+  gems: null,          // { balance, totalPurchased, totalSpent }
+  shopCatalog: [],     // packs comprables con Telegram Stars
   dailyTasks: [],
   socialTasks: [],
   streakInfo: null,
@@ -786,6 +788,72 @@ const useGameStore = create((set, get) => ({
       set({ tokenInfo: data });
     } catch (error) {
       console.error('Error loading token info:', error);
+    }
+  },
+
+  // ─── Tienda (Gemas / Telegram Stars) ──────────────────────────────────────
+  // Las gemas NUNCA se acreditan desde acá: el cliente solo abre la factura y
+  // Telegram le avisa al bot, que es quien acredita (ver paymentService).
+  loadGems: async () => {
+    try {
+      const { data } = await api.get('/shop/gems');
+      set({ gems: data });
+    } catch (error) {
+      console.error('Error loading gems:', error);
+    }
+  },
+
+  loadShopCatalog: async () => {
+    try {
+      const { data } = await api.get('/shop/catalog');
+      set({ shopCatalog: data.packs || [] });
+    } catch (error) {
+      console.error('Error loading shop catalog:', error);
+    }
+  },
+
+  /**
+   * Pide el link de factura al server y lo abre con Telegram.
+   * El crédito llega por el bot; acá solo refrescamos el saldo al volver.
+   */
+  buyGemPack: async (productId) => {
+    try {
+      const { data } = await api.post('/shop/invoice', { productId });
+      const tg = window.Telegram?.WebApp;
+      if (!tg?.openInvoice) {
+        get().addNotification('Las compras solo funcionan dentro de Telegram', 'error');
+        return { success: false };
+      }
+      return await new Promise((resolve) => {
+        tg.openInvoice(data.link, async (status) => {
+          if (status === 'paid') {
+            // El bot ya acreditó (o está por hacerlo): refrescar saldo.
+            setTimeout(() => get().loadGems(), 1200);
+            get().addNotification(`¡Compra exitosa! +${data.gems} 💎`, 'success');
+            resolve({ success: true });
+          } else if (status === 'failed') {
+            get().addNotification('El pago falló', 'error');
+            resolve({ success: false });
+          } else {
+            resolve({ success: false, cancelled: true });
+          }
+        });
+      });
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'Error al crear la compra', 'error');
+      return { success: false };
+    }
+  },
+
+  speedupBuilding: async (buildingDbId) => {
+    try {
+      const { data } = await api.post('/shop/speedup/building', { buildingDbId });
+      get().addNotification(data.message, 'success');
+      await Promise.all([get().loadGems(), get().loadBuildings()]);
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo acelerar', 'error');
+      return null;
     }
   },
 

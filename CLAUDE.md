@@ -384,6 +384,48 @@ ENVÍO ON-CHAIN (tokenService.sendTON + processPendingWithdrawals):
     para producción. Probar SIEMPRE en testnet primero.
 ```
 
+### 7.2b Spec: INGRESO de dinero (Telegram Stars → Gemas)
+
+```
+⚠️ INVARIANTE INNEGOCIABLE: con dinero real SOLO se compran GEMAS.
+   JAMÁS se venden KH Tokens. KH es retirable a TON (dinero real), así que
+   venderlo haría del juego una CASA DE CAMBIO (lavado + regulatorio + baneo
+   del bot por ToS de Stars). Las gemas son moneda de UN SOLO SENTIDO: entran
+   con dinero, se gastan adentro, NO tienen ninguna ruta a KH/TON.
+   Por eso viven en tabla propia (player_gems) y NO en player_resources — los
+   recursos tienen ruta de quema a KH (burnResourcesForTokens).
+   Testeado en server/tests/paymentService.test.js.
+
+CATÁLOGO (shared/shopConfig.js): GEM_PACKS (pouch/chest/vault/relic, 50–1000
+  Stars con bonus 0–30%) + GEM_SINKS (speedup, hero_summon, wave_retry).
+
+FLUJO DE COBRO (paymentService + bot/telegramBot.js):
+  1. Cliente pide link:  POST /api/shop/invoice { productId }
+     → bot.createInvoiceLink(..., provider_token '', currency 'XTR')
+  2. Cliente abre:       Telegram.WebApp.openInvoice(link)
+  3. Bot: 'pre_checkout_query' → revalida producto/moneda/precio contra el
+     catálogo del server → answerPreCheckoutQuery (Telegram exige < 10s)
+  4. Bot: 'successful_payment' → ÚNICA fuente de verdad para acreditar gemas.
+
+INVARIANTES DE SEGURIDAD DEL COBRO:
+  ✓ NINGUNA ruta HTTP acredita gemas (el cliente no es fuente de verdad)
+  ✓ Idempotencia: telegram_payment_charge_id UNIQUE; el insert del pago y el
+    crédito van en la MISMA transacción → un replay de Telegram revienta contra
+    el UNIQUE, hace ROLLBACK y no acredita dos veces (probado con replays
+    concurrentes)
+  ✓ Se acredita a msg.from.id (pagador REAL según Telegram), nunca al id del
+    invoice_payload (que el cliente podría manipular)
+  ✓ La cantidad de gemas sale del CATÁLOGO del server, nunca del mensaje
+  ✓ Gasto de gemas: decrementIfEnough atómico (sin saldo negativo bajo carrera)
+  ✓ Los sinks calculan el costo SERVER-SIDE contra el estado real (nunca se
+    confía en un precio enviado por el cliente)
+
+⚠️ Requiere BOT_POLLING activo (o webhook): con polling apagado los updates de
+   pago NO llegan a este proceso y las compras quedarían sin acreditar.
+
+Migración 028: player_gems, star_payments.
+```
+
 ### 7.3 Spec de Quema de Recursos
 
 ```

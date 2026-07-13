@@ -20,6 +20,7 @@ import GalaxyMapPanel from './GalaxyMapPanel';
 // Parallel panels from WiFOf merge
 import CraftingPanel from './CraftingPanel';
 import HeroPanel from './HeroPanel';
+import ShopPanel from './ShopPanel';
 import CommerceView from '../commerce/CommerceView';
 import WorldEventPanel from './WorldEventPanel';
 import AchievementPanel from './AchievementPanel';
@@ -167,6 +168,8 @@ function renderPanel(overlayState, onClose) {
       return <CraftingPanel onClose={onClose} />;
     case 'heroes':
       return <HeroPanel onClose={onClose} />;
+    case 'shop':
+      return <ShopPanel onClose={onClose} />;
     case 'world_event':
       return <WorldEventPanel data={overlayState.data} onClose={onClose} />;
     case 'achievements':

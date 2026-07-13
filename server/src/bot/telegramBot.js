@@ -20,6 +20,42 @@ function initBot() {
   if (!polling) console.log('Bot polling DESACTIVADO (BOT_POLLING=false)');
   const webAppUrl = process.env.WEBAPP_URL || 'https://tu-dominio.com';
 
+  // ─── Pagos con Telegram Stars (INGRESO de dinero real) ───────────────────
+  // Esta es la ÚNICA puerta por la que se acreditan gemas: los updates vienen
+  // firmados por Telegram, no del cliente. Ver paymentService (idempotencia).
+  //
+  // ⚠️ Requiere polling (o webhook) activo. Con BOT_POLLING=false estos updates
+  //    NO llegan a este proceso y las compras quedarían sin acreditar.
+  bot.on('pre_checkout_query', async (query) => {
+    // Telegram exige respuesta en < 10s o el cobro se cae.
+    try {
+      await require('../services/paymentService').handlePreCheckout(query);
+    } catch (err) {
+      console.error('[Bot] pre_checkout_query error:', err.message);
+    }
+  });
+
+  bot.on('successful_payment', async (msg) => {
+    try {
+      const result = await require('../services/paymentService').handleSuccessfulPayment(msg);
+      if (result.duplicate) return; // replay de Telegram: ya acreditado
+      await bot.sendMessage(
+        msg.chat.id,
+        `💎 *¡Compra confirmada!*\n\n+${result.credited} Gemas acreditadas.\nSaldo: *${result.balance}* 💎\n\n¡Gracias por sostener el bastión!`,
+        { parse_mode: 'Markdown' },
+      );
+    } catch (err) {
+      // El pago YA ocurrió: no perder el evento. Se loguea fuerte para revisión.
+      console.error('[Bot] ✗ successful_payment SIN ACREDITAR:', err.message, JSON.stringify(msg.successful_payment || {}));
+      try {
+        await bot.sendMessage(
+          msg.chat.id,
+          '⚠️ Recibimos tu pago pero hubo un problema al acreditarlo. Ya quedó registrado: escribinos y lo resolvemos.',
+        );
+      } catch {}
+    }
+  });
+
   // Comando /start (con soporte para referidos: /start ref_123456)
   bot.onText(/\/start\s*(.*)/, (msg, match) => {
     const chatId = msg.chat.id;
