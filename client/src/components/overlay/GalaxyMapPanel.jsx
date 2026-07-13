@@ -60,7 +60,11 @@ export default function GalaxyMapPanel({ onClose }) {
     <div
       className="mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
       style={{
-        background: 'rgba(20, 16, 26, 0.98)',
+        // Brazos espirales + tormenta disforme púrpura de fondo.
+        backgroundImage:
+          'linear-gradient(rgba(20,16,26,0.90), rgba(20,16,26,0.97)), url(/assets/game/ambient/galaxy_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         border: '1px solid rgba(168, 85, 247, 0.45)',
         maxHeight: '80vh',
       }}

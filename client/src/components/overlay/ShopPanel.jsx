@@ -12,11 +12,13 @@ import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
+// Los íconos salen del sheet grimdark (spriteMap → grim_icons.png). El emoji
+// queda solo como fallback si el arte no está generado.
 const PACK_STYLE = {
-  pouch: { grad: 'from-slate-700 to-slate-800', ring: 'rgba(148,163,184,0.4)', icon: '💎' },
-  chest: { grad: 'from-indigo-800 to-indigo-950', ring: 'rgba(129,140,248,0.5)', icon: '💎' },
-  vault: { grad: 'from-purple-800 to-purple-950', ring: 'rgba(192,132,252,0.6)', icon: '💎' },
-  relic: { grad: 'from-amber-700 to-amber-950', ring: 'rgba(251,191,36,0.7)', icon: '💎' },
+  pouch: { grad: 'from-slate-700 to-slate-800', ring: 'rgba(148,163,184,0.4)', size: 30 },
+  chest: { grad: 'from-indigo-800 to-indigo-950', ring: 'rgba(129,140,248,0.5)', size: 34 },
+  vault: { grad: 'from-purple-800 to-purple-950', ring: 'rgba(192,132,252,0.6)', size: 38 },
+  relic: { grad: 'from-amber-700 to-amber-950', ring: 'rgba(251,191,36,0.7)', size: 42 },
 };
 
 export default function ShopPanel({ onClose }) {
@@ -50,7 +52,7 @@ export default function ShopPanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-2">
-          <span className="text-lg">💎</span>
+          <SpriteIcon name="gem" size={20} fallback="💎" />
           <h2 className="text-yellow-400 font-bold text-sm" style={{ fontFamily: 'MedievalSharp, serif' }}>
             Arsenal del Bastión
           </h2>
@@ -58,7 +60,7 @@ export default function ShopPanel({ onClose }) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 px-2 py-1 rounded-md"
             style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(192,132,252,0.4)' }}>
-            <span className="text-xs">💎</span>
+            <SpriteIcon name="gem" size={14} fallback="💎" />
             <span className="text-purple-200 text-xs font-bold tabular-nums">
               {gems?.balance ?? 0}
             </span>
@@ -82,7 +84,8 @@ export default function ShopPanel({ onClose }) {
                 style={{ border: `1px solid ${st.ring}` }}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{st.icon}</span>
+                  {/* El pack grande muestra una gema más grande: jerarquía visual */}
+                  <SpriteIcon name="gem" size={st.size} fallback="💎" />
                   <div className="text-left">
                     <p className="text-white font-bold text-sm leading-tight">{pack.name}</p>
                     <p className="text-purple-200 text-xs font-semibold tabular-nums">
@@ -95,7 +98,7 @@ export default function ShopPanel({ onClose }) {
                 </div>
                 <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg"
                   style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                  <span className="text-sm">⭐</span>
+                  <SpriteIcon name="star_currency" size={16} fallback="⭐" />
                   <span className="text-white text-xs font-bold tabular-nums">
                     {isBusy ? '…' : pack.stars}
                   </span>

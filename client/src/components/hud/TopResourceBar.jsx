@@ -173,7 +173,7 @@ export default function TopResourceBar() {
               border: '1px solid rgba(192,132,252,0.55)',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15), 0 0 6px rgba(168,85,247,0.30)',
             }}>
-            <span className="text-[11px]">💎</span>
+            <SpriteIcon name="gem" size={14} fallback="💎" />
             <span className="text-purple-200 text-[10px] font-bold tabular-nums">
               {gems?.balance ?? 0}
             </span>

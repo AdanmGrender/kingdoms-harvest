@@ -9,7 +9,7 @@
  */
 export const GRIM_SHEET = '/assets/sprites/grim_icons.png';
 export const GRIM_SHEET_W = 1024;
-export const GRIM_SHEET_H = 896;
+export const GRIM_SHEET_H = 1024;
 export const GRIM_CELL = 128;
 export const GRIM_ICONS = {
   gold: { col: 0, row: 0 },
@@ -66,4 +66,13 @@ export const GRIM_ICONS = {
   heart: { col: 3, row: 6 },
   star: { col: 4, row: 6 },
   check: { col: 5, row: 6 },
+  gem: { col: 6, row: 6 },
+  star_currency: { col: 7, row: 6 },
+  speedup: { col: 0, row: 7 },
+  enemy_carroneros: { col: 1, row: 7 },
+  enemy_brutos: { col: 2, row: 7 },
+  enemy_aullador: { col: 3, row: 7 },
+  enemy_coloso: { col: 4, row: 7 },
+  enemy_boss_devorador: { col: 5, row: 7 },
+  enemy_boss_heraldo: { col: 6, row: 7 },
 };

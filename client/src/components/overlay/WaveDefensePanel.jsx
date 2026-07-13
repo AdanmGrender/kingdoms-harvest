@@ -6,6 +6,17 @@
 import { useEffect, useRef, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 
+// Bestiario visible (ids = WAVE_ENEMIES de shared/gameConfig.js; el arte vive en
+// /assets/game/enemies/<id>.png). Nombres cortos para que entren a 8px.
+const BESTIARY = [
+  { id: 'carroneros',     short: 'Carroñeros', name: 'Carroñeros del Velo' },
+  { id: 'brutos',         short: 'Brutos',     name: 'Brutos Retorcidos' },
+  { id: 'aullador',       short: 'Aullador',   name: 'Aullador del Vacío' },
+  { id: 'coloso',         short: 'Coloso',     name: 'Coloso de Ceniza' },
+  { id: 'boss_devorador', short: 'Devorador',  name: 'Devorador de Auroras', boss: true },
+  { id: 'boss_heraldo',   short: 'Heraldo',    name: 'Heraldo de la Estática', boss: true },
+];
+
 const REPLAY_MS = 550; // cadencia del replay línea a línea
 
 export default function WaveDefensePanel({ onClose }) {
@@ -54,7 +65,12 @@ export default function WaveDefensePanel({ onClose }) {
     <div
       className="mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
       style={{
-        background: 'rgba(23, 21, 26, 0.97)',
+        // Telón de fondo: la muralla del bastión desde adentro con la horda
+        // acercándose en la niebla. Va oscurecido para que el texto se lea.
+        backgroundImage:
+          'linear-gradient(rgba(23,21,26,0.92), rgba(23,21,26,0.97)), url(/assets/game/ambient/wave_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         border: '1px solid rgba(179, 40, 33, 0.45)',
         maxHeight: '80vh',
       }}
@@ -85,6 +101,40 @@ export default function WaveDefensePanel({ onClose }) {
             <Stat label="Próxima" value={waveStatus.nextWave} icon={waveStatus.nextIsBoss ? '💀' : '🌊'}
               highlight={waveStatus.nextIsBoss} />
             <Stat label="Desafíos" value={waveStatus.totalRuns} icon="⚔️" />
+          </div>
+        )}
+
+        {/* Plantel de horrores: qué te vas a comer. Los jefes aparecen cada 5
+            oleadas, así que se resaltan cuando la próxima ES boss. */}
+        {waveStatus && !run && (
+          <div className="rounded-lg p-2.5 bg-black/40 border border-gray-700/50">
+            <p className="text-[10px] text-gray-400 font-semibold mb-2">Lo que acecha en la niebla</p>
+            <div className="flex items-end justify-between gap-1">
+              {BESTIARY.map((e) => (
+                <div key={e.id} className="flex flex-col items-center gap-1 flex-1 min-w-0">
+                  <div
+                    className="rounded-md p-1 flex items-center justify-center"
+                    style={{
+                      background: e.boss ? 'rgba(179,40,33,0.18)' : 'rgba(255,255,255,0.04)',
+                      border: e.boss
+                        ? `1px solid rgba(179,40,33,${waveStatus.nextIsBoss ? 0.9 : 0.4})`
+                        : '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: e.boss && waveStatus.nextIsBoss ? '0 0 8px rgba(179,40,33,0.5)' : 'none',
+                    }}
+                  >
+                    <img
+                      src={`/assets/game/enemies/${e.id}.png`}
+                      alt={e.name}
+                      className="w-8 h-8 object-contain"
+                      style={{ imageRendering: 'pixelated' }}
+                    />
+                  </div>
+                  <span className="text-[8px] text-gray-500 truncate w-full text-center leading-tight">
+                    {e.short}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
         {waveStatus?.nextIsBoss && !run && (

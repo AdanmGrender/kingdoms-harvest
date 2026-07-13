@@ -77,15 +77,31 @@ declare -A PROMPTS=(
   [heart]="an armor-plated heart with rivets"
   [star]="a five-pointed merit star badge"
   [check]="a completed mission seal stamp with a bold checkmark"
+  # ── tienda / premium (hoy emoji en la UI: 💎 ⭐ ⏩) ──
+  [gem]="a single large faceted violet-purple gemstone with a bright inner glow and sharp cut facets"
+  [star_currency]="a single bright golden five-pointed star coin, glowing, premium currency"
+  [speedup]="a clock face fused with an iron gear, with bold motion speed-lines streaking off it to show time rushing forward"
+  # ── enemigos de la Marea Disforme (WAVE_ENEMIES) como ícono chico ──
+  [enemy_carroneros]="the head of a scrawny mangy scavenger vermin: rat-like carrion beast, patchy fur, long yellow fangs, red beady eyes, snarling"
+  [enemy_brutos]="the head and shoulders of a deformed mutant hulk brute: bloated patchwork flesh, rusted iron staples, a lolling jawless head, sickly grey-green hide"
+  [enemy_aullador]="a floating void horror head: a ball of writhing tentacles studded with many unblinking eyes and a puckered screaming maw, sickly teal glow"
+  [enemy_coloso]="the head and shoulders of an ash-stone golem giant: cracked grey rock, a craggy featureless face, deep fissures glowing with orange embers, venting smoke"
+  [enemy_boss_devorador]="a monstrous boss beast head: a ringed maw of many jagged fangs swallowing a streak of light, teal aura, armored plates"
+  [enemy_boss_heraldo]="a boss herald head made of crackling electric static: a featureless white-hot head breaking apart into arcing lightning bolts and glitch bands"
 )
 
+# El orden canónico del sheet vive en assemble_icon_sheet.js (ICONS). Los
+# nombres nuevos se AGREGAN AL FINAL para no mover col/row de los 54 viejos.
 ORDER=(gold wood stone iron wheat water bread kh_token crystal relic blueprint
        carrot potato tomato corn pumpkin grape egg milk wool
        chicken sheep cow
        castle farmhouse market tower barracks tavern mill wall trap stable sawmill barn
        sword bow spear ram horse
        crown scroll medal backpack reward_bag exclamation gear caravan flame wallet
-       map heart star check)
+       map heart star check
+       gem star_currency speedup
+       enemy_carroneros enemy_brutos enemy_aullador enemy_coloso
+       enemy_boss_devorador enemy_boss_heraldo)
 LIST=("$@")
 [ ${#LIST[@]} -eq 0 ] && LIST=("${ORDER[@]}")
 

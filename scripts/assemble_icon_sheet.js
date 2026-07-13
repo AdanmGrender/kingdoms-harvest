@@ -46,6 +46,14 @@ const ICONS = [
   // UI / misc
   'crown', 'scroll', 'medal', 'backpack', 'reward_bag', 'exclamation', 'gear',
   'caravan', 'flame', 'wallet', 'map', 'heart', 'star', 'check',
+  // ⚠️ Los nombres nuevos van SIEMPRE AL FINAL: la posición en este array es el
+  // col/row del sheet. Insertar en el medio movería todos los íconos siguientes.
+  // tienda / premium (antes emoji en la UI: 💎 ⭐ ⏩). 'star' ya existe (estrella
+  // de mérito) → la moneda de Telegram Stars es 'star_currency'.
+  'gem', 'star_currency', 'speedup',
+  // enemigos de la Marea Disforme (ids de WAVE_ENEMIES, prefijados enemy_)
+  'enemy_carroneros', 'enemy_brutos', 'enemy_aullador', 'enemy_coloso',
+  'enemy_boss_devorador', 'enemy_boss_heraldo',
 ];
 
 fs.mkdirSync(PROC_DIR, { recursive: true });

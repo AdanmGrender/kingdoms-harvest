@@ -67,7 +67,11 @@ export default function SystemMapPanel({ onClose }) {
     <div
       className="mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
       style={{
-        background: 'rgba(23, 21, 26, 0.97)',
+        // Mapa estelar del sistema de fondo (oscurecido para que se lea la UI).
+        backgroundImage:
+          'linear-gradient(rgba(23,21,26,0.90), rgba(23,21,26,0.96)), url(/assets/game/ambient/system_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         border: '1px solid rgba(79, 216, 200, 0.4)',
         maxHeight: '80vh',
       }}
