@@ -284,6 +284,27 @@ describe('tokenService — withdrawal payout safety', () => {
     expect(balAfter).toBe(balBefore);
   });
 
+  test('getWithdrawalHistory NO expone admin_note/seqno/attempts (bypass M2)', async () => {
+    await db('withdrawal_requests').insert({
+      player_id: TOKEN_PLAYER_ID, amount: 500, ton_amount: '0.047500',
+      wallet_address: TEST_WALLET, status: 'failed',
+      admin_note: 'preflight: SECRETO-INTERNO-RPC', seqno: 42, attempts: 1,
+      created_at: new Date().toISOString(), processed_at: new Date().toISOString(),
+    });
+    const rows = await tokenService.getWithdrawalHistory(TOKEN_PLAYER_ID);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) {
+      expect(r.admin_note).toBeUndefined();
+      expect(r.seqno).toBeUndefined();
+      expect(r.attempts).toBeUndefined();
+      expect(r.claimed_at).toBeUndefined();
+      expect(r.wallet_address).toBeUndefined(); // tampoco hace falta re-exponerla
+    }
+    // Lo público sigue presente
+    expect(rows[0].status).toBeDefined();
+    expect(rows[0].amount).toBeDefined();
+  });
+
   test('needs_review cuenta para el tope diario (M3)', async () => {
     await db('withdrawal_requests').insert({
       player_id: TOKEN_PLAYER_ID, amount: 999999, ton_amount: String(TOKEN_CONFIG.MAX_DAILY_TON_PAYOUT),

@@ -385,7 +385,12 @@ const tokenService = {
    * Historial de retiros
    */
   async getWithdrawalHistory(playerId) {
+    // Whitelist de columnas (cierre del bypass de M2): admin_note guarda
+    // err.message interno (RPC/preflight — p.ej. "hot wallet insuficiente" =
+    // inteligencia operativa para un atacante) y seqno/attempts/claimed_at son
+    // internos del payout. El jugador ve solo su historial público.
     return db('withdrawal_requests')
+      .select('id', 'amount', 'ton_amount', 'status', 'tx_hash', 'created_at', 'processed_at')
       .where('player_id', playerId)
       .orderBy('id', 'desc')
       .limit(20);
@@ -396,8 +401,8 @@ const tokenService = {
    */
   async processPendingWithdrawals() {
     // Kill-switch operativo (parseo laxo: false/0/no/off pausan; default on).
-    const sw = String(process.env.WITHDRAWALS_ENABLED ?? '').toLowerCase();
-    if (['false', '0', 'no', 'off'].includes(sw)) return;
+    const sw = String(process.env.WITHDRAWALS_ENABLED ?? '').trim().toLowerCase();
+    if (['false', '0', 'no', 'off', 'disabled'].includes(sw)) return;
     // Single-flight a nivel proceso: node-cron NO impide reentradas y una corrida
     // dura hasta ~5min (poll de confirmación). Dos corridas solapadas leerían el
     // MISMO seqno del hot wallet → una podría marcar 'completed' un retiro cuyo
