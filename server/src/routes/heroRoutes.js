@@ -51,13 +51,15 @@ router.get('/items', telegramAuth, async (req, res) => {
   }
 });
 
-// Summon a hero (tokens or gold)
+// Summon a hero (tokens, gold, o GEMAS de la tienda — precio plano)
 router.post('/summon', telegramAuth, validate({
   payWithTokens: { type: 'boolean' },
+  payWithGems: { type: 'boolean' },
 }), async (req, res) => {
   try {
+    const payWithGems = req.body.payWithGems === true;
     const payWithTokens = req.body.payWithTokens !== false;
-    const result = await heroService.summonHero(req.playerId, payWithTokens);
+    const result = await heroService.summonHero(req.playerId, payWithTokens, payWithGems);
     res.json(result);
   } catch (error) {
     res.status(400).json({ error: safeErrorMessage(error) });

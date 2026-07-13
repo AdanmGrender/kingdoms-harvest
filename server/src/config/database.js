@@ -427,7 +427,11 @@ function saveToDisk() {
   }, SAVE_DEBOUNCE_MS);
 }
 
-// Flush synchronously on shutdown so no data is lost
+// Flush synchronously on shutdown so no data is lost.
+// También se expone como db.flushNow() para el CAMINO DEL DINERO (créditos de
+// gemas, ledger de retiros TON): saveToDisk() está debounceado 2s, así que un
+// kill duro (SIGKILL/OOM) dentro de esa ventana perdería un pago YA cobrado.
+// Tras un COMMIT que toca dinero se fuerza el flush inmediato.
 function saveToDiskSync() {
   if (IS_TEST) return;
   if (sqlDb) {
@@ -747,5 +751,10 @@ QueryBuilder.prototype.then = function (resolve, reject) {
 };
 
 db.initDatabase = initDatabase;
+
+// Flush sincrónico inmediato (bypass del debounce de 2s). Usar SOLO en el camino
+// del dinero (crédito de gemas de un pago cobrado, ledger de retiros): un kill
+// duro dentro de la ventana de debounce perdería un pago ya cobrado al jugador.
+db.flushNow = saveToDiskSync;
 
 module.exports = db;

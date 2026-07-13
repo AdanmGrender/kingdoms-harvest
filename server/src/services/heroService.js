@@ -273,11 +273,17 @@ const heroService = {
     return { recoveryUntil, recoveryHours };
   },
 
-  async summonHero(playerId, payWithTokens = true) {
+  async summonHero(playerId, payWithTokens = true, payWithGems = false) {
     const rarityId = rollRarity();
     const rarity = HERO_RARITIES[rarityId];
 
-    if (payWithTokens) {
+    if (payWithGems) {
+      // Sumidero de la tienda: precio PLANO en gemas para CUALQUIER rareza
+      // (por eso conviene pagar con gemas). Gasto atómico: si no alcanza,
+      // lanza y no se invoca nada. Las gemas NUNCA vuelven a KH/TON.
+      const { GEM_SINKS } = require('../../../shared/shopConfig');
+      await require('./gemService').spend(playerId, GEM_SINKS.hero_summon.gems, 'hero_summon');
+    } else if (payWithTokens) {
       const tokenData = await db('player_tokens').where('player_id', playerId).first();
       if (!tokenData || tokenData.balance < rarity.summonCost) {
         throw new Error(`Necesitás ${rarity.summonCost} KH Tokens para invocar un héroe ${rarity.name}`);

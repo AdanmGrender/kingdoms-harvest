@@ -34,17 +34,13 @@ const GEM_SINKS = {
     minGems: 5,
     maxGems: 300,
   },
-  // Invocación de héroe pagada con gemas (alternativa a KH/oro).
+  // Invocación de héroe pagada con gemas: precio PLANO para cualquier rareza
+  // (con KH el costo escala con la rareza) → pagar con gemas conviene.
+  // Implementado en heroService.summonHero(playerId, _, payWithGems=true).
   hero_summon: {
     id: 'hero_summon',
     name: 'Invocación de Héroe',
     gems: 150,
-  },
-  // Recarga instantánea del cap de energía de oleadas / run extra.
-  wave_retry: {
-    id: 'wave_retry',
-    name: 'Desafío extra de la Marea',
-    gems: 60,
   },
 };
 

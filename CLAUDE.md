@@ -420,8 +420,34 @@ INVARIANTES DE SEGURIDAD DEL COBRO:
   ✓ Los sinks calculan el costo SERVER-SIDE contra el estado real (nunca se
     confía en un precio enviado por el cliente)
 
-⚠️ Requiere BOT_POLLING activo (o webhook): con polling apagado los updates de
-   pago NO llegan a este proceso y las compras quedarían sin acreditar.
+  ✓ TODO pago con charge_id se PERSISTE (aunque no se acredite): producto
+    desconocido / monto o moneda que no cuadran → fila con status 'needs_review'
+    y gems_credited=0. Nunca se pierde un pago cobrado sin registro.
+  ✓ El "duplicado" NO se detecta por el texto del error: en el catch se consulta
+    si la fila del charge_id existe (si no, se re-lanza — otro UNIQUE, p.ej. el
+    de player_gems, NO se traga como duplicado)
+  ✓ REEMBOLSOS (handleRefund, update `message` con refunded_payment): marca el
+    pago 'refunded' y DEBITA las gemas otorgadas, permitiendo saldo NEGATIVO. Sin
+    esto el abuso es comprar → gastar al instante → reembolsar → quedarse con
+    todo. Con deuda, el jugador no puede volver a gastar. Idempotente.
+  ✓ db.flushNow() tras acreditar/reembolsar: saveToDisk está debounceado 2s y un
+    SIGKILL/OOM en esa ventana borraría un pago YA cobrado.
+
+⚠️ CLUSTER PROHIBIDO: sql.js es SQLite in-memory POR PROCESO y persiste
+   exportando la imagen COMPLETA sobre el archivo entero. En cluster, el flush de
+   un worker PISA los writes de otro (se borran créditos de gemas y el ledger de
+   retiros TON) y el UNIQUE de charge_id no protege entre workers.
+   → ecosystem.config.js: instances:1 / exec_mode:'fork'. initBot() además solo
+   corre en IS_PRIMARY_WORKER.
+
+⚠️ Requiere BOT_POLLING activo (o webhook): con polling apagado este proceso NO
+   recibe los updates de pago. No se cobra sin entregar (Telegram cancela si
+   nadie contesta el pre_checkout en 10s), pero la tienda queda muerta en
+   silencio → index.js avisa fuerte al arrancar.
+
+SUMIDEROS implementados: speedup de construcción (costo server-side por minuto
+restante, piso 5 / techo 300) y hero_summon con gemas (precio PLANO 150 para
+cualquier rareza — con KH el costo escala, así que pagar con gemas conviene).
 
 Migración 028: player_gems, star_payments.
 ```

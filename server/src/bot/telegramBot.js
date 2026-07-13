@@ -39,6 +39,18 @@ function initBot() {
     try {
       const result = await require('../services/paymentService').handleSuccessfulPayment(msg);
       if (result.duplicate) return; // replay de Telegram: ya acreditado
+
+      if (result.needsReview) {
+        // El pago QUEDÓ REGISTRADO (status needs_review) pero no se acreditó:
+        // producto desconocido o monto/moneda que no cuadra. Reconciliable.
+        await bot.sendMessage(
+          msg.chat.id,
+          '⚠️ Recibimos tu pago pero quedó *en revisión* (no pudimos validar el producto).\nYa está registrado: escribinos y lo resolvemos.',
+          { parse_mode: 'Markdown' },
+        );
+        return;
+      }
+
       await bot.sendMessage(
         msg.chat.id,
         `💎 *¡Compra confirmada!*\n\n+${result.credited} Gemas acreditadas.\nSaldo: *${result.balance}* 💎\n\n¡Gracias por sostener el bastión!`,
@@ -50,9 +62,29 @@ function initBot() {
       try {
         await bot.sendMessage(
           msg.chat.id,
-          '⚠️ Recibimos tu pago pero hubo un problema al acreditarlo. Ya quedó registrado: escribinos y lo resolvemos.',
+          '⚠️ Recibimos tu pago pero hubo un problema al acreditarlo. Escribinos y lo resolvemos.',
         );
       } catch {}
+    }
+  });
+
+  // Reembolso de Stars. La librería NO emite un evento dedicado: Telegram lo
+  // manda como un `message` con el campo `refunded_payment`. Sin esto, el abuso
+  // clásico es comprar → gastar al instante → pedir reembolso → quedarse con
+  // todo (y ese patrón hace que Telegram flaguee el bot).
+  bot.on('message', async (msg) => {
+    if (!msg || !msg.refunded_payment) return;
+    try {
+      const r = await require('../services/paymentService').handleRefund(msg);
+      if (r.refunded && r.clawedBack > 0) {
+        await bot.sendMessage(
+          msg.chat.id,
+          `↩️ Reembolso procesado. Se retiraron *${r.clawedBack}* 💎 de tu cuenta.`,
+          { parse_mode: 'Markdown' },
+        );
+      }
+    } catch (err) {
+      console.error('[Bot] ✗ refunded_payment error:', err.message, JSON.stringify(msg.refunded_payment || {}));
     }
   });
 

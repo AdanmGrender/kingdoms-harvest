@@ -327,11 +327,22 @@ async function start() {
     await worldEventService.cleanExpiredEvents();
     await worldEventService.generateEvents();
 
-    // Iniciar bot de Telegram
-    if (process.env.BOT_TOKEN) {
+    // Iniciar bot de Telegram — SOLO en el worker primario. Con sql.js cada
+    // proceso tiene su propia DB; si dos workers acreditaran pagos (o corrieran
+    // el poller), uno pisaría al otro al persistir. Con instances:1 esto es
+    // redundante, pero es defensa en profundidad si alguien reactiva cluster.
+    if (process.env.BOT_TOKEN && IS_PRIMARY_WORKER) {
+      // Guard de ingresos: si el polling está apagado, este proceso NO recibe
+      // los updates de pago (pre_checkout / successful_payment) → la tienda
+      // emitiría facturas que nunca se acreditan. Se avisa fuerte (no se lanza:
+      // el modo dual VPS+local con polling en la otra instancia es legítimo).
+      if (process.env.BOT_POLLING === 'false') {
+        console.warn('\n[Shop] ⚠️  BOT_POLLING=false: este proceso NO procesará pagos de Stars.\n'
+          + '        Los pagos deben procesarlos la instancia que tenga el polling.\n');
+      }
       initBot();
       console.log('Bot de Telegram iniciado');
-    } else {
+    } else if (!process.env.BOT_TOKEN) {
       console.log('BOT_TOKEN no configurado, bot desactivado');
     }
 

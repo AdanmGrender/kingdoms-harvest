@@ -49,9 +49,23 @@ describe('INVARIANTE: con dinero real solo se compran GEMAS, nunca KH', () => {
     }
   });
 
-  test('gemService NO expone ninguna función de conversión a KH/TON', () => {
-    const forbidden = ['toKH', 'convertToTokens', 'toTokens', 'withdraw', 'exchange', 'toTon'];
-    for (const fn of forbidden) expect(gemService[fn]).toBeUndefined();
+  // El control REAL de la invariante no es un banner en un comentario: es que
+  // BURN_RATES sea un allowlist y 'gems' no esté en él. Eso es lo que se testea.
+  test('las gemas NO se pueden quemar por KH (no están en el allowlist BURN_RATES)', async () => {
+    const { TOKEN_CONFIG } = require('../../shared/tokenConfig');
+    expect(TOKEN_CONFIG.BURN_RATES.gems).toBeUndefined();
+
+    const tokenService = require('../src/services/tokenService');
+    await expect(tokenService.burnResourcesForTokens(PID, 'gems', 1000))
+      .rejects.toThrow(/no se puede quemar/i);
+  });
+
+  test('comprar gemas NO crea una fila "gems" en player_resources (ruta de quema)', async () => {
+    await paymentService.handleSuccessfulPayment(paymentMsg({ productId: 'relic' }));
+
+    const asResource = await db('player_resources')
+      .where({ player_id: PID, resource_id: 'gems' }).first();
+    expect(asResource).toBeUndefined(); // las gemas viven SOLO en player_gems
   });
 
   test('comprar gemas NO toca el balance de KH del jugador', async () => {
@@ -114,16 +128,50 @@ describe('paymentService.handleSuccessfulPayment — idempotencia', () => {
     expect(balance).toBe(packGems('pouch'));
   });
 
-  test('rechaza moneda distinta de XTR', async () => {
-    const msg = paymentMsg();
-    msg.successful_payment.currency = 'USD';
-    await expect(paymentService.handleSuccessfulPayment(msg)).rejects.toThrow(/moneda/i);
+  // A1: un pago que no se puede acreditar NO se pierde en silencio — queda
+  // registrado como needs_review para poder reembolsar/reconciliar.
+  test('producto desconocido → needs_review REGISTRADO, sin acreditar (A1)', async () => {
+    const msg = paymentMsg({ chargeId: 'charge_UNKNOWN_1' });
+    msg.successful_payment.invoice_payload = JSON.stringify({ prod: 'pack_pirata' });
+
+    const res = await paymentService.handleSuccessfulPayment(msg);
+    expect(res.needsReview).toBe(true);
+
+    // El pago QUEDÓ registrado (si no, el jugador pagó y no hay contra qué reclamar)
+    const row = await db('star_payments')
+      .where('telegram_payment_charge_id', 'charge_UNKNOWN_1').first();
+    expect(row).toBeDefined();
+    expect(row.status).toBe('needs_review');
+    expect(row.gems_credited).toBe(0);
+
+    const { balance } = await gemService.getBalance(PID);
+    expect(balance).toBe(0); // no se acreditó nada
   });
 
-  test('rechaza un producto desconocido', async () => {
-    const msg = paymentMsg();
-    msg.successful_payment.invoice_payload = JSON.stringify({ prod: 'pack_pirata' });
-    await expect(paymentService.handleSuccessfulPayment(msg)).rejects.toThrow(/desconocido/i);
+  // M2: el monto que no coincide con el catálogo NO se acredita (última línea
+  // de defensa detrás de pre_checkout).
+  test('monto distinto al catálogo → needs_review, NO acredita (M2)', async () => {
+    const msg = paymentMsg({ productId: 'relic', chargeId: 'charge_MISMATCH_1', stars: 1 });
+
+    const res = await paymentService.handleSuccessfulPayment(msg);
+    expect(res.needsReview).toBe(true);
+
+    const { balance } = await gemService.getBalance(PID);
+    expect(balance).toBe(0); // pagó 1⭐, NO se lleva 3380 gemas
+
+    const row = await db('star_payments')
+      .where('telegram_payment_charge_id', 'charge_MISMATCH_1').first();
+    expect(row.status).toBe('needs_review');
+  });
+
+  test('moneda distinta de XTR → needs_review, NO acredita', async () => {
+    const msg = paymentMsg({ chargeId: 'charge_CURRENCY_1' });
+    msg.successful_payment.currency = 'USD';
+
+    const res = await paymentService.handleSuccessfulPayment(msg);
+    expect(res.needsReview).toBe(true);
+    const { balance } = await gemService.getBalance(PID);
+    expect(balance).toBe(0);
   });
 
   test('acredita al PAGADOR real (msg.from.id), no al id del payload', async () => {
@@ -137,6 +185,67 @@ describe('paymentService.handleSuccessfulPayment — idempotencia', () => {
     const victim = await gemService.getBalance(999999999);
     expect(payer.balance).toBe(packGems('pouch'));
     expect(victim.balance).toBe(0);
+  });
+});
+
+// ─── Reembolsos (A3) ─────────────────────────────────────────────────────────
+
+/** Simula el `message` con refunded_payment que manda Telegram al reembolsar. */
+function refundMsg(chargeId, playerId = PID) {
+  return {
+    from: { id: playerId },
+    chat: { id: playerId },
+    refunded_payment: { currency: 'XTR', telegram_payment_charge_id: chargeId },
+  };
+}
+
+describe('paymentService.handleRefund — abuso comprar/gastar/reembolsar', () => {
+  test('el reembolso DEBITA las gemas otorgadas', async () => {
+    await paymentService.handleSuccessfulPayment(
+      paymentMsg({ productId: 'pouch', chargeId: 'charge_REF_1' }),
+    );
+    expect((await gemService.getBalance(PID)).balance).toBe(packGems('pouch'));
+
+    const r = await paymentService.handleRefund(refundMsg('charge_REF_1'));
+    expect(r.refunded).toBe(true);
+    expect(r.clawedBack).toBe(packGems('pouch'));
+
+    expect((await gemService.getBalance(PID)).balance).toBe(0);
+    const row = await db('star_payments')
+      .where('telegram_payment_charge_id', 'charge_REF_1').first();
+    expect(row.status).toBe('refunded');
+  });
+
+  test('comprar → GASTAR todo → reembolsar deja al jugador EN DEUDA (no puede robar)', async () => {
+    await paymentService.handleSuccessfulPayment(
+      paymentMsg({ productId: 'pouch', chargeId: 'charge_ABUSE_1' }),
+    );
+    const gems = packGems('pouch');
+
+    // El atacante gasta TODO antes de pedir el reembolso.
+    await gemService.spend(PID, gems, 'abuso');
+    expect((await gemService.getBalance(PID)).balance).toBe(0);
+
+    // Telegram le devuelve las Stars...
+    await paymentService.handleRefund(refundMsg('charge_ABUSE_1'));
+
+    // ...pero queda con saldo NEGATIVO = deuda. No puede volver a gastar.
+    const { balance } = await gemService.getBalance(PID);
+    expect(balance).toBe(-gems);
+    await expect(gemService.spend(PID, 1, 'post-refund')).rejects.toThrow(/suficientes/i);
+  });
+
+  test('el reembolso es idempotente (no debita dos veces)', async () => {
+    await paymentService.handleSuccessfulPayment(
+      paymentMsg({ productId: 'pouch', chargeId: 'charge_REF_IDEM' }),
+    );
+    await paymentService.handleRefund(refundMsg('charge_REF_IDEM'));
+    const after1 = (await gemService.getBalance(PID)).balance;
+
+    const second = await paymentService.handleRefund(refundMsg('charge_REF_IDEM'));
+    expect(second.duplicate).toBe(true);
+
+    expect((await gemService.getBalance(PID)).balance).toBe(after1); // sin doble débito
   });
 });
 
@@ -163,6 +272,33 @@ describe('gemService.spend — gasto atómico', () => {
     const { balance } = await gemService.getBalance(PID);
     expect(balance).toBe(40);
     expect(balance).toBeGreaterThanOrEqual(0);
+  });
+});
+
+// ─── Sumidero: invocación de héroe con gemas ─────────────────────────────────
+
+describe('heroService.summonHero con gemas', () => {
+  test('cobra el precio plano en gemas y entrega el héroe', async () => {
+    const { GEM_SINKS } = require('../../shared/shopConfig');
+    const heroService = require('../src/services/heroService');
+    await gemService.credit(PID, 1000);
+
+    const res = await heroService.summonHero(PID, false, true); // payWithGems
+    expect(res.success).toBe(true);
+    expect(res.hero).toBeDefined();
+
+    const { balance } = await gemService.getBalance(PID);
+    expect(balance).toBe(1000 - GEM_SINKS.hero_summon.gems);
+  });
+
+  test('sin gemas suficientes NO invoca (y no regala héroe)', async () => {
+    const heroService = require('../src/services/heroService');
+    await gemService.credit(PID, 10); // menos que el precio
+
+    const before = (await db('player_heroes').where('player_id', PID)) || [];
+    await expect(heroService.summonHero(PID, false, true)).rejects.toThrow(/suficientes/i);
+    const after = (await db('player_heroes').where('player_id', PID)) || [];
+    expect(after.length).toBe(before.length); // ningún héroe nuevo
   });
 });
 

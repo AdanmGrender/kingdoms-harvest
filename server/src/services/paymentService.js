@@ -103,52 +103,118 @@ const paymentService = {
     const payerId = msg && msg.from && msg.from.id;
     if (!sp || !payerId) throw new Error('successful_payment inválido');
 
-    if (sp.currency !== 'XTR') throw new Error(`Moneda inesperada: ${sp.currency}`);
-
     const chargeId = sp.telegram_payment_charge_id;
+    // Sin charge_id no hay clave de idempotencia ni forma de reconciliar: es un
+    // caso patológico (Telegram siempre lo manda). Se lanza para que el bot lo
+    // loguee fuerte; no hay nada seguro que persistir.
     if (!chargeId) throw new Error('Falta telegram_payment_charge_id');
 
     let payload = {};
     try { payload = JSON.parse(sp.invoice_payload || '{}'); } catch { /* payload roto */ }
     const productId = payload.prod;
     const pack = GEM_PACKS[productId];
-    if (!pack) throw new Error(`Producto desconocido en el pago: ${productId}`);
+    const gems = pack ? packGems(productId) : 0;
 
-    // Las gemas salen del CATÁLOGO, no del mensaje. Si el monto pagado no
-    // coincide con el catálogo (p.ej. cambio de precio en vuelo), se registra;
-    // se acredita según el producto realmente comprado.
-    const gems = packGems(productId);
-    if (sp.total_amount !== pack.stars) {
-      console.warn(`[Pay] monto ${sp.total_amount}⭐ != catálogo ${pack.stars}⭐ para ${productId}`);
-    }
+    // Acreditable SOLO si el producto es del catálogo, la moneda es XTR y el
+    // monto pagado coincide con el precio del catálogo (M2: un mismatch NO se
+    // acredita — pre_checkout ya lo debería haber frenado, pero es la última
+    // línea). Todo lo demás se REGISTRA para revisión humana (A1), nunca se
+    // pierde el pago en silencio.
+    const creditable = !!pack && sp.currency === 'XTR' && sp.total_amount === pack.stars;
+    const status = creditable ? 'completed' : 'needs_review';
 
     try {
       await db.transaction(async () => {
         // El UNIQUE de charge_id ES el guard de idempotencia: un replay revienta
-        // acá y hace ROLLBACK antes de acreditar nada.
+        // acá y hace ROLLBACK antes de acreditar nada. La fila se persiste SIEMPRE
+        // (creditable o no) → todo pago queda reconciliable.
         await db('star_payments').insert({
           player_id: payerId,
-          product_id: productId,
+          product_id: productId || 'unknown',
           stars: sp.total_amount,
-          gems_credited: gems,
+          gems_credited: creditable ? gems : 0,
           telegram_payment_charge_id: chargeId,
-          status: 'completed',
+          status,
           created_at: new Date().toISOString(),
         });
-        // Participa de la MISMA transacción (trx === db en este builder).
-        await gemService.credit(payerId, gems);
+        if (creditable) {
+          // Participa de la MISMA transacción (trx === db en este builder):
+          // o queda la fila + las gemas, o no queda ninguna.
+          await gemService.credit(payerId, gems);
+        }
       });
     } catch (err) {
-      if (/UNIQUE constraint/i.test(err.message)) {
+      // A2: NO confiar en el texto del error. Solo es un duplicado real si la
+      // fila del charge_id YA existe; cualquier otra violación de UNIQUE (p.ej.
+      // player_gems) se re-lanza para que el bot la registre, no se traga.
+      const existing = await db('star_payments')
+        .where('telegram_payment_charge_id', chargeId).first();
+      if (existing) {
         console.log(`[Pay] charge ${chargeId} ya procesado — sin doble crédito`);
         return { duplicate: true };
       }
       throw err;
     }
 
+    // M1: el pago YA se cobró. saveToDisk está debounceado 2s → un kill duro
+    // (OOM/SIGKILL) en esa ventana borraría el crédito y hasta el registro.
+    // En el camino del dinero forzamos el flush inmediato.
+    try { db.flushNow(); } catch (e) { console.error('[Pay] flushNow falló:', e.message); }
+
+    if (!creditable) {
+      console.warn(`[Pay] pago en needs_review: player ${payerId}, prod=${productId}, ${sp.total_amount}⭐, currency=${sp.currency} (registrado, sin acreditar)`);
+      return { needsReview: true, reason: !pack ? 'producto desconocido' : 'monto/moneda no coincide' };
+    }
+
     const { balance } = await gemService.getBalance(payerId);
     console.log(`[Pay] player ${payerId} compró ${productId}: +${gems} gemas (${sp.total_amount}⭐)`);
     return { credited: gems, balance };
+  },
+
+  /**
+   * A3 — Reembolso de Stars. Telegram manda un `message` con `refunded_payment`
+   * (la librería no emite un evento dedicado). Marca el pago como reembolsado y
+   * DEBITA las gemas otorgadas (permitiendo saldo negativo: si el jugador ya las
+   * gastó, queda en deuda y no puede volver a comprar-gastar-reembolsar). Sin
+   * esto: comprar → gastar al instante → reembolsar → quedarse con todo.
+   * Idempotente por telegram_payment_charge_id.
+   */
+  async handleRefund(msg) {
+    const rp = msg && msg.refunded_payment;
+    const payerId = msg && msg.from && msg.from.id;
+    if (!rp || !payerId) return { ignored: true };
+
+    const chargeId = rp.telegram_payment_charge_id;
+    if (!chargeId) return { ignored: true };
+
+    const row = await db('star_payments')
+      .where('telegram_payment_charge_id', chargeId).first();
+    if (!row) {
+      console.warn(`[Pay] refund de un charge desconocido: ${chargeId}`);
+      return { ignored: true };
+    }
+    if (row.status === 'refunded') return { duplicate: true }; // idempotente
+
+    const gemsToClaw = row.gems_credited || 0;
+    await db.transaction(async () => {
+      await db('star_payments')
+        .where({ telegram_payment_charge_id: chargeId })
+        .update({ status: 'refunded' });
+      if (gemsToClaw > 0) {
+        // Débito directo (permite negativo a propósito): el saldo negativo
+        // bloquea gastar hasta saldar la deuda; getBalance lo refleja.
+        await gemService.ensureRecord(row.player_id);
+        await db('player_gems').where('player_id', row.player_id).update({
+          balance:    db.raw('balance - ?', [gemsToClaw]),
+          updated_at: new Date().toISOString(),
+        });
+      }
+    });
+    // Camino del dinero: persistir ya (ver M1 arriba).
+    try { db.flushNow(); } catch (e) { console.error('[Pay] flushNow falló:', e.message); }
+
+    console.warn(`[Pay] REEMBOLSO player ${row.player_id}: charge ${chargeId}, −${gemsToClaw} gemas`);
+    return { refunded: true, clawedBack: gemsToClaw };
   },
 
   /** Historial de compras del jugador (solo columnas públicas). */

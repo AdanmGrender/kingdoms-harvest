@@ -108,11 +108,12 @@ export default function ShopPanel({ onClose }) {
         {/* Para qué sirven */}
         <div className="mt-4 rounded-xl px-3 py-3"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          {/* Solo se listan sumideros IMPLEMENTADOS: prometerle al que paga algo
+              que no funciona es la peor forma de romper la confianza. */}
           <p className="text-gray-300 text-xs font-semibold mb-1.5">Las Gemas sirven para:</p>
           <ul className="text-gray-400 text-[11px] flex flex-col gap-1">
             <li>⚡ Acelerar construcciones al instante</li>
-            <li>🦸 Invocar héroes</li>
-            <li>🌊 Desafíos extra de la Marea Disforme</li>
+            <li>🦸 Invocar héroes (precio fijo, cualquier rareza)</li>
           </ul>
         </div>
 
