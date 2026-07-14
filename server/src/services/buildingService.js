@@ -11,13 +11,20 @@ const buildingService = {
   /**
    * Calcula el coste de un edificio para un nivel dado
    */
-  calculateCost(buildingId, level) {
+  /**
+   * @param {number} [costMult=1] — multiplicador de costo (prestige
+   *   "Gremio de Arquitectos" → build_cost_redux, ya viene como <1 para abaratar).
+   *   Se pasa desde los call sites async (calculateCost es sincrónica).
+   */
+  calculateCost(buildingId, level, costMult = 1) {
     const building = BUILDINGS[buildingId];
     if (!building) throw new Error('Edificio no válido');
 
     const cost = {};
     for (const [resource, baseCost] of Object.entries(building.baseCost)) {
-      cost[resource] = Math.floor(baseCost * Math.pow(building.costMultiplier, level - 1));
+      cost[resource] = Math.max(0, Math.floor(
+        baseCost * Math.pow(building.costMultiplier, level - 1) * costMult
+      ));
     }
 
     const buildTime = Math.floor(
@@ -72,7 +79,10 @@ const buildingService = {
     await this.validatePlacement(playerId, posX, posY, tileW, tileH);
 
     // Calcular y cobrar costes
-    const { cost, buildTime } = this.calculateCost(buildingId, 1);
+    // Prestige "Gremio de Arquitectos": abarata la construcción (build_cost_redux
+    // ya viene como <1). Antes el bono no lo consumía nadie.
+    const costMult = (await require('./prestigeService').getMultipliers(playerId)).build_cost_redux ?? 1;
+    const { cost, buildTime } = this.calculateCost(buildingId, 1, costMult);
     await this.payResources(playerId, cost);
 
     const now = new Date();
@@ -155,7 +165,8 @@ const buildingService = {
       throw new Error('Ya tenés un edificio en construcción.');
     }
 
-    const { cost, buildTime } = this.calculateCost(playerBuilding.building_id, nextLevel);
+    const costMult = (await require('./prestigeService').getMultipliers(playerId)).build_cost_redux ?? 1;
+    const { cost, buildTime } = this.calculateCost(playerBuilding.building_id, nextLevel, costMult);
     await this.payResources(playerId, cost);
 
     const now = new Date();

@@ -7,7 +7,7 @@ const PRESTIGE_UPGRADES = [
   { id: 'veteran_farmer',   label: 'Granjero Veterano',     desc: '+5% rendimiento de cultivos por nivel', maxLevel: 10, costPerLevel: 1, bonusKey: 'crop_yield',       perLevel: 0.05 },
   { id: 'battle_hardened',  label: 'Endurecido en Batalla', desc: '+3% poder de ataque por nivel',          maxLevel: 10, costPerLevel: 1, bonusKey: 'combat_atk',       perLevel: 0.03 },
   { id: 'merchants_eye',    label: 'Ojo de Mercader',       desc: '+5% precio de venta por nivel',          maxLevel: 10, costPerLevel: 1, bonusKey: 'sell_price',       perLevel: 0.05 },
-  { id: 'architects_guild', label: 'Gremio de Arquitectos', desc: '-5% costo de construcción por nivel',    maxLevel:  6, costPerLevel: 2, bonusKey: 'build_cost_redux', perLevel: 0.05 },
+  { id: 'architects_guild', label: 'Gremio de Arquitectos', desc: '-5% costo de construcción por nivel',    maxLevel:  6, costPerLevel: 2, bonusKey: 'build_cost_redux', perLevel: 0.05, reduction: true },
   { id: 'token_magnate',    label: 'Magnate de Tokens',     desc: '+5% cap diario de tokens por nivel',     maxLevel: 10, costPerLevel: 1, bonusKey: 'daily_token_cap',  perLevel: 0.05 },
 ];
 
@@ -48,18 +48,26 @@ async function executePrestige(playerId) {
   const newCount = (player.prestige_count || 0) + 1;
   const newPoints = (player.prestige_points || 0) + pointsEarned;
 
-  await db('players').where('telegram_id', playerId).update({
-    level: 1,
-    xp: 0,
-    prestige_count: newCount,
-    prestige_points: newPoints,
-  });
+  // TODO el reset en UNA transacción. Antes eran statements sueltos y las dos
+  // tablas de abajo estaban MAL NOMBRADAS ('buildings'/'troops' no existen; son
+  // player_buildings/player_troops): el DELETE lanzaba "no such table" DESPUÉS
+  // de haber bajado el nivel a 1, sumado los puntos y borrado los recursos →
+  // el jugador quedaba nivel 1, sin recursos, con puntos, CONSERVANDO base y
+  // tropas, y viendo un error. Con la transacción, o pasa todo o no pasa nada.
+  await db.transaction(async (trx) => {
+    await trx('players').where('telegram_id', playerId).update({
+      level: 1,
+      xp: 0,
+      prestige_count: newCount,
+      prestige_points: newPoints,
+    });
 
-  await db('player_resources').where('player_id', playerId).delete();
-  await db('buildings').where('player_id', playerId).delete();
-  await db('troops').where('player_id', playerId).delete();
-  await db('farm_plots').where('player_id', playerId).delete();
-  await db('missions').where('player_id', playerId).delete();
+    await trx('player_resources').where('player_id', playerId).delete();
+    await trx('player_buildings').where('player_id', playerId).delete();
+    await trx('player_troops').where('player_id', playerId).delete();
+    await trx('farm_plots').where('player_id', playerId).delete();
+    await trx('missions').where('player_id', playerId).delete();
+  });
 
   return { success: true, prestigeCount: newCount, pointsEarned, totalPoints: newPoints };
 }
@@ -106,7 +114,13 @@ async function getMultipliers(playerId) {
     if (!row.level || row.level <= 0) continue;
     const def = PRESTIGE_UPGRADES.find((u) => u.id === row.upgrade_id);
     if (!def) continue;
-    multipliers[def.bonusKey] = 1 + row.level * def.perLevel;
+    // Las mejoras de REDUCCIÓN (p.ej. build_cost_redux) deben BAJAR el valor.
+    // Antes todas devolvían `1 + nivel*perLevel`: para el costo de construcción
+    // eso daba 1.25 → multiplicar el costo lo SUBÍA 25% en vez de bajarlo.
+    // Piso 0.5 para que nunca llegue a 0 o negativo.
+    multipliers[def.bonusKey] = def.reduction
+      ? Math.max(0.5, 1 - row.level * def.perLevel)
+      : 1 + row.level * def.perLevel;
   }
 
   return multipliers;

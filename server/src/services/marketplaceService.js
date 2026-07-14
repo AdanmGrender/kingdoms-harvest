@@ -116,15 +116,32 @@ const marketplaceService = {
     }
 
     const totalGold = listing.price_per_unit * qty;
-    // Seller's net: base 95% minus market fee, plus seasonal commerce event
-    // bonus on top (so a 20% event roughly cancels the fee + adds extra).
+    // Neto del vendedor: 95% (menos la fee) + bono de evento de comercio.
+    // CLAMP a 1: si el bono de evento superaba la fee, el factor pasaba de 1 y el
+    // vendedor cobraba MÁS oro del que gastó el comprador → oro creado de la nada
+    // (inflación no acotada). Nunca se paga más de lo que entró.
     const eventBonus = await eventService.getMultiplier('commerce');
-    const sellerGold = Math.floor(totalGold * (1 - MARKET_FEE + eventBonus));
+    const payoutFactor = Math.min(1, 1 - MARKET_FEE + eventBonus);
+    const sellerGold = Math.floor(totalGold * payoutFactor);
 
-    // Charge buyer (atomic). Refund the listing if charge fails.
+    // RESERVA ATÓMICA DEL STOCK, ANTES de cobrar/transferir. Antes el stock se
+    // descontaba al final con un valor calculado en JS (remaining - qty): dos
+    // compras concurrentes leían el mismo snapshot, ambas pasaban el check y
+    // ambas transferían el recurso → el comprador recibía MÁS de lo escrowado
+    // (duplicación). Este UPDATE condicional (un solo statement) deja pasar sólo
+    // a uno; el que pierde ve "Listado ya no disponible".
+    const reserved = await db('marketplace_listings')
+      .where({ id: listingId, status: 'active' })
+      .where('quantity_remaining', '>=', qty)
+      .update({ quantity_remaining: db.raw('quantity_remaining - ?', [qty]) });
+    if (!reserved) throw new Error('Listado ya no disponible');
+
+    // Cobrar al comprador. Si falla, DEVOLVER el stock reservado.
     try {
       await playerService.modifyResource(buyerId, 'gold', -totalGold);
     } catch {
+      await db('marketplace_listings').where('id', listingId)
+        .update({ quantity_remaining: db.raw('quantity_remaining + ?', [qty]) });
       throw new Error(`Necesitás ${totalGold} oro`);
     }
 
@@ -132,12 +149,10 @@ const marketplaceService = {
     await playerService.modifyResource(buyerId, listing.resource_id, qty);
     await playerService.modifyResource(listing.seller_id, 'gold', sellerGold);
 
-    // Decrement remaining; auto-mark sold if drained
-    const newRemaining = listing.quantity_remaining - qty;
-    await db('marketplace_listings').where('id', listingId).update({
-      quantity_remaining: newRemaining,
-      status: newRemaining === 0 ? 'sold' : 'active',
-    });
+    // Marcar vendido si el stock quedó en 0 (condicional: no pisa otra compra).
+    await db('marketplace_listings')
+      .where({ id: listingId, quantity_remaining: 0, status: 'active' })
+      .update({ status: 'sold' });
 
     // Append-only price log — feeds the history endpoint. Decoupled from
     // listings so cancellations/expirations don't pollute the time series.

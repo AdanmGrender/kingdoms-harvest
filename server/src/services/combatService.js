@@ -279,10 +279,15 @@ const combatService = {
       squadBonus = await require('./heroService').getSquadCombatBonus(playerId);
     } catch { /* sin escuadra */ }
 
-    // Calcular batalla con bonuses de facción + tech + alianza + habilidad
+    // Prestige "Endurecido en Batalla" (combat_atk): el multiplicador viene como
+    // (1 + nivel*3%); lo pasamos al bono aditivo del cálculo. Antes este bono
+    // existía en la config pero NINGÚN servicio lo consumía.
+    const prestigeAtk = (await require('./prestigeService').getMultipliers(playerId)).combat_atk ?? 1;
+
+    // Calcular batalla con bonuses de facción + tech + alianza + prestige + habilidad
     const result = this.calculateBattle(army, npcArmy, [], {
       attackBonus: factionAtkBonus + techAttacker.atk + allianceBonus.atk + stormAtk
-        + squadBonus.attackBonus,
+        + squadBonus.attackBonus + (prestigeAtk - 1),
       defenseBonus: factionDefBonus + techAttacker.def - squadBonus.defDebuff,
       abilityId,
       attackerArmy: army,

@@ -117,10 +117,17 @@ const dailyTaskService = {
     const config = TOKEN_CONFIG.DAILY_TASKS.find((t) => t.id === taskId);
     if (!config) throw new Error('Tarea invalida');
 
-    // Award tokens
-    const result = await tokenService.awardTokens(playerId, config.reward, 'daily_task');
+    // CLAIM ATÓMICO ANTES DE PAGAR (TOCTOU): el chequeo `task.reward_claimed` de
+    // arriba es un fast-fail; ESTE es el guard real. Antes se otorgaban los
+    // tokens y RECIÉN DESPUÉS se marcaba reclamada: dos requests concurrentes
+    // leían reward_claimed=0 y ambos cobraban la misma recompensa. El UPDATE
+    // condicional (un solo statement) deja pasar a uno solo.
+    const claimed = await db('player_daily_tasks')
+      .where({ id: task.id, reward_claimed: 0 })
+      .update({ reward_claimed: 1 });
+    if (!claimed) throw new Error('Recompensa ya reclamada');
 
-    await db('player_daily_tasks').where('id', task.id).update({ reward_claimed: 1 });
+    const result = await tokenService.awardTokens(playerId, config.reward, 'daily_task');
 
     return {
       success: true,
@@ -265,13 +272,22 @@ const dailyTaskService = {
       }
     }
 
-    // Mark completed and award tokens
-    await db('social_task_completions').insert({
-      player_id: playerId,
-      task_id: taskId,
-      completed: 1,
-      completed_at: new Date().toISOString(),
-    });
+    // El INSERT es el GUARD de idempotencia (migración 029: UNIQUE(player_id,
+    // task_id)). El chequeo `existing` de arriba es un fast-fail; antes, sin
+    // constraint, dos requests concurrentes pasaban ambos, insertaban ambos y
+    // cobraban ambos (hasta 250 KH en 'invite_10'). Ahora el segundo revienta
+    // contra el UNIQUE y NO se acredita nada.
+    try {
+      await db('social_task_completions').insert({
+        player_id: playerId,
+        task_id: taskId,
+        completed: 1,
+        completed_at: new Date().toISOString(),
+      });
+    } catch (err) {
+      if (/UNIQUE constraint/i.test(err.message)) throw new Error('Tarea ya completada');
+      throw err;
+    }
 
     const result = await tokenService.awardTokens(playerId, task.reward, 'social_task');
 

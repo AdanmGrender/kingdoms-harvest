@@ -149,6 +149,16 @@ const tournamentService = {
   async _settleTournament(tournamentRow) {
     const config = TOURNAMENTS[tournamentRow.type];
     if (!config) return;
+
+    // CLAIM ATÓMICO ANTES de repartir premios: se marca cerrado primero, y sólo
+    // el que gana el UPDATE reparte. Antes se otorgaban los premios y RECIÉN
+    // DESPUÉS se marcaba is_active=0: dos ticks solapados liquidaban el mismo
+    // torneo y pagaban el premio DOS VECES.
+    const claimed = await db('tournaments')
+      .where({ id: tournamentRow.id, is_active: 1 })
+      .update({ is_active: 0, finalized_at: new Date().toISOString() });
+    if (!claimed) return; // otro tick ya lo liquidó
+
     const leaderboard = await this.getLeaderboard(tournamentRow.id, 3);
     for (const entry of leaderboard) {
       const prize = config.prizes?.[entry.rank];
@@ -163,10 +173,7 @@ const tournamentService = {
         console.error('[Tournament] Prize award failed:', err.message);
       }
     }
-    await db('tournaments').where('id', tournamentRow.id).update({
-      is_active: 0,
-      finalized_at: new Date().toISOString(),
-    });
+    // (el cierre ya se hizo con el claim atómico arriba)
   },
 
   /**

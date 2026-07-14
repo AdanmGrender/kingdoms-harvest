@@ -49,7 +49,26 @@ const productionAccumulators = {};
  * Procesa cultivos listos, producción de animales,
  * construcciones completadas, tropas entrenadas, etc.
  */
+// Single-flight del tick: node-cron NO impide reentradas. El tick corre cada 60s
+// y hace mucho I/O de DB; si una corrida tarda más de un minuto, la siguiente
+// arranca ENCIMA y los subsistemas sin claim atómico se duplican (p.ej. liquidar
+// el mismo torneo dos veces y repartir el premio dos veces). Serializamos.
+let _tickRunning = false;
+
 async function processTick() {
+  if (_tickRunning) {
+    console.warn('[Tick] la corrida anterior sigue en curso; se saltea esta');
+    return;
+  }
+  _tickRunning = true;
+  try {
+    await _processTickInner();
+  } finally {
+    _tickRunning = false;
+  }
+}
+
+async function _processTickInner() {
   const now = new Date().toISOString();
 
   // 0. Heartbeat idle (F1): último instante "vivo" del server para detectar

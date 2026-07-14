@@ -180,7 +180,11 @@ const commerceService = {
       + (completedTechs.has('trade_routes') ? 0.10 : 0);
     // Seasonal event: harvest_festival adds commerce bonus
     const eventBonus = await eventService.getMultiplier('commerce');
-    const totalGold = Math.floor(offer.price * quantity * (1 + commerceBonus + techBonus + eventBonus));
+    // Prestige "Ojo de Mercader" (sell_price): antes el bono no lo consumía nadie.
+    const prestigeSell = (await require('./prestigeService').getMultipliers(playerId)).sell_price ?? 1;
+    const totalGold = Math.floor(
+      offer.price * quantity * prestigeSell * (1 + commerceBonus + techBonus + eventBonus)
+    );
 
     // Cobrar recurso (atómico)
     try {

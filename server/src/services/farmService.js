@@ -106,8 +106,13 @@ const farmService = {
     const eventBonus = await eventService.getMultiplier('farming');
     // Tormenta disforme (F2): puede penalizar la producción (p. ej. Velo Estático −25%)
     const stormBonus = await require('./stormService').getModifier('farming');
+    // Prestige "Granjero Veterano" (crop_yield): multiplicador (1 + nivel*5%).
+    // Antes el bono existía en la config pero NADIE lo consumía → el jugador
+    // gastaba puntos de prestige y no pasaba nada.
+    const prestigeMult = (await require('./prestigeService').getMultipliers(playerId)).crop_yield ?? 1;
     const finalYield = Math.max(0, Math.floor(
-      baseYield * quality.multiplier * (1 + factionBonus + techYieldBonus + eventBonus + stormBonus)
+      baseYield * quality.multiplier * prestigeMult
+      * (1 + factionBonus + techYieldBonus + eventBonus + stormBonus)
     ));
 
     // Dar recursos al jugador

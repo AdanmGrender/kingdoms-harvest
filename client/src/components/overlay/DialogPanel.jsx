@@ -15,10 +15,26 @@ const NPC_GREETINGS = {
   ranger: 'Cuidado en el páramo. No todo lo que se mueve está vivo.',
 };
 
+// Normaliza recompensas a SIEMPRE un array de { amount, resource_id }. El server
+// puede mandarlas como array de items o como objeto { gold, xp, items:[...] }
+// (así lo guardan varios tests/misiones). Antes esta función devolvía el objeto
+// tal cual y el caller le hacía .map → TypeError que rompía todo el panel.
 function parseRewards(rewards) {
-  if (Array.isArray(rewards)) return rewards;
-  if (typeof rewards === 'string') {
-    try { return JSON.parse(rewards); } catch { return []; }
+  let r = rewards;
+  if (typeof r === 'string') {
+    try { r = JSON.parse(r); } catch { return []; }
+  }
+  if (Array.isArray(r)) return r;
+  if (r && typeof r === 'object') {
+    const out = [];
+    for (const [key, val] of Object.entries(r)) {
+      if (key === 'items' && Array.isArray(val)) {
+        for (const it of val) out.push({ amount: it.amount ?? it.quantity ?? 1, resource_id: it.resource_id ?? it.id ?? it.item });
+      } else if (typeof val === 'number' && val > 0) {
+        out.push({ amount: val, resource_id: key }); // gold, xp, kh, etc.
+      }
+    }
+    return out;
   }
   return [];
 }
