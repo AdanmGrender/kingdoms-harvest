@@ -1,8 +1,9 @@
 /**
  * SettingsPanel v2 (F1 idle) — bottom sheet de configuración completa:
  *  - Master toggle del bot + los 9 flags granulares de notification_preferences
- *  - Audio (mute/volumen — gancho vía EventBridge 'settings:audio', persiste
- *    en localStorage; el juego aún no tiene sonido, el gancho queda listo)
+ *  - Audio (mute + slider de volumen — vía EventBridge 'settings:audio' con
+ *    { muted } / { volume }, persiste en localStorage 'kh_audio_muted' /
+ *    'kh_audio_volume'. Lo consume client/src/audio/AudioEngine.js)
  *  - Gráficos: toggle de efectos de ambiente (viñeta/cielo/glows) para
  *    teléfonos débiles — EventBridge 'settings:ambient'
  */
@@ -42,6 +43,7 @@ export default function SettingsPanel({ onClose }) {
   const [prefs, setPrefs] = useState(null);
   const [busy, setBusy] = useState(false);
   const [muted, setMuted] = useState(() => loadLocal('kh_audio_muted', false));
+  const [volume, setVolume] = useState(() => loadLocal('kh_audio_volume', 0.7));
   const [ambientFx, setAmbientFx] = useState(() => loadLocal('kh_ambient_fx', true));
 
   useEffect(() => {
@@ -86,6 +88,14 @@ export default function SettingsPanel({ onClose }) {
     EventBridge.emit('settings:audio', { muted: next });
   };
 
+  // Volumen maestro 0..1 → el motor de audio lo aplica al master gain.
+  const changeVolume = (v) => {
+    const next = Math.max(0, Math.min(1, v));
+    setVolume(next);
+    saveLocal('kh_audio_volume', next);
+    EventBridge.emit('settings:audio', { volume: next });
+  };
+
   const toggleAmbient = () => {
     const next = !ambientFx;
     setAmbientFx(next);
@@ -117,6 +127,7 @@ export default function SettingsPanel({ onClose }) {
         <Section title="Juego">
           <Row icon="🔇" title="Silenciar audio" subtitle={muted ? 'Silenciado' : 'Sonido activo'}
             control={<Toggle on={!muted} onChange={toggleMute} />} />
+          <VolumeRow value={volume} disabled={muted} onChange={changeVolume} />
           <Row icon="🌫️" title="Efectos de ambiente" subtitle="Viñeta, cielo, luces — apagar en teléfonos lentos"
             control={<Toggle on={ambientFx} onChange={toggleAmbient} />} />
         </Section>
@@ -161,6 +172,33 @@ function Row({ icon, title, subtitle, control, small }) {
         {subtitle && <p className="text-[11px] text-gray-400 truncate">{subtitle}</p>}
       </div>
       {control}
+    </div>
+  );
+}
+
+// Slider de volumen maestro (0–100%). Ocupa fila completa por el ancho del range.
+function VolumeRow({ value, disabled, onChange }) {
+  const pct = Math.round((value ?? 0) * 100);
+  return (
+    <div className={`flex items-center gap-3 ${disabled ? 'opacity-50' : ''}`}>
+      <div className="text-2xl w-9 text-center">🔊</div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-white font-semibold truncate">Volumen</p>
+          <span className="text-[11px] text-gray-400 tabular-nums">{pct}%</span>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={pct}
+          disabled={disabled}
+          onChange={(e) => onChange(Number(e.target.value) / 100)}
+          className="w-full mt-1 accent-yellow-500 cursor-pointer disabled:cursor-default"
+          style={{ height: '18px' }}
+          aria-label="Volumen maestro"
+        />
+      </div>
     </div>
   );
 }

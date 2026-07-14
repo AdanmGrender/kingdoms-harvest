@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import useGameStore from './store/gameStore';
 import EventBridge from './game/EventBridge';
+import audio from './audio/AudioEngine';
 import NotificationToast from './components/ui/NotificationToast';
 import LoadingScreen from './components/ui/LoadingScreen';
 import SpriteIcon from './components/ui/SpriteIcon';
@@ -39,6 +40,11 @@ function App() {
   const menuDismissed = useGameStore((s) => s.menuDismissed);
 
   useEffect(() => {
+    // Motor de audio procedural (Web Audio). Lee el estado de mute/volumen de
+    // localStorage en su constructor; init() sólo registra el desbloqueo por
+    // gesto (autoplay) y engancha EventBridge. Nada suena hasta el primer toque.
+    audio.init();
+
     if (window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
       tg.ready();
@@ -153,6 +159,9 @@ function App() {
       EventBridge.off('resources:refresh', handleResourcesRefresh);
       document.removeEventListener('touchmove', blockMultiTouch);
       document.removeEventListener('gesturestart', blockGesture);
+      // Quita listeners del motor de audio (el grafo/ambiente sobrevive: es
+      // singleton). Idempotente con el doble-montaje de React StrictMode.
+      audio.teardown();
     };
   }, []);
 
