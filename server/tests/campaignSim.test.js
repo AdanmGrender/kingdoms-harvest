@@ -73,4 +73,40 @@ describe('campaignSim.simulateRound', () => {
     expect(st.round).toBe(0);
     expect(st.enemy.hp).toBe(120);
   });
+
+  test('la ronda de victoria incluye snapshot y no duplica número de ronda', () => {
+    let st = baseState({ enemy: { hp: 90, maxHp: 90, dps: 5 } });
+    let result = null;
+    while (result === null) {
+      const res = simulateRound(st, { type: 'advance' });
+      st = res.state;
+      result = res.result;
+    }
+    expect(result).toBe('victory');
+    const lastEntry = st.log[st.log.length - 1];
+    expect(lastEntry.result).toBe('victory');
+    expect(typeof lastEntry.enemyHp).toBe('number');
+    expect(Array.isArray(lastEntry.heroes)).toBe(true);
+    expect(lastEntry.heroes.length).toBeGreaterThan(0);
+    const roundNumbers = st.log.map((e) => e.round);
+    expect(new Set(roundNumbers).size).toBe(roundNumbers.length); // sin rondas duplicadas
+  });
+
+  test('desborda daño del héroe frontal al segundo cuando el primero muere (dos héroes)', () => {
+    const st = baseState({
+      heroes: [
+        { slot: 1, heroId: 'h1', class: 'warrior', name: 'Front', atk: 10, hp: 20, maxHp: 20,
+          energy: 0, energyMax: ENERGY_MAX, skill: { id: 'golpe', type: 'damage', mult: 2 }, alive: true },
+        { slot: 2, heroId: 'h2', class: 'warrior', name: 'Back', atk: 10, hp: 50, maxHp: 50,
+          energy: 0, energyMax: ENERGY_MAX, skill: { id: 'golpe', type: 'damage', mult: 2 }, alive: true },
+      ],
+      enemy: { hp: 1000, maxHp: 1000, dps: 30 },
+    });
+    const { state, result } = simulateRound(st, { type: 'advance' });
+    expect(state.heroes[0].alive).toBe(false);
+    expect(state.heroes[0].hp).toBe(0);
+    expect(state.heroes[1].alive).toBe(true);
+    expect(state.heroes[1].hp).toBe(40); // 50 - (30 - 20 de overflow del frontal)
+    expect(result).toBeNull();
+  });
 });
