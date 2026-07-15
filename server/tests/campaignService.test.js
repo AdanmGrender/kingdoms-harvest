@@ -1,8 +1,16 @@
 const { CAMPAIGN } = require('../../shared/gameConfig');
 const db = require('../src/config/database');
 const { initTestDb, seedTestData } = require('./setup');
+const campaignService = require('../src/services/campaignService');
 
 beforeAll(async () => { await initTestDb(); await seedTestData(); });
+
+async function freshPlayer(id) {
+  await db('players').where('telegram_id', id).delete();
+  await db('player_campaign_progress').where('player_id', id).delete();
+  await db('players').insert({ telegram_id: id, username: 'c', first_name: 'C', display_name: 'C',
+    level: 5, xp: 0, created_at: new Date().toISOString() });
+}
 
 describe('CAMPAIGN config', () => {
   test('ids únicos y unlocks referencian nodos válidos', () => {
@@ -36,5 +44,28 @@ describe('migración 030', () => {
       player_id: 999, node_id: 'a1n3', status: 'active', state: '{}', created_at: new Date().toISOString(),
     }).returning('id');
     expect(id).toBeGreaterThan(0);
+  });
+});
+
+describe('campaignService mapa y gating', () => {
+  test('jugador nuevo: nodo 1 available, resto locked', async () => {
+    await freshPlayer(770001);
+    const map = await campaignService.getMap(770001);
+    expect(map[0].status).toBe('available');
+    expect(map[1].status).toBe('locked');
+  });
+
+  test('_clearNode marca cleared y desbloquea el siguiente (idempotente)', async () => {
+    await freshPlayer(770002);
+    await campaignService.getMap(770002); // siembra
+    const node = require('../../shared/gameConfig').CAMPAIGN[0];
+    const r1 = await campaignService._clearNode(770002, node);
+    expect(r1.alreadyCleared).toBe(false);
+    expect(r1.unlocked).toContain('a1n2');
+    const r2 = await campaignService._clearNode(770002, node); // segundo intento
+    expect(r2.alreadyCleared).toBe(true); // no re-otorga
+    const map = await campaignService.getMap(770002);
+    expect(map[0].status).toBe('cleared');
+    expect(map[1].status).toBe('available');
   });
 });
