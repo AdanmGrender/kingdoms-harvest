@@ -32,33 +32,38 @@ const campaignService = {
   },
 
   // Claim atómico + recompensa (una vez) + desbloqueo de siguientes.
+  // Todo el cuerpo corre en UNA transacción: si un award/unlock falla tras el
+  // claim, el rollback revierte el nodo a 'available' (retry recuperable) en
+  // vez de dejarlo 'cleared' con la recompensa perdida.
   async _clearNode(playerId, node) {
-    const claimed = await db('player_campaign_progress')
-      .where({ player_id: playerId, node_id: node.id, status: 'available' })
-      .update({ status: 'cleared', cleared_at: new Date().toISOString() });
-    if (!claimed) return { alreadyCleared: true, unlocked: [] };
+    return db.transaction(async () => {
+      const claimed = await db('player_campaign_progress')
+        .where({ player_id: playerId, node_id: node.id, status: 'available' })
+        .update({ status: 'cleared', cleared_at: new Date().toISOString() });
+      if (!claimed) return { alreadyCleared: true, unlocked: [] };
 
-    if (node.rewards?.kh) {
-      await tokenService().awardTokens(playerId, node.rewards.kh, 'wave_defense');
-    }
-    if (node.rewards?.resources) {
-      for (const [rid, amt] of Object.entries(node.rewards.resources)) {
-        await playerService().modifyResource(playerId, rid, amt);
+      if (node.rewards?.kh) {
+        await tokenService().awardTokens(playerId, node.rewards.kh, 'wave_defense');
       }
-    }
-    if (isCombat(node)) {
-      try { await dailyService().trackProgress(playerId, 'battle_win', 1); } catch { /* no crítico */ }
-    }
+      if (node.rewards?.resources) {
+        for (const [rid, amt] of Object.entries(node.rewards.resources)) {
+          await playerService().modifyResource(playerId, rid, amt);
+        }
+      }
+      if (isCombat(node)) {
+        try { await dailyService().trackProgress(playerId, 'battle_win', 1); } catch { /* no crítico */ }
+      }
 
-    const unlocked = [];
-    for (const nextId of (node.unlocks || [])) {
-      const exists = await db('player_campaign_progress').where({ player_id: playerId, node_id: nextId }).first();
-      if (!exists) {
-        await db('player_campaign_progress').insert({ player_id: playerId, node_id: nextId, status: 'available' });
-        unlocked.push(nextId);
+      const unlocked = [];
+      for (const nextId of (node.unlocks || [])) {
+        const exists = await db('player_campaign_progress').where({ player_id: playerId, node_id: nextId }).first();
+        if (!exists) {
+          await db('player_campaign_progress').insert({ player_id: playerId, node_id: nextId, status: 'available' });
+          unlocked.push(nextId);
+        }
       }
-    }
-    return { alreadyCleared: false, unlocked };
+      return { alreadyCleared: false, unlocked };
+    });
   },
 };
 

@@ -68,4 +68,29 @@ describe('campaignService mapa y gating', () => {
     expect(map[0].status).toBe('cleared');
     expect(map[1].status).toBe('available');
   });
+
+  test('_clearNode revierte el claim si el award falla (rollback recuperable)', async () => {
+    await freshPlayer(770003);
+    await campaignService.getMap(770003); // siembra
+    const node = require('../../shared/gameConfig').CAMPAIGN[0];
+
+    const tokenService = require('../src/services/tokenService');
+    const spy = jest.spyOn(tokenService, 'awardTokens').mockRejectedValueOnce(new Error('boom'));
+
+    await expect(campaignService._clearNode(770003, node)).rejects.toThrow('boom');
+    spy.mockRestore();
+
+    const row = await db('player_campaign_progress')
+      .where({ player_id: 770003, node_id: node.id }).first();
+    expect(row.status).toBe('available');
+
+    const nextRow = await db('player_campaign_progress')
+      .where({ player_id: 770003, node_id: 'a1n2' }).first();
+    expect(nextRow).toBeUndefined();
+
+    // El nodo sigue disponible para un retry exitoso.
+    const retry = await campaignService._clearNode(770003, node);
+    expect(retry.alreadyCleared).toBe(false);
+    expect(retry.unlocked).toContain('a1n2');
+  });
 });
