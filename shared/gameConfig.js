@@ -1015,6 +1015,40 @@ const HERO_ITEMS = {
   lucky_charm:   { id: 'lucky_charm',   name: 'Amuleto de Fortuna',    slot: 'accessory', icon: '🍀', bonuses: { atk: 2, def: 2, hp: 10, spd: 2, mgk: 2 }, rarity: 'common', description: 'Talismán de hueso bendecido por un capellán errante' },
 };
 
+// ── CAMPAÑA (acto 1) — cadena de nodos que reemplaza el mundo paseable ──────
+// Tipos alternan sobre un riel; boss cada ~5 nodos. Números placeholder,
+// se afinan con playtest. Contenido 100% original (regla IP).
+const CAMPAIGN = [
+  { id: 'a1n1', act: 1, type: 'manage', name: 'Despertar del Bastión',
+    requires: [], unlocks: ['a1n2'],
+    manage: { type: 'building_level', min: 2, hint: 'Mejorá cualquier edificio a nivel 2', panel: 'building' },
+    rewards: { kh: 2, resources: { gold: 100 } } },
+  { id: 'a1n2', act: 1, type: 'collect', name: 'Cosecha en la Niebla',
+    requires: ['a1n1'], unlocks: ['a1n3'], rewards: { kh: 2, resources: { gold: 80 } } },
+  { id: 'a1n3', act: 1, type: 'combat', name: 'Merodeadores del Páramo',
+    requires: ['a1n2'], unlocks: ['a1n4'], enemy: { hp: 400, dps: 22 }, maxRounds: 8,
+    rewards: { kh: 3, resources: { gold: 150 } } },
+  { id: 'a1n4', act: 1, type: 'wave', name: 'Marea Menor',
+    requires: ['a1n3'], unlocks: ['a1n5'], enemy: { hp: 650, dps: 30 }, maxRounds: 10,
+    rewards: { kh: 4, resources: { crystal: 1 } } },
+  { id: 'a1n5', act: 1, type: 'boss', name: 'El Heraldo Putrefacto',
+    requires: ['a1n4'], unlocks: ['a1n6'], enemy: { hp: 1200, dps: 45 }, maxRounds: 12, isBoss: true,
+    rewards: { kh: 10, resources: { relic: 1 } } },
+  { id: 'a1n6', act: 1, type: 'manage', name: 'Reforzar Murallas',
+    requires: ['a1n5'], unlocks: ['a1n7'],
+    manage: { type: 'building_level', min: 3, hint: 'Mejorá cualquier edificio a nivel 3', panel: 'building' },
+    rewards: { kh: 3 } },
+  { id: 'a1n7', act: 1, type: 'combat', name: 'Carroñeros',
+    requires: ['a1n6'], unlocks: ['a1n8'], enemy: { hp: 900, dps: 40 }, maxRounds: 9,
+    rewards: { kh: 5, resources: { gold: 300 } } },
+  { id: 'a1n8', act: 1, type: 'wave', name: 'Marea Creciente',
+    requires: ['a1n7'], unlocks: ['a1n9'], enemy: { hp: 1400, dps: 55 }, maxRounds: 11,
+    rewards: { kh: 6, resources: { crystal: 2 } } },
+  { id: 'a1n9', act: 1, type: 'boss', name: 'Devorador de Almas',
+    requires: ['a1n8'], unlocks: [], enemy: { hp: 2400, dps: 70 }, maxRounds: 14, isBoss: true,
+    rewards: { kh: 20, resources: { relic: 2, blueprint: 1 } } },
+];
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -1048,6 +1082,7 @@ module.exports = {
   WAVE_CONFIG,
   WAVE_ENEMIES,
   HERO_SKILLS,
+  CAMPAIGN,
   SYSTEM_PLANETS,
   SYSTEM_UNLOCK_LEVEL,
   GALAXY_SYSTEMS,
