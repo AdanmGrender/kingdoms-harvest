@@ -60,6 +60,7 @@ const marketRoutes = require('./routes/marketRoutes');
 const seasonalRoutes = require('./routes/seasonalRoutes');
 const prestigeRoutes = require('./routes/prestigeRoutes');
 const guildRoutes = require('./routes/guildRoutes');
+const campaignRoutes = require('./routes/campaignRoutes');
 
 const app = express();
 app.set('trust proxy', 1); // Necesario detrás de Nginx para que rate-limit use IP real
@@ -170,6 +171,7 @@ app.use('/api/market', marketRoutes);
 app.use('/api/seasonal', seasonalRoutes);
 app.use('/api/prestige', prestigeRoutes);
 app.use('/api/guilds', guildRoutes);
+app.use('/api/campaign', campaignRoutes);
 // Idle F2: Tormentas Disformes
 app.use('/api/storms', require('./routes/stormRoutes'));
 // Idle F3: Marea Disforme (defensa por oleadas)
