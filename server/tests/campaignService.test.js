@@ -190,4 +190,43 @@ describe('campaignService resolveStep', () => {
     await expect(campaignService.resolveStep(770023, run.runId, { type: 'advance' }))
       .rejects.toThrow(/inexistente/i);
   });
+
+  test('si el award falla en el paso terminal, claim de run + _clearNode se revierten juntos (retry recuperable)', async () => {
+    const run = await reachCombat(770024);
+
+    const tokenService = require('../src/services/tokenService');
+    const spy = jest.spyOn(tokenService, 'awardTokens').mockRejectedValueOnce(new Error('boom'));
+
+    let threw = false, guard = 0;
+    while (!threw && guard++ < 100) {
+      try {
+        await campaignService.resolveStep(770024, run.runId, { type: 'advance' });
+      } catch (e) {
+        threw = true;
+        expect(e.message).toMatch(/boom/);
+      }
+    }
+    spy.mockRestore();
+    expect(threw).toBe(true); // el paso terminal (award falló) rechazó
+
+    // Todo se revirtió: el run sigue 'active' y el nodo sigue 'available'.
+    const runRow = await db('campaign_runs').where({ id: run.runId }).first();
+    expect(runRow.status).toBe('active');
+    const nodeRow = await db('player_campaign_progress')
+      .where({ player_id: 770024, node_id: 'a1n3' }).first();
+    expect(nodeRow.status).toBe('available');
+
+    // Retry: el estado persistido ya tenía la ronda terminal calculada, así
+    // que el siguiente 'advance' recomputa y esta vez el claim+award prospera.
+    let result = null;
+    guard = 0;
+    while (!result && guard++ < 100) {
+      const r = await campaignService.resolveStep(770024, run.runId, { type: 'advance' });
+      result = r.result;
+    }
+    expect(result).toBe('victory');
+    const map = await campaignService.getMap(770024);
+    expect(map.find((n) => n.id === 'a1n3').status).toBe('cleared');
+    expect(map.find((n) => n.id === 'a1n4').status).toBe('available');
+  });
 });

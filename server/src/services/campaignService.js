@@ -140,13 +140,20 @@ const campaignService = {
 
     let unlocked = [];
     if (out.result) {
-      // claim atómico: sólo el primero que cierra el run otorga
-      const claimed = await db('campaign_runs')
-        .where({ id: runId, status: 'active' }).update({ status: out.result });
-      if (claimed && out.result === 'victory') {
-        const r = await this._clearNode(playerId, node);
-        unlocked = r.unlocked;
-      }
+      // claim del run + _clearNode en UNA transacción (db.transaction es
+      // reentrante: la transacción interna de _clearNode participa en ésta).
+      // Si el award/unlock falla tras el claim, el rollback también revierte
+      // el claim del run (vuelve a 'active') — un retry recomputa la ronda
+      // terminal y reintenta, sin combate perdido.
+      await db.transaction(async () => {
+        // claim atómico: sólo el primero que cierra el run otorga
+        const claimed = await db('campaign_runs')
+          .where({ id: runId, status: 'active' }).update({ status: out.result });
+        if (claimed && out.result === 'victory') {
+          const r = await this._clearNode(playerId, node);
+          unlocked = r.unlocked;
+        }
+      });
     }
     const roundLog = out.state.log[out.state.log.length - 1] || null;
     return { state: out.state, roundLog, result: out.result, unlocked };
