@@ -126,6 +126,31 @@ const campaignService = {
     }).returning('id');
     return { kind: 'combat', runId, node: { id: node.id, name: node.name, type: node.type }, state };
   },
+
+  async resolveStep(playerId, runId, action) {
+    const run = await db('campaign_runs').where({ id: runId, player_id: playerId }).first();
+    if (!run) throw new Error('Run inexistente');
+    if (run.status !== 'active') throw new Error('Este combate ya terminó');
+
+    const state = JSON.parse(run.state);
+    const node = nodeById(run.node_id);
+    const out = simulateRound(state, action); // puede lanzar (energía insuficiente)
+
+    await db('campaign_runs').where('id', runId).update({ state: JSON.stringify(out.state) });
+
+    let unlocked = [];
+    if (out.result) {
+      // claim atómico: sólo el primero que cierra el run otorga
+      const claimed = await db('campaign_runs')
+        .where({ id: runId, status: 'active' }).update({ status: out.result });
+      if (claimed && out.result === 'victory') {
+        const r = await this._clearNode(playerId, node);
+        unlocked = r.unlocked;
+      }
+    }
+    const roundLog = out.state.log[out.state.log.length - 1] || null;
+    return { state: out.state, roundLog, result: out.result, unlocked };
+  },
 };
 
 module.exports = campaignService;

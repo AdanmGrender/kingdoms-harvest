@@ -133,3 +133,61 @@ describe('campaignService enterNode', () => {
     expect(res.state.enemy.hp).toBe(400);
   });
 });
+
+describe('campaignService resolveStep', () => {
+  // La guarnición default (1 unidad, atk 30/hp 200 — fallback de
+  // _buildCombatState para squads vacías) NO alcanza para limpiar a1n3
+  // (enemy hp 400, maxRounds 8) ni con timing óptimo de skill: verificado
+  // por simulación directa, el mejor caso deja al enemigo en 28hp cuando se
+  // agotan las rondas (defeat forzado). Un jugador real llega a su primer
+  // combate con héroes ya reclutados, así que la escuadra de prueba se
+  // siembra directo en player_heroes/player_squads (5× Aria, común, atk
+  // 14/hp 90 reales de HEROES.aria) — con eso a1n3 cae en 6 rondas usando
+  // sólo 'advance', sin tocar CAMPAIGN ni campaignSim.
+  async function reachCombat(id) {
+    await freshPlayer(id);
+    await db('player_heroes').where('player_id', id).delete();
+    await db('player_squads').where('player_id', id).delete();
+    for (let slot = 1; slot <= 5; slot++) {
+      const [{ id: heroDbId }] = await db('player_heroes').insert({
+        player_id: id, hero_id: 'aria', level: 1, xp: 0,
+        equipment: '{"weapon":null,"armor":null,"accessory":null}',
+        obtained_at: new Date().toISOString(),
+      }).returning('id');
+      await db('player_squads').insert({ player_id: id, slot, hero_db_id: heroDbId });
+    }
+    await campaignService.getMap(id);
+    await campaignService._clearNode(id, require('../../shared/gameConfig').CAMPAIGN[0]);
+    await campaignService.enterNode(id, 'a1n2');
+    return campaignService.enterNode(id, 'a1n3'); // combat run
+  }
+
+  test('avanzar rondas hasta victoria otorga y desbloquea UNA vez', async () => {
+    const run = await reachCombat(770020);
+    let result = null, guard = 0;
+    while (!result && guard++ < 100) {
+      const r = await campaignService.resolveStep(770020, run.runId, { type: 'advance' });
+      result = r.result;
+    }
+    expect(result).toBe('victory');
+    const map = await campaignService.getMap(770020);
+    expect(map.find((n) => n.id === 'a1n3').status).toBe('cleared');
+    expect(map.find((n) => n.id === 'a1n4').status).toBe('available');
+    // otro step sobre el run terminado falla (no re-otorga)
+    await expect(campaignService.resolveStep(770020, run.runId, { type: 'advance' }))
+      .rejects.toThrow(/terminó/i);
+  });
+
+  test('skill sin energía se rechaza como error de negocio', async () => {
+    const run = await reachCombat(770021);
+    await expect(campaignService.resolveStep(770021, run.runId, { type: 'skill', slot: 1 }))
+      .rejects.toThrow(/energía/i);
+  });
+
+  test('run ajeno no se puede tocar', async () => {
+    const run = await reachCombat(770022);
+    await freshPlayer(770023);
+    await expect(campaignService.resolveStep(770023, run.runId, { type: 'advance' }))
+      .rejects.toThrow(/inexistente/i);
+  });
+});
