@@ -94,3 +94,42 @@ describe('campaignService mapa y gating', () => {
     expect(retry.unlocked).toContain('a1n2');
   });
 });
+
+describe('campaignService enterNode', () => {
+  test('nodo bloqueado lanza', async () => {
+    await freshPlayer(770010);
+    await campaignService.getMap(770010);
+    await expect(campaignService.enterNode(770010, 'a1n9')).rejects.toThrow(/bloqueado/i);
+  });
+
+  test('collect se limpia al entrar y desbloquea el siguiente', async () => {
+    await freshPlayer(770011);
+    await campaignService.getMap(770011);
+    // limpiar n1 (manage) directo para llegar a n2 (collect)
+    await campaignService._clearNode(770011, require('../../shared/gameConfig').CAMPAIGN[0]);
+    const res = await campaignService.enterNode(770011, 'a1n2');
+    expect(res.kind).toBe('cleared');
+    const map = await campaignService.getMap(770011);
+    expect(map.find((n) => n.id === 'a1n3').status).toBe('available');
+  });
+
+  test('manage sin condición cumplida devuelve blocked', async () => {
+    await freshPlayer(770012);
+    await campaignService.getMap(770012); // n1 available, sin edificios
+    const res = await campaignService.enterNode(770012, 'a1n1');
+    expect(res.kind).toBe('blocked');
+    expect(res.panel).toBe('building');
+  });
+
+  test('combat crea un run con snapshot de escuadra (o guarnición default)', async () => {
+    await freshPlayer(770013);
+    await campaignService.getMap(770013);
+    await campaignService._clearNode(770013, require('../../shared/gameConfig').CAMPAIGN[0]); // n1
+    await campaignService.enterNode(770013, 'a1n2'); // collect -> desbloquea n3
+    const res = await campaignService.enterNode(770013, 'a1n3');
+    expect(res.kind).toBe('combat');
+    expect(res.runId).toBeGreaterThan(0);
+    expect(res.state.heroes.length).toBeGreaterThanOrEqual(1);
+    expect(res.state.enemy.hp).toBe(400);
+  });
+});

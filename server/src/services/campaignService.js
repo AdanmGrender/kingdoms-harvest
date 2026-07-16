@@ -65,6 +65,67 @@ const campaignService = {
       return { alreadyCleared: false, unlocked };
     });
   },
+
+  async _checkManage(playerId, node) {
+    const c = node.manage;
+    if (c && c.type === 'building_level') {
+      const row = await db('player_buildings')
+        .where('player_id', playerId).where('level', '>=', c.min).first();
+      return !!row;
+    }
+    return true;
+  },
+
+  async _buildCombatState(playerId, node) {
+    let squad = [];
+    try { squad = await heroService().getSquad(playerId); } catch { squad = []; }
+    let heroes = (Array.isArray(squad) ? squad : [])
+      .filter((h) => !h.recovering)
+      .map((h) => ({
+        slot: h.slot, heroId: h.heroId, class: h.class, name: h.name,
+        atk: h.stats.atk, hp: h.stats.hp, maxHp: h.stats.hp,
+        energy: 0, energyMax: 100,
+        skill: HERO_SKILLS[h.class] || HERO_SKILLS.warrior, alive: true,
+      }));
+    if (heroes.length === 0) {
+      heroes = [{ slot: 1, heroId: null, class: 'warrior', name: 'Guarnición',
+        atk: 30, hp: 200, maxHp: 200, energy: 0, energyMax: 100,
+        skill: HERO_SKILLS.warrior, alive: true }];
+    }
+    return {
+      round: 0, maxRounds: node.maxRounds, isBoss: !!node.isBoss, shield: 0,
+      heroes, enemy: { hp: node.enemy.hp, maxHp: node.enemy.hp, dps: node.enemy.dps }, log: [],
+    };
+  },
+
+  async enterNode(playerId, nodeId) {
+    await this._ensureSeeded(playerId);
+    const node = nodeById(nodeId);
+    if (!node) throw new Error('Nodo inexistente');
+    const prog = await db('player_campaign_progress')
+      .where({ player_id: playerId, node_id: nodeId }).first();
+    if (!prog || prog.status === 'locked') throw new Error('Nodo bloqueado');
+
+    if (node.type === 'collect') {
+      const r = await this._clearNode(playerId, node);
+      return { kind: 'cleared', node: { id: node.id, name: node.name, type: node.type }, unlocked: r.unlocked };
+    }
+    if (node.type === 'manage') {
+      const ok = await this._checkManage(playerId, node);
+      if (!ok) return { kind: 'blocked', node: { id: node.id, name: node.name, type: node.type },
+        hint: node.manage.hint, panel: node.manage.panel };
+      const r = await this._clearNode(playerId, node);
+      return { kind: 'cleared', node: { id: node.id, name: node.name, type: node.type }, unlocked: r.unlocked };
+    }
+
+    // combat / wave / boss
+    const state = await this._buildCombatState(playerId, node);
+    const [{ id: runId }] = await db('campaign_runs').insert({
+      player_id: playerId, node_id: nodeId, status: 'active',
+      state: JSON.stringify(state), created_at: new Date().toISOString(),
+    }).returning('id');
+    return { kind: 'combat', runId, node: { id: node.id, name: node.name, type: node.type }, state };
+  },
 };
 
 module.exports = campaignService;
