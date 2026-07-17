@@ -5,6 +5,7 @@ export default function CombatInstancePanel({ onClose }) {
   const activeRun = useGameStore((s) => s.activeRun);
   const stepInstance = useGameStore((s) => s.stepInstance);
   const clearActiveRun = useGameStore((s) => s.clearActiveRun);
+  const addNotification = useGameStore((s) => s.addNotification);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
 
@@ -17,6 +18,8 @@ export default function CombatInstancePanel({ onClose }) {
     try {
       const r = await stepInstance(action);
       if (r?.result) setResult(r.result);
+    } catch (e) {
+      addNotification(e.response?.data?.error || 'No se pudo resolver la ronda', 'error');
     } finally { setBusy(false); }
   };
 
