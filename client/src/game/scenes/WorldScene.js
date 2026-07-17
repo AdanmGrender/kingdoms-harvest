@@ -78,6 +78,8 @@ export default class WorldScene extends Phaser.Scene {
     // vez acá (el registry no cambia dinámicamente durante la vida de la
     // escena: PhaserGame crea el juego una sola vez por mount).
     this.hubMode = !!this.registry.get('hubMode');
+    // Inicializar hubZonesBuilt (se usa en buildHubZones para idempotencia)
+    this.hubZonesBuilt = new Set();
 
     const player = useGameStore.getState().player;
     const seed = player?.telegram_id ?? player?.id ?? 42;
@@ -180,7 +182,6 @@ export default class WorldScene extends Phaser.Scene {
     const zy0 = Math.max(0, Math.floor(view.y / zonePx) - margin);
     const zx1 = Math.min(zonesX - 1, Math.floor((view.right - 1) / zonePx) + margin);
     const zy1 = Math.min(zonesY - 1, Math.floor((view.bottom - 1) / zonePx) + margin);
-    if (!this.hubZonesBuilt) this.hubZonesBuilt = new Set();
     for (let zy = zy0; zy <= zy1; zy++) {
       for (let zx = zx0; zx <= zx1; zx++) {
         const key = `${zx},${zy}`;
