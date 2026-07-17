@@ -73,6 +73,12 @@ export default class WorldScene extends Phaser.Scene {
   }
 
   create() {
+    // Modo hub (Task 11): pantalla-ancla compacta con cámara fija sobre la
+    // base — no se streamea el mundo gigante ni se permite paneo. Se lee UNA
+    // vez acá (el registry no cambia dinámicamente durante la vida de la
+    // escena: PhaserGame crea el juego una sola vez por mount).
+    this.hubMode = !!this.registry.get('hubMode');
+
     const player = useGameStore.getState().player;
     const seed = player?.telegram_id ?? player?.id ?? 42;
 
@@ -89,7 +95,10 @@ export default class WorldScene extends Phaser.Scene {
     // salir de cámara. El gameplay (edificios, NPCs, cultivos, animales,
     // aldeanos, marcadores de recursos, estructuras) NO se streamea.
     this.decalSpots = this.computeDecalSpots();
-    this.zoneStreamer = new ZoneStreamer(this, this.mapData, {
+    // Modo hub: la cámara nunca se mueve, así que no hace falta streamear
+    // zonas dentro/fuera — se construyen una sola vez las que cubren el
+    // viewport fijo (ver buildHubZones(), llamado tras setupCamera()).
+    this.zoneStreamer = this.hubMode ? null : new ZoneStreamer(this, this.mapData, {
       tileSize: TILE_SIZE,
       buildZone: (zx, zy) => this.buildZone(zx, zy),
     });
@@ -106,10 +115,17 @@ export default class WorldScene extends Phaser.Scene {
     this.createAnimals();
     this.createVillagers();
     this.setupCamera();
-    // Primer stream inmediato: la cámara ya está centrada en el spawn, así el
-    // jugador nunca ve el piso vacío (worldView aún no existe → ZoneStreamer
-    // deriva el rect desde scroll/zoom).
-    this.zoneStreamer.update(true);
+    if (this.hubMode) {
+      // Base compacta: construye de una sola vez las zonas bajo la cámara
+      // fija (equivalente al "primer stream inmediato" de abajo, pero sin
+      // streamer — la cámara no se va a mover).
+      this.buildHubZones();
+    } else {
+      // Primer stream inmediato: la cámara ya está centrada en el spawn, así
+      // el jugador nunca ve el piso vacío (worldView aún no existe →
+      // ZoneStreamer deriva el rect desde scroll/zoom).
+      this.zoneStreamer.update(true);
+    }
     this.setupSystems();
     this.setupEventBridge();
 
@@ -119,7 +135,48 @@ export default class WorldScene extends Phaser.Scene {
     // as "off the edge of the map" rather than a render failure.
     this.scale.on('resize', (gameSize) => {
       this.cameras.main.setSize(gameSize.width, gameSize.height);
+      if (this.hubMode) {
+        // Cámara fija: re-centrar sobre la base tras un resize (el ancho/alto
+        // usados por centerOn() cambian con el viewport).
+        const spawn = this.mapData.spawn;
+        this.cameraSystem.centerOn(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE);
+      }
     });
+  }
+
+  /**
+   * Modo hub: construye, una única vez, las zonas de terreno/decals/anclas
+   * que caen bajo el viewport fijo de la cámara (+1 zona de margen). No hay
+   * streaming continuo — la cámara no se mueve en este modo (CameraSystem
+   * queda deshabilitado en setupCamera()).
+   */
+  buildHubZones() {
+    const cam = this.cameras.main;
+    const viewW = cam.width / cam.zoom;
+    const viewH = cam.height / cam.zoom;
+    // Mismo cálculo de fallback que ZoneStreamer._viewRect(): worldView aún
+    // no existe en el primer frame (se actualiza en preRender), así que se
+    // deriva desde scroll/zoom. centerOn() ya dejó scrollX/Y tal que
+    // scroll + width/2 == centro pedido, independientemente del zoom.
+    const view = {
+      x: cam.scrollX + cam.width / 2 - viewW / 2,
+      y: cam.scrollY + cam.height / 2 - viewH / 2,
+      right: cam.scrollX + cam.width / 2 + viewW / 2,
+      bottom: cam.scrollY + cam.height / 2 + viewH / 2,
+    };
+    const zonePx = ZONE_TILES * TILE_SIZE;
+    const zonesX = Math.ceil(this.mapData.width / ZONE_TILES);
+    const zonesY = Math.ceil(this.mapData.height / ZONE_TILES);
+    const margin = 1;
+    const zx0 = Math.max(0, Math.floor(view.x / zonePx) - margin);
+    const zy0 = Math.max(0, Math.floor(view.y / zonePx) - margin);
+    const zx1 = Math.min(zonesX - 1, Math.floor((view.right - 1) / zonePx) + margin);
+    const zy1 = Math.min(zonesY - 1, Math.floor((view.bottom - 1) / zonePx) + margin);
+    for (let zy = zy0; zy <= zy1; zy++) {
+      for (let zx = zx0; zx <= zx1; zx++) {
+        this.buildZone(zx, zy);
+      }
+    }
   }
 
   // ───────────────────────────────────────────────────────────
@@ -461,9 +518,18 @@ export default class WorldScene extends Phaser.Scene {
   setupCamera() {
     this.cameraSystem = new CameraSystem(this);
     this.cameraSystem.setBounds(0, 0, MAP_W * TILE_SIZE, MAP_H * TILE_SIZE);
-    this.cameraSystem.setZoom(1.0);
     const spawn = this.mapData.spawn;
-    this.cameraSystem.centerOn(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE);
+    if (this.hubMode) {
+      // Base compacta, cámara fija: zoom in sobre la base (spawn = centro de
+      // la base — mismo punto que usa deriveObjects() para anclar todos los
+      // edificios iniciales) y sin input de cámara (drag/zoom/pan/teclado).
+      this.cameraSystem.setZoom(1.4);
+      this.cameraSystem.centerOn(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE);
+      this.cameraSystem.setEnabled(false);
+    } else {
+      this.cameraSystem.setZoom(1.0);
+      this.cameraSystem.centerOn(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE);
+    }
   }
 
   setupSystems() {

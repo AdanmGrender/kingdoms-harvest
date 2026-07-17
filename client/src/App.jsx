@@ -6,6 +6,7 @@ import NotificationToast from './components/ui/NotificationToast';
 import LoadingScreen from './components/ui/LoadingScreen';
 import SpriteIcon from './components/ui/SpriteIcon';
 import PhaserGame from './game/PhaserGame';
+import BastionHub from './components/hub/BastionHub';
 import TopResourceBar from './components/hud/TopResourceBar';
 import BottomNavBar from './components/hud/BottomNavBar';
 import BuildingInfoPopup from './components/hud/BuildingInfoPopup';
@@ -218,10 +219,12 @@ function App() {
   // Menú de inicio (F1 idle) — una vez por sesión, antes de entrar al juego
   if (!menuDismissed) return <MainMenu />;
 
-  // RTS Mode — always Phaser game with React overlays
+  // Entrada por defecto = hub Bastión (base compacta + QuestRail); el mundo
+  // 160×120 paseable queda detrás de ?preview=world / ?iso=1 (rama ISO_PREVIEW
+  // arriba, sin tocar).
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
-      <PhaserGame />
+      <BastionHub />
       <TopResourceBar />
       <QuickActionsSidebar />
       <EventSidebar />
