@@ -31,6 +31,7 @@ import PrestigePanel from './PrestigePanel';
 import WithdrawalPanel from './WithdrawalPanel';
 import TechTreePanel from '../castle/TechTreePanel';
 import FactionSelectPanel from './FactionSelectPanel';
+import OperationsMap from '../campaign/OperationsMap';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -164,6 +165,8 @@ function renderPanel(overlayState, onClose) {
       return <SystemMapPanel onClose={onClose} />;
     case 'galaxy':
       return <GalaxyMapPanel onClose={onClose} />;
+    case 'operations':
+      return <OperationsMap onClose={onClose} />;
     case 'crafting':
       return <CraftingPanel onClose={onClose} />;
     case 'heroes':
