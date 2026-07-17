@@ -1,0 +1,91 @@
+import { useState } from 'react';
+import useGameStore from '../../store/gameStore';
+
+export default function CombatInstancePanel({ onClose }) {
+  const activeRun = useGameStore((s) => s.activeRun);
+  const stepInstance = useGameStore((s) => s.stepInstance);
+  const clearActiveRun = useGameStore((s) => s.clearActiveRun);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+
+  if (!activeRun) { onClose(); return null; }
+  const { node, state } = activeRun;
+
+  const doStep = async (action) => {
+    if (busy || result) return;
+    setBusy(true);
+    try {
+      const r = await stepInstance(action);
+      if (r?.result) setResult(r.result);
+    } finally { setBusy(false); }
+  };
+
+  const close = () => { clearActiveRun(); onClose(); };
+  const enemyPct = Math.max(0, Math.round((state.enemy.hp / state.enemy.maxHp) * 100));
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col p-4" style={{ background: 'rgba(8,8,16,0.97)' }}>
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-red-400 font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          {node.type === 'boss' ? '💀' : '⚔️'} {node.name} · ronda {state.round}/{state.maxRounds}
+        </h2>
+        <button onClick={close} className="text-gray-400 text-xl px-2">✕</button>
+      </div>
+
+      {/* Enemigo */}
+      <div className="mb-4">
+        <div className="text-gray-300 text-xs mb-1">Enemigo</div>
+        <div className="h-4 rounded" style={{ background: '#333' }}>
+          <div className="h-4 rounded" style={{ width: `${enemyPct}%`, background: '#e94560', transition: 'width .3s' }} />
+        </div>
+      </div>
+
+      {/* Héroes + tap-skill */}
+      <div className="flex-1 overflow-y-auto space-y-2">
+        {state.heroes.map((h) => {
+          const ready = h.alive && h.energy >= h.energyMax;
+          return (
+            <button
+              key={h.slot}
+              onClick={() => doStep({ type: 'skill', slot: h.slot })}
+              disabled={!ready || busy || !!result}
+              className="w-full p-2 rounded flex items-center gap-2"
+              style={{
+                background: ready ? 'rgba(255,215,0,0.18)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${ready ? '#ffd700' : '#333'}`,
+                opacity: h.alive ? 1 : 0.4,
+              }}
+            >
+              <span className="text-lg">{h.skill.icon || '✦'}</span>
+              <div className="flex-1 text-left">
+                <p className="text-white text-xs">{h.name} {h.alive ? '' : '☠️'}</p>
+                <div className="h-1.5 rounded mt-1" style={{ background: '#222' }}>
+                  <div className="h-1.5 rounded" style={{ width: `${Math.min(100, h.energy)}%`, background: ready ? '#ffd700' : '#4ade80' }} />
+                </div>
+              </div>
+              {ready && <span className="text-yellow-300 text-[10px] font-bold">¡TAP!</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Avanzar / resultado */}
+      {result ? (
+        <div className="mt-3 text-center">
+          <p className={`text-lg font-bold ${result === 'victory' ? 'text-green-400' : 'text-red-400'}`}>
+            {result === 'victory' ? '🏆 ¡Victoria!' : '💀 Derrota'}
+          </p>
+          <button onClick={close} className="btn-gold mt-2 px-6 py-2 rounded">Volver</button>
+        </div>
+      ) : (
+        <button
+          onClick={() => doStep({ type: 'advance' })}
+          disabled={busy}
+          className="btn-primary mt-3 py-3 rounded font-bold disabled:opacity-50"
+        >
+          {busy ? '...' : '⚔️ Avanzar ronda'}
+        </button>
+      )}
+    </div>
+  );
+}
