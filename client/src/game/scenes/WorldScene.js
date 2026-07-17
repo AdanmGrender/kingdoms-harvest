@@ -140,13 +140,21 @@ export default class WorldScene extends Phaser.Scene {
         // usados por centerOn() cambian con el viewport).
         const spawn = this.mapData.spawn;
         this.cameraSystem.centerOn(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE);
+        // Si el viewport creció, la cobertura construida en create() puede
+        // haber quedado corta (+1 zona de margen ya no alcanza) y aparecería
+        // piso vacío en el borde. buildHubZones() es idempotente vía
+        // hubZonesBuilt — re-llamarla solo construye las zonas NUEVAS que
+        // quedaron expuestas, sin duplicar las ya existentes.
+        this.buildHubZones();
       }
     });
   }
 
   /**
-   * Modo hub: construye, una única vez, las zonas de terreno/decals/anclas
-   * que caen bajo el viewport fijo de la cámara (+1 zona de margen). No hay
+   * Modo hub: construye las zonas de terreno/decals/anclas que caen bajo el
+   * viewport fijo de la cámara (+1 zona de margen). Idempotente vía
+   * hubZonesBuilt (Set de claves "zx,zy") — llamable de nuevo tras un resize
+   * que agrande el viewport sin re-construir zonas ya existentes. No hay
    * streaming continuo — la cámara no se mueve en este modo (CameraSystem
    * queda deshabilitado en setupCamera()).
    */
@@ -172,9 +180,13 @@ export default class WorldScene extends Phaser.Scene {
     const zy0 = Math.max(0, Math.floor(view.y / zonePx) - margin);
     const zx1 = Math.min(zonesX - 1, Math.floor((view.right - 1) / zonePx) + margin);
     const zy1 = Math.min(zonesY - 1, Math.floor((view.bottom - 1) / zonePx) + margin);
+    if (!this.hubZonesBuilt) this.hubZonesBuilt = new Set();
     for (let zy = zy0; zy <= zy1; zy++) {
       for (let zx = zx0; zx <= zx1; zx++) {
+        const key = `${zx},${zy}`;
+        if (this.hubZonesBuilt.has(key)) continue;
         this.buildZone(zx, zy);
+        this.hubZonesBuilt.add(key);
       }
     }
   }
