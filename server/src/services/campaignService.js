@@ -73,12 +73,16 @@ const campaignService = {
         .where('player_id', playerId).where('level', '>=', c.min).first();
       return !!row;
     }
-    return true;
+    // Fail closed: sin condición reconocida (o sin `manage` en absoluto) el
+    // nodo no se limpia — evita otorgar recompensas KH ante un tipo de
+    // condición desconocido o mal configurado.
+    return false;
   },
 
   async _buildCombatState(playerId, node) {
     let squad = [];
-    try { squad = await heroService().getSquad(playerId); } catch { squad = []; }
+    try { squad = await heroService().getSquad(playerId); }
+    catch (err) { console.error('[Campaign] getSquad falló; usando guarnición:', err.message); squad = []; }
     let heroes = (Array.isArray(squad) ? squad : [])
       .filter((h) => !h.recovering)
       .map((h) => ({
@@ -119,6 +123,13 @@ const campaignService = {
     }
 
     // combat / wave / boss
+    // Abandonar cualquier run 'active' previo del mismo jugador+nodo antes de
+    // crear uno nuevo — evita runs huérfanos activos en paralelo (p.ej. tras
+    // recargar la app a mitad de combate y volver a entrar al nodo).
+    await db('campaign_runs')
+      .where({ player_id: playerId, node_id: nodeId, status: 'active' })
+      .update({ status: 'abandoned' });
+
     const state = await this._buildCombatState(playerId, node);
     const [{ id: runId }] = await db('campaign_runs').insert({
       player_id: playerId, node_id: nodeId, status: 'active',

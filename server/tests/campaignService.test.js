@@ -121,6 +121,11 @@ describe('campaignService enterNode', () => {
     expect(res.panel).toBe('building');
   });
 
+  test('_checkManage falla cerrado ante un tipo de condición desconocido', async () => {
+    const fakeNode = { id: 'x', type: 'manage', manage: { type: 'unknown_cond' } };
+    await expect(campaignService._checkManage(770012, fakeNode)).resolves.toBe(false);
+  });
+
   test('combat crea un run con snapshot de escuadra (o guarnición default)', async () => {
     await freshPlayer(770013);
     await campaignService.getMap(770013);
@@ -131,6 +136,24 @@ describe('campaignService enterNode', () => {
     expect(res.runId).toBeGreaterThan(0);
     expect(res.state.heroes.length).toBeGreaterThanOrEqual(1);
     expect(res.state.enemy.hp).toBe(400);
+  });
+
+  test('entrar dos veces al mismo nodo de combate abandona el run anterior (sin huérfanos activos)', async () => {
+    await freshPlayer(770014);
+    await campaignService.getMap(770014);
+    await campaignService._clearNode(770014, require('../../shared/gameConfig').CAMPAIGN[0]); // n1
+    await campaignService.enterNode(770014, 'a1n2'); // collect -> desbloquea n3
+    const first = await campaignService.enterNode(770014, 'a1n3');
+    const second = await campaignService.enterNode(770014, 'a1n3');
+
+    const runs = await db('campaign_runs')
+      .where({ player_id: 770014, node_id: 'a1n3' });
+    const active = runs.filter((r) => r.status === 'active');
+    expect(active.length).toBe(1);
+    expect(active[0].id).toBe(second.runId);
+
+    const firstRow = runs.find((r) => r.id === first.runId);
+    expect(firstRow.status).toBe('abandoned');
   });
 });
 

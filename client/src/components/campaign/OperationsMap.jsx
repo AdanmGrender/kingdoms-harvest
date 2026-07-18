@@ -20,7 +20,6 @@ export default function OperationsMap({ onClose }) {
         setOverlay('combat_instance', {});
       } else if (res.kind === 'blocked') {
         addNotification(res.hint, 'info');
-        setOverlay(res.panel, {});
       } else if (res.kind === 'cleared') {
         addNotification(`✅ ${node.name} completado`, 'success');
       }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 
 export default function CombatInstancePanel({ onClose }) {
@@ -8,9 +8,6 @@ export default function CombatInstancePanel({ onClose }) {
   const addNotification = useGameStore((s) => s.addNotification);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
-
-  if (!activeRun) { onClose(); return null; }
-  const { node, state } = activeRun;
 
   const doStep = async (action) => {
     if (busy || result) return;
@@ -22,6 +19,19 @@ export default function CombatInstancePanel({ onClose }) {
       addNotification(e.response?.data?.error || 'No se pudo resolver la ronda', 'error');
     } finally { setBusy(false); }
   };
+
+  // Auto-avance (~2s): spec §4 — combate idle-friendly, no un puro clicker.
+  // Sin tap, la ronda avanza sola; un tap (busy) o el cambio de ronda
+  // reinicia el timer.
+  useEffect(() => {
+    if (!activeRun || result || busy) return;
+    const t = setTimeout(() => { doStep({ type: 'advance' }); }, 2000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRun?.state?.round, result, busy]);
+
+  if (!activeRun) { onClose(); return null; }
+  const { node, state } = activeRun;
 
   const close = () => { clearActiveRun(); onClose(); };
   const enemyPct = Math.max(0, Math.round((state.enemy.hp / state.enemy.maxHp) * 100));
