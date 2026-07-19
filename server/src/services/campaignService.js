@@ -92,8 +92,12 @@ const campaignService = {
         skill: HERO_SKILLS[h.class] || HERO_SKILLS.warrior, alive: true,
       }));
     if (heroes.length === 0) {
+      // Balance (pase 2026-07-18): atk 60 garantiza que un jugador NUEVO sin
+      // héroes limpie a1n3 (hp 400, 8 rondas: 60×7=420) incluso en idle puro,
+      // pero a1n4+ (hp 650+) sigue siendo muro → los héroes son la puerta de
+      // progresión desde el nodo 4. Test de regresión en campaignService.test.js.
       heroes = [{ slot: 1, heroId: null, class: 'warrior', name: 'Guarnición',
-        atk: 30, hp: 200, maxHp: 200, energy: 0, energyMax: 100,
+        atk: 60, hp: 200, maxHp: 200, energy: 0, energyMax: 100,
         skill: HERO_SKILLS.warrior, alive: true }];
     }
     return {

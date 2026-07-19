@@ -253,3 +253,45 @@ describe('campaignService resolveStep', () => {
     expect(map.find((n) => n.id === 'a1n4').status).toBe('available');
   });
 });
+
+// ── Balance (pase 2026-07-18): el embudo del jugador nuevo ───────────────────
+// Garantiza que un jugador SIN héroes (guarnición default) limpia el primer
+// combate (a1n3) en idle puro, y que a1n4 sigue siendo muro → los héroes son
+// la puerta de progresión desde el nodo 4. Si un cambio de números rompe esto,
+// este test lo grita antes de que un jugador real quede bloqueado.
+describe('balance: guarnición sin héroes', () => {
+  const P = 880010;
+
+  async function reachNode(nodeId) {
+    // Sin seed de player_heroes/player_squads: _buildCombatState cae a la guarnición.
+    return campaignService.enterNode(P, nodeId);
+  }
+
+  test('gana a1n3 (primer combate) con advance puro y a1n4 lo frena', async () => {
+    await freshPlayer(P);
+    await campaignService.getMap(P);
+    await campaignService._clearNode(P, require('../../shared/gameConfig').CAMPAIGN[0]);
+    await campaignService.enterNode(P, 'a1n2'); // collect → desbloquea a1n3
+
+    // a1n3: victoria en idle puro (sin taps de skill)
+    const run3 = await reachNode('a1n3');
+    expect(run3.kind).toBe('combat');
+    expect(run3.state.heroes[0].name).toBe('Guarnición');
+    let result = null, guard = 0;
+    while (!result && guard++ < 30) {
+      const r = await campaignService.resolveStep(P, run3.runId, { type: 'advance' });
+      result = r.result;
+    }
+    expect(result).toBe('victory');
+
+    // a1n4: la misma guarnición pierde → muro de héroes intacto
+    const run4 = await reachNode('a1n4');
+    expect(run4.kind).toBe('combat');
+    result = null; guard = 0;
+    while (!result && guard++ < 30) {
+      const r = await campaignService.resolveStep(P, run4.runId, { type: 'advance' });
+      result = r.result;
+    }
+    expect(result).toBe('defeat');
+  });
+});
