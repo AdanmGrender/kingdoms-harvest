@@ -159,6 +159,43 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // ── Campaña (hub + instancias) ──────────────────────────────────────────
+  campaignNodes: [],
+  activeRun: null, // { runId, node, state } durante un combate
+
+  loadCampaignMap: async () => {
+    try {
+      const { data } = await api.get('/campaign/map');
+      set({ campaignNodes: data.nodes });
+      return data.nodes;
+    } catch (e) { console.error('loadCampaignMap', e); return []; }
+  },
+
+  enterNode: async (nodeId) => {
+    const { data } = await api.post('/campaign/enter', { nodeId });
+    if (data.kind === 'combat') {
+      set({ activeRun: { runId: data.runId, node: data.node, state: data.state } });
+    } else if (data.kind === 'cleared') {
+      await get().loadCampaignMap();
+    }
+    return data; // el panel decide qué mostrar (combat / cleared / blocked)
+  },
+
+  stepInstance: async (action) => {
+    const run = get().activeRun;
+    if (!run) return null;
+    const { data } = await api.post('/campaign/step', {
+      runId: run.runId,
+      actionType: action.type,
+      slot: action.slot,
+    });
+    set({ activeRun: { ...run, state: data.state } });
+    if (data.result) await get().loadCampaignMap(); // refrescar candados al terminar
+    return data; // { state, roundLog, result, unlocked }
+  },
+
+  clearActiveRun: () => set({ activeRun: null }),
+
   // Notificaciones del juego
   notifications: [],
 

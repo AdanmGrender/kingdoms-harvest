@@ -8,7 +8,7 @@ import gameConfig, { ISO_MODE } from './config';
 import EventBridge from './EventBridge';
 import useGameStore from '../store/gameStore';
 
-export default function PhaserGame() {
+export default function PhaserGame({ hubMode = false }) {
   const gameRef = useRef(null);
 
   useEffect(() => {
@@ -59,6 +59,7 @@ export default function PhaserGame() {
     game.registry.set('store', useGameStore);
     game.registry.set('eventBridge', EventBridge);
     game.registry.set('isoMode', ISO_MODE);
+    game.registry.set('hubMode', !!hubMode);
 
     gameRef.current = game;
 

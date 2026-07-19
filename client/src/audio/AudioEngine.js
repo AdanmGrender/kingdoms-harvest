@@ -91,6 +91,11 @@ class AudioEngine {
     this._period = 'morning';
     this._storm = false;
 
+    // Movimiento armónico del lecho (anti-monotonía): multiplicador del grado
+    // actual sobre ROOT y timers de los programadores (progresión + acentos).
+    this._chordMult = 1;
+    this._ambientTimers = [];
+
     // Anti-spam SFX.
     this._voiceCount = 0;
     this._lastSfxAt = Object.create(null);
@@ -296,6 +301,9 @@ class AudioEngine {
    *    silencio: la TORMENTA lo abre → tensión/pavor "contenido" que aflora.
    *  - 1 sub (32 Hz) también en silencio: retumbo de tormenta.
    *  - Lecho de ruido filtrado (viento/estática del Velo) con LFO de ráfagas.
+   *  - MOVIMIENTO DE LARGO ARCO (_startProgression/_startAccents): el drone
+   *    deriva entre grados eólicos cada ~22-38 s, con campana lúgubre rara y
+   *    coro fantasma ocasional — la cura de "es un tono monótono".
    */
   _startAmbient() {
     if (!this.ctx || this._ambientStarted) return;
@@ -410,10 +418,20 @@ class AudioEngine {
       subGain,
       noiseGain,
       noiseFilter,
+      // Osciladores afinables: la progresión armónica los re-afina en bloque.
+      osc1,
+      osc2,
+      osc3,
+      oscDiss,
     };
 
     // Aplicar el perfil día/noche + tormenta actual.
     this._applyAmbientProfile();
+
+    // Despertar el movimiento de largo arco: progresión de acordes + acentos
+    // raros (campana / coro). Sin esto el lecho es UNA armonía eterna.
+    this._startProgression();
+    this._startAccents();
   }
 
   /**
@@ -475,6 +493,161 @@ class AudioEngine {
   setStorm(active) {
     this._storm = !!active;
     this._applyAmbientProfile();
+  }
+
+  // ── MOVIMIENTO DE LARGO ARCO (anti-monotonía) ────────────────────────────
+
+  /** setTimeout con registro (el lecho es singleton y sobrevive remounts; los
+   *  timers se auto-reprograman y se guardan por si algún día hay que apagar). */
+  _later(fn, ms) {
+    const id = setTimeout(() => {
+      this._ambientTimers = this._ambientTimers.filter((x) => x !== id);
+      try { fn(); } catch { /* el ambiente jamás debe tirar la app */ }
+    }, ms);
+    this._ambientTimers.push(id);
+    return id;
+  }
+
+  /**
+   * Progresión armónica lentísima: cada 22-38 s el drone ENTERO se desliza a
+   * otro grado (eólico oscuro: i, ♭VII, ♭VI graves; ♭III, iv como tensión).
+   * Glide de ~4 s vía setTargetAtTime → nunca hay salto, sólo deriva. Es el
+   * fix principal a "es un tono monótono": la armonía por fin CAMINA.
+   */
+  _startProgression() {
+    // multiplicador sobre ROOT, con peso (los graves dominan; tensión escasa)
+    const DEGREES = [
+      { mult: 1.0, w: 3 },      // i — hogar
+      { mult: 0.8909, w: 2 },   // ♭VII (debajo)
+      { mult: 0.7937, w: 2 },   // ♭VI (debajo)
+      { mult: 1.1892, w: 1 },   // ♭III (arriba) — pena
+      { mult: 1.3348, w: 1 },   // iv (arriba) — tensión contenida
+    ];
+    const step = () => {
+      const a = this._ambient;
+      if (a && this.ctx) {
+        // Elegir un grado DISTINTO al actual (ponderado).
+        let pick = this._chordMult;
+        for (let tries = 0; tries < 6 && pick === this._chordMult; tries++) {
+          const total = DEGREES.reduce((s, d) => s + d.w, 0);
+          let r = Math.random() * total;
+          for (const d of DEGREES) { r -= d.w; if (r <= 0) { pick = d.mult; break; } }
+        }
+        this._chordMult = pick;
+        const t = this.ctx.currentTime;
+        const glide = (param, v) => {
+          try { param.setTargetAtTime(v, t, 4); } catch { param.value = v; }
+        };
+        glide(a.osc1.frequency, ROOT * pick);
+        glide(a.osc2.frequency, ROOT * pick);
+        glide(a.osc3.frequency, ROOT * pick * 1.5);      // quinta del nuevo grado
+        glide(a.oscDiss.frequency, ROOT * pick * 1.0595); // 2ª menor del nuevo grado
+      }
+      this._later(step, 22000 + Math.random() * 16000);
+    };
+    this._later(step, 18000 + Math.random() * 12000); // primer cambio tras ~18-30 s
+  }
+
+  /**
+   * Campana lúgubre distante: dos parciales (fundamental + parcial inarmónico
+   * ×2.756, firma de campana real) con cola larga, empapada de reverb. Nota de
+   * la pentatónica menor del grado ACTUAL, 2-3 octavas arriba del drone.
+   */
+  _bell() {
+    if (!this.ctx || !this.ambientBus) return;
+    const ctx = this.ctx;
+    const t = ctx.currentTime;
+    // En tormenta el pavor manda: intervalos con 2ª menor; en calma, pentatónica.
+    const scale = this._storm ? [1, 1.0595, 1.3348] : [1, 1.1892, 1.3348, 1.5, 1.7818];
+    const oct = Math.random() < 0.5 ? 4 : 8;
+    const base = ROOT * this._chordMult * oct * scale[(Math.random() * scale.length) | 0];
+    const freq = base * (1 + (Math.random() - 0.5) * 0.006); // humanizar afinación
+
+    const out = ctx.createGain();
+    out.gain.value = 0.0001;
+    out.connect(this.ambientBus);
+    if (this.reverbSend) {
+      const send = ctx.createGain();
+      send.gain.value = 0.9; // campana LEJANA: casi toda reverb
+      out.connect(send).connect(this.reverbSend);
+    }
+    const partial = (mult, peak, decay) => {
+      const o = ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.value = freq * mult;
+      const g = ctx.createGain();
+      g.gain.value = peak;
+      o.connect(g).connect(out);
+      o.start(t);
+      o.stop(t + decay + 1);
+      o.onended = () => { try { o.disconnect(); g.disconnect(); } catch { /* noop */ } };
+    };
+    partial(1, 0.8, 6);       // fundamental, cola larga
+    partial(2.756, 0.22, 2.2); // parcial inarmónico: el "metal" de la campana
+    // Envolvente global: golpe suave y decaimiento exponencial largo.
+    out.gain.setValueAtTime(0.0001, t);
+    out.gain.linearRampToValueAtTime(0.055 + Math.random() * 0.03, t + 0.02);
+    out.gain.setTargetAtTime(0.0001, t + 0.05, 1.8);
+    this._later(() => { try { out.disconnect(); } catch { /* noop */ } }, 9000);
+  }
+
+  /**
+   * Coro fantasma: dos sierras detuneadas por un bandpass angosto = "voces del
+   * Vacío" lejanas. Ataque de 4 s, cola de 7 s, casi subliminal. Sólo en calma
+   * (la tormenta ya tiene su propia tensión).
+   */
+  _choirSwell() {
+    if (!this.ctx || !this.ambientBus || this._storm) return;
+    const ctx = this.ctx;
+    const t = ctx.currentTime;
+    const freq = ROOT * this._chordMult * 4 * (Math.random() < 0.5 ? 1 : 1.5);
+
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 640 + Math.random() * 240;
+    bp.Q.value = 2.6;
+    const out = ctx.createGain();
+    out.gain.value = 0.0001;
+    bp.connect(out).connect(this.ambientBus);
+    if (this.reverbSend) {
+      const send = ctx.createGain();
+      send.gain.value = 0.6;
+      out.connect(send).connect(this.reverbSend);
+    }
+    const voices = [];
+    for (const cents of [-7, 8]) {
+      const o = ctx.createOscillator();
+      o.type = 'sawtooth';
+      o.frequency.value = freq;
+      o.detune.value = cents;
+      o.connect(bp);
+      o.start(t);
+      o.stop(t + 15);
+      voices.push(o);
+    }
+    out.gain.setValueAtTime(0.0001, t);
+    out.gain.linearRampToValueAtTime(0.03, t + 4);   // emerge lentísimo
+    out.gain.setTargetAtTime(0.0001, t + 7, 2.6);    // y se disuelve
+    this._later(() => {
+      for (const o of voices) { try { o.disconnect(); } catch { /* noop */ } }
+      try { bp.disconnect(); out.disconnect(); } catch { /* noop */ }
+    }, 16000);
+  }
+
+  /** Programa los acentos raros con jitter (nada se repite igual dos veces). */
+  _startAccents() {
+    const bell = () => {
+      // En tormenta la campana calla a veces (el retumbo manda).
+      if (!this._storm || Math.random() < 0.5) this._bell();
+      if (Math.random() < 0.18) this._later(() => this._bell(), 900 + Math.random() * 700); // doble tañido raro
+      this._later(bell, 14000 + Math.random() * 26000);
+    };
+    const choir = () => {
+      this._choirSwell();
+      this._later(choir, 45000 + Math.random() * 45000);
+    };
+    this._later(bell, 6000 + Math.random() * 8000);
+    this._later(choir, 25000 + Math.random() * 20000);
   }
 
   // ── SFX (síntesis bajo demanda con auto-limpieza) ─────────────────────────

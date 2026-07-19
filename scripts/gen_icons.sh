@@ -88,6 +88,9 @@ declare -A PROMPTS=(
   [enemy_coloso]="the head and shoulders of an ash-stone golem giant: cracked grey rock, a craggy featureless face, deep fissures glowing with orange embers, venting smoke"
   [enemy_boss_devorador]="a monstrous boss beast head: a ringed maw of many jagged fangs swallowing a streak of light, teal aura, armored plates"
   [enemy_boss_heraldo]="a boss herald head made of crackling electric static: a featureless white-hot head breaking apart into arcing lightning bolts and glitch bands"
+  # ── campaña (mapa de operaciones; antes emoji 🌊 💀) ──
+  [tide]="a towering dark tidal wave of murky corrupted water curling over, crest laced with sickly teal glow and foam"
+  [skull]="a cracked ancient horned beast skull, hollow eye sockets with a faint ember glow"
 )
 
 # El orden canónico del sheet vive en assemble_icon_sheet.js (ICONS). Los
@@ -101,7 +104,8 @@ ORDER=(gold wood stone iron wheat water bread kh_token crystal relic blueprint
        map heart star check
        gem star_currency speedup
        enemy_carroneros enemy_brutos enemy_aullador enemy_coloso
-       enemy_boss_devorador enemy_boss_heraldo)
+       enemy_boss_devorador enemy_boss_heraldo
+       tide skull)
 LIST=("$@")
 [ ${#LIST[@]} -eq 0 ] && LIST=("${ORDER[@]}")
 

@@ -18,6 +18,9 @@ client/.claude/
 /screenshots/
 /.webui_secret_key
 
+# graphify knowledge-graph build output (regenerable: python -m graphify update .)
+graphify-out/
+
 # Generated placeholder sprites — not committed.
 # Real art goes in the same paths. See docs/art-spec.md
 # Regenerar tras clone fresco: node scripts/gen_placeholders.js
