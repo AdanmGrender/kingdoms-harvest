@@ -1,7 +1,15 @@
 import { useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
-const TYPE_ICON = { manage: '🔧', collect: '🌾', combat: '⚔️', wave: '🌊', boss: '💀' };
+// Ícono grim del sheet IA por tipo de nodo (fallback emoji si falta el arte)
+const TYPE_ICON = {
+  manage:  { sprite: 'gear',  emoji: '🔧' },
+  collect: { sprite: 'wheat', emoji: '🌾' },
+  combat:  { sprite: 'sword', emoji: '⚔️' },
+  wave:    { sprite: 'tide',  emoji: '🌊' },
+  boss:    { sprite: 'skull', emoji: '💀' },
+};
 
 export default function OperationsMap({ onClose }) {
   const nodes = useGameStore((s) => s.campaignNodes);
@@ -31,8 +39,8 @@ export default function OperationsMap({ onClose }) {
   return (
     <div className="fixed inset-0 z-40 flex flex-col" style={{ background: 'rgba(10,10,20,0.96)' }}>
       <div className="flex justify-between items-center p-4">
-        <h2 className="text-yellow-400 text-lg font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          🗺️ Operaciones
+        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <SpriteIcon name="map" size={26} fallback="🗺️" /> Operaciones
         </h2>
         <button onClick={onClose} className="text-gray-400 text-2xl px-2">✕</button>
       </div>
@@ -53,12 +61,19 @@ export default function OperationsMap({ onClose }) {
                     opacity: locked ? 0.5 : 1,
                   }}
                 >
-                  <span className="text-2xl">{node.isBoss ? '💀' : TYPE_ICON[node.type]}</span>
+                  <SpriteIcon
+                    name={node.isBoss ? 'skull' : TYPE_ICON[node.type]?.sprite}
+                    size={34}
+                    fallback={node.isBoss ? '💀' : TYPE_ICON[node.type]?.emoji}
+                    style={locked ? { filter: 'grayscale(1) brightness(0.7)' } : undefined}
+                  />
                   <div className="flex-1 text-left">
                     <p className="text-white text-sm font-semibold">{node.name}</p>
                     <p className="text-gray-400 text-[10px] uppercase">{node.type}</p>
                   </div>
-                  <span className="text-lg">{cleared ? '✓' : locked ? '🔒' : '▶'}</span>
+                  {cleared
+                    ? <SpriteIcon name="check" size={22} fallback="✓" />
+                    : <span className="text-lg">{locked ? '🔒' : '▶'}</span>}
                 </button>
                 {i < nodes.length - 1 && <div className="w-0.5 h-3" style={{ background: '#555' }} />}
               </div>

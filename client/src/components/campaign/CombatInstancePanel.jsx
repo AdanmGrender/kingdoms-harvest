@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 export default function CombatInstancePanel({ onClose }) {
   const activeRun = useGameStore((s) => s.activeRun);
@@ -39,8 +40,13 @@ export default function CombatInstancePanel({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col p-4" style={{ background: 'rgba(8,8,16,0.97)' }}>
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-red-400 font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          {node.type === 'boss' ? '💀' : '⚔️'} {node.name} · ronda {state.round}/{state.maxRounds}
+        <h2 className="text-red-400 font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <SpriteIcon
+            name={node.type === 'boss' ? 'skull' : 'sword'}
+            size={24}
+            fallback={node.type === 'boss' ? '💀' : '⚔️'}
+          />
+          {node.name} · ronda {state.round}/{state.maxRounds}
         </h2>
         <button onClick={close} className="text-gray-400 text-xl px-2">✕</button>
       </div>

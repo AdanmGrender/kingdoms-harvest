@@ -54,6 +54,8 @@ const ICONS = [
   // enemigos de la Marea Disforme (ids de WAVE_ENEMIES, prefijados enemy_)
   'enemy_carroneros', 'enemy_brutos', 'enemy_aullador', 'enemy_coloso',
   'enemy_boss_devorador', 'enemy_boss_heraldo',
+  // campaña (mapa de operaciones; antes emoji 🌊 💀)
+  'tide', 'skull',
 ];
 
 fs.mkdirSync(PROC_DIR, { recursive: true });

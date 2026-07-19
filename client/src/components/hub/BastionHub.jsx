@@ -1,6 +1,7 @@
 import QuestRail from './QuestRail';
 import PhaserGame from '../../game/PhaserGame';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 // Pantalla-ancla: riel arriba, base compacta (Phaser en modo hub) al medio,
 // botón Operaciones abajo. Reemplaza al mundo paseable como entrada por defecto.
@@ -20,10 +21,10 @@ export default function BastionHub() {
       <div className="px-3 pb-28 pt-1">
         <button
           onClick={() => setOverlay('operations', {})}
-          className="w-full btn-primary py-3 rounded font-bold"
+          className="w-full btn-primary py-3 rounded font-bold flex items-center justify-center gap-2"
           style={{ fontFamily: 'MedievalSharp, serif' }}
         >
-          🗺️ Operaciones
+          <SpriteIcon name="map" size={24} fallback="🗺️" /> Operaciones
         </button>
       </div>
     </div>
