@@ -147,6 +147,10 @@ export default class BootScene extends Phaser.Scene {
         this.load.image(`zone_${fam}_${i}`, `/assets/game/zones/zone_${fam}_${i}.png`);
       }
     }
+    // Ancla ÚNICA del hub: una sola imagen que cubre el viewport de la vista
+    // fija del Bastión, tapando la cruz donde se juntan 4 anclas de zona
+    // (el hub caía justo en esa esquina → terreno "partido en 4").
+    this.load.image('zone_hub', '/assets/game/zones/zone_hub.png');
   }
 
   create() {

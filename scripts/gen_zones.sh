@@ -38,4 +38,11 @@ for slot in grass_0 grass_1 dirt_0 dirt_1 sand_0 snow_0 ice_0; do
   node scripts/downscale.js "art-inbox/zone_$slot.png" "$OUTDIR/zone_$slot.png" --width 512 >/dev/null
   echo "  → $OUTDIR/zone_$slot.png"
 done
+
+# Ancla ÚNICA del hub (WorldScene.buildHubAnchor): una sola imagen 3:2 a 1024px
+# que cubre el viewport fijo del Bastión y tapa la cruz entre 4 zonas.
+echo "── zone_hub ──"
+node scripts/gen_ai_art.js --prompt "flat overhead top-down orthographic ground texture, seamless, fills the entire frame edge to edge, NOT isometric, NO buildings, NO structures, NO horizon, NO characters, just the ground surface: bastion courtyard grounds in a grimdark wasteland — center is hard-packed dark trampled earth with faint worn flagstones and cart ruts, edges transition to cracked ash soil with sparse rubble, scattered soot stains and faint ember specks, muted desaturated palette" --out "art-inbox/zone_hub.png" --aspect 3:2
+node scripts/downscale.js "art-inbox/zone_hub.png" "$OUTDIR/zone_hub.png" --width 1024 >/dev/null
+echo "  → $OUTDIR/zone_hub.png"
 echo "✓ anclas de terreno generadas en $OUTDIR"

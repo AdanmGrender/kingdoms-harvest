@@ -122,6 +122,7 @@ export default class WorldScene extends Phaser.Scene {
       // fija (equivalente al "primer stream inmediato" de abajo, pero sin
       // streamer — la cámara no se va a mover).
       this.buildHubZones();
+      this.buildHubAnchor();
     } else {
       // Primer stream inmediato: la cámara ya está centrada en el spawn, así
       // el jugador nunca ve el piso vacío (worldView aún no existe →
@@ -190,6 +191,26 @@ export default class WorldScene extends Phaser.Scene {
         this.hubZonesBuilt.add(key);
       }
     }
+  }
+
+  /**
+   * Ancla ÚNICA del hub: una sola imagen de terreno (zone_hub) centrada en el
+   * spawn, dibujada SOBRE las anclas por zona (depth 0.52 vs 0.5) y BAJO los
+   * decals (depth 1) y el gameplay. La vista fija del Bastión cae justo en la
+   * esquina donde se juntan 4 zonas con imágenes IA distintas → sin esto el
+   * piso se ve "partido en 4" con costuras en cruz. Mismo tinte que las anclas
+   * para que el gameplay siga resaltando. No-op si falta el arte (fallback).
+   */
+  buildHubAnchor() {
+    if (!this.textures.exists('zone_hub')) return;
+    const spawn = this.mapData.spawn;
+    // 1600×1067 world px (aspecto 3:2 del arte): cubre de sobra el viewport a
+    // zoom 1.4 incluso en desktop ancho; más allá siguen las anclas por zona.
+    this.add.image(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE, 'zone_hub')
+      .setOrigin(0.5, 0.5)
+      .setDisplaySize(1600, 1067)
+      .setTint(0x6b6b73)
+      .setDepth(0.52);
   }
 
   // ───────────────────────────────────────────────────────────

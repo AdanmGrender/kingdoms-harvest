@@ -765,6 +765,8 @@ QUERIES:
 
 ⚠️ Balance pendiente (placeholder): la guarnición default (atk 30/hp 200, sin héroes) NO puede ganar `a1n3` — jugador nuevo sin héroes se bloquea en el primer combate. Subir guarnición o bajar `a1n3.enemy` en el pase de balance.
 
+✅ VISUAL resuelto (hub, 2026-07-18): el terreno "partido en 4" se tapó con el **ancla única del hub** — `WorldScene.buildHubAnchor()` dibuja UNA imagen IA (`zone_hub.png`, 1024px 3:2, explanada del Bastión con losas gastadas) centrada en el spawn a depth 0.52 (sobre las 4 anclas de zona, bajo decals/gameplay), 1600×1067 world px (cubre cualquier viewport a zoom 1.4). No-op si falta el arte. Regenerar: `bash scripts/gen_zones.sh` (slot zone_hub).
+
 ### Bugs Conocidos (auditoría 2026-07-02, fixes aplicados el mismo día)
 
 | Issue | Severidad | Estado | Ubicación |
