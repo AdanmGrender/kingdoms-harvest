@@ -38,7 +38,9 @@ export default function CombatInstancePanel({ onClose }) {
   const enemyPct = Math.max(0, Math.round((state.enemy.hp / state.enemy.maxHp) * 100));
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col p-4" style={{ background: 'rgba(8,8,16,0.97)' }}>
+    // pb-28: la BottomNavBar (absolute bottom-0, botón-castillo desbordando)
+    // flota SOBRE este panel — sin el despeje tapaba "Avanzar ronda"/"Volver".
+    <div className="fixed inset-0 z-50 flex flex-col p-4 pb-28" style={{ background: 'rgba(8,8,16,0.97)' }}>
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-red-400 font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
           <SpriteIcon
