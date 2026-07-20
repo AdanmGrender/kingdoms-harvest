@@ -8,6 +8,7 @@ beforeAll(async () => { await initTestDb(); await seedTestData(); });
 async function freshPlayer(id) {
   await db('players').where('telegram_id', id).delete();
   await db('player_campaign_progress').where('player_id', id).delete();
+  await db('campaign_sweeps').where('player_id', id).delete();
   await db('players').insert({ telegram_id: id, username: 'c', first_name: 'C', display_name: 'C',
     level: 5, xp: 0, created_at: new Date().toISOString() });
 }
@@ -293,5 +294,82 @@ describe('balance: guarnición sin héroes', () => {
       result = r.result;
     }
     expect(result).toBe('defeat');
+  });
+});
+
+// ── F1: Sweep de nodos ("Asalto rápido") ─────────────────────────────────────
+// Re-farmear nodos combat/wave/boss YA limpiados: 5 sweeps/día (reset UTC),
+// 60% de los recursos del nodo (floor, mínimo 1) + 1 KH, claim atómico
+// (campaign_sweeps, fila UNIQUE por player).
+describe('campaignService.sweepNode', () => {
+  const NODE1 = CAMPAIGN[0]; // a1n1 manage
+  const NODE2 = CAMPAIGN[1]; // a1n2 collect
+  const NODE3 = CAMPAIGN[2]; // a1n3 combat — rewards { kh: 3, resources: { gold: 150 } }
+
+  // Siembra a1n1/a1n2 disponibles y limpia hasta dejar a1n3 'cleared' sin
+  // correr la simulación de combate (el sweep sólo necesita el estado final).
+  async function seedCleared(id) {
+    await freshPlayer(id);
+    await campaignService.getMap(id); // siembra a1n1 available
+    await campaignService._clearNode(id, NODE1); // desbloquea a1n2
+    await campaignService._clearNode(id, NODE2); // desbloquea a1n3
+    await campaignService._clearNode(id, NODE3); // a1n3 cleared
+  }
+
+  test('sweep sobre nodo cleared paga 60% de recursos (floor) y decrementa cupo', async () => {
+    const P = 890001;
+    await seedCleared(P);
+    const before = await db('player_resources').where({ player_id: P, resource_id: 'gold' }).first();
+
+    const res = await campaignService.sweepNode(P, 'a1n3');
+
+    expect(res.rewards.gold).toBe(Math.max(1, Math.floor(150 * 0.6))); // 90
+    expect(res.sweepsLeft).toBe(4);
+
+    const after = await db('player_resources').where({ player_id: P, resource_id: 'gold' }).first();
+    expect(after.amount).toBe((before?.amount || 0) + 90);
+  });
+
+  test('rechaza nodo no-cleared, y rechaza nodos manage/collect aunque estén cleared', async () => {
+    const P = 890002;
+    await freshPlayer(P);
+    await campaignService.getMap(P); // a1n1 available (manage, sin limpiar)
+    await expect(campaignService.sweepNode(P, 'a1n1')).rejects.toThrow();
+
+    await campaignService._clearNode(P, NODE1); // a1n1 cleared, pero type=manage
+    await expect(campaignService.sweepNode(P, 'a1n1')).rejects.toThrow();
+
+    await campaignService._clearNode(P, NODE2); // a1n2 cleared, pero type=collect
+    await expect(campaignService.sweepNode(P, 'a1n2')).rejects.toThrow();
+
+    // a1n3 ya disponible pero todavía NO cleared
+    await expect(campaignService.sweepNode(P, 'a1n3')).rejects.toThrow();
+  });
+
+  test('5 sweeps ok y el 6º rechaza (cupo diario)', async () => {
+    const P = 890003;
+    await seedCleared(P);
+    for (let i = 0; i < 5; i++) {
+      const r = await campaignService.sweepNode(P, 'a1n3');
+      expect(r.sweepsLeft).toBe(4 - i);
+    }
+    await expect(campaignService.sweepNode(P, 'a1n3')).rejects.toThrow(/asaltos/i);
+    expect(await campaignService.sweepsLeft(P)).toBe(0);
+  });
+
+  test('carrera: 3 sweeps concurrentes con 1 cupo restante → sólo 1 gana', async () => {
+    const P = 890004;
+    await seedCleared(P);
+    for (let i = 0; i < 4; i++) await campaignService.sweepNode(P, 'a1n3'); // consume 4, deja 1
+    expect(await campaignService.sweepsLeft(P)).toBe(1);
+
+    const results = await Promise.allSettled([
+      campaignService.sweepNode(P, 'a1n3'),
+      campaignService.sweepNode(P, 'a1n3'),
+      campaignService.sweepNode(P, 'a1n3'),
+    ]);
+    const ok = results.filter((r) => r.status === 'fulfilled').length;
+    expect(ok).toBe(1);
+    expect(await campaignService.sweepsLeft(P)).toBe(0);
   });
 });

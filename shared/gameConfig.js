@@ -1049,6 +1049,12 @@ const CAMPAIGN = [
     rewards: { kh: 20, resources: { relic: 2, blueprint: 1 } } },
 ];
 
+// F1 Sweep de nodos ("Asalto rápido"): re-farmear nodos combat/wave/boss YA
+// limpiados con un tap. Cupo GLOBAL 5/día (reset UTC), recompensa reducida
+// (60% de los recursos del nodo, redondeo floor, mínimo 1) + 1 KH vía
+// awardTokens (cap diario aplica). Sin unlock, sin XP de héroes.
+const SWEEP = { perDay: 5, resourcePct: 0.6, kh: 1 };
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -1083,6 +1089,7 @@ module.exports = {
   WAVE_ENEMIES,
   HERO_SKILLS,
   CAMPAIGN,
+  SWEEP,
   SYSTEM_PLANETS,
   SYSTEM_UNLOCK_LEVEL,
   GALAXY_SYSTEMS,

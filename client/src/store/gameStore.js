@@ -162,13 +162,30 @@ const useGameStore = create((set, get) => ({
   // ── Campaña (hub + instancias) ──────────────────────────────────────────
   campaignNodes: [],
   activeRun: null, // { runId, node, state } durante un combate
+  sweepsLeft: 0, // F1: cupo diario de "Asalto rápido" restante
 
   loadCampaignMap: async () => {
     try {
       const { data } = await api.get('/campaign/map');
-      set({ campaignNodes: data.nodes });
+      set({ campaignNodes: data.nodes, sweepsLeft: data.sweepsLeft ?? 0 });
       return data.nodes;
     } catch (e) { console.error('loadCampaignMap', e); return []; }
+  },
+
+  // F1: re-farmea un nodo combat/wave/boss ya limpiado (60% recursos + 1 KH,
+  // 5/día). El server es la única fuente de verdad del cupo y la recompensa.
+  sweepNode: async (nodeId) => {
+    try {
+      const { data } = await api.post('/campaign/sweep', { nodeId });
+      set({ sweepsLeft: data.sweepsLeft });
+      const parts = Object.entries(data.rewards || {}).map(([rid, amt]) => `+${amt} ${rid}`);
+      const gained = [...parts, '+1 KH'].join(', ');
+      get().addNotification(`⚡ Asalto: ${gained}`, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo asaltar', 'error');
+      return null;
+    }
   },
 
   enterNode: async (nodeId) => {
