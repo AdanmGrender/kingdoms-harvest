@@ -44,6 +44,7 @@ const useGameStore = create((set, get) => ({
   tokenInfo: null,
   gems: null,          // { balance, totalPurchased, totalSpent }
   shopCatalog: [],     // packs comprables con Telegram Stars
+  boostState: null,    // { active, expiresAt } — boost ×2 de producción (F3)
   dailyTasks: [],
   socialTasks: [],
   streakInfo: null,
@@ -936,6 +937,30 @@ const useGameStore = create((set, get) => ({
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'No se pudo acelerar', 'error');
+      return null;
+    }
+  },
+
+  // F3 (retención): boost ×2 producción, 4h, sink de 80 gemas. Multiplica
+  // SOLO recursos (farm/venta) — NUNCA el KH, ver server/boostService.
+  loadBoost: async () => {
+    try {
+      const { data } = await api.get('/shop/boost');
+      set({ boostState: data });
+    } catch (error) {
+      console.error('Error loading boost state:', error);
+    }
+  },
+
+  buyBoost: async () => {
+    try {
+      const { data } = await api.post('/shop/boost', {});
+      set({ boostState: { active: true, expiresAt: data.expiresAt } });
+      get().addNotification('¡Boost de producción ×2 activado!', 'success');
+      get().loadGems();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo activar el boost', 'error');
       return null;
     }
   },

@@ -5,6 +5,7 @@ const { validate } = require('../middleware/validate');
 const paymentService = require('../services/paymentService');
 const gemService = require('../services/gemService');
 const shopService = require('../services/shopService');
+const boostService = require('../services/boostService');
 const { safeErrorMessage } = require('../middleware/errorHandler');
 
 /**
@@ -75,6 +76,25 @@ router.post('/speedup/building', telegramAuth, validate({
   try {
     const result = await shopService.speedupBuilding(req.playerId, req.body.buildingDbId);
     res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Estado del boost de producción (activo/vencido + vencimiento).
+router.get('/boost', telegramAuth, async (req, res) => {
+  try {
+    res.json(await boostService.getState(req.playerId));
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
+});
+
+// Comprar/extender el boost ×2 de producción. Costo/duración salen del
+// catálogo (GEM_SINKS.production_boost) — nunca del request.
+router.post('/boost', telegramAuth, validate({}), async (req, res) => {
+  try {
+    res.json(await boostService.buy(req.playerId));
   } catch (error) {
     res.status(400).json({ error: safeErrorMessage(error) });
   }
