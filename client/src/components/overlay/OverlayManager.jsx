@@ -34,6 +34,7 @@ import FactionSelectPanel from './FactionSelectPanel';
 import OperationsMap from '../campaign/OperationsMap';
 import CombatInstancePanel from '../campaign/CombatInstancePanel';
 import CalendarPanel from './CalendarPanel';
+import PassPanel from './PassPanel';
 
 export default function OverlayManager() {
   const overlayState = useGameStore((s) => s.overlayState);
@@ -173,6 +174,8 @@ function renderPanel(overlayState, onClose) {
       return <CombatInstancePanel onClose={onClose} />;
     case 'calendar':
       return <CalendarPanel onClose={onClose} />;
+    case 'pass':
+      return <PassPanel onClose={onClose} />;
     case 'crafting':
       return <CraftingPanel onClose={onClose} />;
     case 'heroes':

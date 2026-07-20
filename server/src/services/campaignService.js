@@ -2,12 +2,13 @@ const db = require('../config/database');
 const { CAMPAIGN, HERO_SKILLS, SWEEP } = require('../../../shared/gameConfig');
 const { simulateRound } = require('./campaignSim');
 
-// Lazy requires (evitan ciclos con token/hero/daily services)
-let _token, _hero, _daily, _player;
+// Lazy requires (evitan ciclos con token/hero/daily/pass services)
+let _token, _hero, _daily, _player, _pass;
 const tokenService = () => (_token ||= require('./tokenService'));
 const heroService  = () => (_hero  ||= require('./heroService'));
 const dailyService = () => (_daily ||= require('./dailyTaskService'));
 const playerService = () => (_player ||= require('./playerService'));
+const passService = () => (_pass ||= require('./passService'));
 
 const nodeById = (id) => CAMPAIGN.find((n) => n.id === id);
 const isCombat = (n) => ['combat', 'wave', 'boss'].includes(n.type);
@@ -54,6 +55,10 @@ const campaignService = {
       if (isCombat(node)) {
         try { await dailyService().trackProgress(playerId, 'battle_win', 1); } catch { /* no crítico */ }
       }
+      // F4 (retención): puntos de pase de temporada por CUALQUIER nodo
+      // limpiado (manage/collect/combat/wave/boss) — no crítico, nunca
+      // bloquea el clear del nodo ni su recompensa principal.
+      try { await passService().addPoints(playerId, 'node_clear'); } catch { /* no crítico */ }
 
       const unlocked = [];
       for (const nextId of (node.unlocks || [])) {

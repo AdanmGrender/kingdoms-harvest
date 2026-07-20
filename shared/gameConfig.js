@@ -1069,6 +1069,47 @@ const LOGIN_CALENDAR = [
   { day: 7, gems: 20 },
 ];
 
+// F4 Pase de temporada (battle pass, retención): temporada de 30 días, 20
+// tiers × 50 pts. Puntos: nodo de campaña limpiado +10, tarea diaria +5,
+// oleada ganada +5 (passService.addPoints, hooks try/catch no críticos en
+// campaignService._clearNode / dailyTaskService.claimTaskReward /
+// waveDefenseService.startRun).
+//
+// Riel FREE (recursos/KH chico, siempre accesible) + riel PREMIUM (gemas
+// promocionales vía gemService.grantPromo — moneda de un solo sentido, ver
+// CLAUDE.md §7.2b). El premium se desbloquea gastando `premiumCostGems`
+// gemas (gemService.spend/decrementIfEnough — sink neto positivo, jamás
+// convierte gemas en KH). rewards[i] es el tier i+1.
+const SEASON_PASS = {
+  days: 30,
+  tiers: 20,
+  ptsPerTier: 50,
+  premiumCostGems: 1440,
+  points: { node_clear: 10, daily_task: 5, wave_win: 5 },
+  rewards: [
+    { free: { gold: 100 },    premium: { gems: 5 } },   // tier 1
+    { free: { wood: 100 },    premium: { gems: 5 } },   // tier 2
+    { free: { kh: 1 },        premium: { gems: 6 } },   // tier 3
+    { free: { gold: 150 },    premium: { gems: 6 } },   // tier 4
+    { free: { crystal: 1 },   premium: { gems: 8 } },   // tier 5
+    { free: { gold: 200 },    premium: { gems: 8 } },   // tier 6
+    { free: { kh: 2 },        premium: { gems: 10 } },  // tier 7
+    { free: { wood: 200 },    premium: { gems: 10 } },  // tier 8
+    { free: { gold: 250 },    premium: { gems: 10 } },  // tier 9
+    { free: { relic: 1 },     premium: { gems: 15 } },  // tier 10
+    { free: { gold: 300 },    premium: { gems: 10 } },  // tier 11
+    { free: { kh: 2 },        premium: { gems: 10 } },  // tier 12
+    { free: { crystal: 2 },   premium: { gems: 12 } },  // tier 13
+    { free: { gold: 350 },    premium: { gems: 12 } },  // tier 14
+    { free: { blueprint: 1 }, premium: { gems: 15 } },  // tier 15
+    { free: { gold: 400 },    premium: { gems: 12 } },  // tier 16
+    { free: { kh: 3 },        premium: { gems: 15 } },  // tier 17
+    { free: { crystal: 3 },   premium: { gems: 15 } },  // tier 18
+    { free: { gold: 500 },    premium: { gems: 15 } },  // tier 19
+    { free: { relic: 2 },     premium: { gems: 60 } },  // tier 20
+  ],
+};
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -1105,6 +1146,7 @@ module.exports = {
   CAMPAIGN,
   SWEEP,
   LOGIN_CALENDAR,
+  SEASON_PASS,
   SYSTEM_PLANETS,
   SYSTEM_UNLOCK_LEVEL,
   GALAXY_SYSTEMS,

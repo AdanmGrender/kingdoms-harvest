@@ -34,6 +34,14 @@ export default function BastionHub() {
         >
           <SpriteIcon name="scroll" size={24} fallback="📅" />
         </button>
+        <button
+          onClick={() => setOverlay('pass', {})}
+          className="px-4 py-3 rounded font-bold flex items-center justify-center"
+          style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid #ffd700' }}
+          title="Pase de temporada"
+        >
+          <SpriteIcon name="scroll" size={24} fallback="🎫" />
+        </button>
       </div>
     </div>
   );

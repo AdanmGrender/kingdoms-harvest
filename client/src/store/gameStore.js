@@ -243,6 +243,46 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // ── Retención F4: Pase de temporada (battle pass, 20 tiers) ─────────────
+  passState: null, // { seasonKey, endsAt, points, tier, premium, claims, rewards }
+
+  loadPass: async () => {
+    try {
+      const { data } = await api.get('/pass/state');
+      set({ passState: data });
+      return data;
+    } catch (e) { console.error('loadPass', e); return null; }
+  },
+
+  unlockPassPremium: async () => {
+    try {
+      const { data } = await api.post('/pass/premium');
+      await get().loadPass();
+      get().loadGems();
+      get().addNotification('¡Pase premium desbloqueado!', 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo desbloquear el premium', 'error');
+      return null;
+    }
+  },
+
+  claimPassTier: async (tier, track) => {
+    try {
+      const { data } = await api.post('/pass/claim', { tier, track });
+      await get().loadPass();
+      get().refreshResources();
+      get().loadTokenInfo();
+      get().loadGems();
+      const parts = Object.entries(data.reward || {}).map(([k, v]) => `+${v} ${k}`).join(', ');
+      get().addNotification(`🎫 Tier ${data.tier} (${track}): ${parts}`, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo reclamar', 'error');
+      return null;
+    }
+  },
+
   // Notificaciones del juego
   notifications: [],
 
