@@ -1055,6 +1055,20 @@ const CAMPAIGN = [
 // awardTokens (cap diario aplica). Sin unlock, sin XP de héroes.
 const SWEEP = { perDay: 5, resourcePct: 0.6, kh: 1 };
 
+// F2 Calendario de login 7 días: ciclo reclamable UNA vez por día UTC (si se
+// saltea un día no se rompe — el ciclo simplemente avanza al reclamar).
+// Índice 0 = día 1 ... índice 6 = día 7 (gemas promocionales, ver
+// gemService.grantPromo). KH del día 3 vía awardTokens (cap diario aplica).
+const LOGIN_CALENDAR = [
+  { day: 1, gold: 200 },
+  { day: 2, wood: 150 },
+  { day: 3, kh: 3 },
+  { day: 4, crystal: 2 },
+  { day: 5, gold: 500 },
+  { day: 6, relic: 1 },
+  { day: 7, gems: 20 },
+];
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -1090,6 +1104,7 @@ module.exports = {
   HERO_SKILLS,
   CAMPAIGN,
   SWEEP,
+  LOGIN_CALENDAR,
   SYSTEM_PLANETS,
   SYSTEM_UNLOCK_LEVEL,
   GALAXY_SYSTEMS,

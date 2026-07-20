@@ -183,6 +183,8 @@ app.use('/api/shop', require('./routes/shopRoutes'));
 app.use('/api/system', require('./routes/systemRoutes'));
 // Idle G2: Escala Galaxia (surcar la Disformidad entre sistemas)
 app.use('/api/galaxy', require('./routes/galaxyRoutes'));
+// Ganchos de retención F2: Calendario de login 7 días + gemas promocionales
+app.use('/api/calendar', require('./routes/calendarRoutes'));
 
 // Sentry error handler — must come after all routes so it can capture Express errors
 setupExpressErrorHandler(app);

@@ -213,6 +213,35 @@ const useGameStore = create((set, get) => ({
 
   clearActiveRun: () => set({ activeRun: null }),
 
+  // ── Retención F2: Calendario de login 7 días ────────────────────────────
+  calendarState: null, // { cycleDay, claimedToday, rewards }
+
+  loadCalendar: async () => {
+    try {
+      const { data } = await api.get('/calendar/state');
+      set({ calendarState: data });
+      return data;
+    } catch (e) { console.error('loadCalendar', e); return null; }
+  },
+
+  claimCalendar: async () => {
+    try {
+      const { data } = await api.post('/calendar/claim');
+      await get().loadCalendar();
+      get().refreshResources();
+      get().loadTokenInfo();
+      get().loadGems();
+      const parts = Object.entries(data.reward || {})
+        .filter(([k]) => k !== 'day')
+        .map(([k, v]) => `+${v} ${k}`).join(', ');
+      get().addNotification(`📅 Día ${data.day}: ${parts}`, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo reclamar', 'error');
+      return null;
+    }
+  },
+
   // Notificaciones del juego
   notifications: [],
 

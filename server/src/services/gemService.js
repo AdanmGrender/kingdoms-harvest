@@ -79,6 +79,33 @@ const gemService = {
     console.log(`[Gems] player ${playerId} gastó ${amount} gemas (${reason})`);
     return { spent: amount, balance: row.balance };
   },
+
+  /**
+   * Acreditar gemas PROMOCIONALES (calendario de login día 7, tiers premium
+   * del pase de temporada, etc). A diferencia de `credit()` — exclusivo del
+   * pago confirmado por Telegram — este camino es para recompensas que el
+   * propio juego otorga, así que deja ledger propio (`gem_promo_grants`) para
+   * poder auditar de dónde salió cada gema que NO vino de un pago con Stars.
+   * NUNCA toca `total_purchased` (eso es sólo para compras reales).
+   * Llamado por servicios ya dentro de una transacción con el claim gateado
+   * ANTES del award (patrón `_clearNode`) — no valida el claim, sólo acredita.
+   */
+  async grantPromo(playerId, amount, reason = 'promo') {
+    if (!Number.isInteger(amount) || amount <= 0) {
+      throw new Error('Monto de gemas inválido');
+    }
+    return db.transaction(async () => {
+      await this.ensureRecord(playerId);
+      await db('player_gems').where('player_id', playerId).update({
+        balance:    db.raw('balance + ?', [amount]),
+        updated_at: new Date().toISOString(),
+      });
+      await db('gem_promo_grants').insert({
+        player_id: playerId, amount, reason, created_at: new Date().toISOString(),
+      });
+      return { granted: amount };
+    });
+  },
 };
 
 module.exports = gemService;

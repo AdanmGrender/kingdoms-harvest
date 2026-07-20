@@ -18,13 +18,21 @@ export default function BastionHub() {
       <div className="flex-1 relative">
         <PhaserGame hubMode />
       </div>
-      <div className="px-3 pb-28 pt-1">
+      <div className="px-3 pb-28 pt-1 flex gap-2">
         <button
           onClick={() => setOverlay('operations', {})}
-          className="w-full btn-primary py-3 rounded font-bold flex items-center justify-center gap-2"
+          className="flex-1 btn-primary py-3 rounded font-bold flex items-center justify-center gap-2"
           style={{ fontFamily: 'MedievalSharp, serif' }}
         >
           <SpriteIcon name="map" size={24} fallback="🗺️" /> Operaciones
+        </button>
+        <button
+          onClick={() => setOverlay('calendar', {})}
+          className="px-4 py-3 rounded font-bold flex items-center justify-center"
+          style={{ background: 'rgba(255,215,0,0.12)', border: '1px solid #ffd700' }}
+          title="Calendario de login"
+        >
+          <SpriteIcon name="scroll" size={24} fallback="📅" />
         </button>
       </div>
     </div>
