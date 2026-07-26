@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, Fragment } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
@@ -62,8 +62,21 @@ export default function OperationsMap({ onClose }) {
             const locked = node.status === 'locked';
             const cleared = node.status === 'cleared';
             const sweepable = cleared && SWEEPABLE_TYPES.includes(node.type);
+            // Separador de acto: antes del primer nodo, y cada vez que cambia el
+            // acto respecto del nodo anterior (F5 — acto 2 encadenado al acto 1).
+            const showActSep = i === 0 || node.act !== nodes[i - 1].act;
             return (
-              <div key={node.id} className="flex flex-col items-center w-full">
+              <Fragment key={node.id}>
+              {showActSep && (
+                <div className="w-full max-w-xs my-2 flex items-center gap-2 text-yellow-600/70">
+                  <div className="flex-1 h-px" style={{ background: 'rgba(255,215,0,0.25)' }} />
+                  <span className="text-[10px] uppercase tracking-widest font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+                    Acto {node.act}
+                  </span>
+                  <div className="flex-1 h-px" style={{ background: 'rgba(255,215,0,0.25)' }} />
+                </div>
+              )}
+              <div className="flex flex-col items-center w-full">
                 <div className="w-full max-w-xs flex items-stretch gap-2">
                   <button
                     onClick={() => handleTap(node)}
@@ -108,6 +121,7 @@ export default function OperationsMap({ onClose }) {
                 </div>
                 {i < nodes.length - 1 && <div className="w-0.5 h-3" style={{ background: '#555' }} />}
               </div>
+              </Fragment>
             );
           })}
         </div>

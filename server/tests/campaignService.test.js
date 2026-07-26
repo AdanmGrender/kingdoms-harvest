@@ -35,6 +35,33 @@ describe('CAMPAIGN config', () => {
   });
 });
 
+describe('CAMPAIGN acto 2', () => {
+  const byId = (id) => CAMPAIGN.find((n) => n.id === id);
+  const act2 = CAMPAIGN.filter((n) => n.act === 2);
+
+  test('a1n9 desbloquea a2n1', () => {
+    expect(byId('a1n9').unlocks).toContain('a2n1');
+  });
+
+  test('hay exactamente 2 nodos boss en acto 2', () => {
+    expect(act2.filter((n) => n.type === 'boss').length).toBe(2);
+  });
+
+  test('los enemy.hp del acto 2 crecen (a2n2 < a2n10)', () => {
+    expect(byId('a2n2').enemy.hp).toBeLessThan(byId('a2n10').enemy.hp);
+  });
+
+  test('la cadena a2 tiene requires/unlocks consistentes', () => {
+    expect(act2.length).toBe(10);
+    for (const n of act2) {
+      expect(n.act).toBe(2);
+      for (const u of n.unlocks) {
+        expect(byId(u).requires).toContain(n.id);
+      }
+    }
+  });
+});
+
 describe('migración 030', () => {
   test('las tablas de campaña existen y aceptan inserts', async () => {
     await db('player_campaign_progress').insert({ player_id: 999, node_id: 'a1n1', status: 'available' });
