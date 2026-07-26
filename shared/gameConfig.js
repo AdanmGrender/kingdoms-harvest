@@ -1143,6 +1143,12 @@ const SEASON_PASS = {
   ],
 };
 
+// F6 (retención): Códice de colección. Bono pasivo de ATK de escuadra por cada
+// `heroesPerStep` héroes ÚNICOS poseídos (hero_id distinto), hasta `maxSteps`.
+// Con 3/héroes = +1% ATK, cap +6% (18 únicos). Aplicado server-side en el
+// snapshot de combate (campaignService._buildCombatState).
+const CODEX = { heroesPerStep: 3, atkPerStep: 0.01, maxSteps: 6 };
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -1180,6 +1186,7 @@ module.exports = {
   SWEEP,
   LOGIN_CALENDAR,
   SEASON_PASS,
+  CODEX,
   SYSTEM_PLANETS,
   SYSTEM_UNLOCK_LEVEL,
   GALAXY_SYSTEMS,

@@ -283,6 +283,17 @@ const useGameStore = create((set, get) => ({
     }
   },
 
+  // F6 Códice de colección
+  codexState: null, // { unique, heroesPerStep, bonusPct, maxPct, nextAt }
+
+  loadCodex: async () => {
+    try {
+      const { data } = await api.get('/heroes/codex');
+      set({ codexState: data });
+      return data;
+    } catch (e) { console.error('loadCodex', e); return null; }
+  },
+
   // Notificaciones del juego
   notifications: [],
 

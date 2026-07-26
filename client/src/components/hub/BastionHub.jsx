@@ -42,6 +42,14 @@ export default function BastionHub() {
         >
           <SpriteIcon name="scroll" size={24} fallback="🎫" />
         </button>
+        <button
+          onClick={() => setOverlay('codex', {})}
+          className="px-4 py-3 rounded font-bold flex items-center justify-center"
+          style={{ background: 'rgba(74,222,128,0.12)', border: '1px solid #4ade80' }}
+          title="Códice de colección"
+        >
+          <SpriteIcon name="medal" size={24} fallback="📖" />
+        </button>
       </div>
     </div>
   );

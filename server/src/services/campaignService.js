@@ -3,12 +3,13 @@ const { CAMPAIGN, HERO_SKILLS, SWEEP } = require('../../../shared/gameConfig');
 const { simulateRound } = require('./campaignSim');
 
 // Lazy requires (evitan ciclos con token/hero/daily/pass services)
-let _token, _hero, _daily, _player, _pass;
+let _token, _hero, _daily, _player, _pass, _codex;
 const tokenService = () => (_token ||= require('./tokenService'));
 const heroService  = () => (_hero  ||= require('./heroService'));
 const dailyService = () => (_daily ||= require('./dailyTaskService'));
 const playerService = () => (_player ||= require('./playerService'));
 const passService = () => (_pass ||= require('./passService'));
+const codexService = () => (_codex ||= require('./codexService'));
 
 const nodeById = (id) => CAMPAIGN.find((n) => n.id === id);
 const isCombat = (n) => ['combat', 'wave', 'boss'].includes(n.type);
@@ -89,11 +90,15 @@ const campaignService = {
     let squad = [];
     try { squad = await heroService().getSquad(playerId); }
     catch (err) { console.error('[Campaign] getSquad falló; usando guarnición:', err.message); squad = []; }
+    // F6 Códice: bono pasivo de ATK por héroes únicos poseídos (1 si 0 héroes,
+    // así que la guarnición del jugador nuevo mantiene atk 60 y el balance del
+    // embudo no se rompe).
+    const codexMult = await codexService().getAtkMult(playerId);
     let heroes = (Array.isArray(squad) ? squad : [])
       .filter((h) => !h.recovering)
       .map((h) => ({
         slot: h.slot, heroId: h.heroId, class: h.class, name: h.name,
-        atk: h.stats.atk, hp: h.stats.hp, maxHp: h.stats.hp,
+        atk: Math.round(h.stats.atk * codexMult), hp: h.stats.hp, maxHp: h.stats.hp,
         energy: 0, energyMax: 100,
         skill: HERO_SKILLS[h.class] || HERO_SKILLS.warrior, alive: true,
       }));
@@ -103,7 +108,7 @@ const campaignService = {
       // pero a1n4+ (hp 650+) sigue siendo muro → los héroes son la puerta de
       // progresión desde el nodo 4. Test de regresión en campaignService.test.js.
       heroes = [{ slot: 1, heroId: null, class: 'warrior', name: 'Guarnición',
-        atk: 60, hp: 200, maxHp: 200, energy: 0, energyMax: 100,
+        atk: Math.round(60 * codexMult), hp: 200, maxHp: 200, energy: 0, energyMax: 100,
         skill: HERO_SKILLS.warrior, alive: true }];
     }
     return {
