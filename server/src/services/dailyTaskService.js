@@ -2,6 +2,10 @@ const db = require('../config/database');
 const { TOKEN_CONFIG } = require('../../../shared/tokenConfig');
 const tokenService = require('./tokenService');
 
+// Lazy require (evita ciclos; passService no depende de dailyTaskService).
+let _pass;
+const passService = () => (_pass ||= require('./passService'));
+
 const dailyTaskService = {
   /**
    * Obtener o crear tareas diarias del jugador
@@ -128,6 +132,10 @@ const dailyTaskService = {
     if (!claimed) throw new Error('Recompensa ya reclamada');
 
     const result = await tokenService.awardTokens(playerId, config.reward, 'daily_task');
+
+    // F4 (retención): puntos de pase de temporada — no crítico, nunca bloquea
+    // el claim de la recompensa de la tarea diaria.
+    try { await passService().addPoints(playerId, 'daily_task'); } catch { /* no crítico */ }
 
     return {
       success: true,

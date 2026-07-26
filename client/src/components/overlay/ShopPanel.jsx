@@ -24,22 +24,37 @@ const PACK_STYLE = {
 export default function ShopPanel({ onClose }) {
   const gems = useGameStore((s) => s.gems);
   const catalog = useGameStore((s) => s.shopCatalog);
+  const boostState = useGameStore((s) => s.boostState);
   const loadGems = useGameStore((s) => s.loadGems);
   const loadShopCatalog = useGameStore((s) => s.loadShopCatalog);
+  const loadBoost = useGameStore((s) => s.loadBoost);
   const buyGemPack = useGameStore((s) => s.buyGemPack);
+  const buyBoost = useGameStore((s) => s.buyBoost);
 
   const [busy, setBusy] = useState(null);
+  const [boostBusy, setBoostBusy] = useState(false);
 
   useEffect(() => {
     loadGems();
     loadShopCatalog();
-  }, [loadGems, loadShopCatalog]);
+    loadBoost();
+  }, [loadGems, loadShopCatalog, loadBoost]);
 
   const handleBuy = async (productId) => {
     setBusy(productId);
     await buyGemPack(productId);
     setBusy(null);
   };
+
+  const handleBuyBoost = async () => {
+    setBoostBusy(true);
+    await buyBoost();
+    setBoostBusy(false);
+  };
+
+  const boostExpiryLabel = boostState?.active && boostState?.expiresAt
+    ? new Date(boostState.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : null;
 
   return (
     <div className="absolute inset-x-0 bottom-0 z-40 rounded-t-2xl overflow-hidden"
@@ -108,6 +123,35 @@ export default function ShopPanel({ onClose }) {
           })}
         </div>
 
+        {/* Boost ×2 producción (F3 retención) — sink de gemas, JAMÁS toca el KH */}
+        <div className="mt-3 rounded-xl px-3 py-3 bg-gradient-to-r from-emerald-800 to-emerald-950"
+          style={{ border: '1px solid rgba(74,222,128,0.5)' }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <SpriteIcon name="flame" size={28} fallback="🔥" />
+              <div className="text-left">
+                <p className="text-white font-bold text-sm leading-tight">Boost de Producción ×2</p>
+                <p className="text-emerald-200 text-xs">
+                  {boostState?.active
+                    ? `Activo hasta ${boostExpiryLabel}`
+                    : `Duplica cosechas y venta de oro por 4h`}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleBuyBoost}
+              disabled={boostBusy}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-transform active:scale-[0.98] disabled:opacity-60"
+              style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.15)' }}
+            >
+              <SpriteIcon name="gem" size={14} fallback="💎" />
+              <span className="text-white text-xs font-bold tabular-nums">
+                {boostBusy ? '…' : boostState?.active ? '+80' : '80'}
+              </span>
+            </button>
+          </div>
+        </div>
+
         {/* Para qué sirven */}
         <div className="mt-4 rounded-xl px-3 py-3"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -117,6 +161,7 @@ export default function ShopPanel({ onClose }) {
           <ul className="text-gray-400 text-[11px] flex flex-col gap-1">
             <li>⚡ Acelerar construcciones al instante</li>
             <li>🦸 Invocar héroes (precio fijo, cualquier rareza)</li>
+            <li>🔥 Boost ×2 producción por 4h (cosechas + venta de oro)</li>
           </ul>
         </div>
 

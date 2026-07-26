@@ -3,11 +3,21 @@ const router = express.Router();
 const { telegramAuth } = require('../middleware/telegramAuth');
 const { validate } = require('../middleware/validate');
 const heroService = require('../services/heroService');
+const codexService = require('../services/codexService');
 const { safeErrorMessage } = require('../middleware/errorHandler');
 
 // Stat caps for client bar normalization
 router.get('/stat-caps', (req, res) => {
   res.json(heroService.STAT_CAPS);
+});
+
+// F6 Códice de colección: conteo de héroes únicos + bono de ATK actual.
+router.get('/codex', telegramAuth, async (req, res) => {
+  try {
+    res.json(await codexService.getState(req.playerId));
+  } catch (error) {
+    res.status(400).json({ error: safeErrorMessage(error) });
+  }
 });
 
 // Get all player heroes

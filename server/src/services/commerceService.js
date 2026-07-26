@@ -182,8 +182,11 @@ const commerceService = {
     const eventBonus = await eventService.getMultiplier('commerce');
     // Prestige "Ojo de Mercader" (sell_price): antes el bono no lo consumía nadie.
     const prestigeSell = (await require('./prestigeService').getMultipliers(playerId)).sell_price ?? 1;
+    // Boost de gemas (F3): ×2 SOLO el oro (recurso) — el KH (abajo, awardTokens)
+    // usa un monto FIJO de config y nunca pasa por este multiplicador.
+    const boostMult = await require('./boostService').getMultiplier(playerId);
     const totalGold = Math.floor(
-      offer.price * quantity * prestigeSell * (1 + commerceBonus + techBonus + eventBonus)
+      offer.price * quantity * prestigeSell * boostMult * (1 + commerceBonus + techBonus + eventBonus)
     );
 
     // Cobrar recurso (atómico)

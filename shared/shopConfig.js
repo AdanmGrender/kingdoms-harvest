@@ -42,6 +42,17 @@ const GEM_SINKS = {
     name: 'Invocación de Héroe',
     gems: 150,
   },
+  // F3 (retención): boost temporal de producción. Multiplica SOLO la ganancia
+  // de recursos (farm yield + oro de venta) — JAMÁS el KH otorgado (eso
+  // inflaría la economía retirable a TON). No apilable: comprar con un boost
+  // activo extiende `expires_at` en `hours` más. Implementado en boostService.
+  production_boost: {
+    id: 'production_boost',
+    name: 'Boost de Producción ×2',
+    costGems: 80,
+    hours: 4,
+    mult: 2,
+  },
 };
 
 /** Costo en gemas para acelerar `msRemaining` de un timer. */

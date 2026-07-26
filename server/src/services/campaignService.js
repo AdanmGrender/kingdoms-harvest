@@ -1,16 +1,19 @@
 const db = require('../config/database');
-const { CAMPAIGN, HERO_SKILLS } = require('../../../shared/gameConfig');
+const { CAMPAIGN, HERO_SKILLS, SWEEP } = require('../../../shared/gameConfig');
 const { simulateRound } = require('./campaignSim');
 
-// Lazy requires (evitan ciclos con token/hero/daily services)
-let _token, _hero, _daily, _player;
+// Lazy requires (evitan ciclos con token/hero/daily/pass services)
+let _token, _hero, _daily, _player, _pass, _codex;
 const tokenService = () => (_token ||= require('./tokenService'));
 const heroService  = () => (_hero  ||= require('./heroService'));
 const dailyService = () => (_daily ||= require('./dailyTaskService'));
 const playerService = () => (_player ||= require('./playerService'));
+const passService = () => (_pass ||= require('./passService'));
+const codexService = () => (_codex ||= require('./codexService'));
 
 const nodeById = (id) => CAMPAIGN.find((n) => n.id === id);
 const isCombat = (n) => ['combat', 'wave', 'boss'].includes(n.type);
+const todayUTC = () => new Date().toISOString().slice(0, 10);
 
 const campaignService = {
   async _ensureSeeded(playerId) {
@@ -53,6 +56,10 @@ const campaignService = {
       if (isCombat(node)) {
         try { await dailyService().trackProgress(playerId, 'battle_win', 1); } catch { /* no crítico */ }
       }
+      // F4 (retención): puntos de pase de temporada por CUALQUIER nodo
+      // limpiado (manage/collect/combat/wave/boss) — no crítico, nunca
+      // bloquea el clear del nodo ni su recompensa principal.
+      try { await passService().addPoints(playerId, 'node_clear'); } catch { /* no crítico */ }
 
       const unlocked = [];
       for (const nextId of (node.unlocks || [])) {
@@ -83,11 +90,15 @@ const campaignService = {
     let squad = [];
     try { squad = await heroService().getSquad(playerId); }
     catch (err) { console.error('[Campaign] getSquad falló; usando guarnición:', err.message); squad = []; }
+    // F6 Códice: bono pasivo de ATK por héroes únicos poseídos (1 si 0 héroes,
+    // así que la guarnición del jugador nuevo mantiene atk 60 y el balance del
+    // embudo no se rompe).
+    const codexMult = await codexService().getAtkMult(playerId);
     let heroes = (Array.isArray(squad) ? squad : [])
       .filter((h) => !h.recovering)
       .map((h) => ({
         slot: h.slot, heroId: h.heroId, class: h.class, name: h.name,
-        atk: h.stats.atk, hp: h.stats.hp, maxHp: h.stats.hp,
+        atk: Math.round(h.stats.atk * codexMult), hp: h.stats.hp, maxHp: h.stats.hp,
         energy: 0, energyMax: 100,
         skill: HERO_SKILLS[h.class] || HERO_SKILLS.warrior, alive: true,
       }));
@@ -97,7 +108,7 @@ const campaignService = {
       // pero a1n4+ (hp 650+) sigue siendo muro → los héroes son la puerta de
       // progresión desde el nodo 4. Test de regresión en campaignService.test.js.
       heroes = [{ slot: 1, heroId: null, class: 'warrior', name: 'Guarnición',
-        atk: 60, hp: 200, maxHp: 200, energy: 0, energyMax: 100,
+        atk: Math.round(60 * codexMult), hp: 200, maxHp: 200, energy: 0, energyMax: 100,
         skill: HERO_SKILLS.warrior, alive: true }];
     }
     return {
@@ -172,6 +183,74 @@ const campaignService = {
     }
     const roundLog = out.state.log[out.state.log.length - 1] || null;
     return { state: out.state, roundLog, result: out.result, unlocked };
+  },
+
+  // ── F1: Sweep de nodos ("Asalto rápido") ────────────────────────────────
+  // Cupo diario (UTC) de asaltos disponibles para este jugador. Puramente de
+  // lectura: el reset de día se calcula contra la fecha de hoy sin escribir
+  // nada (el UPDATE condicional del claim es quien resetea, ver _claimSweep).
+  async sweepsLeft(playerId) {
+    const row = await db('campaign_sweeps')
+      .where({ player_id: playerId, sweep_date: todayUTC() }).first();
+    const used = row ? row.sweeps_today : 0;
+    return Math.max(0, SWEEP.perDay - used);
+  },
+
+  // Claim atómico del cupo diario. Fila UNIQUE por player_id: se siembra
+  // (insert con try/catch por si otra llamada ya la creó), se resetea si es
+  // de un día viejo, y por último el UPDATE condicional
+  // `sweeps_today < perDay` decide (su `.count` es la fuente de verdad —
+  // ninguno de estos pasos depende de una lectura previa, así que dos claims
+  // concurrentes nunca pueden pisarse: cada UPDATE es una sentencia SQL
+  // síncrona indivisible sobre sql.js).
+  async _claimSweep(playerId) {
+    const today = todayUTC();
+    try {
+      await db('campaign_sweeps').insert({ player_id: playerId, sweep_date: today, sweeps_today: 0 });
+    } catch { /* fila ya existe (UNIQUE player_id) — seguimos */ }
+
+    await db('campaign_sweeps')
+      .where({ player_id: playerId })
+      .where('sweep_date', '!=', today)
+      .update({ sweep_date: today, sweeps_today: 0 });
+
+    const claimed = await db('campaign_sweeps')
+      .where({ player_id: playerId, sweep_date: today })
+      .where('sweeps_today', '<', SWEEP.perDay)
+      .increment('sweeps_today', 1);
+    if (!claimed) throw new Error('Sin asaltos por hoy');
+  },
+
+  // Re-farmea un nodo combat/wave/boss YA limpiado por este jugador: 60% de
+  // sus recursos (floor, mínimo 1) + 1 KH vía awardTokens (cap diario
+  // aplica). Sin unlocks, sin XP de héroes. El claim del cupo diario ocurre
+  // ANTES de otorgar nada — si no hay cupo, no se toca ningún recurso.
+  // Claim + premios ocurren en UNA transacción: si un award falla tras el
+  // claim, el rollback revierte el cupo (retry recuperable) en vez de dejar
+  // el cupo consumido sin recompensa.
+  async sweepNode(playerId, nodeId) {
+    const node = nodeById(nodeId);
+    if (!node || !isCombat(node)) throw new Error('Nodo inválido para asalto');
+
+    const prog = await db('player_campaign_progress')
+      .where({ player_id: playerId, node_id: nodeId }).first();
+    if (!prog || prog.status !== 'cleared') throw new Error('Nodo no limpiado todavía');
+
+    return db.transaction(async () => {
+      await this._claimSweep(playerId); // gate: lanza 'Sin asaltos por hoy' si no hay cupo
+
+      const rewards = {};
+      if (node.rewards?.resources) {
+        for (const [rid, amt] of Object.entries(node.rewards.resources)) {
+          const grant = Math.max(1, Math.floor(amt * SWEEP.resourcePct));
+          await playerService().modifyResource(playerId, rid, grant);
+          rewards[rid] = grant;
+        }
+      }
+      await tokenService().awardTokens(playerId, SWEEP.kh, 'wave_defense');
+
+      return { rewards, sweepsLeft: await this.sweepsLeft(playerId) };
+    });
   },
 };
 

@@ -44,6 +44,7 @@ const useGameStore = create((set, get) => ({
   tokenInfo: null,
   gems: null,          // { balance, totalPurchased, totalSpent }
   shopCatalog: [],     // packs comprables con Telegram Stars
+  boostState: null,    // { active, expiresAt } — boost ×2 de producción (F3)
   dailyTasks: [],
   socialTasks: [],
   streakInfo: null,
@@ -162,13 +163,34 @@ const useGameStore = create((set, get) => ({
   // ── Campaña (hub + instancias) ──────────────────────────────────────────
   campaignNodes: [],
   activeRun: null, // { runId, node, state } durante un combate
+  sweepsLeft: 0, // F1: cupo diario de "Asalto rápido" restante
 
   loadCampaignMap: async () => {
     try {
       const { data } = await api.get('/campaign/map');
-      set({ campaignNodes: data.nodes });
+      set({ campaignNodes: data.nodes, sweepsLeft: data.sweepsLeft ?? 0 });
       return data.nodes;
     } catch (e) { console.error('loadCampaignMap', e); return []; }
+  },
+
+  // F1: re-farmea un nodo combat/wave/boss ya limpiado (60% recursos + 1 KH,
+  // 5/día). El server es la única fuente de verdad del cupo y la recompensa.
+  sweepNode: async (nodeId) => {
+    try {
+      const { data } = await api.post('/campaign/sweep', { nodeId });
+      set({ sweepsLeft: data.sweepsLeft });
+      // Refrescar la barra de recursos/KH (review whole-branch: el sweep no la
+      // actualizaba, a diferencia de calendar/pass).
+      get().refreshResources();
+      get().loadTokenInfo();
+      const parts = Object.entries(data.rewards || {}).map(([rid, amt]) => `+${amt} ${rid}`);
+      const gained = [...parts, '+1 KH'].join(', ');
+      get().addNotification(`⚡ Asalto: ${gained}`, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo asaltar', 'error');
+      return null;
+    }
   },
 
   enterNode: async (nodeId) => {
@@ -195,6 +217,86 @@ const useGameStore = create((set, get) => ({
   },
 
   clearActiveRun: () => set({ activeRun: null }),
+
+  // ── Retención F2: Calendario de login 7 días ────────────────────────────
+  calendarState: null, // { cycleDay, claimedToday, rewards }
+
+  loadCalendar: async () => {
+    try {
+      const { data } = await api.get('/calendar/state');
+      set({ calendarState: data });
+      return data;
+    } catch (e) { console.error('loadCalendar', e); return null; }
+  },
+
+  claimCalendar: async () => {
+    try {
+      const { data } = await api.post('/calendar/claim');
+      await get().loadCalendar();
+      get().refreshResources();
+      get().loadTokenInfo();
+      get().loadGems();
+      const parts = Object.entries(data.reward || {})
+        .filter(([k]) => k !== 'day')
+        .map(([k, v]) => `+${v} ${k}`).join(', ');
+      get().addNotification(`📅 Día ${data.day}: ${parts}`, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo reclamar', 'error');
+      return null;
+    }
+  },
+
+  // ── Retención F4: Pase de temporada (battle pass, 20 tiers) ─────────────
+  passState: null, // { seasonKey, endsAt, points, tier, premium, claims, rewards }
+
+  loadPass: async () => {
+    try {
+      const { data } = await api.get('/pass/state');
+      set({ passState: data });
+      return data;
+    } catch (e) { console.error('loadPass', e); return null; }
+  },
+
+  unlockPassPremium: async () => {
+    try {
+      const { data } = await api.post('/pass/premium');
+      await get().loadPass();
+      get().loadGems();
+      get().addNotification('¡Pase premium desbloqueado!', 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo desbloquear el premium', 'error');
+      return null;
+    }
+  },
+
+  claimPassTier: async (tier, track) => {
+    try {
+      const { data } = await api.post('/pass/claim', { tier, track });
+      await get().loadPass();
+      get().refreshResources();
+      get().loadTokenInfo();
+      get().loadGems();
+      const parts = Object.entries(data.reward || {}).map(([k, v]) => `+${v} ${k}`).join(', ');
+      get().addNotification(`🎫 Tier ${data.tier} (${track}): ${parts}`, 'success');
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo reclamar', 'error');
+      return null;
+    }
+  },
+
+  // F6 Códice de colección
+  codexState: null, // { unique, heroesPerStep, bonusPct, maxPct, nextAt }
+
+  loadCodex: async () => {
+    try {
+      const { data } = await api.get('/heroes/codex');
+      set({ codexState: data });
+      return data;
+    } catch (e) { console.error('loadCodex', e); return null; }
+  },
 
   // Notificaciones del juego
   notifications: [],
@@ -890,6 +992,30 @@ const useGameStore = create((set, get) => ({
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'No se pudo acelerar', 'error');
+      return null;
+    }
+  },
+
+  // F3 (retención): boost ×2 producción, 4h, sink de 80 gemas. Multiplica
+  // SOLO recursos (farm/venta) — NUNCA el KH, ver server/boostService.
+  loadBoost: async () => {
+    try {
+      const { data } = await api.get('/shop/boost');
+      set({ boostState: data });
+    } catch (error) {
+      console.error('Error loading boost state:', error);
+    }
+  },
+
+  buyBoost: async () => {
+    try {
+      const { data } = await api.post('/shop/boost', {});
+      set({ boostState: { active: true, expiresAt: data.expiresAt } });
+      get().addNotification('¡Boost de producción ×2 activado!', 'success');
+      get().loadGems();
+      return data;
+    } catch (error) {
+      get().addNotification(error.response?.data?.error || 'No se pudo activar el boost', 'error');
       return null;
     }
   },

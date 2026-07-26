@@ -110,8 +110,11 @@ const farmService = {
     // Antes el bono existía en la config pero NADIE lo consumía → el jugador
     // gastaba puntos de prestige y no pasaba nada.
     const prestigeMult = (await require('./prestigeService').getMultipliers(playerId)).crop_yield ?? 1;
+    // Boost de gemas (F3): ×2 SOLO recursos — el KH (abajo, awardTokens) usa
+    // un monto FIJO de config y nunca pasa por este multiplicador.
+    const boostMult = await require('./boostService').getMultiplier(playerId);
     const finalYield = Math.max(0, Math.floor(
-      baseYield * quality.multiplier * prestigeMult
+      baseYield * quality.multiplier * prestigeMult * boostMult
       * (1 + factionBonus + techYieldBonus + eventBonus + stormBonus)
     ));
 

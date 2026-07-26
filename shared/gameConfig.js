@@ -1045,9 +1045,109 @@ const CAMPAIGN = [
     requires: ['a1n7'], unlocks: ['a1n9'], enemy: { hp: 1400, dps: 55 }, maxRounds: 11,
     rewards: { kh: 6, resources: { crystal: 2 } } },
   { id: 'a1n9', act: 1, type: 'boss', name: 'Devorador de Almas',
-    requires: ['a1n8'], unlocks: [], enemy: { hp: 2400, dps: 70 }, maxRounds: 14, isBoss: true,
+    requires: ['a1n8'], unlocks: ['a2n1'], enemy: { hp: 2400, dps: 70 }, maxRounds: 14, isBoss: true,
     rewards: { kh: 20, resources: { relic: 2, blueprint: 1 } } },
+  // Acto 2 (F5 ganchos de retención): 10 nodos, stats escalados (hp 3000→9500,
+  // dps 80→200), 2 bosses. Pensado para escuadras con héroes epic+.
+  { id: 'a2n1', act: 2, type: 'manage', name: 'Cimientos Quebrados',
+    requires: ['a1n9'], unlocks: ['a2n2'],
+    manage: { type: 'building_level', min: 4, hint: 'Mejorá un edificio a nivel 4', panel: 'building' },
+    rewards: { kh: 6, resources: { gold: 400 } } },
+  { id: 'a2n2', act: 2, type: 'combat', name: 'Jauría del Umbral',
+    requires: ['a2n1'], unlocks: ['a2n3'], enemy: { hp: 3000, dps: 80 }, maxRounds: 10,
+    rewards: { kh: 8, resources: { gold: 600 } } },
+  { id: 'a2n3', act: 2, type: 'collect', name: 'Descenso a las Cenizas',
+    requires: ['a2n2'], unlocks: ['a2n4'], rewards: { kh: 6, resources: { crystal: 3 } } },
+  { id: 'a2n4', act: 2, type: 'wave', name: 'Marea de Cenizas',
+    requires: ['a2n3'], unlocks: ['a2n5'], enemy: { hp: 4200, dps: 110 }, maxRounds: 11,
+    rewards: { kh: 10, resources: { crystal: 4 } } },
+  { id: 'a2n5', act: 2, type: 'boss', name: 'Coloso de Ceniza',
+    requires: ['a2n4'], unlocks: ['a2n6'], enemy: { hp: 6000, dps: 140 }, maxRounds: 12, isBoss: true,
+    rewards: { kh: 16, resources: { relic: 2 } } },
+  { id: 'a2n6', act: 2, type: 'manage', name: 'Vigilia de los Sin Rostro',
+    requires: ['a2n5'], unlocks: ['a2n7'],
+    manage: { type: 'building_level', min: 5, hint: 'Mejorá un edificio a nivel 5', panel: 'building' },
+    rewards: { kh: 8 } },
+  { id: 'a2n7', act: 2, type: 'combat', name: 'Los Sin Rostro',
+    requires: ['a2n6'], unlocks: ['a2n8'], enemy: { hp: 5200, dps: 130 }, maxRounds: 10,
+    rewards: { kh: 12, resources: { gold: 900 } } },
+  { id: 'a2n8', act: 2, type: 'wave', name: 'Marea del Velo',
+    requires: ['a2n7'], unlocks: ['a2n9'], enemy: { hp: 7000, dps: 160 }, maxRounds: 12,
+    rewards: { kh: 14, resources: { crystal: 5 } } },
+  { id: 'a2n9', act: 2, type: 'combat', name: 'Guardia del Umbral Roto',
+    requires: ['a2n8'], unlocks: ['a2n10'], enemy: { hp: 8000, dps: 180 }, maxRounds: 11,
+    rewards: { kh: 16, resources: { gold: 1400 } } },
+  { id: 'a2n10', act: 2, type: 'boss', name: 'La Voz del Velo',
+    requires: ['a2n9'], unlocks: [], enemy: { hp: 9500, dps: 200 }, maxRounds: 14, isBoss: true,
+    rewards: { kh: 30, resources: { relic: 3, blueprint: 2 } } },
 ];
+
+// F1 Sweep de nodos ("Asalto rápido"): re-farmear nodos combat/wave/boss YA
+// limpiados con un tap. Cupo GLOBAL 5/día (reset UTC), recompensa reducida
+// (60% de los recursos del nodo, redondeo floor, mínimo 1) + 1 KH vía
+// awardTokens (cap diario aplica). Sin unlock, sin XP de héroes.
+const SWEEP = { perDay: 5, resourcePct: 0.6, kh: 1 };
+
+// F2 Calendario de login 7 días: ciclo reclamable UNA vez por día UTC (si se
+// saltea un día no se rompe — el ciclo simplemente avanza al reclamar).
+// Índice 0 = día 1 ... índice 6 = día 7 (gemas promocionales, ver
+// gemService.grantPromo). KH del día 3 vía awardTokens (cap diario aplica).
+const LOGIN_CALENDAR = [
+  { day: 1, gold: 200 },
+  { day: 2, wood: 150 },
+  { day: 3, kh: 3 },
+  { day: 4, crystal: 2 },
+  { day: 5, gold: 500 },
+  { day: 6, relic: 1 },
+  { day: 7, gems: 20 },
+];
+
+// F4 Pase de temporada (battle pass, retención): temporada de 30 días, 20
+// tiers × 50 pts. Puntos: nodo de campaña limpiado +10, tarea diaria +5,
+// oleada ganada +5 (passService.addPoints, hooks try/catch no críticos en
+// campaignService._clearNode / dailyTaskService.claimTaskReward /
+// waveDefenseService.startRun).
+//
+// Riel FREE (recursos/KH chico, siempre accesible) + riel PREMIUM (gemas
+// promocionales vía gemService.grantPromo — moneda de un solo sentido, ver
+// CLAUDE.md §7.2b). El premium se desbloquea gastando `premiumCostGems`
+// gemas (gemService.spend/decrementIfEnough — sink neto positivo, jamás
+// convierte gemas en KH). rewards[i] es el tier i+1.
+const SEASON_PASS = {
+  days: 30,
+  tiers: 20,
+  ptsPerTier: 50,
+  premiumCostGems: 1440,
+  points: { node_clear: 10, daily_task: 5, wave_win: 5 },
+  rewards: [
+    { free: { gold: 100 },    premium: { gems: 5 } },   // tier 1
+    { free: { wood: 100 },    premium: { gems: 5 } },   // tier 2
+    { free: { kh: 1 },        premium: { gems: 6 } },   // tier 3
+    { free: { gold: 150 },    premium: { gems: 6 } },   // tier 4
+    { free: { crystal: 1 },   premium: { gems: 8 } },   // tier 5
+    { free: { gold: 200 },    premium: { gems: 8 } },   // tier 6
+    { free: { kh: 2 },        premium: { gems: 10 } },  // tier 7
+    { free: { wood: 200 },    premium: { gems: 10 } },  // tier 8
+    { free: { gold: 250 },    premium: { gems: 10 } },  // tier 9
+    { free: { relic: 1 },     premium: { gems: 15 } },  // tier 10
+    { free: { gold: 300 },    premium: { gems: 10 } },  // tier 11
+    { free: { kh: 2 },        premium: { gems: 10 } },  // tier 12
+    { free: { crystal: 2 },   premium: { gems: 12 } },  // tier 13
+    { free: { gold: 350 },    premium: { gems: 12 } },  // tier 14
+    { free: { blueprint: 1 }, premium: { gems: 15 } },  // tier 15
+    { free: { gold: 400 },    premium: { gems: 12 } },  // tier 16
+    { free: { kh: 3 },        premium: { gems: 15 } },  // tier 17
+    { free: { crystal: 3 },   premium: { gems: 15 } },  // tier 18
+    { free: { gold: 500 },    premium: { gems: 15 } },  // tier 19
+    { free: { relic: 2 },     premium: { gems: 60 } },  // tier 20
+  ],
+};
+
+// F6 (retención): Códice de colección. Bono pasivo de ATK de escuadra por cada
+// `heroesPerStep` héroes ÚNICOS poseídos (hero_id distinto), hasta `maxSteps`.
+// Con 3/héroes = +1% ATK, cap +6% (18 únicos). Aplicado server-side en el
+// snapshot de combate (campaignService._buildCombatState).
+const CODEX = { heroesPerStep: 3, atkPerStep: 0.01, maxSteps: 6 };
 
 module.exports = {
   SEASONS,
@@ -1083,6 +1183,10 @@ module.exports = {
   WAVE_ENEMIES,
   HERO_SKILLS,
   CAMPAIGN,
+  SWEEP,
+  LOGIN_CALENDAR,
+  SEASON_PASS,
+  CODEX,
   SYSTEM_PLANETS,
   SYSTEM_UNLOCK_LEVEL,
   GALAXY_SYSTEMS,

@@ -308,6 +308,13 @@ const waveDefenseService = {
         const dailyTaskService = require('./dailyTaskService');
         await dailyTaskService.trackProgress(playerId, 'battle_win', 1);
       } catch { /* no bloquea */ }
+
+      // F4 (retención): puntos de pase de temporada por oleada(s) ganada(s)
+      // en este run — no crítico, nunca bloquea el resultado del combate.
+      try {
+        const passService = require('./passService');
+        await passService.addPoints(playerId, 'wave_win');
+      } catch { /* no bloquea */ }
     }
 
     // Derrota: pequeñas bajas de guarnición + la escuadra a recuperación breve
