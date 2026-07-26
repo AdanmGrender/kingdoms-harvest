@@ -157,6 +157,24 @@ describe('passService.unlockPremium', () => {
     const gems = await db('player_gems').where('player_id', 940031).first();
     expect(gems.balance).toBe(100);
   });
+
+  // Regresión del bug de doble-cobro (review T4): dos unlockPremium concurrentes
+  // (p.ej. doble-tap) NO deben descontar 1440 dos veces. Con el gate-primero,
+  // sólo el que flipa premium 0→1 cobra; el otro rechaza sin tocar gemas.
+  test('dos unlocks concurrentes descuentan 1440 UNA sola vez', async () => {
+    await freshPlayer(940040, { gems: 5000 });
+    const results = await Promise.allSettled([
+      passService.unlockPremium(940040),
+      passService.unlockPremium(940040),
+    ]);
+    const ok = results.filter((r) => r.status === 'fulfilled').length;
+    expect(ok).toBe(1); // exactamente un desbloqueo
+
+    const gems = await db('player_gems').where('player_id', 940040).first();
+    expect(gems.balance).toBe(5000 - SEASON_PASS.premiumCostGems); // 3560, NO 2120
+    const row = await db('player_pass').where('player_id', 940040).first();
+    expect(row.premium).toBe(1);
+  });
 });
 
 describe('passService.claimTier — premium tras unlock', () => {

@@ -94,25 +94,42 @@ const passService = {
   },
 
   // Desbloquea el riel premium de la temporada activa gastando
-  // `premiumCostGems` gemas. Idempotente: si el jugador YA tiene premium en
-  // esta season, rechaza SIN cobrar (chequeo antes del gasto). Todo en una
-  // transacción: si el gate final falla tras el gasto (carrera), el rollback
-  // devuelve las gemas también.
+  // `premiumCostGems` gemas.
+  //
+  // ⚠️ SIN db.transaction A PROPÓSITO: la transacción de este builder es
+  // reentrante por un flag global (`_inTransaction`, database.js:473). Dos
+  // unlockPremium concurrentes (doble-tap) compartirían UNA transacción; si el
+  // que PIERDE el gate lanza y resulta ser el dueño, su ROLLBACK revierte el
+  // gasto Y el premium del que GANÓ → el ganador cree tener premium pero el
+  // server quedó en 0 (bug confirmado en review T4).
+  //
+  // En su lugar: GATE-PRIMERO como statement ÚNICO atómico. El UPDATE
+  // condicional `premium 0→1` es indivisible en sql.js; de dos llamadas
+  // concurrentes, sólo una afecta 1 fila, la otra ve 0 y rechaza SIN cobrar.
+  // El cobro va DESPUÉS del gate ganado; si no alcanzan las gemas, se COMPENSA
+  // revirtiendo el flag (no hay transacción que lo haga por nosotros).
   async unlockPremium(playerId) {
-    return db.transaction(async () => {
-      const season = await this._ensureSeason();
-      const row = await this._ensurePlayerPass(playerId, season.season_key);
-      if (row.premium) throw new Error('Ya tenés el pase premium esta temporada');
+    const season = await this._ensureSeason();
+    await this._ensurePlayerPass(playerId, season.season_key);
 
+    const claimed = await db('player_pass')
+      .where({ player_id: playerId, season_key: season.season_key, premium: 0 })
+      .update({ premium: 1 });
+    if (!claimed) throw new Error('Ya tenés el pase premium esta temporada');
+
+    try {
       await gemService().spend(playerId, SEASON_PASS.premiumCostGems, 'season_pass_premium');
+    } catch (err) {
+      // Cobro falló (gemas insuficientes / error): revertir el flag que este
+      // mismo llamado acaba de ganar. Sólo este llamado está en premium=1 aún
+      // sin pagar, así que la compensación no pisa un premium legítimo ajeno.
+      await db('player_pass')
+        .where({ player_id: playerId, season_key: season.season_key })
+        .update({ premium: 0 });
+      throw err;
+    }
 
-      const claimed = await db('player_pass')
-        .where({ player_id: playerId, season_key: season.season_key, premium: 0 })
-        .update({ premium: 1 });
-      if (!claimed) throw new Error('Ya tenés el pase premium esta temporada');
-
-      return { premium: true, seasonKey: season.season_key };
-    });
+    return { premium: true, seasonKey: season.season_key };
   },
 
   // Reclama la recompensa de un tier en un track ('free' | 'premium').
