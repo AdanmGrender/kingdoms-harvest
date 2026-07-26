@@ -179,6 +179,10 @@ const useGameStore = create((set, get) => ({
     try {
       const { data } = await api.post('/campaign/sweep', { nodeId });
       set({ sweepsLeft: data.sweepsLeft });
+      // Refrescar la barra de recursos/KH (review whole-branch: el sweep no la
+      // actualizaba, a diferencia de calendar/pass).
+      get().refreshResources();
+      get().loadTokenInfo();
       const parts = Object.entries(data.rewards || {}).map(([rid, amt]) => `+${amt} ${rid}`);
       const gained = [...parts, '+1 KH'].join(', ');
       get().addNotification(`⚡ Asalto: ${gained}`, 'success');

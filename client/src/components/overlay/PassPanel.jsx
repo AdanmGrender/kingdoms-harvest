@@ -76,7 +76,7 @@ export default function PassPanel({ onClose }) {
 
   const { points, tier, premium, claims, rewards } = passState;
   const claimedSet = new Set(claims.map((c) => `${c.tier}:${c.track}`));
-  const ptsPerTier = rewards.length > 0 ? 50 : 50; // catálogo fijo del server (SEASON_PASS.ptsPerTier)
+  const ptsPerTier = 50; // catálogo fijo del server (SEASON_PASS.ptsPerTier)
   const pointsInTier = points % 50;
   const gemsBalance = gems?.balance ?? 0;
 
