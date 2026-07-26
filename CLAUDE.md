@@ -767,6 +767,23 @@ QUERIES:
 
 ✅ VISUAL resuelto (hub, 2026-07-18): el terreno "partido en 4" se tapó con el **ancla única del hub** — `WorldScene.buildHubAnchor()` dibuja UNA imagen IA (`zone_hub.png`, 1024px 3:2, explanada del Bastión con losas gastadas) centrada en el spawn a depth 0.52 (sobre las 4 anclas de zona, bajo decals/gameplay), 1600×1067 world px (cubre cualquier viewport a zoom 1.4). No-op si falta el arte. Regenerar: `bash scripts/gen_zones.sh` (slot zone_hub).
 
+### Phase 5 — Ganchos de retención idle (2026-07-19, rama `feat/ganchos-idle-retencion`)
+
+> Spec: `docs/superpowers/specs/2026-07-19-ganchos-idle-retencion-design.md` · Plan: `docs/superpowers/plans/2026-07-19-ganchos-idle-retencion.md`. Análisis competitivo (idle Android + Whiteout Survival + juegos TON). Piggy bank / VIP / chief-gear CORTADOS (post-launch, exigen producto Stars nuevo).
+
+| Feature | Implementado |
+|---------|-------------|
+| **Sweep de nodos** ("Asalto rápido"): re-farmear nodos combat/wave/boss limpiados, 5/día UTC, 60% recursos + 1 KH, claim atómico en transacción | ✅ `campaignService.sweepNode`, migración 031 |
+| **Calendario de login** 7 días (UTC), día 7 = 20 **gemas promocionales** con ledger propio (`gem_promo_grants`) vía `gemService.grantPromo` | ✅ `calendarService`, migración 032 |
+| **Boost ×2 producción** 4h (sink de gemas, 80): multiplica SOLO recursos (farm yield + oro de venta), **jamás KH** (constante fija) | ✅ `boostService`, migración 033 |
+| **Pase de temporada** 30d, 20 tiers × 50 pts (node_clear +10, daily +5, wave +5). Riel free (recursos/KH) + premium (gemas, unlock 1440). Claims idempotentes por UNIQUE | ✅ `passService`, migración 034 |
+| **Acto 2 de campaña**: 10 nodos `a2n1..a2n10` (hp 3000→9500, 2 bosses), `a1n9` desbloquea `a2n1`, separador de acto en OperationsMap | ✅ `gameConfig.CAMPAIGN` |
+| **Códice de colección**: +1% ATK de escuadra por cada 3 héroes ÚNICOS (cap +6%), aplicado en `_buildCombatState` (guarnición con 0 héroes = ×1, balance intacto) | ✅ `codexService` |
+
+⚠️ **Gemas promocionales** (nueva categoría controlada): entran por calendario/pase vía `gemService.grantPromo` (ledger `gem_promo_grants`). Siguen siendo moneda de UN SOLO SENTIDO — NO hay ruta gemas→KH/TON. El pase premium se PAGA con gemas (sink).
+
+⚠️ **`db.transaction` NO es seguro para 2 llamadas CONCURRENTES de la misma operación** (reentrante por flag global `_inTransaction`, database.js:473 — el comentario ya lo advierte). El review de T4 reprodujo un doble-cobro de gemas en `unlockPremium` por esto → arreglado sacándolo de la transacción (gate-primero como UPDATE atómico único + compensación). Los demás claims usan gate-primero (sin doble-grant) pero comparten un transitorio cross-rollback que auto-corrige. Para claims con dinero real: preferir UPDATE condicional atómico como gate, no confiar en el rollback de la tx reentrante.
+
 ### Bugs Conocidos (auditoría 2026-07-02, fixes aplicados el mismo día)
 
 | Issue | Severidad | Estado | Ubicación |
