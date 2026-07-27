@@ -11,7 +11,7 @@
 
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #1a1a2e;
+  background: #1a1712; /* grimdark: piedra-tierra oscura (era #1a1a2e navy) */
   color: #ffffff;
   min-height: 100vh;
   overflow-x: hidden;
@@ -22,10 +22,10 @@ body {
   width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #16213e;
+  background: #2a2620; /* piedra (era navy #16213e) */
 }
 ::-webkit-scrollbar-thumb {
-  background: #e94560;
+  background: #b32821; /* sangre (era rosa #e94560) */
   border-radius: 2px;
 }
 

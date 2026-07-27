@@ -93,7 +93,10 @@ export function buildZoneAnchor(scene, mapData, zx, zy, opts = {}) {
     // detallado y en el mismo rango de valor que los sprites, así que
     // edificios y personajes se fundían. Un tinte gris oscuro lo empuja al
     // fondo y hace que el gameplay resalte.
-    .setTint(0x6b6b73)
+    // Tinte de piedra oscura y cálida: empuja el PISO hacia abajo en valor para
+    // que los actores (edificios/héroes) resalten (Fase 0 del rework visual). El
+    // arte de piso oscuro de Fase 1 permitirá suavizarlo aún más. (era 0x6b6b73)
+    .setTint(0x4a443e)
     .setDepth(depth);
 
   // Voltear por zona rompe la repetición cuando el mismo bioma abarca

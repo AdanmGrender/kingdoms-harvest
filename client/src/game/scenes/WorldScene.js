@@ -209,7 +209,7 @@ export default class WorldScene extends Phaser.Scene {
     this.add.image(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE, 'zone_hub')
       .setOrigin(0.5, 0.5)
       .setDisplaySize(1600, 1067)
-      .setTint(0x6b6b73)
+      .setTint(0x4a443e) // piedra oscura cálida — el piso retrocede (Fase 0)
       .setDepth(0.52);
   }
 

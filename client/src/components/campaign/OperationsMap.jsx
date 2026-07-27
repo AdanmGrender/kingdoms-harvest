@@ -83,8 +83,8 @@ export default function OperationsMap({ onClose }) {
                     disabled={locked}
                     className="flex-1 p-3 rounded-lg flex items-center gap-3"
                     style={{
-                      background: cleared ? 'rgba(74,222,128,0.12)' : locked ? 'rgba(60,60,70,0.4)' : 'rgba(233,69,96,0.15)',
-                      border: `1px solid ${cleared ? '#4ade80' : locked ? '#444' : '#e94560'}`,
+                      background: cleared ? 'rgba(74,222,128,0.12)' : locked ? 'rgba(60,60,70,0.4)' : 'rgba(179,40,33,0.15)',
+                      border: `1px solid ${cleared ? '#4ade80' : locked ? '#444' : '#b32821'}`,
                       opacity: locked ? 0.5 : 1,
                     }}
                   >

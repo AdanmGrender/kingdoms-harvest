@@ -450,7 +450,7 @@ export default function GuildPanel({ onClose }) {
           {inviteCount > 0 && (
             <span
               className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold text-white"
-              style={{ background: '#e94560' }}
+              style={{ background: '#b32821' }}
             >
               {inviteCount}
             </span>

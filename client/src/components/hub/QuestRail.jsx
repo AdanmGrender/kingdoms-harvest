@@ -20,7 +20,7 @@ export default function QuestRail() {
       <button
         onClick={() => setOverlay('operations', {})}
         className="text-white text-xs px-3 py-1 rounded whitespace-nowrap"
-        style={{ background: 'rgba(233,69,96,0.25)', border: '1px solid #e94560' }}
+        style={{ background: 'rgba(179,40,33,0.25)', border: '1px solid #b32821' }}
       >
         {next ? next.name : 'Acto completado ✓'}
       </button>

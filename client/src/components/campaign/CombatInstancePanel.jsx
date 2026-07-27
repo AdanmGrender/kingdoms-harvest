@@ -57,7 +57,7 @@ export default function CombatInstancePanel({ onClose }) {
       <div className="mb-4">
         <div className="text-gray-300 text-xs mb-1">Enemigo</div>
         <div className="h-4 rounded" style={{ background: '#333' }}>
-          <div className="h-4 rounded" style={{ width: `${enemyPct}%`, background: '#e94560', transition: 'width .3s' }} />
+          <div className="h-4 rounded" style={{ width: `${enemyPct}%`, background: '#b32821', transition: 'width .3s' }} />
         </div>
       </div>
 
