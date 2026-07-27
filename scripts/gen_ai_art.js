@@ -124,33 +124,64 @@ function loadApiKey() {
 
 // ─── Args ────────────────────────────────────────────────────────────────────
 function parseArgs(argv) {
-  const a = { preset: null, prompt: null, out: null, aspect: '1:1', list: false };
+  const a = { preset: null, prompt: null, out: null, aspect: '1:1', list: false, refs: [] };
   for (let i = 2; i < argv.length; i++) {
     const t = argv[i];
     if (t === '--list') a.list = true;
     else if (t === '--prompt') a.prompt = argv[++i];
     else if (t === '--out') a.out = argv[++i];
     else if (t === '--aspect') a.aspect = argv[++i];
+    else if (t === '--ref') a.refs.push(argv[++i]); // imagen-ancla de estilo (repetible)
     else if (!t.startsWith('--')) a.preset = t;
   }
   return a;
 }
 
-async function generate(prompt, aspect, outPath) {
+// Lee una imagen del disco y la empaqueta como parte inlineData para Nano Banana.
+function refPart(refPath) {
+  const abs = path.isAbsolute(refPath) ? refPath : path.join(ROOT, refPath);
+  if (!fs.existsSync(abs)) throw new Error(`ref no encontrada: ${refPath}`);
+  const ext = path.extname(abs).toLowerCase();
+  const mimeType = ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg'
+    : ext === '.webp' ? 'image/webp' : 'image/png';
+  return { inlineData: { mimeType, data: fs.readFileSync(abs).toString('base64') } };
+}
+
+async function generate(prompt, aspect, outPath, refs = []) {
   const apiKey = loadApiKey();
   if (!apiKey) {
     throw new Error('Falta GEMINI_API_KEY en server/.env (o en el entorno).');
   }
 
+  // STYLE-LOCK: si hay imágenes-ancla, van como inlineData ANTES del texto y el
+  // prompt manda replicar EXACTAMENTE su estilo (técnica de render, paleta, peso
+  // de línea, luz, nivel de detalle) sobre un sujeto nuevo. Es la vía que da
+  // cohesión real (a diferencia de texto-a-imagen suelto). Sin refs → texto solo
+  // (comportamiento previo).
+  let parts;
+  if (refs.length) {
+    const instruction =
+      `Use the attached reference image(s) as the EXACT and ONLY art-style guide: `
+      + `replicate their rendering technique, colour palette, line weight, lighting, `
+      + `shading and level of detail with maximum fidelity. Now render a NEW, DIFFERENT `
+      + `subject in that identical style: ${prompt}. Keep the composition centered on a `
+      + `plain dark background unless told otherwise. 100% ORIGINAL design — no text, no `
+      + `watermark, no logos, no imperial/double-headed eagles, no chaos star, no purity `
+      + `seals, no Games Workshop marks. Palette: ${STYLE}.`;
+    parts = [...refs.map(refPart), { text: instruction }];
+  } else {
+    parts = [{ text: `${STYLE}. ${prompt}` }];
+  }
+
   const body = {
-    contents: [{ parts: [{ text: `${STYLE}. ${prompt}` }] }],
+    contents: [{ parts }],
     generationConfig: {
       responseModalities: ['IMAGE'],
       imageConfig: { aspectRatio: aspect },
     },
   };
 
-  console.log(`→ generando (${aspect}): ${prompt.slice(0, 70)}…`);
+  console.log(`→ generando (${aspect}${refs.length ? `, ${refs.length} ref${refs.length > 1 ? 's' : ''} de estilo` : ''}): ${prompt.slice(0, 60)}…`);
   const res = await fetch(ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
@@ -166,11 +197,11 @@ async function generate(prompt, aspect, outPath) {
   }
 
   const data = await res.json();
-  const parts = data?.candidates?.[0]?.content?.parts || [];
-  const img = parts.find((p) => p.inlineData?.data);
+  const respParts = data?.candidates?.[0]?.content?.parts || [];
+  const img = respParts.find((p) => p.inlineData?.data);
   if (!img) {
     // A veces el modelo responde texto (p. ej. rechazo de contenido)
-    const text = parts.map((p) => p.text).filter(Boolean).join(' ');
+    const text = respParts.map((p) => p.text).filter(Boolean).join(' ');
     throw new Error(`la API no devolvió imagen.${text ? ` Dijo: ${text.slice(0, 300)}` : ''}`);
   }
 
@@ -199,14 +230,14 @@ async function generate(prompt, aspect, outPath) {
       process.exit(1);
     }
     await generate(p.prompt, args.aspect !== '1:1' ? args.aspect : p.aspect,
-      path.join(ROOT, args.out || p.out));
+      path.join(ROOT, args.out || p.out), args.refs);
     console.log(`  destino final sugerido: ${p.finalPath}`);
     return;
   }
 
   if (args.prompt) {
     const out = args.out ? path.join(ROOT, args.out) : path.join(INBOX, `art-${Date.now()}.png`);
-    await generate(args.prompt, args.aspect, out);
+    await generate(args.prompt, args.aspect, out, args.refs);
     return;
   }
 
