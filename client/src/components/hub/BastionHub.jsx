@@ -15,9 +15,16 @@ export default function BastionHub() {
       <div className="pt-20">
         <QuestRail />
       </div>
-      <div className="flex-1 relative">
-        <PhaserGame hubMode />
-      </div>
+      {/* PRUEBA de arte: el hub como diorama iso grimdark (estilo de referencia,
+          anclado). Reemplaza temporalmente al mundo Phaser top-down para ver el
+          look. El sistema final compone la base con sprites de edificios. */}
+      <div className="flex-1 relative" style={{
+        backgroundImage: 'url(/assets/game/dioramas/hub_bastion.png)',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#12100e',
+      }} />
       <div className="px-3 pb-28 pt-1 flex gap-2">
         <button
           onClick={() => setOverlay('operations', {})}

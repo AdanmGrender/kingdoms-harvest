@@ -40,7 +40,13 @@ export default function CombatInstancePanel({ onClose }) {
   return (
     // pb-28: la BottomNavBar (absolute bottom-0, botón-castillo desbordando)
     // flota SOBRE este panel — sin el despeje tapaba "Avanzar ronda"/"Volver".
-    <div className="fixed inset-0 z-50 flex flex-col p-4 pb-28" style={{ background: 'rgba(8,8,16,0.97)' }}>
+    // Fondo = diorama iso grimdark (estilo de referencia) + velo oscuro en
+    // degradé para que las barras/botones sigan legibles sobre la escena.
+    <div className="fixed inset-0 z-50 flex flex-col p-4 pb-28" style={{
+      backgroundImage: 'linear-gradient(rgba(12,9,12,0.66), rgba(12,9,12,0.88)), url(/assets/game/dioramas/battle_ruins.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }}>
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-red-400 font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
           <SpriteIcon
