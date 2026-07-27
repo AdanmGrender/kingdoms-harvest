@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
+// T1 coordinación visual: diorama iso grimdark de fondo según el tipo de nodo.
+const BG_BY_TYPE = { combat: 'battle_ruins', wave: 'battle_tide', boss: 'boss_arena' };
+
 export default function CombatInstancePanel({ onClose }) {
   const activeRun = useGameStore((s) => s.activeRun);
   const stepInstance = useGameStore((s) => s.stepInstance);
@@ -36,6 +39,7 @@ export default function CombatInstancePanel({ onClose }) {
 
   const close = () => { clearActiveRun(); onClose(); };
   const enemyPct = Math.max(0, Math.round((state.enemy.hp / state.enemy.maxHp) * 100));
+  const bgFile = BG_BY_TYPE[node.type] || 'battle_ruins';
 
   return (
     // pb-28: la BottomNavBar (absolute bottom-0, botón-castillo desbordando)
@@ -43,7 +47,7 @@ export default function CombatInstancePanel({ onClose }) {
     // Fondo = diorama iso grimdark (estilo de referencia) + velo oscuro en
     // degradé para que las barras/botones sigan legibles sobre la escena.
     <div className="fixed inset-0 z-50 flex flex-col p-4 pb-28" style={{
-      backgroundImage: 'linear-gradient(rgba(12,9,12,0.66), rgba(12,9,12,0.88)), url(/assets/game/dioramas/battle_ruins.png)',
+      backgroundImage: `linear-gradient(rgba(12,9,12,0.66), rgba(12,9,12,0.88)), url(/assets/game/dioramas/${bgFile}.png)`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}>
