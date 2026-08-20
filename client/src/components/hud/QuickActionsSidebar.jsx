@@ -4,14 +4,16 @@
  */
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
+import { grimBtn } from './grimChrome';
 
 const ACTIONS = [
-  { id: 'castle', icon: '🏠', label: 'Bastión', color: '#ffd750' },
-  { id: 'waves', icon: '🌊', label: 'Marea Disforme', color: '#b32821' },
-  { id: 'missions', icon: '📜', label: 'Misiones', color: '#8fd4ff', badge: 3 },
-  { id: 'build', icon: '🔨', label: 'Construir', color: '#ffb070' },
-  { id: 'explore', icon: '🛰️', label: 'Sistema', color: '#4fd8c8' },
-  { id: 'settings', icon: '⚙️', label: 'Ajustes', color: '#cccccc' },
+  { id: 'castle', sprite: 'castle', icon: '🏠', label: 'Bastión', color: '#d9a441' },
+  { id: 'waves', sprite: 'tide', icon: '🌊', label: 'Marea Disforme', color: '#b32821' },
+  { id: 'missions', sprite: 'scroll', icon: '📜', label: 'Misiones', color: '#d9a441', badge: 3 },
+  { id: 'build', sprite: 'blueprint', icon: '🔨', label: 'Construir', color: '#e8933a' },
+  { id: 'explore', sprite: 'star', icon: '🛰️', label: 'Sistema', color: '#4fd8c8' },
+  { id: 'settings', sprite: 'gear', icon: '⚙️', label: 'Ajustes', color: '#8a8378' },
 ];
 
 export default function QuickActionsSidebar() {
@@ -53,14 +55,10 @@ export default function QuickActionsSidebar() {
             key={a.id}
             onClick={() => handleAction(a.id)}
             className="pointer-events-auto relative w-11 h-11 rounded-xl flex items-center justify-center transition-transform active:scale-90 hover:scale-105"
-            style={{
-              background: `linear-gradient(180deg, rgba(25,28,50,0.95) 0%, rgba(12,14,28,0.92) 100%)`,
-              border: `1.5px solid ${a.color}55`,
-              boxShadow: `0 2px 8px rgba(0,0,0,0.5), 0 0 10px ${a.color}22, inset 0 1px 0 rgba(255,255,255,0.08)`,
-            }}
+            style={grimBtn(a.color)}
             title={a.label}
           >
-            <span className="text-xl drop-shadow">{a.icon}</span>
+            <SpriteIcon name={a.sprite} size={22} fallback={a.icon} />
             {badge > 0 && (
               <span
                 className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-white"

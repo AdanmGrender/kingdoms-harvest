@@ -3,12 +3,14 @@
  */
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
+import { grimBtn } from './grimChrome';
 
 const SOCIAL = [
-  { id: 'achievements', icon: '⭐', label: 'Logros',   color: '#ffd750', metaTab: 'achievements' },
-  { id: 'alliance',     icon: '🤝', label: 'Alianza',  color: '#8fd4ff', metaTab: 'alliances' },
-  { id: 'rankings',     icon: '📊', label: 'Rankings', color: '#b8ffb8', metaTab: 'rankings' },
-  { id: 'market',       icon: '💱', label: 'Mercado',  color: '#ffcc88', metaTab: 'market' },
+  { id: 'achievements', sprite: 'star',   icon: '⭐', label: 'Logros',   color: '#d9a441', metaTab: 'achievements' },
+  { id: 'alliance',     sprite: 'medal',  icon: '🤝', label: 'Alianza',  color: '#4fd8c8', metaTab: 'alliances' },
+  { id: 'rankings',     sprite: 'scroll', icon: '📊', label: 'Rankings', color: '#8a8378', metaTab: 'rankings' },
+  { id: 'market',       sprite: 'wallet', icon: '💱', label: 'Mercado',  color: '#e8933a', metaTab: 'market' },
 ];
 
 export default function SocialSidebar() {
@@ -31,14 +33,10 @@ export default function SocialSidebar() {
           key={s.id}
           onClick={() => handleClick(s)}
           className="pointer-events-auto relative w-11 h-11 rounded-xl flex items-center justify-center transition-transform active:scale-90 hover:scale-105"
-          style={{
-            background: 'linear-gradient(180deg, rgba(25,28,50,0.95) 0%, rgba(12,14,28,0.92) 100%)',
-            border: `1.5px solid ${s.color}55`,
-            boxShadow: `0 2px 8px rgba(0,0,0,0.5), 0 0 10px ${s.color}22, inset 0 1px 0 rgba(255,255,255,0.08)`,
-          }}
+          style={grimBtn(s.color)}
           title={s.label}
         >
-          <span className="text-xl drop-shadow">{s.icon}</span>
+          <SpriteIcon name={s.sprite} size={22} fallback={s.icon} />
           {s.badge > 0 && (
             <span
               className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-white"

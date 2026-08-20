@@ -6,6 +6,7 @@ import { useMemo, useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
+import { grimBar } from './grimChrome';
 
 // Íconos del set grimdark (spriteMap resuelve contra grim_icons.png); el emoji
 // queda solo como fallback si el sheet no está generado.
@@ -66,30 +67,25 @@ export default function TopResourceBar() {
     <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none px-2 pt-2">
       <div
         className="flex items-center gap-2 px-2 py-1.5 rounded-xl pointer-events-auto"
-        style={{
-          background: 'linear-gradient(180deg, rgba(15,18,35,0.95) 0%, rgba(10,12,24,0.92) 100%)',
-          border: '1px solid rgba(255,215,80,0.3)',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
-          backdropFilter: 'blur(6px)',
-        }}
+        style={{ ...grimBar, backdropFilter: 'blur(6px)' }}
       >
         {/* Avatar + Level */}
         <div className="relative flex-shrink-0">
           <div
             className="w-10 h-10 rounded-lg flex items-center justify-center"
             style={{
-              background: 'radial-gradient(circle, #3b2f1a 0%, #1a1408 100%)',
-              border: '2px solid #ffd750',
-              boxShadow: '0 0 6px rgba(255,215,80,0.4)',
+              background: 'radial-gradient(circle, #3b332a 0%, #14110c 100%)',
+              border: '2px solid #d9a441',
+              boxShadow: '0 0 6px rgba(217,164,65,0.35)',
             }}
           >
-            <span className="text-lg">👑</span>
+            <SpriteIcon name="crown" size={22} fallback="👑" />
           </div>
           <div
             className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-gray-900"
             style={{
-              background: 'linear-gradient(135deg, #ffe070 0%, #b8860b 100%)',
-              border: '1px solid #1a1408',
+              background: 'linear-gradient(135deg, #d9a441 0%, #8a6a1f 100%)',
+              border: '1px solid #14110c',
             }}
           >
             {player.level || 1}

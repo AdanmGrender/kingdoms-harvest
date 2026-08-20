@@ -6,11 +6,13 @@
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
+import { grimBtn } from './grimChrome';
 
 const SHORTCUTS = [
-  { id: 'newplayer', icon: '🎁', label: 'Logros', color: '#ff88cc', metaTab: 'achievements', pulse: true },
-  { id: 'tech',      icon: '🔬', label: 'Tech',   color: '#ffac30', metaTab: 'tech' },
-  { id: 'siege',     icon: '🏰', label: 'Mundo',  color: '#ff6060', metaTab: 'world' },
+  { id: 'newplayer', sprite: 'reward_bag', icon: '🎁', label: 'Logros', color: '#d9a441', metaTab: 'achievements', pulse: true },
+  { id: 'tech',      sprite: 'blueprint',  icon: '🔬', label: 'Tech',   color: '#e8933a', metaTab: 'tech' },
+  { id: 'siege',     sprite: 'castle',     icon: '🏰', label: 'Mundo',  color: '#b32821', metaTab: 'world' },
 ];
 
 function formatCountdown(seconds) {
@@ -63,15 +65,7 @@ export default function EventSidebar() {
       <button
         onClick={handleEvent}
         className={`pointer-events-auto relative w-12 h-14 rounded-xl flex flex-col items-center justify-center transition-transform active:scale-90 hover:scale-105 ${activeEvent ? 'animate-pulse' : ''}`}
-        style={{
-          background: activeEvent
-            ? `linear-gradient(180deg, ${activeEvent.color || '#ffd750'}33 0%, rgba(12,14,28,0.92) 100%)`
-            : 'linear-gradient(180deg, rgba(60,60,80,0.6) 0%, rgba(12,14,28,0.92) 100%)',
-          border: `1.5px solid ${activeEvent?.color || '#666'}66`,
-          boxShadow: activeEvent
-            ? `0 2px 8px rgba(0,0,0,0.5), 0 0 12px ${activeEvent.color || '#ffd750'}33, inset 0 1px 0 rgba(255,255,255,0.1)`
-            : '0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
-        }}
+        style={grimBtn(activeEvent?.color || '#8a8378')}
         title={activeEvent ? activeEvent.description : 'Sin evento activo'}
       >
         <span className="text-xl leading-none">{activeEvent?.icon || '⏳'}</span>
@@ -88,14 +82,10 @@ export default function EventSidebar() {
           key={item.id}
           onClick={() => handleShortcut(item)}
           className={`pointer-events-auto relative w-12 h-14 rounded-xl flex flex-col items-center justify-center transition-transform active:scale-90 hover:scale-105 ${item.pulse ? 'animate-pulse' : ''}`}
-          style={{
-            background: `linear-gradient(180deg, ${item.color}22 0%, rgba(12,14,28,0.92) 100%)`,
-            border: `1.5px solid ${item.color}66`,
-            boxShadow: `0 2px 8px rgba(0,0,0,0.5), 0 0 12px ${item.color}33, inset 0 1px 0 rgba(255,255,255,0.1)`,
-          }}
+          style={grimBtn(item.color)}
           title={item.label}
         >
-          <span className="text-xl leading-none">{item.icon}</span>
+          <SpriteIcon name={item.sprite} size={22} fallback={item.icon} />
           <span className="text-[8px] font-semibold leading-tight mt-0.5" style={{ color: item.color }}>
             {item.label}
           </span>
