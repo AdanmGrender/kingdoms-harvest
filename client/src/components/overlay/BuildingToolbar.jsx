@@ -29,14 +29,14 @@ function QuickNavButtons() {
 
   return (
     <>
-      {btn('⚔️ Héroes',   'heroes',       { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(168,85,247,0.4)', borderBottom: 'none', color: '#d8b4fe' })}
-      {btn('🏆 Logros',   'achievements', { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(234,179,8,0.4)',  borderBottom: 'none', color: '#fde047' })}
-      {btn('🏷️ Mercado',  'marketplace',  { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(59,130,246,0.4)', borderBottom: 'none', color: '#93c5fd' })}
-      {btn('🛡️ Gremio',   'guild',        { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
-      {btn('🌸 Temporada','seasonal',     { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(74,222,128,0.4)', borderBottom: 'none', color: '#86efac' })}
-      {btn('⚔️ Guerra',   'combat',       { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
-      {btn('⭐ Prestige', 'prestige',     { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(250,204,21,0.4)', borderBottom: 'none', color: '#fbbf24' })}
-      {btn('💸 Retiro',   'withdrawal',   { background: 'rgba(22,33,62,0.9)', border: '1px solid rgba(253,224,71,0.4)', borderBottom: 'none', color: '#fde047' })}
+      {btn('⚔️ Héroes',   'heroes',       { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(168,85,247,0.4)', borderBottom: 'none', color: '#d8b4fe' })}
+      {btn('🏆 Logros',   'achievements', { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(234,179,8,0.4)',  borderBottom: 'none', color: '#fde047' })}
+      {btn('🏷️ Mercado',  'marketplace',  { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(59,130,246,0.4)', borderBottom: 'none', color: '#93c5fd' })}
+      {btn('🛡️ Gremio',   'guild',        { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('🌸 Temporada','seasonal',     { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(74,222,128,0.4)', borderBottom: 'none', color: '#86efac' })}
+      {btn('⚔️ Guerra',   'combat',       { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('⭐ Prestige', 'prestige',     { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(250,204,21,0.4)', borderBottom: 'none', color: '#fbbf24' })}
+      {btn('💸 Retiro',   'withdrawal',   { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(253,224,71,0.4)', borderBottom: 'none', color: '#fde047' })}
     </>
   );
 }
@@ -176,7 +176,7 @@ export default function BuildingToolbar() {
 
   return (
     <div className="absolute bottom-20 left-0 right-0 z-40 pointer-events-none">
-      <div className="pointer-events-auto" style={{ background: 'rgba(22, 33, 62, 0.95)', borderTop: '1px solid rgba(255, 215, 0, 0.3)' }}>
+      <div className="pointer-events-auto" style={{ background: 'rgba(51, 47, 43, 0.95)', borderTop: '1px solid rgba(255, 215, 0, 0.3)' }}>
         <div className="flex items-center justify-between px-3 py-1 border-b border-yellow-900/30">
           <span className="text-yellow-300 text-[11px] font-bold">🔨 Construir</span>
           <button

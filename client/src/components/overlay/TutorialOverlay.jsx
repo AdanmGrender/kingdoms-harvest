@@ -71,7 +71,7 @@ export default function TutorialOverlay() {
       <div className="absolute inset-0 bg-black/60" onClick={handleSkip} />
       <div
         className="relative z-10 mx-4 p-5 rounded-xl max-w-sm w-full"
-        style={{ background: 'rgba(22, 33, 62, 0.97)', border: '2px solid rgba(255, 215, 0, 0.5)' }}
+        style={{ background: 'rgba(51, 47, 43, 0.97)', border: '2px solid rgba(255, 215, 0, 0.5)' }}
       >
         {/* Step indicator */}
         <div className="flex justify-center gap-1 mb-3">

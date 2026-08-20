@@ -329,12 +329,12 @@ export default function WithdrawalPanel({ onClose }) {
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col"
-      style={{ background: 'rgba(22,33,62,0.97)' }}
+      style={{ background: 'rgba(51,47,43,0.97)' }}
     >
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 flex-shrink-0"
-        style={{ background: 'rgba(22,33,62,0.98)' }}
+        style={{ background: 'rgba(51,47,43,0.98)' }}
       >
         <h2
           className="text-yellow-400 font-bold text-base"
@@ -353,7 +353,7 @@ export default function WithdrawalPanel({ onClose }) {
 
       {/* Tabs */}
       <div className="flex border-b border-yellow-900/30 flex-shrink-0"
-        style={{ background: 'rgba(22,33,62,0.98)' }}>
+        style={{ background: 'rgba(51,47,43,0.98)' }}>
         {tabBtn('withdraw', '💸 Retirar')}
         {tabBtn('history',  '📋 Historial')}
       </div>

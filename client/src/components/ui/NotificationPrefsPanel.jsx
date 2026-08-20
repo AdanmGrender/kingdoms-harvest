@@ -33,7 +33,7 @@ export default function NotificationPrefsPanel({ onClose }) {
     >
       <div
         className="w-full max-w-md rounded-t-2xl p-4 pb-8"
-        style={{ background: '#16213e', border: '1px solid rgba(255,215,0,0.3)', maxHeight: '80vh', overflowY: 'auto' }}
+        style={{ background: '#332f2b', border: '1px solid rgba(255,215,0,0.3)', maxHeight: '80vh', overflowY: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

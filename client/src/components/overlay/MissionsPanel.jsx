@@ -31,7 +31,7 @@ export default function MissionsPanel({ onClose }) {
     <div
       className="mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
       style={{
-        background: 'rgba(22, 33, 62, 0.97)',
+        background: 'rgba(51, 47, 43, 0.97)',
         border: '1px solid rgba(255, 215, 0, 0.3)',
         maxHeight: '75vh',
       }}

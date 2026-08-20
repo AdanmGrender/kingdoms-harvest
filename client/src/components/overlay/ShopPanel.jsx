@@ -59,7 +59,7 @@ export default function ShopPanel({ onClose }) {
   return (
     <div className="absolute inset-x-0 bottom-0 z-40 rounded-t-2xl overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #16213e 0%, #0d1226 100%)',
+        background: 'linear-gradient(180deg, #332f2b 0%, #1a1712 100%)',
         border: '1px solid rgba(255,255,255,0.10)',
         maxHeight: '78vh',
       }}>

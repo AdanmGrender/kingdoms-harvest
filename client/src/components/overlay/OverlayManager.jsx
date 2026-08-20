@@ -221,7 +221,7 @@ function renderPanel(overlayState, onClose) {
 function GenericPanel({ title, onClose, children }) {
   return (
     <div className="mx-2 mb-2 p-4 rounded-t-xl"
-      style={{ background: 'rgba(22, 33, 62, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
+      style={{ background: 'rgba(51, 47, 43, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
           {title}
@@ -302,11 +302,11 @@ function ConstructionView({ record, meta, onClose }) {
 
   return (
     <div className="mx-2 mb-2 rounded-t-xl overflow-hidden"
-      style={{ background: 'rgba(22, 33, 62, 0.97)', border: `1px solid ${accent}50` }}>
+      style={{ background: 'rgba(51, 47, 43, 0.97)', border: `1px solid ${accent}50` }}>
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30"
-        style={{ background: `linear-gradient(135deg, rgba(22,33,62,0.9), ${accent}22)` }}>
+        style={{ background: `linear-gradient(135deg, rgba(51,47,43,0.9), ${accent}22)` }}>
         <div className="flex items-center gap-3">
           <span className="text-3xl">🔨</span>
           <div>
@@ -389,7 +389,7 @@ function BuildingInfoPanel({ data, onClose }) {
 
   return (
     <div className="mx-2 mb-2 rounded-t-xl overflow-hidden"
-      style={{ background: 'rgba(22, 33, 62, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
+      style={{ background: 'rgba(51, 47, 43, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
@@ -486,7 +486,7 @@ function AnimalPanel({ data, onClose }) {
 
   return (
     <div className="mx-2 mb-2 rounded-t-xl overflow-hidden"
-      style={{ background: 'rgba(22, 33, 62, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
+      style={{ background: 'rgba(51, 47, 43, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
         <div className="flex items-center gap-3">
           <span className="text-3xl">{meta.icon}</span>
@@ -559,7 +559,7 @@ function HarvestPanel({ data, onClose }) {
 
   return (
     <div className="mx-2 mb-2 rounded-t-xl overflow-hidden"
-      style={{ background: 'rgba(22, 33, 62, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
+      style={{ background: 'rgba(51, 47, 43, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
         <div className="flex items-center gap-3">
           <span className="text-3xl">{crop.icon}</span>

@@ -86,7 +86,7 @@ function CoopSection({ data, onSessionStarted }) {
 
   return (
     <div className="rounded-lg p-3 space-y-2"
-      style={{ background: 'rgba(15,52,96,0.4)', border: '1px solid rgba(59,130,246,0.25)' }}>
+      style={{ background: 'rgba(74,69,80,0.4)', border: '1px solid rgba(59,130,246,0.25)' }}>
       <div className="flex items-center gap-2">
         <span className="text-blue-400 text-sm">⚔️</span>
         <p className="text-xs font-bold text-blue-300" style={{ fontFamily: 'MedievalSharp, serif' }}>
@@ -110,7 +110,7 @@ function CoopSection({ data, onSessionStarted }) {
 
           {/* Invite link */}
           <div className="rounded p-2 space-y-1.5"
-            style={{ background: 'rgba(22,33,62,0.8)', border: '1px solid rgba(59,130,246,0.2)' }}>
+            style={{ background: 'rgba(51,47,43,0.8)', border: '1px solid rgba(59,130,246,0.2)' }}>
             <p className="text-[10px] text-gray-500">Enlace de invitación:</p>
             <p className="text-[10px] text-blue-300 break-all leading-relaxed">{inviteLink}</p>
           </div>
@@ -199,11 +199,11 @@ export default function WorldEventPanel({ data, onClose }) {
 
   return (
     <div className="mx-2 mb-2 rounded-t-xl overflow-hidden"
-      style={{ background: 'rgba(22, 33, 62, 0.97)', border: `1px solid ${rarity.color}50` }}>
+      style={{ background: 'rgba(51, 47, 43, 0.97)', border: `1px solid ${rarity.color}50` }}>
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30"
-        style={{ background: `linear-gradient(135deg, rgba(22,33,62,0.9), ${rarity.bg})` }}>
+        style={{ background: `linear-gradient(135deg, rgba(51,47,43,0.9), ${rarity.bg})` }}>
         <div className="flex items-center gap-3">
           <span className="text-4xl">{data.icon}</span>
           <div>

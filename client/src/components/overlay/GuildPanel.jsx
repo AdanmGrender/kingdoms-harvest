@@ -416,7 +416,7 @@ export default function GuildPanel({ onClose }) {
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col"
-      style={{ background: 'rgba(22,33,62,0.97)' }}
+      style={{ background: 'rgba(51,47,43,0.97)' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-yellow-900/30 shrink-0">

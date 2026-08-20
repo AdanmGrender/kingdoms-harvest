@@ -359,7 +359,7 @@ export default function HeroPanel({ onClose }) {
   return (
     <div
       className="mx-2 mb-2 p-4 pb-6 rounded-t-xl max-h-[75vh] overflow-y-auto"
-      style={{ background: 'rgba(22, 33, 62, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}
+      style={{ background: 'rgba(51, 47, 43, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-3">

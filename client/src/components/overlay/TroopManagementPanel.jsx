@@ -81,7 +81,7 @@ export default function TroopManagementPanel({ data, onClose }) {
   return (
     <div
       className="mx-2 mb-2 p-4 rounded-t-xl max-h-[65vh] overflow-y-auto"
-      style={{ background: 'rgba(22, 33, 62, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}
+      style={{ background: 'rgba(51, 47, 43, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
