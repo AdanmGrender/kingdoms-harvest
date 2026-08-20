@@ -492,7 +492,7 @@ export default function WarPanel({ data, onClose }) {
                   {/* Status + countdown */}
                   <div className="flex justify-between items-center mb-1">
                     <span className={`text-[10px] px-2 py-0.5 rounded ${
-                      siege.status === 'marching' ? 'bg-blue-800 text-blue-300' : 'bg-red-800 text-red-300'
+                      siege.status === 'marching' ? 'bg-stone-700 text-teal-300' : 'bg-red-800 text-red-300'
                     }`}>
                       {siege.status === 'marching' ? 'En marcha' : 'En combate'}
                     </span>
@@ -595,7 +595,7 @@ export default function WarPanel({ data, onClose }) {
       {/* Action buttons */}
       <div className="flex gap-2">
         <button
-          className="flex-1 bg-blue-700 hover:bg-blue-600 text-white text-xs py-2 rounded"
+          className="flex-1 bg-stone-700 hover:bg-stone-600 border border-yellow-700/50 text-white text-xs py-2 rounded"
           onClick={() => openTroopPanel('troops')}
         >
           Gestionar Tropas

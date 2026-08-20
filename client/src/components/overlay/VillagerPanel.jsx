@@ -106,7 +106,7 @@ export default function VillagerPanel({ data, onClose }) {
         {!assigning ? (
           <>
             <button
-              className="flex-1 bg-blue-700 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded"
+              className="flex-1 bg-stone-700 hover:bg-stone-600 border border-yellow-700/50 text-white text-xs px-3 py-2 rounded"
               onClick={() => setAssigning(true)}
             >
               Asignar a edificio

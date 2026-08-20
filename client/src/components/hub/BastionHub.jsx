@@ -28,10 +28,18 @@ export default function BastionHub() {
       <div className="px-3 pb-28 pt-1 flex gap-2">
         <button
           onClick={() => setOverlay('operations', {})}
-          className="flex-1 btn-primary py-3 rounded font-bold flex items-center justify-center gap-2"
-          style={{ fontFamily: 'MedievalSharp, serif' }}
+          className="flex-1 py-3 rounded font-bold flex items-center justify-center gap-2 transition-transform active:scale-95"
+          style={{
+            fontFamily: 'MedievalSharp, serif',
+            // CTA principal atenuado a la paleta: base de piedra con tinte sangre
+            // + borde/glow rojo de acento (antes era relleno rojo sólido "candy").
+            background: 'linear-gradient(180deg, rgba(74,42,36,0.98) 0%, rgba(38,20,17,0.97) 100%)',
+            border: '1.5px solid #b32821',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.6), 0 0 12px rgba(179,40,33,0.35), inset 0 1px 0 rgba(255,255,255,0.06)',
+            color: '#f0d9a8',
+          }}
         >
-          <SpriteIcon name="map" size={24} fallback="🗺️" /> Operaciones
+          <SpriteIcon name="map" size={24} fallback="🗺️" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.7))' }} /> Operaciones
         </button>
         <button
           onClick={() => setOverlay('calendar', {})}

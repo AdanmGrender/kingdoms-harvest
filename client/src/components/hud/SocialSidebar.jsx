@@ -4,7 +4,7 @@
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
-import { grimBtn } from './grimChrome';
+import { grimBtn, grimIcon } from './grimChrome';
 
 const SOCIAL = [
   { id: 'achievements', sprite: 'star',   icon: '⭐', label: 'Logros',   color: '#d9a441', metaTab: 'achievements' },
@@ -36,7 +36,7 @@ export default function SocialSidebar() {
           style={grimBtn(s.color)}
           title={s.label}
         >
-          <SpriteIcon name={s.sprite} size={22} fallback={s.icon} />
+          <SpriteIcon name={s.sprite} size={22} fallback={s.icon} style={grimIcon} />
           {s.badge > 0 && (
             <span
               className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-white"

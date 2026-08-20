@@ -5,7 +5,7 @@
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
-import { grimBtn } from './grimChrome';
+import { grimBtn, grimIcon } from './grimChrome';
 
 const ACTIONS = [
   { id: 'castle', sprite: 'castle', icon: '🏠', label: 'Bastión', color: '#d9a441' },
@@ -58,7 +58,7 @@ export default function QuickActionsSidebar() {
             style={grimBtn(a.color)}
             title={a.label}
           >
-            <SpriteIcon name={a.sprite} size={22} fallback={a.icon} />
+            <SpriteIcon name={a.sprite} size={22} fallback={a.icon} style={grimIcon} />
             {badge > 0 && (
               <span
                 className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-white"

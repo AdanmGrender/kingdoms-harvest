@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
-import { grimBtn } from './grimChrome';
+import { grimBtn, grimIcon } from './grimChrome';
 
 const SHORTCUTS = [
   { id: 'newplayer', sprite: 'reward_bag', icon: '🎁', label: 'Logros', color: '#d9a441', metaTab: 'achievements', pulse: true },
@@ -85,7 +85,7 @@ export default function EventSidebar() {
           style={grimBtn(item.color)}
           title={item.label}
         >
-          <SpriteIcon name={item.sprite} size={22} fallback={item.icon} />
+          <SpriteIcon name={item.sprite} size={22} fallback={item.icon} style={grimIcon} />
           <span className="text-[8px] font-semibold leading-tight mt-0.5" style={{ color: item.color }}>
             {item.label}
           </span>

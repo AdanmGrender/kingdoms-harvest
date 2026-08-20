@@ -86,7 +86,7 @@ function BrowseTab({ myPlayerId, onBuy, onCancel, loading }) {
       <div className="flex gap-1 mb-2 overflow-x-auto pb-1">
         <button
           onClick={() => setFilter('all')}
-          className={`shrink-0 text-[9px] px-2 py-1 rounded ${filter === 'all' ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400'}`}
+          className={`shrink-0 text-[9px] px-2 py-1 rounded ${filter === 'all' ? 'bg-amber-700 text-white' : 'bg-gray-800 text-gray-400'}`}
         >
           Todos
         </button>
@@ -94,7 +94,7 @@ function BrowseTab({ myPlayerId, onBuy, onCancel, loading }) {
           <button
             key={r}
             onClick={() => setFilter(r)}
-            className={`shrink-0 text-[9px] px-2 py-1 rounded ${filter === r ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400'}`}
+            className={`shrink-0 text-[9px] px-2 py-1 rounded ${filter === r ? 'bg-amber-700 text-white' : 'bg-gray-800 text-gray-400'}`}
           >
             {RESOURCE_ICONS[r]} {r}
           </button>
@@ -313,7 +313,7 @@ export default function MarketplacePanel({ onClose }) {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 text-[10px] py-1.5 rounded font-bold transition-colors ${activeTab === tab ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-400'}`}
+            className={`flex-1 text-[10px] py-1.5 rounded font-bold transition-colors ${activeTab === tab ? 'bg-amber-700 text-white' : 'bg-gray-800 text-gray-400'}`}
           >
             {label}
           </button>

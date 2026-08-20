@@ -9,6 +9,13 @@ export const grimBar = {
   boxShadow: '0 2px 12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(217,164,65,0.08)',
 };
 
+// Íconos del set grim sobre piedra oscura: quedan apagados (dark-on-dark). Este
+// filtro les sube brillo/contraste y les mete una sombra fina para separarlos
+// del botón. Pasar como `style` a SpriteIcon en los rieles.
+export const grimIcon = {
+  filter: 'brightness(1.3) contrast(1.12) drop-shadow(0 1px 2px rgba(0,0,0,0.75))',
+};
+
 // Botón de riel/nav: piedra oscura + borde del acento (tenue). El acento tiñe
 // SOLO el borde/glow, no la masa — así todo lee grimdark y coherente.
 export function grimBtn(accent = '#d9a441') {
