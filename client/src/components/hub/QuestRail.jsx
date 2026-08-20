@@ -12,7 +12,9 @@ export default function QuestRail() {
   const next = nodes.find((n) => n.status === 'available');
 
   return (
-    <div className="w-full px-3 py-2 flex items-center gap-2 overflow-x-auto"
+    // pl-16: despeja la columna del QuickActionsSidebar (left-2 + w-11 ≈ 52px),
+    // que flota sobre este riel y tapaba el label "Objetivo:".
+    <div className="w-full pl-16 pr-3 py-2 flex items-center gap-2 overflow-x-auto"
       style={{ background: 'rgba(26,23,18,0.92)', borderBottom: '1px solid rgba(217,164,65,0.28)' }}>
       <span className="text-yellow-400 text-xs font-bold whitespace-nowrap flex items-center gap-1">
         <SpriteIcon name="exclamation" size={16} fallback="▸" /> Objetivo:
