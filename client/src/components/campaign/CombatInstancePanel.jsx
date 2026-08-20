@@ -4,6 +4,9 @@ import SpriteIcon from '../ui/SpriteIcon';
 
 // T1 coordinación visual: diorama iso grimdark de fondo según el tipo de nodo.
 const BG_BY_TYPE = { combat: 'battle_ruins', wave: 'battle_tide', boss: 'boss_arena' };
+// T3: sprite del enemigo (anclado, transparente) — bosses por id, resto por tipo.
+const ENEMY_BY_NODE = { a1n5: 'heraldo', a1n9: 'devorador', a2n5: 'coloso', a2n10: 'heraldo' };
+const ENEMY_BY_TYPE = { combat: 'bruto', wave: 'coloso', boss: 'devorador' };
 
 export default function CombatInstancePanel({ onClose }) {
   const activeRun = useGameStore((s) => s.activeRun);
@@ -40,6 +43,7 @@ export default function CombatInstancePanel({ onClose }) {
   const close = () => { clearActiveRun(); onClose(); };
   const enemyPct = Math.max(0, Math.round((state.enemy.hp / state.enemy.maxHp) * 100));
   const bgFile = BG_BY_TYPE[node.type] || 'battle_ruins';
+  const enemyFile = ENEMY_BY_NODE[node.id] || ENEMY_BY_TYPE[node.type] || 'bruto';
 
   return (
     // pb-28: la BottomNavBar (absolute bottom-0, botón-castillo desbordando)
@@ -51,7 +55,21 @@ export default function CombatInstancePanel({ onClose }) {
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}>
-      <div className="flex justify-between items-center mb-2">
+      {/* T3: enemigo anclado flotando sobre el diorama (se desvanece al morir). */}
+      <img
+        src={`/assets/game/enemies/${enemyFile}.png`}
+        alt=""
+        className="absolute left-1/2 -translate-x-1/2 pointer-events-none select-none"
+        style={{
+          top: '15%',
+          height: node.type === 'boss' ? '36%' : '29%',
+          zIndex: -1, // sobre el diorama (bg del panel) pero bajo toda la UI estática
+          filter: 'drop-shadow(0 10px 16px rgba(0,0,0,0.7))',
+          opacity: enemyPct > 0 ? 1 : 0.12,
+          transition: 'opacity .4s ease',
+        }}
+      />
+      <div className="flex justify-between items-center mb-2 relative z-10">
         <h2 className="text-red-400 font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
           <SpriteIcon
             name={node.type === 'boss' ? 'skull' : 'sword'}
