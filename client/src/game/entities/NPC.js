@@ -67,7 +67,7 @@ export default class NPC extends Phaser.GameObjects.Sprite {
       color: '#ffd700',
       stroke: '#000000',
       strokeThickness: 2,
-    }).setOrigin(0.5).setDepth(20);
+    }).setOrigin(0.5).setDepth(20).setVisible(!scene.hubMode); // hub painterly: sin etiquetas de debug
 
     this.questIcon = scene.add.text(x, y - 44, '!', {
       fontFamily: 'MedievalSharp, serif',

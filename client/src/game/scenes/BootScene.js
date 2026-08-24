@@ -151,6 +151,9 @@ export default class BootScene extends Phaser.Scene {
     // fija del Bastión, tapando la cruz donde se juntan 4 anclas de zona
     // (el hub caía justo en esa esquina → terreno "partido en 4").
     this.load.image('zone_hub', '/assets/game/zones/zone_hub.png');
+    // Fondo painterly del hub (escenario vivo Fase A): el diorama del Bastión
+    // como piso del hub, con personajes/animales animados por encima.
+    this.load.image('hub_bastion', '/assets/game/dioramas/hub_bastion.png');
   }
 
   create() {

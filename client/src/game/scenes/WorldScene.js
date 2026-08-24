@@ -111,9 +111,13 @@ export default class WorldScene extends Phaser.Scene {
     // Physics bounds for world
     this.physics.world.setBounds(0, 0, MAP_W * TILE_SIZE, MAP_H * TILE_SIZE);
 
-    this.createBuildings();
+    // Escenario vivo Fase A: en hub painterly, los edificios YA están pintados en
+    // el diorama de fondo → no spawneamos sprites de edificio (doble render /
+    // desalineación). Sólo objetos que se MUEVEN: NPCs, animales, aldeanos.
+    const hubPainterly = this.hubMode && this.textures.exists('hub_bastion');
+    if (!hubPainterly) this.createBuildings();
     this.createNPCs();
-    this.createFarmPlots();
+    if (!hubPainterly) this.createFarmPlots();
     this.createAnimals();
     this.createVillagers();
     this.setupCamera();
@@ -202,15 +206,22 @@ export default class WorldScene extends Phaser.Scene {
    * para que el gameplay siga resaltando. No-op si falta el arte (fallback).
    */
   buildHubAnchor() {
-    if (!this.textures.exists('zone_hub')) return;
     const spawn = this.mapData.spawn;
+    // Escenario vivo Fase A: preferimos el diorama painterly del Bastión como
+    // piso del hub (personajes/animales animados van encima). Fallback al ancla
+    // teselada zone_hub si el arte painterly falta.
+    const painterly = this.textures.exists('hub_bastion');
+    const key = painterly ? 'hub_bastion' : (this.textures.exists('zone_hub') ? 'zone_hub' : null);
+    if (!key) return;
     // 1600×1067 world px (aspecto 3:2 del arte): cubre de sobra el viewport a
     // zoom 1.4 incluso en desktop ancho; más allá siguen las anclas por zona.
-    this.add.image(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE, 'zone_hub')
+    const img = this.add.image(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE, key)
       .setOrigin(0.5, 0.5)
       .setDisplaySize(1600, 1067)
-      .setTint(0x4a443e) // piedra oscura cálida — el piso retrocede (Fase 0)
       .setDepth(0.52);
+    // El diorama painterly va casi sin tinte (que se luzca); el ancla teselada
+    // conserva el tinte piedra oscura para que el gameplay resalte.
+    img.setTint(painterly ? 0xd8d2c6 : 0x4a443e);
   }
 
   // ───────────────────────────────────────────────────────────
