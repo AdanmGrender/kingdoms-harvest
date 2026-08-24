@@ -43,7 +43,7 @@ export default function BastionHub() {
         <button
           onClick={() => setOverlay('calendar', {})}
           className="px-4 py-3 rounded font-bold flex items-center justify-center"
-          style={{ background: 'rgba(255,215,0,0.12)', border: '1px solid #ffd700' }}
+          style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
           title="Calendario de login"
         >
           <SpriteIcon name="scroll" size={24} fallback="📅" />
@@ -51,7 +51,7 @@ export default function BastionHub() {
         <button
           onClick={() => setOverlay('pass', {})}
           className="px-4 py-3 rounded font-bold flex items-center justify-center"
-          style={{ background: 'rgba(124,58,237,0.15)', border: '1px solid #ffd700' }}
+          style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
           title="Pase de temporada"
         >
           <SpriteIcon name="scroll" size={24} fallback="🎫" />
@@ -59,7 +59,7 @@ export default function BastionHub() {
         <button
           onClick={() => setOverlay('codex', {})}
           className="px-4 py-3 rounded font-bold flex items-center justify-center"
-          style={{ background: 'rgba(74,222,128,0.12)', border: '1px solid #4ade80' }}
+          style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
           title="Códice de colección"
         >
           <SpriteIcon name="medal" size={24} fallback="📖" />

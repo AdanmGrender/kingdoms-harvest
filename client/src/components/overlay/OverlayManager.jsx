@@ -123,9 +123,10 @@ export default function OverlayManager() {
 
   return (
     <div className="absolute inset-0 z-30 pointer-events-none">
-      {/* Backdrop */}
+      {/* Backdrop — oscuro (era /40): tapa el hub pixel detrás de los sheets
+          para que no sangre sobre el panel painterly. */}
       <div
-        className="absolute inset-0 bg-black/40 pointer-events-auto"
+        className="absolute inset-0 bg-black/80 pointer-events-auto"
         onClick={handleClose}
       />
 

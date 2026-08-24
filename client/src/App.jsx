@@ -225,17 +225,24 @@ function App() {
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
       <BastionHub />
-      <TopResourceBar />
-      <QuickActionsSidebar />
-      <EventSidebar />
-      <SocialSidebar />
+      {/* Chrome persistente (barras, rieles, nav, banners) SOLO sin overlay:
+          si no, sangra pixel/candy sobre los overlays painterly (combate,
+          héroes). Los overlays traen su propio cierre. */}
+      {!overlayActive && (
+        <>
+          <TopResourceBar />
+          <QuickActionsSidebar />
+          <EventSidebar />
+          <SocialSidebar />
+        </>
+      )}
       <ConstructionTimer />
       <BuildingInfoPopup />
       <OverlayManager />
       {!overlayActive && <BuildingToolbar />}
-      <BottomNavBar />
-      <StreakBanner />
-      <StormBanner />
+      {!overlayActive && <BottomNavBar />}
+      {!overlayActive && <StreakBanner />}
+      {!overlayActive && <StormBanner />}
       <NotificationToast />
       <TutorialOverlay />
       <OfflineReportModal />

@@ -8,8 +8,8 @@ import { HERO_LORE } from '../../config/heroLore';
 
 const RARITY_COLORS = {
   common:    { text: 'text-gray-300',   border: 'border-gray-500',   bg: 'bg-gray-800/60',    badge: 'bg-gray-700'   },
-  rare:      { text: 'text-blue-300',   border: 'border-blue-500',   bg: 'bg-blue-900/30',    badge: 'bg-blue-800'   },
-  epic:      { text: 'text-purple-300', border: 'border-purple-500', bg: 'bg-purple-900/30',  badge: 'bg-purple-800' },
+  rare:      { text: 'text-teal-300',   border: 'border-teal-500',   bg: 'bg-teal-900/30',    badge: 'bg-teal-800'   },
+  epic:      { text: 'text-orange-300', border: 'border-orange-500', bg: 'bg-orange-900/30',  badge: 'bg-orange-800' },
   legendary: { text: 'text-yellow-300', border: 'border-yellow-400', bg: 'bg-yellow-900/30',  badge: 'bg-yellow-700' },
 };
 
@@ -60,7 +60,9 @@ function HeroPortrait({ hero, height }) {
 
 function StatBar({ stat, value }) {
   const pct = Math.min(100, Math.round((value / STAT_CAPS[stat]) * 100));
-  const color = { atk: '#ef4444', def: '#3b82f6', hp: '#22c55e', spd: '#f59e0b', mgk: '#a855f7' }[stat];
+  // Paleta grimdark (era arcoíris candy): sangre/acero/oliva/oro/teal — on-palette,
+  // aún diferenciables.
+  const color = { atk: '#b32821', def: '#7d8794', hp: '#6a9a4a', spd: '#d9a441', mgk: '#4fd8c8' }[stat];
   return (
     <div className="flex items-center gap-1.5 text-[10px]">
       <span className="w-5 text-center">{STAT_ICONS[stat]}</span>
@@ -101,7 +103,8 @@ function HeroCard({ hero, selected, onClick }) {
         <div className="flex-1 min-w-0">
           <p className={`text-xs font-bold truncate ${rc.text}`}>{hero.name}</p>
           <p className="text-gray-500 text-[10px]">
-            {RARITY_ICONS[hero.rarity]} {hero.rarity} · Nv.{hero.level}
+            {/* Punto de rareza en el color de la paleta (era emoji azul/violeta). */}
+            <span className={rc.text}>●</span> {hero.rarity} · Nv.{hero.level}
           </p>
           {hero.deployed && (
             <span className="inline-block mt-0.5 text-[9px] px-1.5 py-0.5 rounded bg-green-800 text-green-300 font-bold">
@@ -195,7 +198,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
             <button
               onClick={() => onDeploy(hero.dbId)}
               disabled={loading}
-              className="text-[9px] px-2 py-1 rounded border border-green-600 text-green-300 hover:bg-green-900/40 disabled:opacity-50"
+              className="text-[9px] px-2 py-1 rounded border border-teal-600 text-teal-300 hover:bg-teal-900/30 disabled:opacity-50"
             >
               Desplegar
             </button>
@@ -369,7 +372,7 @@ export default function HeroPanel({ onClose }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setView(view === 'summon' ? 'roster' : 'summon')}
-            className="text-[10px] px-2 py-1 rounded border border-purple-500 text-purple-300 hover:bg-purple-900/40"
+            className="text-[10px] px-2 py-1 rounded border border-yellow-600 text-yellow-300 hover:bg-yellow-900/30"
           >
             ✨ Invocar
           </button>
@@ -379,8 +382,8 @@ export default function HeroPanel({ onClose }) {
 
       {/* Summon panel */}
       {view === 'summon' && (
-        <div className="mb-4 p-3 rounded-lg border border-purple-700/50 bg-purple-900/20 space-y-3">
-          <p className="text-purple-200 text-xs font-bold text-center" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <div className="mb-4 p-3 rounded-lg space-y-3" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(217,164,65,0.4)' }}>
+          <p className="text-yellow-200 text-xs font-bold text-center" style={{ fontFamily: 'MedievalSharp, serif' }}>
             ✨ Portal de Invocación
           </p>
           <p className="text-gray-400 text-[10px] text-center">

@@ -49,7 +49,9 @@ export default class Villager extends Phaser.GameObjects.Container {
     if (scene.textures.exists(spriteKey)) {
       this.sprite = scene.add.sprite(0, 0, spriteKey, 0);
       this.sprite.setDisplaySize(28, 42);
-      addRimGlow(this.sprite); // contorno claro → resalta del piso oscuro
+      // Rim-glow solo fuera del hub: en el hub painterly hacía ver a los
+      // personajes como recortes flotando (costura). Ver NPC.js.
+      if (!scene.hubMode) addRimGlow(this.sprite);
       if (scene.anims.exists(animKey)) {
         try { this.sprite.play(animKey); } catch (_) { /* anim missing frames */ }
       }
