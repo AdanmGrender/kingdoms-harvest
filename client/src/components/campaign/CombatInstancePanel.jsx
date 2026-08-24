@@ -17,12 +17,13 @@ export default function CombatInstancePanel({ onClose }) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
 
-  // ── Juice (pase de movimiento): floaters de daño, flash del enemigo, shake,
-  //    fx por héroe. Todo se dispara de deltas REALES del estado por ronda. ──
+  // ── Fase B: escenario de combate — unidades que se mueven (embate/retroceso/
+  //    muerte), disparado de deltas REALES del estado por ronda. ──
   const [floaters, setFloaters] = useState([]);   // números de daño al enemigo
   const [flashKey, setFlashKey] = useState(0);     // remonta el sprite → replay hitFlash
-  const [shaking, setShaking] = useState(false);   // screen-shake al recibir daño
-  const [heroFx, setHeroFx] = useState({});        // { slot: { type:'hit'|'cast', key, dmg } }
+  const [shaking, setShaking] = useState(false);   // screen-shake defensivo
+  const [heroFx, setHeroFx] = useState({});        // { slot: { type, key } }
+  const [motion, setMotion] = useState({ type: null, key: 0 }); // enemigo: attack|recoil
   const prevEnemyHp = useRef(null);
   const prevHeroHp = useRef({});
   const floatId = useRef(0);
@@ -30,15 +31,15 @@ export default function CombatInstancePanel({ onClose }) {
 
   const spawnFloater = (text, color) => {
     const id = ++floatId.current;
-    const left = 42 + Math.random() * 16; // jitter horizontal sobre el enemigo
+    const left = 42 + Math.random() * 16;
     setFloaters((f) => [...f, { id, text, color, left }]);
     setTimeout(() => setFloaters((f) => f.filter((x) => x.id !== id)), 1000);
   };
 
   const doStep = async (action) => {
     if (busy || result) return;
-    // Chispa de conjuro inmediata al tap (feedback antes de que responda el server).
     if (action.type === 'skill') {
+      // Conjuro: el héroe se abalanza (lunge grande) + chispa.
       setHeroFx((p) => ({ ...p, [action.slot]: { type: 'cast', key: Date.now() } }));
     }
     setBusy(true);
@@ -50,7 +51,7 @@ export default function CombatInstancePanel({ onClose }) {
     } finally { setBusy(false); }
   };
 
-  // Auto-avance (~2s): spec §4 — combate idle-friendly, no un puro clicker.
+  // Auto-avance (~2s): combate idle-friendly.
   useEffect(() => {
     if (!activeRun || result || busy) return;
     const t = setTimeout(() => { doStep({ type: 'advance' }); }, 2000);
@@ -58,36 +59,40 @@ export default function CombatInstancePanel({ onClose }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRun?.state?.round, result, busy]);
 
-  // Deltas por ronda → dispara los efectos. Se ejecuta cada vez que el server
-  // devuelve un state nuevo (objeto reemplazado en cada stepInstance).
+  // Coreografía por ronda: deltas del server → animaciones de unidades.
   const stateObj = activeRun?.state;
   useEffect(() => {
     if (!stateObj) return;
-    // Daño al enemigo → floater rojo + flash + (si fuerte) shake.
+    // Daño al enemigo → retrocede + número flotante; los héroes vivos embisten.
     if (prevEnemyHp.current != null) {
       const d = prevEnemyHp.current - stateObj.enemy.hp;
       if (d > 0) {
         spawnFloater(`-${d}`, '#ff5a4d');
         setFlashKey((k) => k + 1);
+        setMotion({ type: 'recoil', key: Date.now() });
+        const k = Date.now();
+        setHeroFx((prev) => {
+          const next = { ...prev };
+          stateObj.heroes.forEach((h) => { if (h.alive) next[h.slot] = { type: 'lunge', key: k + h.slot }; });
+          return next;
+        });
       }
     }
     prevEnemyHp.current = stateObj.enemy.hp;
-    // Daño a héroes → flash de fila roja + screen-shake defensivo.
+    // Daño a héroes → flash rojo + shake + el enemigo embiste.
     let hurt = false;
-    const nextFx = {};
+    const fxu = {};
     stateObj.heroes.forEach((h) => {
       const prev = prevHeroHp.current[h.slot];
-      if (prev != null && prev - h.hp > 0) {
-        hurt = true;
-        nextFx[h.slot] = { type: 'hit', key: Date.now() + h.slot, dmg: prev - h.hp };
-      }
+      if (prev != null && prev - h.hp > 0) { hurt = true; fxu[h.slot] = { type: 'hit', key: Date.now() + h.slot }; }
       prevHeroHp.current[h.slot] = h.hp;
     });
-    if (Object.keys(nextFx).length) setHeroFx((p) => ({ ...p, ...nextFx }));
+    if (Object.keys(fxu).length) setHeroFx((prev) => ({ ...prev, ...fxu }));
     if (hurt) {
       setShaking(true);
       clearTimeout(shakeTimer.current);
       shakeTimer.current = setTimeout(() => setShaking(false), 480);
+      setMotion({ type: 'attack', key: Date.now() + 1 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateObj]);
@@ -103,12 +108,10 @@ export default function CombatInstancePanel({ onClose }) {
   const bgFile = BG_BY_TYPE[node.type] || 'battle_ruins';
   const enemyFile = ENEMY_BY_NODE[node.id] || ENEMY_BY_TYPE[node.type] || 'bruto';
 
-  const enemyAnim = dead
-    ? 'dissolve 0.6s ease-out forwards'
-    : `breathe 3.2s ease-in-out infinite${flashKey ? ', hitFlash 0.32s ease-out' : ''}`;
+  const motionClass = motion.type === 'attack' ? 'fx-enemy-lunge'
+    : motion.type === 'recoil' ? 'fx-enemy-recoil' : '';
 
   return (
-    // pb-28: despeje de la BottomNavBar (flota sobre este panel).
     <div className={`fixed inset-0 z-50 flex flex-col p-4 pb-28 overflow-hidden ${shaking ? 'animate-shake' : ''}`}
       style={{ background: '#0c090c' }}>
       {/* Diorama de fondo con ken-burns lento. */}
@@ -118,111 +121,111 @@ export default function CombatInstancePanel({ onClose }) {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }} />
-      {/* Velo oscuro para legibilidad. */}
       <div className="absolute inset-0" style={{
         zIndex: 1,
         background: 'linear-gradient(rgba(12,9,12,0.62), rgba(12,9,12,0.88))',
       }} />
-      {/* Brasas subiendo + viñeta cálida parpadeante (torchlight). */}
       <EmberField count={18} color="#e8933a" maxOpacity={0.7} className="z-[2]" />
       <div className="fx-torch-vignette fx-flicker" style={{ zIndex: 2 }} />
 
-      {/* Enemigo anclado: respira, destella al golpe, se disuelve al morir. */}
-      <img
-        key={dead ? 'dead' : flashKey}
-        src={`/assets/game/enemies/${enemyFile}.png`}
-        alt=""
-        className="absolute left-1/2 pointer-events-none select-none"
-        style={{
-          top: '14%',
-          height: node.type === 'boss' ? '36%' : '29%',
-          zIndex: 3,
-          filter: 'drop-shadow(0 10px 16px rgba(0,0,0,0.7))',
-          animation: enemyAnim,
-        }}
-      />
+      {/* Enemigo: unidad centrada por flex — respira, embiste, retrocede, se
+          vuelca al morir. Anidamos motion(wrapper) × idle(img) para componer
+          transforms sin pisarse. */}
+      <div className="absolute left-0 right-0 flex justify-center pointer-events-none" style={{ top: '15%', zIndex: 3 }}>
+        <div key={motion.key} className={motionClass}>
+          <img
+            key={flashKey}
+            src={`/assets/game/enemies/${enemyFile}.png`}
+            alt=""
+            className={dead ? 'fx-enemy-topple' : ''}
+            style={{
+              height: node.type === 'boss' ? '36vh' : '29vh',
+              filter: 'drop-shadow(0 10px 16px rgba(0,0,0,0.7))',
+              animation: dead ? undefined : `breathe 3.2s ease-in-out infinite${flashKey ? ', hitFlash 0.32s ease-out' : ''}`,
+            }}
+          />
+        </div>
+      </div>
 
-      {/* Capa de números de daño flotantes sobre el enemigo. */}
+      {/* Números de daño flotantes sobre el enemigo. */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 4 }}>
         {floaters.map((f) => (
-          <span
-            key={f.id}
-            className="fx-floatup absolute font-bold"
-            style={{
-              left: `${f.left}%`, top: '26%',
-              color: f.color, fontSize: '22px',
-              textShadow: '0 2px 4px rgba(0,0,0,0.9)',
-              fontFamily: 'MedievalSharp, serif',
-            }}
-          >
-            {f.text}
-          </span>
+          <span key={f.id} className="fx-floatup absolute font-bold" style={{
+            left: `${f.left}%`, top: '26%', color: f.color, fontSize: '22px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.9)', fontFamily: 'MedievalSharp, serif',
+          }}>{f.text}</span>
         ))}
       </div>
 
-      {/* ── Contenido (por encima de todo lo anterior) ── */}
+      {/* ── Contenido (por encima de la escena) ── */}
       <div className="relative flex flex-col flex-1 min-h-0" style={{ zIndex: 10 }}>
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-red-400 font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
-            <SpriteIcon
-              name={node.type === 'boss' ? 'skull' : 'sword'}
-              size={24}
-              fallback={node.type === 'boss' ? '💀' : '⚔️'}
-            />
+            <SpriteIcon name={node.type === 'boss' ? 'skull' : 'sword'} size={24}
+              fallback={node.type === 'boss' ? '💀' : '⚔️'} />
             {node.name} · ronda {state.round}/{state.maxRounds}
           </h2>
           <button onClick={close} className="text-gray-400 text-xl px-2">✕</button>
         </div>
 
         {/* Enemigo — barra de vida */}
-        <div className="mb-4">
+        <div className="mb-2">
           <div className="text-gray-300 text-xs mb-1">Enemigo</div>
           <div className="h-4 rounded" style={{ background: '#333' }}>
             <div className="h-4 rounded" style={{ width: `${enemyPct}%`, background: '#b32821', transition: 'width .3s' }} />
           </div>
         </div>
 
-        {/* Héroes + tap-skill */}
-        <div className="flex-1 overflow-y-auto space-y-2">
+        <div className="flex-1" />
+
+        {/* Fila de UNIDADES de héroe (retratos painterly): embisten al golpear,
+            destellan al recibir, caen al morir. Tap = disparar habilidad. */}
+        <div className="flex justify-center items-end gap-2 flex-wrap mb-2">
           {state.heroes.map((h) => {
             const ready = h.alive && h.energy >= h.energyMax;
             const fx = heroFx[h.slot];
+            const portrait = h.heroId ? `/assets/game/heroes/${h.heroId}.png` : null;
+            const lunging = h.alive && (fx?.type === 'cast' || fx?.type === 'lunge');
+            const animClass = !h.alive ? 'fx-hero-down' : (lunging ? 'fx-hero-lunge' : '');
             return (
-              <button
-                key={h.slot}
-                onClick={() => doStep({ type: 'skill', slot: h.slot })}
+              <button key={h.slot} onClick={() => doStep({ type: 'skill', slot: h.slot })}
                 disabled={!ready || busy || !!result}
-                className={`w-full p-2 rounded flex items-center gap-2 relative overflow-hidden ${ready ? 'fx-pulseready' : ''}`}
-                style={{
-                  background: ready ? 'rgba(255,215,0,0.18)' : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${ready ? '#ffd700' : '#333'}`,
-                  opacity: h.alive ? 1 : 0.4,
-                }}
-              >
-                {/* Flash rojo al recibir daño */}
-                {fx?.type === 'hit' && (
-                  <span key={fx.key} className="fx-rowhit absolute inset-0 pointer-events-none"
-                    style={{ background: '#b32821' }} />
+                className="relative flex flex-col items-center" style={{ width: 60 }}>
+                {ready && (
+                  <span className="absolute -top-1.5 z-10 text-[8px] font-bold text-yellow-200 bg-black/70 px-1 rounded"
+                    style={{ left: '50%', transform: 'translateX(-50%)' }}>¡TAP!</span>
                 )}
-                <span className="text-lg relative">
-                  {h.skill.icon || '✦'}
-                  {/* Chispa de conjuro */}
-                  {fx?.type === 'cast' && (
-                    <span key={fx.key} className="fx-castspark absolute pointer-events-none"
-                      style={{
-                        left: '50%', top: '50%', width: 26, height: 26, marginLeft: -13, marginTop: -13,
-                        borderRadius: '9999px',
-                        background: 'radial-gradient(circle, #ffe9a8 0%, #ffb020 55%, transparent 72%)',
+                <div key={!h.alive ? 'dead' : (fx?.key || 'idle')} className={animClass}>
+                  <div className={`relative rounded-lg overflow-hidden ${ready ? 'fx-ring-ready' : ''}`}
+                    style={{
+                      width: 52, height: 52,
+                      border: `2px solid ${ready ? '#ffd700' : '#5a5148'}`,
+                      backgroundImage: portrait ? `url(${portrait})` : 'none',
+                      backgroundColor: portrait ? '#1a1712' : '#2a2620',
+                      backgroundSize: 'cover', backgroundPosition: 'center top',
+                    }}>
+                    {!portrait && (
+                      <span className="absolute inset-0 flex items-center justify-center text-xl">{h.skill.icon || '⚔️'}</span>
+                    )}
+                    {fx?.type === 'hit' && (
+                      <span key={fx.key} className="fx-rowhit absolute inset-0" style={{ background: '#b32821' }} />
+                    )}
+                    {fx?.type === 'cast' && (
+                      <span key={fx.key} className="fx-castspark absolute" style={{
+                        left: '50%', top: '50%', width: 34, height: 34, marginLeft: -17, marginTop: -17,
+                        borderRadius: '9999px', background: 'radial-gradient(circle, #ffe9a8 0%, #ffb020 55%, transparent 72%)',
                       }} />
-                  )}
-                </span>
-                <div className="flex-1 text-left">
-                  <p className="text-white text-xs">{h.name} {h.alive ? '' : '☠️'}</p>
-                  <div className="h-1.5 rounded mt-1" style={{ background: '#222' }}>
-                    <div className="h-1.5 rounded" style={{ width: `${Math.min(100, h.energy)}%`, background: ready ? '#ffd700' : '#4ade80', transition: 'width .3s' }} />
+                    )}
+                    {!h.alive && (
+                      <span className="absolute inset-0 flex items-center justify-center text-lg">☠️</span>
+                    )}
                   </div>
                 </div>
-                {ready && <span className="text-yellow-300 text-[10px] font-bold">¡TAP!</span>}
+                {/* Energía */}
+                <div className="h-1 rounded mt-1 w-full" style={{ background: '#222' }}>
+                  <div className="h-1 rounded" style={{ width: `${Math.min(100, h.energy)}%`, background: ready ? '#ffd700' : '#4ade80', transition: 'width .3s' }} />
+                </div>
+                <span className="text-[9px] text-gray-300 truncate w-full text-center leading-tight">{h.name}</span>
               </button>
             );
           })}
@@ -230,7 +233,7 @@ export default function CombatInstancePanel({ onClose }) {
 
         {/* Avanzar / resultado */}
         {result ? (
-          <div className="mt-3 text-center animate-grow">
+          <div className="text-center animate-grow">
             <p className={`text-2xl font-bold ${result === 'victory' ? 'text-green-400' : 'text-red-400'}`}
               style={{ fontFamily: 'MedievalSharp, serif' }}>
               {result === 'victory' ? '🏆 ¡Victoria!' : '💀 Derrota'}
@@ -238,17 +241,14 @@ export default function CombatInstancePanel({ onClose }) {
             <button onClick={close} className="btn-gold mt-2 px-6 py-2 rounded">Volver</button>
           </div>
         ) : (
-          <button
-            onClick={() => doStep({ type: 'advance' })}
-            disabled={busy}
-            className="btn-primary mt-3 py-3 rounded font-bold disabled:opacity-50"
-          >
+          <button onClick={() => doStep({ type: 'advance' })} disabled={busy}
+            className="btn-primary py-3 rounded font-bold disabled:opacity-50">
             {busy ? '...' : '⚔️ Avanzar ronda'}
           </button>
         )}
       </div>
 
-      {/* Fanfarria de resultado: brasas doradas en victoria / velo rojo en derrota. */}
+      {/* Fanfarria de resultado. */}
       {result === 'victory' && <EmberField count={44} color="#ffd35a" maxOpacity={0.95} className="z-[20]" />}
       {result === 'defeat' && (
         <div className="absolute inset-0 pointer-events-none animate-fade-in"

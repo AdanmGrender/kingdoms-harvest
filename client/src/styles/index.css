@@ -78,10 +78,10 @@ body {
   100% { transform: translateY(-140px) scale(0.4); opacity: 0; }
 }
 
-/* Respiración/flotación idle del enemigo anclado. */
+/* Respiración/flotación idle del enemigo (centrado por flex, sin translateX). */
 @keyframes breathe {
-  0%, 100% { transform: translateX(-50%) translateY(0)     scale(1); }
-  50%      { transform: translateX(-50%) translateY(-2.5%) scale(1.015); }
+  0%, 100% { transform: translateY(0)   scale(1); }
+  50%      { transform: translateY(-4px) scale(1.015); }
 }
 
 /* Fogonazo blanco al recibir daño (sobre el sprite). */
@@ -145,6 +145,57 @@ body {
   100% { opacity: 0; }
 }
 .fx-rowhit { animation: rowHit 0.6s ease-out forwards; }
+
+/* ── Fase B: unidades de combate que se mueven (embate/retroceso/muerte) ── */
+
+/* El enemigo se abalanza hacia el jugador (abajo) y vuelve. */
+@keyframes enemyLunge {
+  0%   { transform: translateY(0) scale(1); }
+  35%  { transform: translateY(34px) scale(1.07); }
+  100% { transform: translateY(0) scale(1); }
+}
+.fx-enemy-lunge { animation: enemyLunge 0.5s ease-out; }
+
+/* Retroceso del enemigo al recibir (empujado hacia atrás/arriba). */
+@keyframes enemyRecoil {
+  0%   { transform: translate(0, 0); }
+  30%  { transform: translate(10px, -12px); }
+  100% { transform: translate(0, 0); }
+}
+.fx-enemy-recoil { animation: enemyRecoil 0.3s ease-out; }
+
+/* Muerte del enemigo: se vuelca, cae y se apaga. */
+@keyframes enemyTopple {
+  0%   { transform: rotate(0) translateY(0);   opacity: 1; filter: drop-shadow(0 10px 16px rgba(0,0,0,0.7)); }
+  100% { transform: rotate(14deg) translateY(24px); opacity: 0.05; filter: drop-shadow(0 10px 16px rgba(0,0,0,0.7)) blur(4px); }
+}
+.fx-enemy-topple { animation: enemyTopple 0.7s ease-in forwards; }
+
+/* El héroe salta hacia el enemigo (arriba) al golpear y vuelve. */
+@keyframes heroLunge {
+  0%   { transform: translateY(0) scale(1); }
+  40%  { transform: translateY(-22px) scale(1.14); }
+  100% { transform: translateY(0) scale(1); }
+}
+.fx-hero-lunge { animation: heroLunge 0.45s ease-out; }
+
+/* Muerte del héroe: se apaga en gris y cae. */
+@keyframes heroDown {
+  0%   { transform: translateY(0)  rotate(0);     opacity: 1;    filter: grayscale(0); }
+  100% { transform: translateY(8px) rotate(-12deg); opacity: 0.2; filter: grayscale(1) brightness(0.5); }
+}
+.fx-hero-down { animation: heroDown 0.5s ease-out forwards; }
+
+/* Anillo de energía "listo" pulsante del token de héroe. */
+@keyframes ringReady {
+  0%, 100% { box-shadow: 0 0 4px rgba(255,215,0,0.4), inset 0 0 4px rgba(255,215,0,0.3); }
+  50%      { box-shadow: 0 0 14px rgba(255,215,0,0.85), inset 0 0 8px rgba(255,215,0,0.5); }
+}
+.fx-ring-ready { animation: ringReady 1s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-ring-ready { animation: none !important; }
+}
 
 /* Viñeta cálida que respira (torchlight) sobre un diorama. */
 .fx-torch-vignette {
