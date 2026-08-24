@@ -2,6 +2,7 @@ import QuestRail from './QuestRail';
 import PhaserGame from '../../game/PhaserGame';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import EmberField from '../fx/EmberField';
 
 // Pantalla-ancla: riel arriba, base compacta (Phaser en modo hub) al medio,
 // botón Operaciones abajo. Reemplaza al mundo paseable como entrada por defecto.
@@ -18,13 +19,18 @@ export default function BastionHub() {
       {/* PRUEBA de arte: el hub como diorama iso grimdark (estilo de referencia,
           anclado). Reemplaza temporalmente al mundo Phaser top-down para ver el
           look. El sistema final compone la base con sprites de edificios. */}
-      <div className="flex-1 relative" style={{
-        backgroundImage: 'url(/assets/game/dioramas/hub_bastion.png)',
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: '#12100e',
-      }} />
+      <div className="flex-1 relative overflow-hidden" style={{ backgroundColor: '#12100e' }}>
+        {/* Diorama con ken-burns lento para que el bastión respire. */}
+        <div className="absolute inset-0 fx-driftzoom" style={{
+          backgroundImage: 'url(/assets/game/dioramas/hub_bastion.png)',
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }} />
+        {/* Brasas que suben de los braseros + viñeta cálida parpadeante. */}
+        <EmberField count={16} color="#e8933a" maxOpacity={0.6} />
+        <div className="fx-torch-vignette fx-flicker" />
+      </div>
       <div className="px-3 pb-28 pt-1 flex gap-2">
         <button
           onClick={() => setOverlay('operations', {})}

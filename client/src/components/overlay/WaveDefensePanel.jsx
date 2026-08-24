@@ -5,6 +5,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import EmberField from '../fx/EmberField';
 
 // Bestiario visible (ids = WAVE_ENEMIES de shared/gameConfig.js; el arte vive en
 // /assets/game/enemies/<id>.png). Nombres cortos para que entren a 8px.
@@ -63,7 +64,7 @@ export default function WaveDefensePanel({ onClose }) {
 
   return (
     <div
-      className="mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
+      className="relative mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
       style={{
         // Telón de fondo: la muralla del bastión desde adentro con la horda
         // acercándose en la niebla. Va oscurecido para que el texto se lea.
@@ -75,6 +76,8 @@ export default function WaveDefensePanel({ onClose }) {
         maxHeight: '80vh',
       }}
     >
+      {/* Ceniza a la deriva sobre la muralla asediada. */}
+      <EmberField count={14} color="#8a8378" maxOpacity={0.45} />
       <div className="flex items-center justify-between px-4 py-3 border-b border-red-900/40 shrink-0 bg-black/30">
         <div>
           <h3 className="text-red-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
