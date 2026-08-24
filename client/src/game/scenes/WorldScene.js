@@ -213,11 +213,12 @@ export default class WorldScene extends Phaser.Scene {
     const painterly = this.textures.exists('hub_bastion');
     const key = painterly ? 'hub_bastion' : (this.textures.exists('zone_hub') ? 'zone_hub' : null);
     if (!key) return;
-    // 1600×1067 world px (aspecto 3:2 del arte): cubre de sobra el viewport a
-    // zoom 1.4 incluso en desktop ancho; más allá siguen las anclas por zona.
+    // El arte del hub es CUADRADO (1024×1024): mostrarlo a 3:2 lo estiraba ~50%
+    // a lo ancho. Se dibuja cuadrado (1500×1500) para no distorsionar; cubre el
+    // viewport a zoom 1.1 y más allá siguen las anclas por zona.
     const img = this.add.image(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE, key)
       .setOrigin(0.5, 0.5)
-      .setDisplaySize(1600, 1067)
+      .setDisplaySize(1500, 1500)
       .setDepth(0.52);
     // El diorama painterly va casi sin tinte (que se luzca); el ancla teselada
     // conserva el tinte piedra oscura para que el gameplay resalte.
@@ -568,7 +569,9 @@ export default class WorldScene extends Phaser.Scene {
       // Base compacta, cámara fija: zoom in sobre la base (spawn = centro de
       // la base — mismo punto que usa deriveObjects() para anclar todos los
       // edificios iniciales) y sin input de cámara (drag/zoom/pan/teclado).
-      this.cameraSystem.setZoom(1.4);
+      // Zoom 1.1 (antes 1.4): muestra más del Bastión painterly (postal), sin
+      // salir del ancla 1600×1067 que cubre el viewport.
+      this.cameraSystem.setZoom(1.1);
       this.cameraSystem.centerOn(spawn.x * TILE_SIZE, spawn.y * TILE_SIZE);
       this.cameraSystem.setEnabled(false);
     } else {
@@ -610,6 +613,7 @@ export default class WorldScene extends Phaser.Scene {
         }));
       }
     }
+
 
     for (const npc of this.npcs) {
       this.selectionSystem.register(npc, 'npc', { npcId: npc.npcId, name: npc.npcName });
