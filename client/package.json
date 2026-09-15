@@ -9,9 +9,15 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "build:apk": "vite build --mode apk",
+    "apk:sync": "npm run build:apk && cap sync android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/preferences": "^8.0.1",
     "@telegram-apps/sdk-react": "^1.0.0",
     "@tonconnect/ui-react": "^2.4.4",
     "axios": "^1.6.3",

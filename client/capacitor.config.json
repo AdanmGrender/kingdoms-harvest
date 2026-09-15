@@ -1,0 +1,9 @@
+{
+  "appId": "com.kingdomsharvest.app",
+  "appName": "Kingdoms Harvest",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
+  }
+}

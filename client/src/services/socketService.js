@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client';
 import EventBridge from '../game/EventBridge';
 import useGameStore from '../store/gameStore';
+import { getDeviceId } from './deviceId';
 
 let socket = null;
 
@@ -11,7 +12,9 @@ export function connectSocket(initData) {
   socket = io(url, { transports: ['websocket', 'polling'] });
 
   socket.on('connect', () => {
-    socket.emit('join_game', { initData });
+    // Standalone (APK/web): sin initData, el server autentica el socket por
+    // device-id (misma vía que el HTTP). Dentro de Telegram va el initData.
+    socket.emit('join_game', { initData, deviceId: getDeviceId() });
   });
 
   socket.on('building_complete', ({ buildingType }) => {

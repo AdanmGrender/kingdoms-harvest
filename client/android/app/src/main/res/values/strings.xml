@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kingdoms Harvest</string>
+    <string name="title_activity_main">Kingdoms Harvest</string>
+    <string name="package_name">com.kingdomsharvest.app</string>
+    <string name="custom_url_scheme">com.kingdomsharvest.app</string>
+</resources>

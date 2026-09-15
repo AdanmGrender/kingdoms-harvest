@@ -71,6 +71,11 @@ const server = http.createServer(app);
 const allowedOrigins = [
   process.env.WEBAPP_URL,
   process.env.NODE_ENV !== 'production' ? 'http://localhost:5173' : null,
+  // WebView de Capacitor (APK standalone): el origen del app es localhost.
+  // androidScheme 'http' → http://localhost; también admitimos https/capacitor.
+  ...(process.env.NODE_ENV !== 'production'
+    ? ['http://localhost', 'https://localhost', 'capacitor://localhost']
+    : []),
 ].filter(Boolean);
 
 const io = new Server(server, {
@@ -256,6 +261,8 @@ function wsRateLimit(socket) {
   return entry.count > WS_MAX_EVENTS;
 }
 
+const { deviceIdToPlayerId, deviceAuthAllowed } = require('./middleware/telegramAuth');
+
 io.on('connection', (socket) => {
   socket.on('join_game', (data) => {
     if (wsRateLimit(socket)) {
@@ -265,8 +272,22 @@ io.on('connection', (socket) => {
     }
 
     const initData = typeof data === 'object' ? data.initData : data;
+    const deviceId = typeof data === 'object' ? data.deviceId : null;
 
-    // Validar tipo y tamaño antes de procesar
+    // Standalone (APK/web): auth del socket por device-id si no hay initData.
+    if ((!initData || initData === '') && deviceId && deviceAuthAllowed()) {
+      if (typeof deviceId !== 'string' || deviceId.length < 8 || deviceId.length > 100) {
+        socket.emit('auth_error', { error: 'device-id inválido' });
+        socket.disconnect(true);
+        return;
+      }
+      const pid = deviceIdToPlayerId(deviceId);
+      socket.playerId = pid;
+      socket.join(`player_${pid}`);
+      return;
+    }
+
+    // Validar tipo y tamaño antes de procesar (Telegram)
     if (typeof initData !== 'string' || initData.length > 4096) {
       socket.emit('auth_error', { error: 'Datos inválidos' });
       socket.disconnect(true);

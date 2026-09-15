@@ -3,6 +3,26 @@ const crypto = require('crypto');
 const MAX_AUTH_AGE_SECONDS = 300; // 5 minutos
 
 /**
+ * App standalone (APK/web sin Telegram): deriva un playerId entero ESTABLE del
+ * UUID de dispositivo (FNV-1a 32-bit + offset para separarlo del espacio de
+ * telegram_ids). Reúsa todo el sistema de jugador con esa "telegram_id".
+ * ⚠️ Fase 1: auth DÉBIL (cualquiera puede mandar un device-id). Se endurece en
+ *    Fase 2 (Sign-In / attestation). Gateado a no-producción por defecto.
+ */
+function deviceIdToPlayerId(deviceId) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < deviceId.length; i++) {
+    h ^= deviceId.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0) + 2000000000;
+}
+
+function deviceAuthAllowed() {
+  return process.env.NODE_ENV !== 'production' || process.env.DEVICE_AUTH_ENABLED === 'true';
+}
+
+/**
  * Middleware para validar que la petición viene de Telegram Mini App.
  * Verifica el initData usando HMAC-SHA256 con el bot token.
  */
@@ -16,6 +36,18 @@ function telegramAuth(req, res, next) {
   }
 
   const initData = req.headers['x-telegram-init-data'];
+
+  // Auth por dispositivo (app standalone / APK). Solo si NO hay Telegram initData.
+  const deviceId = req.headers['x-device-id'];
+  if (!initData && deviceId && deviceAuthAllowed()) {
+    if (typeof deviceId !== 'string' || deviceId.length < 8 || deviceId.length > 100) {
+      return res.status(401).json({ error: 'device-id inválido' });
+    }
+    const pid = deviceIdToPlayerId(deviceId);
+    req.playerId = pid;
+    req.playerData = { id: pid, first_name: 'Comandante', username: 'cmd_' + String(pid).slice(-6) };
+    return next();
+  }
 
   if (!initData) {
     return res.status(401).json({ error: 'No se proporcionó initData de Telegram' });
@@ -84,4 +116,4 @@ function telegramAuth(req, res, next) {
   }
 }
 
-module.exports = { telegramAuth };
+module.exports = { telegramAuth, deviceIdToPlayerId, deviceAuthAllowed };
