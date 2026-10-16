@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spike 001 — Combate dirección B</title>
+<link rel="stylesheet" href="/fonts/fonts.css">
+<style>
+  :root {
+    --ink: #120d0b; --stone: #332f2b; --stone-l: #4a443e; --blood: #b32821;
+    --gold: #d9a441; --gold-d: #8a6420; --teal: #4fd8c8; --candle: #e8933a; --parch: #efe0bd;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #070505; }
+  body { display: grid; place-items: center; font-family: 'Alegreya Sans', serif; color: var(--parch); }
+  #phone { position: relative; width: 412px; height: 860px; overflow: hidden; background: #000;
+           box-shadow: 0 0 0 1px #2a2420, 0 30px 80px rgba(0,0,0,.8); }
+  #game { position: absolute; inset: 0; }
+  #game canvas { display: block; }
+  .ui { position: absolute; left: 0; right: 0; pointer-events: none; }
+
+  /* ── placa del enemigo ───────────────────────────── */
+  #enemyPlate { top: 0; padding-top: 14px; padding-bottom: 26px; background: linear-gradient(rgba(8,6,5,.85), rgba(8,6,5,.55) 60%, transparent); padding: 0 18px; text-align: center; }
+  #enemyPlate .round { font: 600 11px 'Alegreya Sans SC'; letter-spacing: .28em; color: var(--gold);
+                       opacity: .85; text-shadow: 0 1px 2px #000; }
+  #enemyPlate .name { font: 800 21px 'Cinzel'; letter-spacing: .06em; color: var(--parch); margin: 2px 0 6px;
+                      text-shadow: 0 2px 0 #000, 0 0 18px rgba(179,40,33,.55); }
+  .bar { position: relative; height: 14px; border-radius: 2px; background: #0d0908;
+         border: 2px solid #1c1512; outline: 1px solid var(--gold-d); box-shadow: 0 2px 6px rgba(0,0,0,.8), inset 0 2px 4px #000; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; transition: width .25s ease-out; }
+  .bar .ghost { background: #e8d9b0; transition: width .9s cubic-bezier(.6,0,.4,1) .25s; }
+  .bar .fill { background: linear-gradient(#d23a2c, #8f1c16 70%, #5d100c); }
+  .bar .fill::after { content: ''; position: absolute; left: 0; right: 0; top: 1px; height: 3px; background: rgba(255,255,255,.18); }
+  #enemyPlate .bar { height: 16px; margin: 0 6px; }
+
+  /* ── banner de turno ─────────────────────────────── */
+  #turn { top: 108px; text-align: center; font: 700 13px 'Alegreya Sans SC'; letter-spacing: .3em; color: var(--gold);
+          opacity: 0; transform: translateY(-6px); transition: all .3s; text-shadow: 0 1px 3px #000; }
+  #turn.on { opacity: 1; transform: none; }
+
+  /* ── panel inferior ──────────────────────────────── */
+  #bottom { bottom: 0; height: 196px; padding: 14px 14px 16px;
+            background: linear-gradient(to bottom, rgba(10,7,6,0) 0, rgba(10,7,6,.86) 26%, #0b0807 60%); }
+  #squad { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+  .hero { position: relative; width: 116px; padding: 8px 8px 9px; text-align: center;
+          background: linear-gradient(#1d1714, #120e0c); border: 1px solid #3a2e24;
+          outline: 1px solid #000; box-shadow: inset 0 0 0 1px rgba(217,164,65,.12), 0 6px 14px rgba(0,0,0,.7);
+          transition: transform .25s, box-shadow .25s; }
+  .hero.active { transform: translateY(-8px);
+                 box-shadow: inset 0 0 0 1px rgba(217,164,65,.6), 0 0 22px rgba(217,164,65,.35), 0 10px 18px rgba(0,0,0,.8); }
+  .hero.hurt { animation: hurt .45s; }
+  @keyframes hurt { 0%,100% { transform: none } 25% { transform: translateX(-5px) } 50% { transform: translateX(4px) } 75% { transform: translateX(-2px) } }
+  .portrait { position: relative; width: 58px; height: 58px; margin: -30px auto 4px; }
+  .portrait .face { position: absolute; inset: 9px; z-index: 1; border-radius: 50%; background-color: #1a1310;
+                    background-repeat: no-repeat; filter: saturate(.9); }
+  .portrait .ring { position: absolute; inset: 0; z-index: 2; -webkit-mask: radial-gradient(circle, transparent 54%, #000 56%); mask: radial-gradient(circle, transparent 54%, #000 56%); background: url(/assets/b/ui/portrait_ring.webp) center/contain no-repeat;
+                    filter: drop-shadow(0 3px 4px #000); }
+  .hero .hname { font: 700 12px 'Cinzel'; letter-spacing: .05em; color: var(--parch); }
+  .hero .cls { font: 500 10px 'Alegreya Sans SC'; letter-spacing: .18em; color: #a8977a; margin-bottom: 5px; }
+  .hero .bar { height: 8px; }
+  .hero .hp { font: 700 10px 'Alegreya Sans'; color: #cdbb95; margin-top: 3px; }
+
+  #actions { display: flex; gap: 10px; justify-content: center; margin-top: 14px; pointer-events: auto; }
+  .btn { width: 170px; height: 46px; border: 0; cursor: pointer; font: 800 15px 'Cinzel'; letter-spacing: .14em;
+         color: var(--parch); text-shadow: 0 2px 0 #000; background: center/100% 100% no-repeat;
+         filter: drop-shadow(0 4px 6px rgba(0,0,0,.8)); transition: transform .08s, filter .2s; }
+  .btn:active { transform: translateY(2px) scale(.98); }
+  .btn.red { background-image: url(/assets/b/ui/btn_red.webp); }
+  .btn.stone { background-image: url(/assets/b/ui/btn_stone.webp); color: #d8c9a6; }
+  .btn:disabled { filter: grayscale(.6) brightness(.6); cursor: default; }
+
+  /* destello rojo al recibir daño */
+  #hurtFlash { inset: 0; top: 0; bottom: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(179,40,33,.55));
+               opacity: 0; transition: opacity .5s; }
+  #hurtFlash.on { opacity: 1; transition: none; }
+  #banner { top: 38%; text-align: center; font: 800 44px 'Cinzel'; letter-spacing: .12em; color: var(--gold);
+            text-shadow: 0 3px 0 #000, 0 0 30px rgba(217,164,65,.6); opacity: 0; transform: scale(.8); transition: all .5s; }
+  #banner.on { opacity: 1; transform: none; }
+  #banner small { display: block; font: 600 13px 'Alegreya Sans SC'; letter-spacing: .35em; color: var(--parch); }
+</style>
+</head>
+<body>
+<div id="phone">
+  <div id="game"></div>
+  <div id="hurtFlash" class="ui"></div>
+  <div id="enemyPlate" class="ui">
+    <div class="round" id="round">RONDA 1 · DE 8</div>
+    <div class="name">Bruto del Velo</div>
+    <div class="bar"><i class="ghost" id="eGhost" style="width:100%"></i><i class="fill" id="eFill" style="width:100%"></i></div>
+  </div>
+  <div id="turn" class="ui">TURNO DE KAEL</div>
+  <div id="banner" class="ui">VICTORIA<small>El pasillo queda en silencio</small></div>
+  <div id="bottom" class="ui">
+    <div id="squad"></div>
+    <div id="actions">
+      <button class="btn red" id="btnAtk">Atacar</button>
+      <button class="btn stone" id="btnSkill">Habilidad</button>
+    </div>
+  </div>
+</div>
+<script src="/phaser.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

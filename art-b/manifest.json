@@ -1,0 +1,96 @@
+[
+  {
+    "id": "anchor_warrior_v1",
+    "kind": "actor",
+    "aspect": "3:4",
+    "prompt": "a grizzled veteran warrior of a besieged gothic fortress-farm, rusted heavy plate armor over a ragged dark red tabard, a huge notched cleaver-sword held low in both hands, a hooded iron lantern hanging from his belt glowing eerie teal, scarred bearded face, three-quarter side view facing right, ready combat stance, feet planted"
+  },
+  {
+    "id": "anchor_warrior_v2",
+    "kind": "actor",
+    "aspect": "3:4",
+    "prompt": "a grim armored warrior-knight defender of the last bastion, battered blackened steel plate with dirty gold trim, torn crimson cloak, wielding a heavy chained greatsword resting on the shoulder, a small teal-glowing lantern on the hip, helmet with a narrow visor slit, three-quarter side view facing right, confident idle combat stance"
+  },
+  {
+    "id": "warrior_attack",
+    "kind": "actor",
+    "aspect": "3:4",
+    "refs": [
+      "art-b/raw/anchor_warrior_v1.png"
+    ],
+    "prompt": "Redraw the reference character in a NEW POSE, keeping his design identical (same rusted plate armor, open-face helmet, grey beard, dark red tabard, teal lantern on the belt, notched cleaver-sword). Exactly ONE character with ONE head, no duplicates, no afterimages, no ghosting. New pose: a full-power attack, stepping deep forward to the right with the front knee bent, both hands swinging the cleaver-sword overhead in a big downward arc toward the right, torso twisted, tabard flying back, three-quarter side view facing right"
+  },
+  {
+    "id": "mage_idle",
+    "kind": "actor",
+    "aspect": "3:4",
+    "refs": [
+      "art-b/raw/anchor_warrior_v1.png"
+    ],
+    "prompt": "a gaunt hooded storm-arcanist of the same fortress, layered dark grey robes with dirty gold embroidery and a frayed blood-red sash, a tall iron staff topped by a cage holding a crackling teal spark, a book chained to the belt, pale face half hidden in the hood, three-quarter side view facing right, idle stance, one hand raised with faint teal glow"
+  },
+  {
+    "id": "mage_attack",
+    "kind": "actor",
+    "aspect": "3:4",
+    "refs": [
+      "art-b/raw/mage_idle.png"
+    ],
+    "prompt": "the EXACT same arcanist character as the reference (same robes, hood, staff with caged teal spark, chained book), now casting: staff thrust forward to the right, robes billowing, a burst of crackling teal lightning erupting from the staff head, three-quarter side view facing right"
+  },
+  {
+    "id": "ranger_idle",
+    "kind": "actor",
+    "aspect": "3:4",
+    "refs": [
+      "art-b/raw/anchor_warrior_v1.png"
+    ],
+    "prompt": "a lean scout-ranger of the same fortress, patched leather coat and a dark hood with a scarf over the mouth, a heavy crank crossbow with brass fittings held ready, bandolier of bolts, small candle-orange lamp on the shoulder strap, three-quarter side view facing right, alert crouched idle stance"
+  },
+  {
+    "id": "ranger_attack",
+    "kind": "actor",
+    "aspect": "3:4",
+    "refs": [
+      "art-b/raw/ranger_idle.png"
+    ],
+    "prompt": "Redraw the reference character in a NEW POSE, keeping the design identical (same patched leather coat, dark hood, scarf over the mouth, brass crank crossbow, bandolier, small orange lamp). Exactly ONE character, no duplicates. New pose clearly different from the reference: down on one knee, crossbow raised to the shoulder and aimed horizontally to the right, the bolt just fired with a short motion streak and a puff of dust, coat tails flaring, three-quarter side view facing right"
+  },
+  {
+    "id": "bruto_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/raw/anchor_warrior_v1.png",
+      "art-inbox/anchors/enemy_bruto.png"
+    ],
+    "prompt": "a hulking warp-mutated brute monster (use the second reference only for the creature concept, render it in the FIRST reference's ink illustration style): massive hunched body, grey diseased skin with glowing teal veins, crude rusted iron plates bolted into its flesh, one arm ending in a huge stone-and-iron maul, small burning orange eyes, three-quarter side view facing LEFT, menacing idle stance"
+  },
+  {
+    "id": "bruto_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/raw/bruto_idle.png"
+    ],
+    "prompt": "Redraw the reference monster in a NEW POSE, keeping its design identical (grey skin, glowing teal veins, bolted iron plates, stone-and-iron maul arm). Exactly ONE creature. New pose clearly different from the reference: violently knocked back by a heavy blow, whole body leaning far backwards, head thrown back roaring in pain, free arm flung up, one foot lifted off the ground, flecks of dark blood flying, three-quarter side view facing LEFT"
+  },
+  {
+    "id": "bg_combat_crypt",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": [
+      "art-b/raw/anchor_warrior_v1.png"
+    ],
+    "prompt": "vertical portrait combat backdrop for a mobile game: interior of a ruined gothic crypt-foundry beneath a fortress, broken stone arches and pillars, hanging rusted chains, a tall cracked window glowing eerie teal in the upper background, iron braziers with candle-orange fire on the sides, a wide open flat flagstone floor filling the lower half of the image as an empty stage, middle of the image kept uncluttered, darker vignette at the edges, dramatic moody lighting"
+  },
+  {
+    "id": "ui_kit",
+    "kind": "ui",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/raw/bg_combat_crypt.png"
+    ],
+    "prompt": "a matching set of flat front-facing dark fantasy game interface pieces, NO characters, NO people, NO body parts: (1) one large rectangular panel frame of blackened riveted iron with dirty gold corner ornaments and a plain dark interior, (2) one wide rectangular button in blood red with an iron rim, (3) one wide rectangular button in dark stone with an iron rim, (4) one round portrait frame of iron and gold with empty dark centre, (5) one long thin horizontal health bar frame with empty interior, (6) three small square iron icon slots. Use the reference only for palette and mood"
+  }
+]
