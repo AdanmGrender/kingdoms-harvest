@@ -22,24 +22,40 @@ const sharp = require('sharp');
 
 const ROOT = path.join(__dirname, '..');
 
-// ─── Bloque de estilo B (contrato visual, ver docs/art-direction-b.md) ────────
-const STYLE_B = [
-  'hand-painted dark fantasy illustration in a gothic graphic-novel style:',
-  'thick confident black ink outlines, heavy chiaroscuro with deep solid black shadows,',
-  'cel-shaded forms with subtle painterly texture, strong readable silhouettes,',
-  'limited muted grimdark palette (stone #4a443e, dark stone #332f2b, blood red #b32821,',
-  'dirty gold #d9a441, eerie teal glow #4fd8c8, candle orange #e8933a, storm grey #4a4550),',
-  'NOT pixel art, NOT 3D render, NOT photorealistic, no text, no watermark, no logos,',
-  'no imperial or double-headed eagles, no chaos stars, no Games Workshop iconography,',
-  '100% original designs',
-].join(' ');
+// ─── Bloques de estilo (contrato visual, ver docs/superpowers/specs) ─────────
+// 'grimdark' (default, 2026-10-16): fantasía oscura renacentista. Se describen
+// RASGOS, nunca franquicias ni artistas reales (IP 100% original).
+const STYLES = {
+  grimdark: [
+    'grimdark Renaissance dark-fantasy illustration, hand-inked like a 16th-century woodcut or',
+    'copperplate engraving: rough scratchy ink linework, dense cross-hatching in the shadows,',
+    'dark ink washes, muted earthy palette of umber, sepia, ochre, rust, bone white, tarnished brass',
+    'and dried-blood crimson, with rare accents of sickly green glow and candle orange;',
+    '"heroic scale" proportions: oversized head, hands, weapons and shoulder armour, chunky',
+    'readable silhouette; everything worn, dirty, muddy, battle-scarred, patched and decaying',
+    '(skulls, spikes, chains, parchment prayer scrolls, wax-sealed charms, bandages); maximalist',
+    'detail with grotesque, darkly humorous touches. NOT clean high fantasy, NOT anime, NOT 3D',
+    'render, NOT pixel art, no text, no watermark, no logos, no heraldic eagles, no eight-pointed',
+    'stars, no comets, no existing franchise iconography, 100% original designs',
+  ].join(' '),
+  ink: [
+    'hand-painted dark fantasy illustration in a gothic graphic-novel style:',
+    'thick confident black ink outlines, heavy chiaroscuro with deep solid black shadows,',
+    'cel-shaded forms with subtle painterly texture, strong readable silhouettes,',
+    'limited muted grimdark palette (stone #4a443e, dark stone #332f2b, blood red #b32821,',
+    'dirty gold #d9a441, eerie teal glow #4fd8c8, candle orange #e8933a, storm grey #4a4550),',
+    'NOT pixel art, NOT 3D render, NOT photorealistic, no text, no watermark, no logos,',
+    'no imperial or double-headed eagles, no chaos stars, no Games Workshop iconography,',
+    '100% original designs',
+  ].join(' '),
+};
 
 const KIND_SUFFIX = {
-  actor: 'Single character, full body fully visible head to feet with margin around it, '
+  actor: 'NOT on parchment or paper texture. Single character, full body fully visible head to feet with margin around it, '
     + 'isolated on a perfectly flat uniform light grey (#d0d0d0) background, '
     + 'no ground, no floor, no cast shadow, no other objects.',
   scene: 'Environment only: absolutely no characters, no people, no creatures.',
-  ui: 'Game UI asset sheet: separate clean elements laid out in a grid with generous spacing '
+  ui: 'NOT on parchment paper. Game UI asset sheet: separate clean elements laid out in a grid with generous spacing '
     + 'on a perfectly flat uniform light grey (#d0d0d0) background, front orthographic view, no text, no letters.',
 };
 
@@ -62,7 +78,7 @@ function refPart(refPath) {
   return { inlineData: { mimeType, data: fs.readFileSync(abs).toString('base64') } };
 }
 
-function buildPrompt({ kind = 'actor', prompt, refs = [] }) {
+function buildPrompt({ kind = 'actor', prompt, refs = [], style = 'grimdark' }) {
   const suffix = KIND_SUFFIX[kind] || '';
   const lead = refs.length
     ? 'The attached image(s) are the art-style reference: match their rendering technique, ink line '
@@ -70,7 +86,7 @@ function buildPrompt({ kind = 'actor', prompt, refs = [] }) {
       + 'reference image(s) unless the SUBJECT explicitly says it is the same character — never add '
       + 'extra figures, heads or body parts from the reference. Draw exactly ONE subject. '
     : '';
-  return `${lead}${STYLE_B}. SUBJECT: ${prompt}. ${suffix}`;
+  return `${lead}${STYLES[style] || STYLES.grimdark}. SUBJECT: ${prompt}. ${suffix}`;
 }
 
 async function generate(item, { model, size }) {

@@ -17,19 +17,29 @@ motor.
 
 ## 1. Contrato visual (todo asset lo cumple)
 
+> **Revisado 2026-10-16 (owner):** el estilo pasa de "tinta gótica limpia" a
+> **grimdark renacentista** — fantasía oscura de escala heroica, estética del
+> Renacimiento alemán (landsknechte, pólvora primitiva + magia caprichosa),
+> mugre y decadencia, maximalismo grotesco con humor negro. Inspiración de
+> RASGOS de la fantasía de mesa clásica; **cero IP de terceros** (ni nombres de
+> facciones, ni símbolos, ni nombres de ilustradores en los prompts).
+
 | Eje | Valor |
 |-----|-------|
-| Estilo | ilustración dark-fantasy de novela gráfica: tinta negra gruesa, claroscuro con negros sólidos, cel-shading con textura pintada. **No** pixel art, **no** 3D |
-| Paleta | piedra `#4a443e`/`#332f2b`, sangre `#b32821`, oro sucio `#d9a441`, teal `#4fd8c8`, vela `#e8933a`, tormenta `#4a4550` |
-| Vista | personajes en ¾ de perfil: héroes miran a la **derecha**, enemigos a la **izquierda** |
-| Poses | por personaje: `idle` + `attack` (+ `hit` en enemigos). Mismo diseño exacto entre poses |
-| Fondos | verticales 9:16 pensados para celular; piso abierto en la mitad inferior |
-| UI | hierro ennegrecido + oro sucio; tipografía Cinzel (títulos) + Alegreya Sans/SC (texto); **cero emojis** |
-| IP | 100% original — sin marcas de GW (águilas, estrella del caos, sellos) |
-| Ancla | `art-b/raw/anchor_warrior_v1.png` va como `--ref` en TODO lo nuevo |
+| Técnica | ilustración entintada tipo grabado/xilografía del s. XVI: línea tosca, trama cruzada en sombras, aguadas de tinta oscura. **No** pixel art, **no** 3D, **no** fantasía limpia/anime |
+| Proporciones | **escala heroica**: cabeza, manos, armas y hombreras sobredimensionadas; siluetas macizas y legibles de lejos |
+| Paleta | tierras: umbra, sepia, ocre, óxido, hueso, latón deslucido, carmesí de sangre seca; acentos raros de **verde enfermizo** (magia/corrupción) y naranja vela |
+| Mundo | Renacimiento alemán: calzas bombachas acuchilladas, sombreros de ala con plumas absurdas, morriones, corazas abolladas, arcabuces, montantes; pueblos de entramado de madera derrumbándose, horcas, jaulas, santuarios quemados, barro |
+| Tono | todo gastado y al borde del colapso: calaveras, pinchos, cadenas, pergaminos de oración, amuletos lacrados, vendas; toques grotescos y cómicos (botín ridículo, bigotes imposibles) |
+| Vista | ¾: héroes miran a la **derecha**, enemigos a la **izquierda** |
+| Poses | héroes: **hoja de pose** (idle izq. + ataque der. en UNA imagen 16:9) → coherencia alta; enemigos: idle + hit |
+| Fondos | verticales 9:16, piso abierto en la mitad inferior |
+| UI | roble oscuro, latón deslucido, hierro con remaches, pergamino, lacre; tipografía **IM Fell English / SC** (imprenta antigua, OFL); cero emojis |
+| Anclas | `art-b/gr/refs/anchor.webp` (Ulrich, el doble sueldo) para estilo; `mage_idle.webp` como ref de estilo cuando el ancla "contagia" su montante |
 
-Herramientas: `scripts/gen_art_b.js` (Gemini 3 Pro Image, 2K, manifest JSON),
-`scripts/process_art_b.js` (recorte + limpieza + webp), `art-b/process.sh`.
+Herramientas: `scripts/gen_art_b.js` (estilo `grimdark` por defecto; `ink`
+conserva el estilo anterior), `scripts/process_art_b.js` (`--crop`, `--erase`,
+`--flip`, `--fade-right`), `art-b/gr/manifest.json` + `art-b/gr/process.sh`.
 Revisión humana obligatoria de cada asset antes de integrarlo.
 
 ## 2. Fases
@@ -48,7 +58,7 @@ Revisión humana obligatoria de cada asset antes de integrarlo.
   para móviles de gama baja.
 
 ### B2 — Kit de UI y tipografía en todo el chrome React
-- Fuentes empaquetadas (`client/public/fonts`, OFL) y quitar Google Fonts.
+- Fuentes empaquetadas (`client/public/fonts`, OFL: IM Fell English para todo el juego) y quitar Google Fonts.
 - Tokens de Tailwind (colores, sombras, bordes) + componentes `Panel`,
   `Button`, `PortraitRing`, `Bar` usando la hoja de UI generada.
 - Hoja de íconos ilustrados (~40) que reemplaza todos los emojis.

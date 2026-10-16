@@ -1,4 +1,17 @@
-# Spike 001 — Combate "dirección B" (ilustración gótica de perfil)
+# Spike 001 — Combate "dirección B"
+
+> **v2 (2026-10-16): estilo grimdark renacentista** (pedido del owner). La v1
+> "tinta gótica" quedó en `capturas/tinta-*.webp` y en el historial de git.
+> Elenco v2: Ulrich (doble sueldo, montante), Ottokar (brujo de tormenta),
+> Greta (arcabucera) contra el Bruto Cornudo en un pueblo apestado.
+>
+> **Hallazgo v2:** editar la pose de una referencia con la IA mezcla posturas
+> (4 piernas, 2 cabezas, "fantasma" del arma del ancla). Lo que funciona:
+> **hoja de pose** — las dos poses del mismo personaje en UNA imagen 16:9 —
+> y recortar cada mitad (`art-b/gr/process.sh`). El estilo grabado tiende a
+> poner fondo de pergamino en figuras sueltas; en hojas de pose sale liso. Plan
+> B para fondos texturados: `rembg` (probado vía `uv run --with "rembg[cpu]"`).
+
 
 **Pregunta:** ¿se puede dar al juego una estética de calidad comercial **sin cambiar
 de motor**, con arte generado por IA de forma coherente y animado en Phaser 3.90?

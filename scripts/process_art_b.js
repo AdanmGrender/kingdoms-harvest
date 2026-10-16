@@ -22,7 +22,7 @@ const fs = require('fs');
 const path = require('path');
 
 function parseArgs(argv) {
-  const a = { tol: 38, height: 0, width: 0, flip: false, scene: false, keepRatio: 0.12, crop: null, pad: 0.02 };
+  const a = { tol: 38, height: 0, width: 0, flip: false, scene: false, keepRatio: 0.12, crop: null, erase: [], fadeRight: 0, pad: 0.02 };
   const pos = [];
   for (let i = 2; i < argv.length; i++) {
     const t = argv[i];
@@ -33,6 +33,8 @@ function parseArgs(argv) {
     else if (t === '--scene') a.scene = true;
     else if (t === '--keep-ratio') a.keepRatio = Number(argv[++i]);
     else if (t === '--crop') a.crop = argv[++i].split(',').map(Number);
+    else if (t === '--erase') a.erase.push(argv[++i].split(',').map(Number)); // x,y,w,h (coords del original) → pintado con color de fondo
+    else if (t === '--fade-right') a.fadeRight = Number(argv[++i]); // fracción del ancho final que se desvanece (humo cortado por el borde)
     else if (t === '--pad') a.pad = Number(argv[++i]);
     else pos.push(t);
   }
@@ -170,6 +172,10 @@ async function main() {
   }
   const { data: raw, info: ri } = await sharp(a.in).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   let img = { width: ri.width, height: ri.height, data: raw };
+  // --erase: tapa con el color de la esquina regiones a descartar (p.ej. recuadros de accesorios de una hoja)
+  for (const [ex, ey, ew, eh] of a.erase) {
+    for (let y = ey; y < Math.min(img.height, ey + eh); y++) for (let x = ex; x < Math.min(img.width, ex + ew); x++) img.data.copy(img.data, (y * img.width + x) * 4, 0, 4);
+  }
   if (a.crop) img = cropImg(img, ...a.crop);
   let info = {};
   if (!a.scene) {
@@ -177,6 +183,12 @@ async function main() {
     img = cropImg(img, ...bbox(img, a.pad));
   }
   if (a.flip) img = flipImg(img);
+  if (a.fadeRight > 0) {
+    const fw = Math.round(img.width * a.fadeRight), x0 = img.width - fw;
+    for (let y = 0; y < img.height; y++) for (let x = x0; x < img.width; x++) {
+      const o = (y * img.width + x) * 4 + 3; img.data[o] = Math.round(img.data[o] * (1 - (x - x0) / fw) ** 1.5);
+    }
+  }
   let nw = img.width, nh = img.height;
   if (a.height) { nh = a.height; nw = Math.round(img.width * (a.height / img.height)); }
   else if (a.width) { nw = a.width; nh = Math.round(img.height * (a.width / img.width)); }

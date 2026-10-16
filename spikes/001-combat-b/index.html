@@ -8,11 +8,11 @@
 <style>
   :root {
     --ink: #120d0b; --stone: #332f2b; --stone-l: #4a443e; --blood: #b32821;
-    --gold: #d9a441; --gold-d: #8a6420; --teal: #4fd8c8; --candle: #e8933a; --parch: #efe0bd;
+    --gold: #c9a45c; --gold-d: #6e5326; --green: #a8e05f; --candle: #e8933a; --parch: #e9dcbc;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: #070505; }
-  body { display: grid; place-items: center; font-family: 'Alegreya Sans', serif; color: var(--parch); }
+  body { display: grid; place-items: center; font-family: 'IM Fell English', serif; color: var(--parch); }
   #phone { position: relative; width: 412px; height: 860px; overflow: hidden; background: #000;
            box-shadow: 0 0 0 1px #2a2420, 0 30px 80px rgba(0,0,0,.8); }
   #game { position: absolute; inset: 0; }
@@ -21,9 +21,9 @@
 
   /* ── placa del enemigo ───────────────────────────── */
   #enemyPlate { top: 0; padding-top: 14px; padding-bottom: 26px; background: linear-gradient(rgba(8,6,5,.85), rgba(8,6,5,.55) 60%, transparent); padding: 0 18px; text-align: center; }
-  #enemyPlate .round { font: 600 11px 'Alegreya Sans SC'; letter-spacing: .28em; color: var(--gold);
+  #enemyPlate .round { font: 13px 'IM Fell English SC'; letter-spacing: .22em; color: var(--gold);
                        opacity: .85; text-shadow: 0 1px 2px #000; }
-  #enemyPlate .name { font: 800 21px 'Cinzel'; letter-spacing: .06em; color: var(--parch); margin: 2px 0 6px;
+  #enemyPlate .name { font: 26px 'IM Fell English SC'; letter-spacing: .04em; color: var(--parch); margin: 2px 0 6px;
                       text-shadow: 0 2px 0 #000, 0 0 18px rgba(179,40,33,.55); }
   .bar { position: relative; height: 14px; border-radius: 2px; background: #0d0908;
          border: 2px solid #1c1512; outline: 1px solid var(--gold-d); box-shadow: 0 2px 6px rgba(0,0,0,.8), inset 0 2px 4px #000; }
@@ -34,7 +34,7 @@
   #enemyPlate .bar { height: 16px; margin: 0 6px; }
 
   /* ── banner de turno ─────────────────────────────── */
-  #turn { top: 108px; text-align: center; font: 700 13px 'Alegreya Sans SC'; letter-spacing: .3em; color: var(--gold);
+  #turn { top: 108px; text-align: center; font: 16px 'IM Fell English SC'; letter-spacing: .2em; color: var(--gold);
           opacity: 0; transform: translateY(-6px); transition: all .3s; text-shadow: 0 1px 3px #000; }
   #turn.on { opacity: 1; transform: none; }
 
@@ -43,8 +43,8 @@
             background: linear-gradient(to bottom, rgba(10,7,6,0) 0, rgba(10,7,6,.86) 26%, #0b0807 60%); }
   #squad { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
   .hero { position: relative; width: 116px; padding: 8px 8px 9px; text-align: center;
-          background: linear-gradient(#1d1714, #120e0c); border: 1px solid #3a2e24;
-          outline: 1px solid #000; box-shadow: inset 0 0 0 1px rgba(217,164,65,.12), 0 6px 14px rgba(0,0,0,.7);
+          background: linear-gradient(#2a1f17, #160f0a); border: 1px solid #5a4226;
+          outline: 1px solid #000; box-shadow: inset 0 0 0 1px rgba(201,164,92,.18), 0 6px 14px rgba(0,0,0,.7);
           transition: transform .25s, box-shadow .25s; }
   .hero.active { transform: translateY(-8px);
                  box-shadow: inset 0 0 0 1px rgba(217,164,65,.6), 0 0 22px rgba(217,164,65,.35), 0 10px 18px rgba(0,0,0,.8); }
@@ -55,13 +55,13 @@
                     background-repeat: no-repeat; filter: saturate(.9); }
   .portrait .ring { position: absolute; inset: 0; z-index: 2; -webkit-mask: radial-gradient(circle, transparent 54%, #000 56%); mask: radial-gradient(circle, transparent 54%, #000 56%); background: url(/assets/b/ui/portrait_ring.webp) center/contain no-repeat;
                     filter: drop-shadow(0 3px 4px #000); }
-  .hero .hname { font: 700 12px 'Cinzel'; letter-spacing: .05em; color: var(--parch); }
-  .hero .cls { font: 500 10px 'Alegreya Sans SC'; letter-spacing: .18em; color: #a8977a; margin-bottom: 5px; }
+  .hero .hname { font: 15px 'IM Fell English SC'; letter-spacing: .02em; color: var(--parch); }
+  .hero .cls { font: italic 11px 'IM Fell English'; letter-spacing: .02em; color: #b09c78; margin-bottom: 5px; }
   .hero .bar { height: 8px; }
-  .hero .hp { font: 700 10px 'Alegreya Sans'; color: #cdbb95; margin-top: 3px; }
+  .hero .hp { font: 11px 'IM Fell English'; color: #cdbb95; margin-top: 3px; }
 
   #actions { display: flex; gap: 10px; justify-content: center; margin-top: 14px; pointer-events: auto; }
-  .btn { width: 170px; height: 46px; border: 0; cursor: pointer; font: 800 15px 'Cinzel'; letter-spacing: .14em;
+  .btn { width: 170px; height: 46px; border: 0; cursor: pointer; font: 19px 'IM Fell English SC'; letter-spacing: .08em;
          color: var(--parch); text-shadow: 0 2px 0 #000; background: center/100% 100% no-repeat;
          filter: drop-shadow(0 4px 6px rgba(0,0,0,.8)); transition: transform .08s, filter .2s; }
   .btn:active { transform: translateY(2px) scale(.98); }
@@ -73,10 +73,10 @@
   #hurtFlash { inset: 0; top: 0; bottom: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(179,40,33,.55));
                opacity: 0; transition: opacity .5s; }
   #hurtFlash.on { opacity: 1; transition: none; }
-  #banner { top: 38%; text-align: center; font: 800 44px 'Cinzel'; letter-spacing: .12em; color: var(--gold);
+  #banner { top: 38%; text-align: center; font: 54px 'IM Fell English SC'; letter-spacing: .06em; color: var(--gold);
             text-shadow: 0 3px 0 #000, 0 0 30px rgba(217,164,65,.6); opacity: 0; transform: scale(.8); transition: all .5s; }
   #banner.on { opacity: 1; transform: none; }
-  #banner small { display: block; font: 600 13px 'Alegreya Sans SC'; letter-spacing: .35em; color: var(--parch); }
+  #banner small { display: block; font: italic 16px 'IM Fell English'; letter-spacing: .04em; color: var(--parch); }
 </style>
 </head>
 <body>
@@ -85,11 +85,11 @@
   <div id="hurtFlash" class="ui"></div>
   <div id="enemyPlate" class="ui">
     <div class="round" id="round">RONDA 1 · DE 8</div>
-    <div class="name">Bruto del Velo</div>
+    <div class="name">Bruto Cornudo</div>
     <div class="bar"><i class="ghost" id="eGhost" style="width:100%"></i><i class="fill" id="eFill" style="width:100%"></i></div>
   </div>
-  <div id="turn" class="ui">TURNO DE KAEL</div>
-  <div id="banner" class="ui">VICTORIA<small>El pasillo queda en silencio</small></div>
+  <div id="turn" class="ui">TURNO DE ULRICH</div>
+  <div id="banner" class="ui">VICTORIA<small>Y ni un trago de cerveza para celebrarlo</small></div>
   <div id="bottom" class="ui">
     <div id="squad"></div>
     <div id="actions">

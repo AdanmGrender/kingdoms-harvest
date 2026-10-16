@@ -7,14 +7,14 @@ const W = 824, H = 1720;
 const A = '/assets/b/';
 
 const HEROES = [
-  { id: 'ranger',  name: 'Isolde', cls: 'Batidora',  x: 112, y: 1180, h: 360, hp: 70,  dmg: [9, 14],  kind: 'bolt',
-    face: { x: 46, y: 9, s: 330 } },
-  { id: 'mage',    name: 'Vaun',   cls: 'Arcanista', x: 292, y: 1262, h: 390, hp: 60,  dmg: [13, 19], kind: 'storm',
-    face: { x: 57, y: 14, s: 330 } },
-  { id: 'warrior', name: 'Kael',   cls: 'Guardián',  x: 488, y: 1350, h: 440, hp: 120, dmg: [10, 16], kind: 'melee',
-    face: { x: 66, y: 8, s: 360 } },
+  { id: 'ranger',  name: 'Greta', cls: 'Arcabucera', x: 118, y: 1185, h: 360, hp: 70,  dmg: [9, 14],  kind: 'musket',
+    face: { x: 34, y: 16, s: 330 } },
+  { id: 'mage',    name: 'Ottokar', cls: 'Brujo de Tormenta', x: 300, y: 1268, h: 390, hp: 60,  dmg: [13, 19], kind: 'storm',
+    face: { x: 40, y: 14, s: 330 } },
+  { id: 'warrior', name: 'Ulrich', cls: 'Doble Sueldo', x: 486, y: 1352, h: 420, hp: 120, dmg: [10, 16], kind: 'melee',
+    face: { x: 61, y: 11, s: 360 } },
 ];
-const ENEMY = { name: 'Bruto del Velo', x: 628, y: 1010, h: 480, hp: 160, dmg: [11, 18] };
+const ENEMY = { name: 'Bruto Cornudo', x: 630, y: 1015, h: 500, hp: 160, dmg: [11, 18] };
 
 const rnd = (a, b) => Math.floor(a + Math.random() * (b - a + 1));
 const emit = (type, detail = {}) => window.dispatchEvent(new CustomEvent('kh', { detail: { type, ...detail } }));
@@ -67,7 +67,7 @@ class Combat extends Phaser.Scene {
     // ── luces: braseros + ventana (PointLight = glow aditivo barato) ──
     const lights = [
       { x: 70, y: 905, c: 0xe8933a, r: 260, i: 0.16 }, { x: 760, y: 905, c: 0xe8933a, r: 260, i: 0.16 },
-      { x: 412, y: 330, c: 0x4fd8c8, r: 380, i: 0.08 },
+      { x: 412, y: 260, c: 0x9fd35a, r: 420, i: 0.07 },
     ];
     for (const L of lights) {
       const pl = this.add.pointlight(L.x, L.y, L.c, L.r, L.i, 0.06);
@@ -83,7 +83,7 @@ class Combat extends Phaser.Scene {
     }
 
     // ── capa de atenuación (foco en el ataque) ──
-    this.dim = this.add.rectangle(W / 2, H / 2, W * 2, H * 2, 0x000000, 0).setDepth(50);
+    this.dim = this.add.rectangle(W / 2, H / 2, W * 2, H * 2, 0x000000, 0).setDepth(2000);
 
     // ── actores ──
     this.actors = {};
@@ -109,22 +109,26 @@ class Combat extends Phaser.Scene {
       x: { min: 0, max: W }, y: H + 20, lifespan: { min: 4000, max: 7000 }, speedY: { min: -60, max: -130 },
       speedX: { min: -20, max: 25 }, scale: { start: 0.9, end: 0.2 }, alpha: { start: 0.9, end: 0 },
       tint: [0xe8933a, 0xffb050, 0xd9a441], blendMode: 'ADD', frequency: 140, rotate: { min: -20, max: 20 },
-    }).setDepth(900);
+    }).setDepth(2400);
     this.sparks = this.add.particles(0, 0, 'spark', {
       lifespan: { min: 250, max: 650 }, speed: { min: 250, max: 750 }, scale: { start: 0.9, end: 0 },
       alpha: { start: 1, end: 0 }, blendMode: 'ADD', gravityY: 900, emitting: false,
-    }).setDepth(1000);
+    }).setDepth(2500);
     this.blood = this.add.particles(0, 0, 'spark', {
       lifespan: { min: 400, max: 900 }, speed: { min: 150, max: 520 }, scale: { start: 0.7, end: 0.15 },
       tint: [0x6e0d0a, 0x9a1812, 0x3a0705], gravityY: 1400, emitting: false,
-    }).setDepth(999);
+    }).setDepth(2490);
 
     // ── post-FX de cámara: viñeta + bloom suave ──
     if (cam.postFX) {
       cam.postFX.addVignette(0.5, 0.48, 0.92, 0.42);
       this.bloom = cam.postFX.addBloom(0xffffff, 1, 1, 1, 0.55, 3);
     }
-    this.lightning = this.add.graphics().setDepth(1001).setBlendMode('ADD');
+    this.smoke = this.add.particles(0, 0, 'fog', {
+      lifespan: { min: 1100, max: 1800 }, speedX: { min: 30, max: 140 }, speedY: { min: -60, max: 10 },
+      scale: { start: 0.12, end: 0.55 }, alpha: { start: 0.9, end: 0 }, tint: [0xb8b2a4, 0x8e897e], emitting: false,
+    }).setDepth(2510);
+    this.lightning = this.add.graphics().setDepth(2520).setBlendMode('ADD');
 
     emit('init', { heroes: HEROES, enemy: ENEMY });
     this.queue = ['warrior', 'mage', 'ranger', 'enemy'];
@@ -159,7 +163,7 @@ class Combat extends Phaser.Scene {
   focus(attacker, target, on) {
     const cam = this.cameras.main;
     if (on) {
-      attacker.sp.setDepth(60 + attacker.base.y / 100); target.sp.setDepth(60 + target.base.y / 100);
+      attacker.sp.setDepth(2100 + attacker.base.y / 100); target.sp.setDepth(2100 + target.base.y / 100);
       const mx = (attacker.base.x + target.base.x) / 2, my = (attacker.base.y + target.base.y) / 2 - 220;
       cam.pan(mx, my, 420, 'Cubic.easeOut'); cam.zoomTo(1.2, 420, 'Cubic.easeOut');
       this.tw({ targets: this.dim, fillAlpha: 0.5, duration: 300 });
@@ -190,10 +194,10 @@ class Combat extends Phaser.Scene {
 
   dmgText(x, y, n, crit) {
     const t = this.add.text(x, y, crit ? `${n}!` : `${n}`, {
-      fontFamily: 'Cinzel', fontStyle: '800', fontSize: crit ? '96px' : '76px',
+      fontFamily: 'IM Fell English SC', fontSize: crit ? '104px' : '84px',
       color: crit ? '#ff5a3c' : '#f3e2b8', stroke: '#120a07', strokeThickness: 12,
       shadow: { offsetX: 0, offsetY: 6, color: '#000', blur: 8, fill: true, stroke: true },
-    }).setOrigin(0.5).setDepth(1100).setScale(0.3);
+    }).setOrigin(0.5).setDepth(2700).setScale(0.3);
     this.tweens.chain({ targets: t, tweens: [
       { scale: crit ? 1.35 : 1.15, duration: 120, ease: 'Back.easeOut' },
       { scale: 1, duration: 120 },
@@ -202,7 +206,7 @@ class Combat extends Phaser.Scene {
   }
 
   slash(x, y) {
-    const s = this.add.image(x, y, 'slashRaw').setBlendMode('ADD').setDepth(1002).setTint(0xfff1d0)
+    const s = this.add.image(x, y, 'slashRaw').setBlendMode('ADD').setDepth(2530).setTint(0xfff1d0)
       .setAngle(-25).setScale(0.6, 0.4).setAlpha(1);
     this.tweens.add({ targets: s, scaleX: 1.6, scaleY: 1.1, angle: 10, alpha: 0, duration: 260, ease: 'Cubic.easeOut', onComplete: () => s.destroy() });
   }
@@ -217,7 +221,7 @@ class Combat extends Phaser.Scene {
         pts.push([x0 + (x1 - x0) * t + rnd(-26, 26), y0 + (y1 - y0) * t + rnd(-34, 34)]);
       }
       pts.push([x1, y1]);
-      for (const [w, a, c] of [[26, 0.12, 0x4fd8c8], [12, 0.45, 0x4fd8c8], [4, 1, 0xe9fffb]]) {
+      for (const [w, a, c] of [[26, 0.14, 0x8fd14f], [12, 0.5, 0xa8e05f], [4, 1, 0xf2ffd8]]) {
         g.lineStyle(w, c, a); g.beginPath(); g.moveTo(...pts[0]); for (const p of pts) g.lineTo(...p); g.strokePath();
       }
     };
@@ -264,20 +268,26 @@ class Combat extends Phaser.Scene {
       const p = this.bolt(tipX, tipY, e.sp.x - 30, e.sp.y - ENEMY.h * 0.55, 300);
       await this.wait(120);
       await this.hitStop(60);
-      this.impact(e, n, crit, [0x4fd8c8, 0xe9fffb]);
+      this.impact(e, n, crit, [0xa8e05f, 0xf2ffd8]);
       await p; await this.wait(420);
     } else {
+      // arcabuz: apuntar → fogonazo + humo + bala → retroceso
       this.pose(a, `${h.id}_attack`);
-      await this.tw({ targets: a.sp, x: a.base.x - 16, duration: 90, ease: 'Quad.easeOut' }); // retroceso
-      const sx = a.sp.x + a.sp.displayWidth * 0.45, sy = a.sp.y - a.base.h * 0.66;
+      await this.wait(260);
+      const mx = a.sp.x + a.sp.displayWidth * 0.36, my = a.sp.y - a.sp.displayHeight * 0.69;
       const tx = e.sp.x - 30, ty = e.sp.y - ENEMY.h * 0.55;
-      const b = this.add.rectangle(sx, sy, 70, 5, 0xfff1d0).setDepth(1002).setBlendMode('ADD')
-        .setRotation(Math.atan2(ty - sy, tx - sx));
-      await this.tw({ targets: b, x: tx, y: ty, duration: 120, ease: 'Linear' });
+      const fl = this.add.image(mx, my, 'spark').setBlendMode('ADD').setTint(0xffd27a).setScale(5).setDepth(2540);
+      this.tweens.add({ targets: fl, scale: 0.5, alpha: 0, duration: 140, onComplete: () => fl.destroy() });
+      this.smoke.explode(14, mx + 20, my);
+      if (this.bloom) this.tw({ targets: this.bloom, strength: 1.5, duration: 80, yoyo: true });
+      this.cameras.main.shake(90, 0.006);
+      this.tweens.add({ targets: a.sp, x: a.base.x - 30, angle: -3, duration: 80, yoyo: true, ease: 'Quad.easeOut' });
+      const b = this.add.rectangle(mx, my, 90, 4, 0xfff1d0).setDepth(2530).setBlendMode('ADD').setRotation(Math.atan2(ty - my, tx - mx));
+      await this.tw({ targets: b, x: tx, y: ty, duration: 90, ease: 'Linear' });
       b.destroy();
-      await this.hitStop(50);
+      await this.hitStop(60);
       this.impact(e, n, crit, [0xffffff, 0xe8933a]);
-      await this.wait(480);
+      await this.wait(520);
     }
     this.restore(e);
     if (this.state.ehp <= 0) { await this.focus(a, e, false); this.restore(a); a.breath.resume(); return this.victory(); }
@@ -318,7 +328,7 @@ class Combat extends Phaser.Scene {
   async victory() {
     const e = this.enemy;
     e.breath.pause();
-    this.sparks.setParticleTint([0x4fd8c8, 0x9fffee]);
+    this.sparks.setParticleTint([0xa8e05f, 0xe8d9a0]);
     for (let i = 0; i < 6; i++) { this.sparks.explode(18, e.sp.x + rnd(-120, 120), e.sp.y - rnd(80, 420)); await this.wait(90); }
     await this.tw({ targets: [e.sp, e.sh], alpha: 0, duration: 900, ease: 'Cubic.easeIn' });
     emit('victory');
@@ -370,7 +380,7 @@ class Combat extends Phaser.Scene {
   $('btnAtk').onclick = next; $('btnSkill').onclick = next;
 })();
 
-document.fonts.load('800 76px Cinzel').finally(() => window.game = new Phaser.Game({
+Promise.all([document.fonts.load("84px 'IM Fell English SC'"), document.fonts.load("16px 'IM Fell English'")]).finally(() => window.game = new Phaser.Game({
   type: Phaser.WEBGL, parent: 'game', backgroundColor: '#000000',
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: W, height: H },
   scene: [Combat],

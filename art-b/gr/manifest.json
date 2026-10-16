@@ -1,0 +1,83 @@
+[
+  {
+    "id": "anchor",
+    "kind": "actor",
+    "aspect": "3:4",
+    "refs": [
+      "art-b/gr/refs/anchor_warrior_a.webp"
+    ],
+    "prompt": "Redraw EXACTLY the same character as the reference (same squat heroic proportions, flamberge greatsword on the shoulder, huge plumed floppy hat, red and bone striped puffed sleeves and breeches, breastplate, moustache, gap-toothed grin, candle, skull charm, scrolls) in the same pose and the same ink-engraving technique, but on a perfectly flat plain light grey background with no paper texture"
+  },
+  {
+    "id": "mage_idle",
+    "kind": "actor",
+    "aspect": "3:4",
+    "refs": [
+      "art-b/gr/refs/anchor.webp"
+    ],
+    "prompt": "a half-mad wandering storm-wizard of the same Renaissance world (a NEW, different character): towering crooked pointed hat hung with bells, bone fetishes and bird skulls, patched layered robes in dirty ochre and faded blue with ragged fur collar, an absurdly long braided beard tied with iron rings, wild staring eyes, gnarled wooden staff topped with an iron cage holding a crackling sickly-green spark, books and scrolls chained to his belt, heroic oversized hands, three-quarter view facing right, idle stance with one hand crackling green"
+  },
+  {
+    "id": "brute_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/anchor.webp"
+    ],
+    "prompt": "a hulking horned mutant brute of the corrupted wilds (a NEW creature): grotesquely oversized curling goat horns, tusked drooling maw, patchy matted fur and diseased grey skin with glowing sickly-green sores, crude spiked rusty iron plates nailed into its flesh, a massive rusted cleaver in one huge hand, chains with skull trophies and stolen pots and a dented helmet dangling as darkly comic loot, ragged loincloth, three-quarter view facing LEFT, menacing hunched idle stance"
+  },
+  {
+    "id": "brute_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/brute_idle.webp"
+    ],
+    "prompt": "Redraw the reference mutant brute in a NEW POSE, keeping its design identical (curling goat horns, tusks, green sores, nailed spiked plates, rusted cleaver, skull and pot trophies). Exactly ONE creature. New pose clearly different: violently knocked back by a heavy blow, whole body leaning far backwards, head thrown back howling in pain, free arm flung up, one hoof lifted off the ground, dark blood flying, three-quarter view facing LEFT"
+  },
+  {
+    "id": "bg_combat",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": [
+      "art-b/gr/refs/anchor.webp"
+    ],
+    "prompt": "vertical portrait combat backdrop for a mobile game: the muddy ruined market square of a plague-stricken Renaissance German walled town at a stormy dusk, crooked half-timbered houses leaning and half-collapsed, a gallows with an empty noose, iron gibbet cages, a burned roadside shrine with guttering candles and skulls, a broken cart wheel, crows, puddles, a sickly green glow in the storm clouds, a wide open flat muddy ground filling the lower half of the image as an empty stage, middle kept uncluttered, darker vignette at the edges"
+  },
+  {
+    "id": "ui_kit",
+    "kind": "ui",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/bg_combat.webp"
+    ],
+    "prompt": "a matching set of flat front-facing grimdark Renaissance game interface pieces, NO characters, NO body parts: (1) one large rectangular panel frame of dark oak wood with tarnished brass corners, iron studs and a nailed parchment-coloured interior, (2) one wide rectangular button of dried-blood red lacquer with a brass rim and a small wax seal, (3) one wide rectangular button of dark weathered wood with an iron rim, (4) one round portrait frame of tarnished brass with a laurel of thorns and an empty dark centre, (5) one long thin horizontal health bar frame of iron and brass with empty interior, (6) three small square iron icon slots. Use the reference only for palette and mood"
+  },
+  {
+    "id": "sheet_warrior",
+    "kind": "ui",
+    "aspect": "16:9",
+    "refs": [
+      "art-b/gr/refs/anchor.webp"
+    ],
+    "prompt": "a game character POSE SHEET: exactly TWO full-body figures of the SAME character side by side with a wide empty gap between them, both in three-quarter view facing right, same scale, both standing on the same baseline, feet fully visible, no third figure, no extra limbs. The character is EXACTLY the reference (squat heroic proportions, huge plumed floppy hat, red and bone striped puffed sleeves and breeches, breastplate, moustache, gap-toothed grin, long wavy flamberge greatsword). LEFT figure: swaggering idle, greatsword resting on the shoulder. RIGHT figure: furious attack, one big step forward, body leaning right, both hands driving the greatsword in a horizontal thrust pointing right, mouth open bellowing"
+  },
+  {
+    "id": "sheet_gunner",
+    "kind": "ui",
+    "aspect": "16:9",
+    "refs": [
+      "art-b/gr/refs/mage_idle.webp"
+    ],
+    "prompt": "a game character POSE SHEET: exactly TWO full-body figures of the SAME character side by side with a wide empty gap between them, both in three-quarter view facing right, same scale, both standing on the same baseline, feet fully visible, no third figure, no extra limbs. Use the reference ONLY for art style (do not draw the wizard). The character: a grizzled scarred woman Renaissance handgunner with heroic oversized hands and head, dented steel morion helmet with a long drooping plume, slashed doublet and puffed sleeves in faded green and mustard stripes, bandolier of wooden powder charges, eyepatch, soot-blackened face, a very long matchlock arquebus. LEFT figure: alert idle holding the arquebus across her body, smoking slow-match. RIGHT figure: down on one knee firing, arquebus at the shoulder aimed horizontally right, bright muzzle flash and a billowing cloud of grey gunpowder smoke at the barrel end"
+  },
+  {
+    "id": "sheet_mage",
+    "kind": "ui",
+    "aspect": "16:9",
+    "refs": [
+      "art-b/gr/refs/mage_idle.webp"
+    ],
+    "prompt": "a game character POSE SHEET: exactly TWO full-body figures of the SAME character side by side with a wide empty gap between them, both in three-quarter view facing right, same scale, both standing on the same baseline, feet fully visible, no third figure, no extra limbs, no inset panels, no item callouts. The character is EXACTLY the reference wizard (towering crooked bell-hung hat with bird skulls, patched ochre and faded blue robes with fur collar, absurdly long braided beard with iron rings, wild eyes, gnarled staff topped with an iron cage holding a sickly-green spark, chained books). Do NOT draw any sword. LEFT figure: idle, leaning on the staff, one oversized hand crackling green. RIGHT figure: casting, staff thrust forward to the right with both hands, robes and beard whipping back, a burst of crackling sickly-green lightning from the staff head"
+  }
+]

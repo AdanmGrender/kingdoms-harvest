@@ -34,3 +34,4 @@ client/public/assets/kenney-medieval/
 # Dirección de arte B: crudos 2K no se versionan (regenerables); sólo el ancla de estilo
 /art-b/raw/*
 !/art-b/raw/anchor_warrior_v1.png
+/art-b/gr/raw/
