@@ -59,7 +59,8 @@
 
 9. **Rendimiento móvil.** Objetivo ≥ 50 fps en el emulador `vault`. FX caros
    (bloom, partículas) con niveles de calidad. Imágenes en webp, fondos ≤ 1080 px
-   de ancho.
+   de ancho; capas del hub hasta 1536 px (render a DPR 3, ver
+   `specs/hub_b_escena/design.md` §8.4).
 
 ## Flujo de datos
 

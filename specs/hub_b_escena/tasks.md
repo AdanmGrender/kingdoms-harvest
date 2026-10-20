@@ -532,12 +532,19 @@
 
 ## Cierre
 
-- [ ] T23 — Verificaciones de alcance: `git grep -nE
+- [x] T23 — Verificaciones de alcance: `git grep -nE
   "hubMode|hub_bastion|zone_hub|buildHubAnchor|buildHubZones|hubZonesBuilt|hubPainterly|hub=legacy" -- client/src
   client/public scripts docs/project-spec.md` vacío (exit 1, citar); `git ls-files client/public/assets/game/dioramas
   client/public/assets/game/zones` sin `hub_bastion.png` ni `zone_hub.png` (citar); `git diff --stat
   feat/art-direction-b...HEAD -- server shared` vacío (citar). Actualizar el tope de fondos en
-  `docs/architecture.md` §9 y `docs/art-direction-b.md` §5 (`design.md` §3). Cubre: R36, R47, R48.
+  `docs/architecture.md` §9 y `docs/art-direction-b.md` §5 (`design.md` §3). Cubre: R36, R47, R48. Evidencia: `git
+  grep -nE "hubMode|hub_bastion|zone_hub|buildHubAnchor|buildHubZones|hubZonesBuilt|hubPainterly|hub=legacy" --
+  client/src client/public scripts docs/project-spec.md` → salida vacía, **exit 1** (R47); `git ls-files
+  client/public/assets/game/dioramas client/public/assets/game/zones` → `battle_ruins.png`, `battle_tide.png`,
+  `boss_arena.png` (sin `hub_bastion.png` ni `zone_hub.png`, R48); `git diff --stat feat/art-direction-b...HEAD --
+  server shared` → salida vacía (0 líneas, exit 0, R36). Tope de fondos actualizado: `docs/architecture.md` §9 y
+  `docs/art-direction-b.md` (riesgo de peso del APK) → "fondos ≤ 1080 px de ancho; capas del hub hasta 1536 px
+  (render a DPR 3, ver `specs/hub_b_escena/design.md` §8.4)".
 - [ ] T24 — Build y suites: `cd client && npx vite build` (exit 0, citar `✓ built in …` y chunks);
   `cd server && npx jest --runInBand --forceExit` (citar `Tests: N passed`) y `cd client && npx vitest run` (citar
   totales; único fallo tolerado: `GameHUD.test.jsx > renders player level as Lv5`). Sin temporales, crudos 2K ni

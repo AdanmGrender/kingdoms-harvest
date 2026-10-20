@@ -113,8 +113,8 @@ de B4.
   revisar en hojas de contacto sobre fondo oscuro.
 - Riesgo: restos de la referencia/poses casi iguales → regenerar
   (≈1 de cada 4 en el spike).
-- Riesgo: peso del APK → todo en webp, fondos 1080 px de ancho, héroes 640 px
-  de alto (~50 KB c/u).
+- Riesgo: peso del APK → todo en webp, fondos ≤ 1080 px de ancho; capas del hub hasta 1536 px (render a DPR 3,
+  ver `specs/hub_b_escena/design.md` §8.4), héroes 640 px de alto (~50 KB c/u).
 
 ## 6. Criterios de aceptación de B2 (combate)
 
