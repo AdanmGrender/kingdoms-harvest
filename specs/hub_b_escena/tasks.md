@@ -517,10 +517,18 @@
   `SelectionSystem` (preview); `entity:deselected` con los mismos emisores; `placement:started` → `{ buildingId }`.
   - `hub_fallback.webp` — cielo con el degradado `hubb_sky_fallback` y el placeholder roble con borde latón en la
     ranura del Granero; el resto del hub (16 edificios, trabajadores, Fuego Votivo) sigue dibujado.
-- [ ] T22 — fps: 17 edificios + `lluvia_de_energia`, Chromium `--use-angle=d3d11 --enable-gpu`, 20 muestras de
+- [x] T22 — fps: 17 edificios + `lluvia_de_energia`, Chromium `--use-angle=d3d11 --enable-gpu`, 20 muestras de
   `loop.actualFps` + rAF; DSF 2 → `evidencia/fps.json` (promedio ≥ 50, citar promedio y mínimo); DSF 3 →
   `evidencia/fps_dpr3.json` (informativo, citar). Si DSF 2 < 50: aplicar las palancas de `design.md` §6.6 en orden y
-  documentarlas acá. Cubre: R33.
+  documentarlas acá. Cubre: R33. Evidencia: `node scripts/hub_b_evidence.js --fps` y `--fps --dpr 3` (17 ids +
+  `setActiveStorm(lluvia_de_energia)`, FX activos: 4 emisores — humo ×2, chispas del Fuego Votivo, brasas —, viñeta;
+  3 s de asentamiento y 20 muestras cada 1 s de `loop.actualFps` y de un contador de `requestAnimationFrame`; WebGL
+  sobre `ANGLE (NVIDIA GeForce RTX 5060 Direct3D11)`; la tormenta siguió activa en las 20 muestras).
+  `evidencia/fps.json` (DSF 2, canvas 824×1720): **`actualFps` promedio 173.4, mínimo 146.9; rAF promedio 180.0,
+  mínimo 179.2** ≥ 50 (R33). `evidencia/fps_dpr3.json` (DSF 3, canvas 1236×2580, informativo): `actualFps` promedio
+  173.5, mínimo 147.0; rAF promedio 180.0, mínimo 179.6. El mínimo de `actualFps` es siempre la 1.ª muestra (el
+  promedio móvil de Phaser converge 146.9 → 179.9 en ~10 s); el rAF queda clavado en ~180 (refresco del monitor).
+  No hizo falta ninguna palanca de §6.6. 0 `pageerror`.
 
 ## Cierre
 
