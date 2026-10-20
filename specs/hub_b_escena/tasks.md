@@ -112,9 +112,17 @@
   zoom 0.5, @3 → 1236×2580, preview `toEqual` la config actual, `?iso=1` → `IsoScene`). Suite completa `npx vitest
   run` → `Test Files 1 failed | 4 passed (5)`, `Tests 1 failed | 64 passed (65)`; único fallo = known_failure
   `GameHUD.test.jsx > renders player level as Lv5`.
-- [ ] T7 — Crear `client/src/game/hub/hubLayout.js` con constantes y funciones de `design.md` §4.2-§5 (sin importar
+- [x] T7 — Crear `client/src/game/hub/hubLayout.js` con constantes y funciones de `design.md` §4.2-§5 (sin importar
   `phaser` ni el store). Cubre: R3, R4, R6, R8, R9, R10, R11, R12, R13, R15, R17, R18, R19, R21, R22, R23, R24, R26,
-  R29, R31.
+  R29, R31. Evidencia: `client/src/game/hub/hubLayout.js` revisado contra §4.2-§5 y §8.3: 26 exports (`HUB_W/H`,
+  `SAFE_*`, `HUB_DEPTHS`, `TOKEN_FONT_PX`, `BUILDING_IDS`, `TILE_SIZES`, `HUB_SLOTS` = tabla §5.1 con `smoke` en
+  tavern/smithy y `fire { dx: 0, dy: −423 }` = −0.92h en throne_room, `WORKER_KINDS`, `WORKER_BY_BUILDING` = §5.2,
+  `CALM_AMBIENCE`/`STORM_AMBIENCE` = §5.3, `HUB_TEXTURES` = §8.3, y las 10 funciones de §4.2 con sus reglas: cover
+  `max(w/824, h/1720)` centrado con `scroll = centro − tamaño/2`, representante construido/mayor nivel/menor id,
+  genérico `0x8a8478` o `#rrggbb`, firma `sky|skyTint|fog|particles|flash|cloudDrift`, `isTap` ≤ 500 ms y ≤ slop,
+  `findFreeTile` en anillos desde `(78, 60)` con la AABB de `buildingService.validatePlacement` y huella por defecto
+  2×2); sin cambios necesarios. `grep -nE "^import|require\(" client/src/game/hub/hubLayout.js` → sin resultados
+  (exit 1: no importa `phaser` ni el store). Verificado por los 82 tests de T8.
 - [ ] T8 — Crear `client/src/tests/hubLayout.test.js` (Vitest): `HUB_DEPTHS` creciente; `computeHubViewport` en
   824×1720 (zoom 1), 1236×2580 (1.5), 412×860 (0.5), 720×1560 y 1536×2048, sin bandas; `HUB_SLOTS` vs
   `Object.keys(BUILDINGS)` y `TILE_SIZES` vs `tileWidth/tileHeight` (leídos con `createRequire` de
