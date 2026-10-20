@@ -44,14 +44,17 @@
       "id": 3,
       "name": "hub_b_escena",
       "title": "Hub idle vivo — escena base ilustrada (B1.1)",
-      "description": "La pantalla-ancla del idle pasa al estilo B: escena Phaser vertical por capas (cielo, colina/muralla, primer plano) con los edificios que el jugador tiene, cada uno como sprite ilustrado en su ranura, trabajadores animados en los edificios que producen y el cielo reflejando la tormenta activa. Solo presentación: lee el estado existente del server.",
+      "description": "La pantalla-ancla del idle pasa al estilo B: escena Phaser vertical por capas (cielo, colina/muralla, primer plano) con los edificios que el jugador tiene, cada uno como sprite ilustrado en su ranura, trabajadores animados en los edificios que producen y el cielo reflejando la tormenta activa, renderizada nítida a la resolución del dispositivo y con la estética grimdark renacentista del spike de combate. Reemplaza y elimina el hub viejo (sin fallback). Solo presentación: lee el estado existente del server.",
       "acceptance": [
         "Al entrar al Bastión se ve la escena ilustrada B en lugar del diorama viejo, encuadrada para vertical 412x860 sin recortes raros",
         "Cada edificio construido por el jugador aparece en su ranura con su sprite B; los no construidos no aparecen (o se ven como solar vacío)",
         "Los edificios que producen muestran un trabajador o efecto animado sin input del jugador (respiración/loop de trabajo, humo)",
         "Con una tormenta activa el cielo/ambiente cambia de forma reconocible; sin tormenta, cielo normal",
         "Tocar un edificio abre la misma información/acción que hoy (no se pierde funcionalidad)",
-        "Sin cambios de economía ni de API; suites de server y cliente sin regresiones; consola sin errores; >= 50 fps medidos en headless con GPU"
+        "Sin cambios de economía ni de API; suites de server y cliente sin regresiones; consola sin errores; >= 50 fps medidos en headless con GPU",
+        "El hub renderiza a la resolución del dispositivo (DPR 2-3): canvas a tamaño CSS x DPR, sprites y texto nítidos sin reescalado del navegador, mismos taps y >= 50 fps a DPR 2",
+        "El hub viejo se elimina sin fallback (rama hubMode de WorldScene, diorama hub_bastion y assets huérfanos) sin romper el combate ni el preview, y el build de producción compila",
+        "El arte del hub sigue la estética grimdark renacentista del spike de combate (preset grimdark, refs art-b/gr/refs)"
       ],
       "sdd": true,
       "status": "spec_ready",
