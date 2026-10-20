@@ -22,7 +22,7 @@ const fs = require('fs');
 const path = require('path');
 
 function parseArgs(argv) {
-  const a = { tol: 38, height: 0, width: 0, flip: false, scene: false, keepRatio: 0.12, crop: null, erase: [], fadeRight: 0, pad: 0.02 };
+  const a = { tol: 38, height: 0, width: 0, flip: false, scene: false, keepRatio: 0.12, minHole: 0.0004, crop: null, erase: [], fadeRight: 0, pad: 0.02 };
   const pos = [];
   for (let i = 2; i < argv.length; i++) {
     const t = argv[i];
@@ -36,6 +36,7 @@ function parseArgs(argv) {
     else if (t === '--erase') a.erase.push(argv[++i].split(',').map(Number)); // x,y,w,h (coords del original) → pintado con color de fondo
     else if (t === '--fade-right') a.fadeRight = Number(argv[++i]); // fracción del ancho final que se desvanece (humo cortado por el borde)
     else if (t === '--pad') a.pad = Number(argv[++i]);
+    else if (t === '--min-hole') a.minHole = Number(argv[++i]); // fracción del área: huecos de fondo cerrados más chicos sobreviven
     else pos.push(t);
   }
   [a.in, a.out] = pos;
@@ -55,7 +56,7 @@ function flipImg(img) {
   return out;
 }
 
-function cutout(img, tol, keepRatio) {
+function cutout(img, tol, keepRatio, minHoleFrac = 0.0004) {
   const { width: W, height: H, data } = img;
   const px = (i) => [data[i * 4], data[i * 4 + 1], data[i * 4 + 2]];
   const corners = [0, W - 1, (H - 1) * W, H * W - 1].map(px);
@@ -82,7 +83,7 @@ function cutout(img, tol, keepRatio) {
   for (let i = 0; i < W * H; i++) if (bg[i]) data[i * 4 + 3] = 0;
   // 1b) huecos cerrados de fondo (entre bastón y túnica, etc.): blobs grandes de
   //     color MUY cercano al fondo aunque no toquen el borde.
-  const strict = Math.max(10, tol * 0.4), minHole = Math.round(W * H * 0.0004);
+  const strict = Math.max(10, tol * 0.4), minHole = Math.round(W * H * minHoleFrac);
   const seen = new Uint8Array(W * H);
   let holes = 0;
   for (let s = 0; s < W * H; s++) {
@@ -179,7 +180,7 @@ async function main() {
   if (a.crop) img = cropImg(img, ...a.crop);
   let info = {};
   if (!a.scene) {
-    info = cutout(img, a.tol, a.keepRatio);
+    info = cutout(img, a.tol, a.keepRatio, a.minHole);
     img = cropImg(img, ...bbox(img, a.pad));
   }
   if (a.flip) img = flipImg(img);

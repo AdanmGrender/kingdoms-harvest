@@ -15,11 +15,25 @@
   literal del bloque ```json de `design.md` §8.2; `node -e` sobre `art-b/hub/manifest.json` → `items 15 style 0
   STYLE MATCH 15`; `bash -n art-b/hub/process.sh` → `syntax-ok` (acepta `1|2` para correr una tanda); `git
   check-ignore -v art-b/hub/raw/x.png` → `.gitignore:39:/art-b/hub/raw/`.
-- [ ] T2 — Tanda 1: `node scripts/gen_art_b.js --manifest art-b/hub/manifest.json --only
+- [x] T2 — Tanda 1: `node scripts/gen_art_b.js --manifest art-b/hub/manifest.json --only
   hub_sky_calm,hub_sky_storm,hub_base,hub_fg`; procesar a `client/public/assets/b/hub/{sky_calm,sky_storm}.webp`
   (1536, sin resize) y `{base,fg}.webp` (`--width 1280`); copiar `base.webp` a `art-b/hub/refs/hub_base.webp`.
   Hoja comparativa preliminar contra el spike (`combat_crypt.webp`) y revisión escrita **antes** de la tanda 2.
-  Regenerar lo que no pase (citar ids regenerados). Cubre: R34, R35, R52.
+  Regenerar lo que no pase (citar ids regenerados). Cubre: R34, R35, R52. Evidencia: `gen_art_b.js --only …` → 4
+  crudos 1536×2752 / 2752×1536 (~25 s c/u), **ninguno regenerado**. `bash art-b/hub/process.sh 1` → `✓
+  sky_calm.webp 1536x2752`, `✓ sky_storm.webp 1536x2752`, `✓ base.webp 1280x1766 bg=rgb(199,199,199) holes=0`, `✓
+  fg.webp 1280x529 bg=rgb(202,202,202) holes=32`; `cmp art-b/hub/refs/hub_base.webp client/public/assets/b/hub/base.webp`
+  → idénticos. Ajustes de proceso (documentados en `process.sh`): base y fg tocan el borde inferior con barro y la
+  mediana de esquinas daba fondo marrón (`bg=rgb(158,139,125)`/`rgb(75,57,45)`, comía el barro) → `--erase` de 2×2 px
+  en las esquinas inferiores para que la mediana sea el gris liso; fg dejaba 17 bolsillos grises cerrados entre tablas
+  y pasto (< `minHole` fijo) → flag nuevo opcional `--min-hole` en `scripts/process_art_b.js` (default 0.0004 = sin
+  cambio de comportamiento; tooling, como `--quality` de `design.md` §3) con `0.00001` solo para fg: blobs grises
+  opacos ≥ 20 px 17 → 0 (medido con sharp); rembg (`isnet-general-use`) se probó y se descartó porque borra el barro.
+  Hoja preliminar `evidencia/contact_hub_vs_spike_t1.webp` (cielos, base, fg junto a `bg/combat_crypt.webp` y
+  `heroes/mage_idle.webp`). Revisión: mismo trazo de grabado con rayado cruzado y aguadas, paleta ocre/sepia/hueso con
+  verde enfermizo solo en el resplandor del cielo de tormenta, humor negro (cuervo robando un sombrero emplumado en
+  `sky_calm`, cuervo con yelmito en la horca de la base, calavera con gorra emplumada en fg); base sin casas ni
+  personas, 5 terrazas vacías + cima libre, murallas sin huecos ni halo; sin texto ni iconografía ajena. Pasa → tanda 2.
 - [ ] T3 — Tanda 2: generar `bld_throne_room`, `bld_sheet_1..6` y `wk_sheet_{farmer,woodcutter,miner,merchant}`;
   medir componentes conexos y escribir los `--crop` literales en `process.sh`; procesar a
   `client/public/assets/b/buildings/<id>.webp` (17, `--height` de la tabla §5.1; citar por id alto del recorte ≥
