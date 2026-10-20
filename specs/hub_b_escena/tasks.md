@@ -209,12 +209,33 @@
   favicon en `client/public/`; a resolver/excluir en T21) — corridas seguidas con cuentas nuevas disparan además el
   rate-limit del server (429), ajeno al hub. `cd client && npx vitest run` → `Tests 1 failed | 146 passed (147)`
   (único fallo: known_failure GameHUD Lv5).
-- [ ] T11 — Crear `client/src/game/scenes/HubSceneB.js` (`design.md` §6.1-§6.3): `renderScale` del registry, preload
+- [x] T11 — Crear `client/src/game/scenes/HubSceneB.js` (`design.md` §6.1-§6.3): `renderScale` del registry, preload
   de `HUB_TEXTURES` con registro de faltantes, texturas generadas, filtro lineal, capas, viewport + resize,
   `syncBuildings` con estado en obra, suscripción al store con cleanup, tap con `slop = 12 × s` →
   `entity:selected` / `entity:deselected`, `DayNightSystem` con overlay oculto, `token:earned` → `emitTokenGain` con
   `fontSize 28`, `resolution = textResolutionFor(zoom)` y depth de partículas, `teardown` que quita solo sus
-  handlers. Cubre: R3, R4, R6, R7, R10, R11, R13, R14, R22, R23, R24, R28, R29, R30, R31, R41, R44.
+  handlers. Cubre: R3, R4, R6, R7, R10, R11, R13, R14, R22, R23, R24, R28, R29, R30, R31, R41, R44. Evidencia:
+  `HubSceneB.js` (≈480 líneas) según §6.1-§6.3: `init` lee `renderScale`; `preload` carga `HUB_TEXTURES` con
+  `loaderror` → `missing` + `console.warn`; `makeTextures` (`hubb_fog/spark/ember/mote/placeholder/sky_fallback`);
+  `setFilter(LINEAR)` por textura cargada; capas cielo ×2 (cover × 1.04, deriva × 1.025 por contador común), base y fg
+  a 824 de ancho, `grade`/flash a pantalla completa, todo con `HUB_DEPTHS`; `applyViewport` + `scale.on('resize')`;
+  `syncBuildings` (crea/actualiza/destruye; en obra `setTint(0x8a8478)` + α 0.75 sin trabajador ni humo); sprites con
+  `setInteractive({ pixelPerfect: true, alphaTolerance: 8 })`; suscripción al store (`buildings`, `activeStorm`);
+  `DayNightSystem` con overlay oculto; `token:earned` → `emitTokenGain(…, { fontSize: 28, resolution:
+  textResolutionFor(zoom), depth: particles })`; tap `isTap(down, up, 12 × s)` + `shouldAcceptTap` →
+  `entity:selected` con pop ×1.04 / `entity:deselected`; `teardown` (`once('shutdown'|'destroy')`) quita la
+  suscripción, `scale.off` y **solo** sus handlers de EventBridge. El mismo archivo trae ya la lógica de T13-T15
+  (trabajadores, ambiente, construcción); se verifica y ajusta en esas tasks. Playwright (Vite + server Docker, cuenta
+  nueva): DSF 2 → sprites `["farm_plot","barn","throne_room"]` para los registros reales `throne_room, farm_plot ×2,
+  barn` (R10/R11/R12); `__gameStore.setState({ buildings: 17 ids })` → `bldSprites.size 17` sin recarga (R14); taps
+  `page.touchscreen.tap` en el centro CSS de los bounds → `[["sel","barn","building"],["sel","throne_room","building"],
+  ["desel"]]` (tap en el cielo `(206, 200)`) y `overlayState.type === 'building'` (abre `BuildingInfoPanel`) en DSF 2
+  **y** DSF 3 (R22/R24/R41); `token:earned {amount: 5}` → `Text` `fontSize 28px`, `resolution 1` a zoom 1 (DSF 2) y
+  `1.5` a zoom 1.5 (DSF 3), cuerpo `28 × zoom / s = 14` px CSS en ambos (R29/R44); `dayNight.elapsed` 122056 →
+  123556 en 1.5 s (R28). Con `page.route` abortando `barn.webp` y `sky_calm.webp`: `barn` usa `hubb_placeholder`,
+  cielo `hubb_sky_fallback`, `missing = [hubb_sky_calm, hubb_bld_barn]`, 2 `console.warn` propios y 0 `pageerror`
+  (R30). Sin `pageerror` en ninguna corrida. `cd client && npx vitest run` → `Tests 1 failed | 146 passed (147)`
+  (known_failure GameHUD Lv5); `vite build` (a un outDir temporal) → `✓ built in 6.91s`.
 - [ ] T12 — Medir con Playwright los rects reales de `TopResourceBar`, `QuestRail`, botonera, `BottomNavBar` y barras
   laterales; confirmar o ajustar `SAFE_*` y `HUB_SLOTS` (re-correr T8; si cambia algún `h`, recalcular su `--height`
   y reprocesar, `design.md` §5.1). Cubre: R9.
