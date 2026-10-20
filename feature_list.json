@@ -6,7 +6,13 @@
     "parallel_sessions_allowed": true,
     "require_approved_spec_to_implement": true,
     "require_verification_evidence_to_close": true,
-    "valid_status": ["pending", "spec_ready", "in_progress", "done", "blocked"],
+    "valid_status": [
+      "pending",
+      "spec_ready",
+      "in_progress",
+      "done",
+      "blocked"
+    ],
     "sdd_required_when": "feature has \"sdd\": true",
     "integration_branch": "feat/art-direction-b",
     "known_failures": [
@@ -132,7 +138,9 @@
       "name": "pantallas_b",
       "title": "Resto de pantallas en estilo B (B4)",
       "description": "Menú con key art, roster de héroes, mapas de la Marca y de los Reinos Caídos, pantallas de victoria/recompensa.",
-      "acceptance": ["Todas las pantallas principales con el contrato visual B"],
+      "acceptance": [
+        "Todas las pantallas principales con el contrato visual B"
+      ],
       "sdd": true,
       "status": "pending",
       "assignee": null
@@ -155,7 +163,22 @@
       "name": "fix_test_gamehud_lv5",
       "title": "Arreglar test preexistente GameHUD Lv5",
       "description": "client/src/tests/GameHUD.test.jsx > renders player level as Lv5 falla desde antes del harness.",
-      "acceptance": ["cd client && npx vitest run sin fallos"],
+      "acceptance": [
+        "cd client && npx vitest run sin fallos"
+      ],
+      "sdd": false,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 12,
+      "name": "fix_building_popup_id",
+      "title": "BuildingInfoPopup lee building_id pero los emisores mandan buildingId",
+      "description": "client/src/components/hud/BuildingInfoPopup.jsx:45 lee data.building_id; entity:selected trae data.buildingId, así que el popup muestra \"Edificio\" genérico con emoji 🏠. Bug preexistente detectado en el review de hub_b_escena.",
+      "acceptance": [
+        "Tocar un edificio en el hub muestra su nombre real y acciones",
+        "Test Vitest que cubra el payload {buildingId}"
+      ],
       "sdd": false,
       "status": "pending",
       "assignee": null

@@ -750,8 +750,8 @@ QUERIES:
 
 ### Phase 4 — Rework hub + instancias (2026-07-15, molde Last Asylum, rama `feat/hub-instancias-idle-rework`)
 
-> Spec: `docs/superpowers/specs/2026-07-15-hub-instancias-idle-rework-design.md` ·
-> Plan: `docs/superpowers/plans/2026-07-15-hub-instancias-idle-rework.md`
+> Spec: `.superpowers/specs/2026-07-15-hub-instancias-idle-rework-design.md` ·
+> Plan: `.superpowers/plans/2026-07-15-hub-instancias-idle-rework.md`
 
 | Feature | Implementado |
 |---------|-------------|
@@ -769,7 +769,7 @@ QUERIES:
 
 ### Phase 5 — Ganchos de retención idle (2026-07-19, rama `feat/ganchos-idle-retencion`)
 
-> Spec: `docs/superpowers/specs/2026-07-19-ganchos-idle-retencion-design.md` · Plan: `docs/superpowers/plans/2026-07-19-ganchos-idle-retencion.md`. Análisis competitivo (idle Android + Whiteout Survival + juegos TON). Piggy bank / VIP / chief-gear CORTADOS (post-launch, exigen producto Stars nuevo).
+> Spec: `.superpowers/specs/2026-07-19-ganchos-idle-retencion-design.md` · Plan: `.superpowers/plans/2026-07-19-ganchos-idle-retencion.md`. Análisis competitivo (idle Android + Whiteout Survival + juegos TON). Piggy bank / VIP / chief-gear CORTADOS (post-launch, exigen producto Stars nuevo).
 
 | Feature | Implementado |
 |---------|-------------|

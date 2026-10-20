@@ -5,7 +5,7 @@
 > Screenshots y hojas de contacto en `specs/hub_b_escena/evidencia/` (webp). Branch: `feature/hub_b_escena`.
 >
 > **Revisión 2 (owner, 2026-10-20):** nitidez a resolución de dispositivo, retiro del hub viejo sin fallback y
-> estética del spike explícita. R2 está eliminado: ninguna task lo cubre. Estado: `spec_ready`, esperando aprobación.
+> estética del spike explícita. R2 está eliminado: ninguna task lo cubre. Aprobada por el owner el 2026-10-20 (commit `e970838`); estado `in_progress`.
 
 ## Arte
 

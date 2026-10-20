@@ -72,4 +72,4 @@ tipo celular 412×860). La demo se juega sola (un turno cada ~2.6 s) o con
   Re-evaluar sólo si se necesita animación esquelética masiva (Spine tiene
   plugin oficial para Phaser) o 3D.
 - Llevar esto a producción por fases: ver
-  `docs/superpowers/specs/2026-10-16-direccion-arte-b-design.md`.
+  `docs/art-direction-b.md`.

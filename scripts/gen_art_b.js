@@ -22,7 +22,7 @@ const sharp = require('sharp');
 
 const ROOT = path.join(__dirname, '..');
 
-// ─── Bloques de estilo (contrato visual, ver docs/superpowers/specs) ─────────
+// ─── Bloques de estilo (contrato visual, ver docs/art-direction-b.md) ─────────
 // 'grimdark' (default, 2026-10-16): fantasía oscura renacentista. Se describen
 // RASGOS, nunca franquicias ni artistas reales (IP 100% original).
 const STYLES = {
