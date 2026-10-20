@@ -261,8 +261,23 @@
   `evidencia/contact_hub_edificios.webp` (3349×572, 17) y `evidencia/contact_hub_vs_spike.webp` (2023×413, 7)
   regeneradas con los webp nuevos: mismos recortes, limpios, uno por archivo, sin texto. `cd client && npx vitest
   run` → `Tests 1 failed | 146 passed (147)` (known_failure GameHUD Lv5).
-- [ ] T13 — Trabajadores y humo (`design.md` §5.2, §6.2): alternancia de poses con normalización por alto,
+- [x] T13 — Trabajadores y humo (`design.md` §5.2, §6.2): alternancia de poses con normalización por alto,
   respiración, desfase aleatorio; humo de `smithy` y `tavern`; Fuego Votivo en `throne_room`. Cubre: R16, R17.
+  Evidencia: `HubSceneB.createWorker/setWorkerPose` — pose `a|b` por `time.addEvent({ delay: periodMs, loop, startAt:
+  random })`, escala `h / frame.realHeight` por pose (spike `pose()`), respiración `scaleY ×1.014 / scaleX ×0.996`
+  `Sine.easeInOut` 1300-1700 ms con `delay` aleatorio; sin pose → solo respiración, sin ninguna → no se dibuja; los de
+  `dx > 0` se espejan para mirar a su edificio (el arte mira a la derecha). Humo: emisor en `slot + smoke` (≤ 12
+  vivas, cada 300 ms), sobre `hubb_spark` gris oscuro en vez de `hubb_fog` — con `hubb_fog` (α 0.42 en el centro,
+  512 px de ancho) las bocanadas no se leían contra el cielo claro (`alive` 10-11 partículas pero invisible en la
+  captura); con FX apagado no se crea (R38). Fuego Votivo: `pointlight 0xe8933a` radio 110 con parpadeo `Stepped` +
+  chispas `ADD` (≤ 15), solo si `throne_room` está construida y hay FX. Playwright DSF 2 con los 17 ids, muestreo cada
+  125 ms durante 3 s: poses vistas `farm_plot farmer_b/farmer_a, mill farmer_b/farmer_a, sawmill
+  woodcutter_a/woodcutter_b, smithy miner_b/miner_a, mine miner_a/miner_b, tavern merchant_b/merchant_a, market
+  merchant_a/merchant_b` (los 7 alternan solos, R16); `scaleY / escala base` recorre `1..1.014` en los 7 (respiración);
+  emisores de humo `smithy@740,935` y `tavern@618,760` (chimeneas medidas, R17), máximo 12 vivas; Fuego en
+  `(477, 408)` (brasero), chispas máx. 11. Con `smithy`, `tavern`, `farm_plot`, `throne_room` en obra (`setState`
+  sin recarga): `tint 8a8478 a 0.75 worker false smoke false` en los 4 y `fire false` (R13). Recorte de chimenea con
+  humo visible revisado a ojo (scratch). 0 `pageerror`.
 - [ ] T14 — Ambiente de tormenta (`design.md` §5.3, §6.5): cielos con cross-fade, tinte, `grade`, niebla, emisores
   `embers_fall`/`motes_rise`, `flash`, `cloudDrift`; todo condicionado a `AmbientSystem.enabledInSettings()` salvo
   cielo/tinte/`grade`. Cubre: R18, R19, R20, R21, R38.

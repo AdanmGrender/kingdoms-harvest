@@ -273,10 +273,12 @@ export default class HubSceneB extends Phaser.Scene {
 
   createSmoke(entry, slot) {
     if (entry.smoke || !this.fxOn) return;
-    entry.smoke = this.add.particles(slot.x + slot.smoke.dx, slot.y + slot.smoke.dy, 'hubb_fog', {
+    // Bocanadas sobre hubb_spark (radial denso): con hubb_fog (α ≈ 0.42 en el centro y muy ancha) el humo no se leía
+    // contra el cielo claro.
+    entry.smoke = this.add.particles(slot.x + slot.smoke.dx, slot.y + slot.smoke.dy, 'hubb_spark', {
       lifespan: { min: 2600, max: 3600 }, speedY: { min: -45, max: -25 }, speedX: { min: 4, max: 16 },
-      scale: { start: 0.07, end: 0.32 }, alpha: { start: 0.5, end: 0 }, tint: [0x8e897e, 0x6b665e],
-      frequency: 320, maxAliveParticles: 12,
+      scale: { start: 1.1, end: 4 }, alpha: { start: 0.7, end: 0, ease: 'Sine.easeIn' }, tint: [0x4a4540, 0x5e5850],
+      frequency: 300, maxAliveParticles: 12,
     }).setDepth(HUB_DEPTHS.buildings + slot.y + 2);
   }
 
