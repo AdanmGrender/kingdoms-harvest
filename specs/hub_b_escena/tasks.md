@@ -466,10 +466,24 @@
     Cancelar/Confirmar visibles.
   - `hub_construir_ok.webp` — tras confirmar: la casa en obra (atenuada) en su ranura; la `BuildingToolbar` queda
     abierta abajo como hoy.
-- [ ] T19 — Nitidez (`node scripts/hub_b_evidence.js --sharpness`): línea base con `devicePixelRatio` forzado a 1
+- [x] T19 — Nitidez (`node scripts/hub_b_evidence.js --sharpness`): línea base con `devicePixelRatio` forzado a 1
   (reproduce el render anterior: canvas a px CSS ampliado ×2 por el navegador; no hay "antes" del hub B en el código,
   así que esta es la línea base válida) y corrida normal, misma región de la ranura `barn`; citar ambas varianzas del
   laplaciano y el cociente (≥ 1.5); `nitidez_s1.webp`, `nitidez_s2.webp`, `nitidez_comparacion.webp`. Cubre: R45.
+  Evidencia: `node scripts/hub_b_evidence.js --sharpness --device hubb-evid-20261020` — dos cargas a DSF 2 con
+  `kh_ambient_fx = 'false'`, 17 ids y `setActiveStorm(null)`; caja de la ranura `barn` desde `HUB_SLOTS` = `{left
+  369, top 985, width 243, height 140}` px de captura. Línea base (`devicePixelRatio` forzado a 1 por
+  `addInitScript`): `canvas [412, 860]`, `zoom 0.5`; normal: `canvas [824, 1720]`, `zoom 1`. **Varianza del
+  laplaciano: s = 1 → 359.94, s = 2 → 3367.99, cociente 9.357 ≥ 1.5** (control independiente: laplaciano en float
+  sobre el gris crudo → 359.29 / 4082.91, cociente 11.364). Nota de método: `sharp().greyscale().convolve(k).stats()`
+  encadenado **no** mide el laplaciano — `stats()` de sharp lee la imagen de entrada y omite las operaciones
+  encadenadas (encadenado = 1897.89 / 2347.11, idéntico a `stats()` del recorte sin procesar, cociente engañoso
+  1.237); el script materializa primero `greyscale().convolve({ kernel [0,1,0,1,−4,1,0,1,0], scale 1, offset 128 })`
+  a PNG y recién ahí toma `stats()` → desvío² (el offset evita que los negativos se recorten a 0). 0 `pageerror` en
+  ambas cargas.
+  - `nitidez_s1.webp` (243×140) — Granero con la línea base: contornos lavados y rayado empastado.
+  - `nitidez_s2.webp` (243×140) — Granero a resolución de dispositivo: tablas, sacos, rueda y rayado definidos.
+  - `nitidez_comparacion.webp` (1482×420) — ambos recortes lado a lado ampliados ×3 con vecino más cercano.
 - [ ] T20 — Entradas que no son el hub: `?preview=world` en DSF 2 → `canvas.width === 412`,
   `isActive('WorldScene')`, 0 `pageerror`, `preview_world.webp`; dioramas de combate: `GET
   /assets/game/dioramas/{battle_ruins,battle_tide,boss_arena}.png` → 200 y `git diff --stat` vacío de esos archivos y

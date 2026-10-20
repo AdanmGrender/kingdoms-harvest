@@ -497,12 +497,28 @@ async function sharpnessRun(args) {
   const box = { left: Math.round(slot.x - slot.w / 2), top: Math.round(slot.y - slot.h), width: Math.round(slot.w),
     height: Math.round(slot.h) };
   const lap = { width: 3, height: 3, kernel: [0, 1, 0, 1, -4, 1, 0, 1, 0] };
+  // sharp().stats() mide la imagen de ENTRADA (ignora greyscale/convolve encadenados): hay que materializar el
+  // laplaciano antes de medir. offset 128 evita recortar los valores negativos a 0 (uint8).
   const metric = async (png) => {
     const crop = await sharp(png).extract(box).png().toBuffer();
-    const g = sharp(crop).greyscale();
-    const clamp = (await g.clone().convolve(lap).stats()).channels[0].stdev;
-    const offs = (await sharp(crop).greyscale().convolve({ ...lap, offset: 128 }).stats()).channels[0].stdev;
-    return { crop, varClamped: +(clamp ** 2).toFixed(2), varOffset: +(offs ** 2).toFixed(2) };
+    const sd2 = async (buf) => (await sharp(buf).stats()).channels[0].stdev ** 2;
+    const chained = (await sharp(crop).greyscale().convolve(lap).stats()).channels[0].stdev ** 2;
+    const input = await sd2(crop);
+    const lapImg = await sharp(crop).greyscale().convolve({ ...lap, scale: 1, offset: 128 }).png().toBuffer();
+    const lapVar = await sd2(lapImg);
+    // Control independiente: laplaciano en float sobre el gris crudo.
+    const { data, info } = await sharp(crop).greyscale().raw().toBuffer({ resolveWithObject: true });
+    const vals = [];
+    for (let y = 1; y < info.height - 1; y++) {
+      for (let x = 1; x < info.width - 1; x++) {
+        const i = y * info.width + x;
+        vals.push(data[i - 1] + data[i + 1] + data[i - info.width] + data[i + info.width] - 4 * data[i]);
+      }
+    }
+    const mean = vals.reduce((s, v) => s + v, 0) / vals.length;
+    const manual = vals.reduce((s, v) => s + (v - mean) ** 2, 0) / vals.length;
+    const f = (n) => +n.toFixed(2);
+    return { crop, lapVar: f(lapVar), manualVar: f(manual), chainedStats: f(chained), inputStats: f(input) };
   };
   const capture = async (forceDpr1) => {
     const init = forceDpr1 ? () => Object.defineProperty(window, 'devicePixelRatio', { get: () => 1 }) : null;
@@ -534,9 +550,11 @@ async function sharpnessRun(args) {
     .png().toBuffer();
   shots.push(await write(cmp, 'nitidez_comparacion.webp'));
   return {
-    box, s1: { ...s1.info, varClamped: m1.varClamped, varOffset: m1.varOffset, pageerrors: s1.pageerrors },
-    s2: { ...s2.info, varClamped: m2.varClamped, varOffset: m2.varOffset, pageerrors: s2.pageerrors },
-    ratioClamped: +(m2.varClamped / m1.varClamped).toFixed(3), ratioOffset: +(m2.varOffset / m1.varOffset).toFixed(3),
+    box,
+    s1: { ...s1.info, ...m1, crop: undefined, pageerrors: s1.pageerrors },
+    s2: { ...s2.info, ...m2, crop: undefined, pageerrors: s2.pageerrors },
+    ratio: +(m2.lapVar / m1.lapVar).toFixed(3),
+    ratioManual: +(m2.manualVar / m1.manualVar).toFixed(3),
     shots,
   };
 }
