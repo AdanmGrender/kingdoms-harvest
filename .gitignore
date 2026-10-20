@@ -10,6 +10,7 @@ server/secrets/
 # Ignore local Claude state (settings.local.json, locks) but SHARE skills.
 .claude/*
 !.claude/skills/
+!.claude/agents/
 server/.claude/
 client/.claude/
 *.tar.gz

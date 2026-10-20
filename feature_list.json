@@ -1,0 +1,161 @@
+{
+  "project": "kingdoms-harvest",
+  "description": "Juego idle + combate por instancias, grimdark renacentista (APK Android vía Capacitor y Telegram Mini App), con economía de tokens KH.",
+  "rules": {
+    "one_feature_at_a_time_per_session": true,
+    "parallel_sessions_allowed": true,
+    "require_approved_spec_to_implement": true,
+    "require_verification_evidence_to_close": true,
+    "valid_status": ["pending", "spec_ready", "in_progress", "done", "blocked"],
+    "sdd_required_when": "feature has \"sdd\": true",
+    "integration_branch": "feat/art-direction-b",
+    "known_failures": [
+      "client: src/tests/GameHUD.test.jsx > GameHUD > renders player level as Lv5 (preexistente, ver feature fix_test_gamehud_lv5)"
+    ]
+  },
+  "features": [
+    {
+      "id": 1,
+      "name": "spike_combate_b",
+      "title": "Spike de dirección de arte B (combate ilustrado en Phaser)",
+      "description": "Prototipo descartable que valida el estilo grimdark renacentista y el pipeline de arte IA sin cambiar de motor. Previo a la adopción del harness.",
+      "acceptance": [
+        "Escena de combate jugable en spikes/001-combat-b con arte coherente",
+        "Pipeline gen_art_b.js + process_art_b.js reproducible"
+      ],
+      "sdd": false,
+      "status": "done",
+      "assignee": "p-kh"
+    },
+    {
+      "id": 2,
+      "name": "lore_v2",
+      "title": "Lore v2 grimdark renacentista en textos visibles",
+      "description": "Reescritura del canon (docs/lore.md) y migración de todos los textos visibles con scripts/lore_v2_apply.js. Previo a la adopción del harness.",
+      "acceptance": [
+        "Ningún texto visible usa términos de ciencia ficción del lore v1",
+        "Ids de datos intactos; server 388/388"
+      ],
+      "sdd": false,
+      "status": "done",
+      "assignee": "p-kh"
+    },
+    {
+      "id": 3,
+      "name": "hub_b_escena",
+      "title": "Hub idle vivo — escena base ilustrada (B1.1)",
+      "description": "La pantalla-ancla del idle pasa al estilo B: escena Phaser vertical por capas (cielo, colina/muralla, primer plano) con los edificios que el jugador tiene, cada uno como sprite ilustrado en su ranura, trabajadores animados en los edificios que producen y el cielo reflejando la tormenta activa. Solo presentación: lee el estado existente del server.",
+      "acceptance": [
+        "Al entrar al Bastión se ve la escena ilustrada B en lugar del diorama viejo, encuadrada para vertical 412x860 sin recortes raros",
+        "Cada edificio construido por el jugador aparece en su ranura con su sprite B; los no construidos no aparecen (o se ven como solar vacío)",
+        "Los edificios que producen muestran un trabajador o efecto animado sin input del jugador (respiración/loop de trabajo, humo)",
+        "Con una tormenta activa el cielo/ambiente cambia de forma reconocible; sin tormenta, cielo normal",
+        "Tocar un edificio abre la misma información/acción que hoy (no se pierde funcionalidad)",
+        "Sin cambios de economía ni de API; suites de server y cliente sin regresiones; consola sin errores; >= 50 fps medidos en headless con GPU"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": "p-kh"
+    },
+    {
+      "id": 4,
+      "name": "hub_b_recoleccion",
+      "title": "Hub idle — recolección como objetos en la escena (B1.2)",
+      "description": "Lo producido y listo para recoger aparece como objeto ilustrado (saco de trigo, leña, lingotes, bolsa de coronas) junto a su edificio; tocarlo lo recoge con el endpoint existente y el objeto vuela al contador.",
+      "acceptance": [
+        "Cada recurso recolectable se ve como objeto junto a su edificio",
+        "Tocar el objeto recoge vía el endpoint actual y actualiza el contador",
+        "Sin cambios de economía"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 5,
+      "name": "hub_b_tramos_nivel",
+      "title": "Hub idle — aspecto del edificio por tramo de nivel (B1.3)",
+      "description": "Cada edificio tiene 3 sprites según su nivel (bajo/medio/alto); subir de nivel cambia el dibujo en la escena.",
+      "acceptance": [
+        "3 sprites por edificio y regla de tramo documentada",
+        "Mejorar un edificio actualiza su sprite sin recargar"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 6,
+      "name": "reporte_escribano",
+      "title": "Reporte offline como libro de cuentas del Escribano (B1.4)",
+      "description": "El modal de reporte offline se rediseña como pergamino/libro del Escribano con lo producido en ausencia, tope de granero y frase de humor negro.",
+      "acceptance": [
+        "Mismos datos que el reporte actual, presentados con el kit B",
+        "Frase del Escribano variable"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 7,
+      "name": "combate_b",
+      "title": "Combate de campaña con la escena B (B2)",
+      "description": "Port del spike 001 a una CombatScene real que reproduce los resultados de stepInstance; escuadra de hasta 5 y oleadas; 18 héroes con hoja de pose, 8 enemigos, 6 fondos.",
+      "acceptance": [
+        "Un combate real de campaña se juega entero con la escena nueva",
+        "Ningún asset del pipeline viejo visible en combate",
+        "Server-authoritative intacto; >= 50 fps"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 8,
+      "name": "ui_kit_b",
+      "title": "Kit de UI e íconos B en todo el chrome React (B3)",
+      "description": "IM Fell English en todo el juego, tokens Tailwind, componentes Panel/Button/PortraitRing/Bar y ~40 íconos ilustrados que reemplazan los emojis.",
+      "acceptance": [
+        "Cero emojis como íconos en la UI",
+        "Sin Google Fonts; tipografía empaquetada"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 9,
+      "name": "pantallas_b",
+      "title": "Resto de pantallas en estilo B (B4)",
+      "description": "Menú con key art, roster de héroes, mapas de la Marca y de los Reinos Caídos, pantallas de victoria/recompensa.",
+      "acceptance": ["Todas las pantallas principales con el contrato visual B"],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 10,
+      "name": "apk_fase1_verificacion",
+      "title": "APK Fase 1 — build y verificación en emulador",
+      "description": "assembleDebug + instalación en el emulador vault + arranque hasta el hub hablando con el server local por device-id (spec .superpowers/specs/2026-09-15-android-apk-pivot-design.md §3).",
+      "acceptance": [
+        "assembleDebug produce un APK instalable",
+        "En el emulador el juego llega al hub sin errores de consola y init devuelve 200"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 11,
+      "name": "fix_test_gamehud_lv5",
+      "title": "Arreglar test preexistente GameHUD Lv5",
+      "description": "client/src/tests/GameHUD.test.jsx > renders player level as Lv5 falla desde antes del harness.",
+      "acceptance": ["cd client && npx vitest run sin fallos"],
+      "sdd": false,
+      "status": "pending",
+      "assignee": null
+    }
+  ]
+}
