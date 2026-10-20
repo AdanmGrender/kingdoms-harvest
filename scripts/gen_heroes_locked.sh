@@ -2,7 +2,7 @@
 # Regenera retratos de héroe anclados al estilo grimdark (anchor_soldier).
 # Uso: bash gen_heroes_locked.sh <id1> <id2> ...
 set -u
-cd "/e/New folder/kingdoms-harvest" || exit 1
+cd "/d/Proyectos/kingdoms-harvest" || exit 1
 ANCHOR="art-inbox/anchors/anchor_soldier.png"
 mkdir -p art-inbox/heroes
 BUST="grimdark character bust portrait, head and shoulders, facing the viewer, dark atmospheric background, painterly pixel-art, single character, centered"

@@ -8,7 +8,7 @@ estáticos con SPA fallback, así que `:3001` = juego entero.
 
 ```powershell
 # Docker Desktop debe estar corriendo (engine Linux)
-cd "E:\New folder\kingdoms-harvest"
+cd "D:\Proyectos\kingdoms-harvest"
 docker compose -f docker-compose.local.yml up -d --build
 # → http://localhost:3001
 ```
