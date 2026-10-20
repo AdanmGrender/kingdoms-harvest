@@ -755,7 +755,7 @@ QUERIES:
 
 | Feature | Implementado |
 |---------|-------------|
-| Entrada por defecto = **hub Bastión** (base compacta, cámara fija 1.4×, sin ZoneStreamer, `registry.hubMode`) + QuestRail + botón Operaciones. Mundo 160×120 queda tras `?preview=world` | ✅ `BastionHub`/`QuestRail` |
+| Entrada por defecto = **hub Bastión** (hoy `HubSceneB`: escena ilustrada dirección B a resolución de dispositivo, ver `specs/hub_b_escena/`) + QuestRail + botón Operaciones. Mundo 160×120 queda tras `?preview=world` | ✅ `BastionHub`/`QuestRail` |
 | Campaña por nodos: `CAMPAIGN` acto 1 (9 nodos manage/collect/combat/wave/boss encadenados con candados, boss cada ~5) | ✅ `gameConfig.CAMPAIGN` |
 | `campaignService` (seed + getMap + enterNode + resolveStep) — gating server-side, `_clearNode` **transaccional** (claim atómico + award + unlock, rollback recuperable), claim de run + clear atómicos | ✅ migración 030 |
 | Combate round-stepped server-authoritative: `campaignSim` puro (determinista, sin RNG, log 1-entrada-por-ronda con snapshot), tap-skill por energía (34/ronda, ult a 100) | ✅ `campaignSim` |
@@ -765,7 +765,7 @@ QUERIES:
 
 ✅ Balance resuelto (pase 2026-07-18): guarnición default atk 30→60 — un jugador nuevo SIN héroes gana `a1n3` (primer combate) en idle puro (victoria ~ronda 7/8), y `a1n4`+ sigue siendo muro → los héroes son la puerta de progresión desde el nodo 4. Test de regresión del embudo en `campaignService.test.js` ('balance: guarnición sin héroes').
 
-✅ VISUAL resuelto (hub, 2026-07-18): el terreno "partido en 4" se tapó con el **ancla única del hub** — `WorldScene.buildHubAnchor()` dibuja UNA imagen IA (`zone_hub.png`, 1024px 3:2, explanada del Bastión con losas gastadas) centrada en el spawn a depth 0.52 (sobre las 4 anclas de zona, bajo decals/gameplay), 1600×1067 world px (cubre cualquier viewport a zoom 1.4). No-op si falta el arte. Regenerar: `bash scripts/gen_zones.sh` (slot zone_hub).
+✅ VISUAL (hub, 2026-10-20, `hub_b_escena`): el hub viejo (rama de `WorldScene` con diorama pintado y ancla de terreno) se eliminó sin fallback; `BastionHub` monta `PhaserGame entry="hub"` → `HubSceneB` (capas `assets/b/hub/`, un sprite por edificio construido en ranuras fijas de `client/src/game/hub/hubLayout.js`, trabajadores animados, ambiente por tormenta). `WorldScene` sigue solo para `?preview=world`.
 
 ### Phase 5 — Ganchos de retención idle (2026-07-19, rama `feat/ganchos-idle-retencion`)
 

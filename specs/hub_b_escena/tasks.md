@@ -84,6 +84,9 @@
   art of this game — …`; el preset `grimdark` completo sí se antepuso). Se deja así para no gastar otra generación
   (las hojas de contacto muestran que `throne_room`/`mine` siguen la estética); si el reviewer exige el bloque literal
   en R52, regenerar `bld_sheet_7` con el bloque completo.
+  **Desviación aceptada (R52, decisión del leader 2026-10-20):** el prompt de `bld_sheet_7` con el bloque
+  `STYLE MATCH` abreviado queda **aceptado** tras revisión visual del leader (sin regeneración). Es la única excepción
+  al "bloque completo de §8.2" de R52; los otros 15 ítems lo llevan literal.
 - [x] T5 — Listar con `sharp` todos los webp nuevos (archivo, ancho, alto, KB) con el total; confirmar ancho ≤ 1536,
   ≤ 900 KB c/u y ≤ 4.5 MB en total (si alguno se pasa: `--quality 80` solo para ese archivo, `design.md` §8.4).
   Cubre: R34. Evidencia: `node --input-type=module` con `sharp` sobre `client/public/assets/b/{hub,buildings,workers}`
@@ -152,14 +155,31 @@
 
 ## Retiro del hub viejo
 
-- [ ] T9 — Antes de tocar nada: screenshot informativo del hub viejo `evidencia/hub_viejo_antes.webp` (registro de
+- [x] T9 — Antes de tocar nada: screenshot informativo del hub viejo `evidencia/hub_viejo_antes.webp` (registro de
   lo que se reemplaza) y `git grep -n "hub_bastion\|zone_hub\|hubMode"` citado. Luego aplicar el inventario de
   `design.md` §7.2: rama `hubMode` de `WorldScene.js` (l. 75-82, 97-106, 113-121, 124-136, 143-157, métodos
   `buildHubZones`/`buildHubAnchor`, rama hub de `setupCamera`), condiciones `scene.hubMode` de `NPC.js` y
   `Villager.js`, cargas `zone_hub`/`hub_bastion` de `BootScene.js`, bloque `zone_hub` de `scripts/gen_zones.sh`,
   `git rm` de `client/public/assets/game/dioramas/hub_bastion.png` y `client/public/assets/game/zones/zone_hub.png`,
   y `docs/project-spec.md` l. 758/768 reescritas para el hub B. **No** tocar `battle_ruins/battle_tide/boss_arena` ni
-  `CombatInstancePanel.jsx`. Cubre: R47, R48, R49.
+  `CombatInstancePanel.jsx`. Cubre: R47, R48, R49. Evidencia: `evidencia/hub_viejo_antes.webp` (registro informativo,
+  cuenta nueva, 412×860 @2: diorama pixel-art `hub_bastion` con chrome encima; canvas 412×571 en y=123 — el desajuste
+  que corrige R5). `git grep -n "hub_bastion\|zone_hub\|hubMode"` **antes** de tocar (fuera de `specs/`):
+  `BastionHub.jsx:25`, `PhaserGame.jsx:11,62`, `NPC.js:55,72`, `Villager.js:54,82,88`, `BootScene.js:153,156`,
+  `WorldScene.js:80,103,117,124,145,201,212-214,568`, `docs/project-spec.md:758,768`, `scripts/gen_zones.sh:44-47`
+  (+ `feature_list.json:56`, texto del acceptance). Aplicado §7.2: `WorldScene` sin `hubMode`/`hubZonesBuilt`,
+  `ZoneStreamer` siempre, `createBuildings()`/`createFarmPlots()` incondicionales, `zoneStreamer.update(true)` solo,
+  resize = `cameras.main.setSize`, `buildHubZones`/`buildHubAnchor` borrados, `setupCamera` zoom 1.0 + `centerOn`
+  (−118 líneas); `NPC.js`/`Villager.js` con glow y etiquetas siempre (comportamiento de preview); `BootScene` sin
+  cargas `zone_hub`/`hub_bastion`; bloque `zone_hub` fuera de `scripts/gen_zones.sh` (`bash -n` → ok);
+  `docs/project-spec.md` l. 758/768 describen el hub B. Assets: `git rm client/public/assets/game/dioramas/hub_bastion.png`;
+  `zone_hub.png` **no estaba versionado** (`git check-ignore -v` → `.gitignore:28:client/public/assets/game/`), se sacó
+  de `client/public/` a `D:/Proyectos/_reorganizacion/kh_hub_viejo/` (copia local, fuera del repo). `git ls-files
+  client/public/assets/game/dioramas client/public/assets/game/zones` → solo `battle_ruins.png`, `battle_tide.png`,
+  `boss_arena.png` (R49: intactos, `CombatInstancePanel.jsx` sin tocar). Grep de R47 tras T9: solo quedan
+  `BastionHub.jsx:25` y `PhaserGame.jsx:11,62` (prop/registry, los reemplaza `entry` en T10). `?preview=world` sigue
+  andando: Playwright → `canvas.width 412`, `isActive('WorldScene') true`, 9 edificios, 0 `pageerror`. `cd client &&
+  npx vitest run` → `Tests 1 failed | 146 passed (147)`, único fallo = known_failure GameHUD Lv5.
 
 ## Escena e integración
 
