@@ -286,7 +286,7 @@ Evidencia: `cd server && npx jest --runInBand --forceExit` (`Tests: N passed`) y
 DONDE el ajuste de ambiente `kh_ambient_fx` está desactivado (`SettingsPanel`), el sistema NO DEBE crear emisores de
 partículas ni postFX en el hub B (la tormenta se reconoce solo por cielo y gradación).
 Evidencia: Playwright con `localStorage.kh_ambient_fx = 'false'` → conteo de `ParticleEmitter` en la escena = 0 y
-`cameras.main.postFX.list.length === 0` (citar) + screenshot `evidencia/hub_fx_off.webp`.
+`cameras.main.postPipelines.length === 0` (citar; con FX activos debe ser ≥ 1 — enmienda del leader 2026-10-20: en Phaser 3.90 `postFX.list` queda siempre vacío) + screenshot `evidencia/hub_fx_off.webp`.
 
 ## Nitidez (resolución de dispositivo)
 

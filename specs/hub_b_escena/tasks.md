@@ -329,7 +329,7 @@
   `hub_obra.webp`, `hub_worker_a.webp` + `hub_worker_b.webp` (texture keys distintas citadas),
   `hub_tormenta_{velo_estatico,marea_carmesi,lluvia_de_energia,susurros_del_vacio,calma_falsa}.webp` + vuelta a
   calma, `hub_resize_360x780.webp` (`canvas` 720×1560 citado), `hub_token.webp` (cuerpo 14 px CSS citado),
-  `hub_fx_off.webp` (emisores 0 y `postFX.list.length` 0), `config.pixelArt/antialias` y filtro lineal de cada
+  `hub_fx_off.webp` (emisores 0 y `cameras.main.postPipelines.length` 0, ≥ 1 con FX activos), `config.pixelArt/antialias` y filtro lineal de cada
   `hubb_*`, `time:updated` recibido, lista de texturas no-`hubb_` vacía. Cubre: R1, R3, R4, R5, R6, R7, R10, R11, R13,
   R14, R16, R17, R18, R19, R20, R28, R29, R38, R39, R50.
 - [ ] T17 — Corrida en el viewport alto (`--dpr 3`) y comparación con DSF 2: `canvas` 1236×2580 y rect 412×860
