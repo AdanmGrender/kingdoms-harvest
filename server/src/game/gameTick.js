@@ -298,7 +298,7 @@ async function _processTickInner() {
     const stormService = require('../services/stormService');
     await stormService.tick(ioRef);
   } catch (error) {
-    console.error('[Tick] Error en tormentas disformes:', error.message);
+    console.error('[Tick] Error en tormentas de la Mácula:', error.message);
   }
 
   // 4b4. Rotate tournaments — settle expired, kick off next per type

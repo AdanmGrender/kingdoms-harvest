@@ -106,8 +106,8 @@ function initBot() {
 
     bot.sendMessage(chatId,
       `💀 *¡Bienvenido a Kingdoms Harvest, ${firstName}!*\n\n` +
-      `Levantá tu bastión en un mundo en ruinas, cultivá tus vats, comerciá ` +
-      `con convoyes y conquistá territorios con tu facción.${referralMsg}\n` +
+      `Levantá tu bastión en un mundo en ruinas, sembrá tus campos, comerciá ` +
+      `con caravanas y conquistá territorios con tu facción.${referralMsg}\n` +
       `🎖️ Tocá el botón de abajo para tomar el mando:`,
       {
         parse_mode: 'Markdown',
@@ -124,10 +124,10 @@ function initBot() {
   bot.onText(/\/help/, (msg) => {
     bot.sendMessage(msg.chat.id,
       `📖 *Guía de Kingdoms Harvest*\n\n` +
-      `🌾 *Cultivo:* Plantá en tus vats y criá bestias para obtener recursos.\n` +
+      `🌾 *Cultivo:* Sembrá tus campos y criá ganado para obtener recursos.\n` +
       `🏭 *Bastión:* Construí y mejorá edificios para desbloquear mecánicas.\n` +
-      `📋 *Misiones:* Completá pedidos de NPCs para ganar créditos y XP.\n` +
-      `🏪 *Comercio:* Comprá y vendé con convoyes a precios variables.\n` +
+      `📋 *Misiones:* Completá pedidos de NPCs para ganar coronas y XP.\n` +
+      `🏪 *Comercio:* Comprá y vendé con caravanas a precios variables.\n` +
       `💥 *Guerra:* Entrená tropas, atacá enclaves NPC o a otros jugadores.\n` +
       `🛡️ *Facciones:* Uníte a una facción y conquistá territorios.\n\n` +
       `Usá /play para abrir el juego.`,

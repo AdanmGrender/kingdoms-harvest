@@ -104,7 +104,7 @@ const farmService = {
     const techYieldBonus = completedTechs.has('fertile_soil') ? 0.20 : 0;
     // Seasonal event: spring_bloom adds farming bonus while active
     const eventBonus = await eventService.getMultiplier('farming');
-    // Tormenta disforme (F2): puede penalizar la producción (p. ej. Velo Estático −25%)
+    // Tormenta disforme (F2): puede penalizar la producción (p. ej. Niebla Sorda −25%)
     const stormBonus = await require('./stormService').getModifier('farming');
     // Prestige "Granjero Veterano" (crop_yield): multiplicador (1 + nivel*5%).
     // Antes el bono existía en la config pero NADIE lo consumía → el jugador

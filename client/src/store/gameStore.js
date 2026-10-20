@@ -78,7 +78,7 @@ const useGameStore = create((set, get) => ({
     } catch { /* silencioso — el banner simplemente no aparece */ }
   },
 
-  // Idle F3: Marea Disforme (defensa por oleadas)
+  // Idle F3: Marea de la Mácula (defensa por oleadas)
   waveStatus: null,
   loadWaveStatus: async () => {
     try {
@@ -114,7 +114,7 @@ const useGameStore = create((set, get) => ({
       get().loadSystem();
       return data;
     } catch (error) {
-      get().addNotification(error.response?.data?.error || 'La Nave no pudo partir', 'error');
+      get().addNotification(error.response?.data?.error || 'La caravana no pudo partir', 'error');
       return null;
     }
   },
@@ -135,7 +135,7 @@ const useGameStore = create((set, get) => ({
       get().loadGalaxy();
       return data;
     } catch (error) {
-      get().addNotification(error.response?.data?.error || 'El Crucero no pudo zarpar', 'error');
+      get().addNotification(error.response?.data?.error || 'La expedición no pudo partir', 'error');
       return null;
     }
   },

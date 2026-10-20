@@ -1,5 +1,5 @@
 /**
- * /api/waves — Marea Disforme (F3 idle): defensa por oleadas automática.
+ * /api/waves — Marea de la Mácula (F3 idle): defensa por oleadas automática.
  */
 const express = require('express');
 const { telegramAuth } = require('../middleware/telegramAuth');

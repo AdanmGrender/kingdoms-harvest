@@ -98,8 +98,8 @@ const commerceService = {
     const departs = new Date(now.getTime() + 4 * 60 * 60 * 1000); // 4 horas
 
     const caravanNames = [
-      'Convoy del Este', 'Chatarreros de Norheim', 'Traficantes del Páramo',
-      'Convoy del Alto Mando', 'Buhoneros del Óxido', 'Zoco Ambulante',
+      'Caravana del Este', 'Carreteros de Norheim', 'Traficantes del Páramo',
+      'Caravana del Margrave', 'Buhoneros del Óxido', 'Zoco Ambulante',
     ];
 
     const [id] = await db('caravans').insert({
@@ -118,15 +118,15 @@ const commerceService = {
    * Comprar recurso de la caravana
    */
   async buyFromCaravan(playerId, resourceId, quantity) {
-    // Tormenta disforme (F2): Velo Estático sella los convoyes
+    // Tormenta disforme (F2): Niebla Sorda sella los convoyes
     if (await require('./stormService').convoysSealed()) {
-      throw new Error('La tormenta disforme selló las rutas — el convoy no responde');
+      throw new Error('La tormenta cerró los caminos — la caravana no responde');
     }
     const caravan = await this.getActiveCaravan();
     const offer = caravan.buy_offers.find((o) => o.resource_id === resourceId);
 
-    if (!offer) throw new Error('El convoy no vende ese recurso');
-    if (quantity > offer.quantity) throw new Error(`El convoy solo tiene ${offer.quantity}`);
+    if (!offer) throw new Error('La caravana no vende ese recurso');
+    if (quantity > offer.quantity) throw new Error(`La caravana solo tiene ${offer.quantity}`);
 
     const totalCost = offer.price * quantity;
 
@@ -156,14 +156,14 @@ const commerceService = {
    * Vender recurso a la caravana
    */
   async sellToCaravan(playerId, resourceId, quantity) {
-    // Tormenta disforme (F2): Velo Estático sella los convoyes
+    // Tormenta disforme (F2): Niebla Sorda sella los convoyes
     if (await require('./stormService').convoysSealed()) {
-      throw new Error('La tormenta disforme selló las rutas — el convoy no responde');
+      throw new Error('La tormenta cerró los caminos — la caravana no responde');
     }
     const caravan = await this.getActiveCaravan();
     const offer = caravan.sell_offers.find((o) => o.resource_id === resourceId);
 
-    if (!offer) throw new Error('El convoy no compra ese recurso');
+    if (!offer) throw new Error('La caravana no compra ese recurso');
 
     // Faction bonus: shadow_merchants +15% sell price
     const player = await db('players').where('telegram_id', playerId).first();
@@ -174,7 +174,7 @@ const commerceService = {
     // Tech F5: caravan_master — el maestro de convoyes consigue +50% de cupo
     const quotaMult = completedTechs.has('caravan_master') ? 1.5 : 1;
     const maxQty = Math.floor(offer.quantity * quotaMult);
-    if (quantity > maxQty) throw new Error(`El convoy solo acepta ${maxQty} más`);
+    if (quantity > maxQty) throw new Error(`La caravana solo acepta ${maxQty} más`);
     // Tech F5: haggling +10%, trade_routes +10% adicional (rutas lejanas pagan más)
     const techBonus = (completedTechs.has('haggling') ? 0.10 : 0)
       + (completedTechs.has('trade_routes') ? 0.10 : 0);

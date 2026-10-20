@@ -82,7 +82,7 @@ describe('launchShip', () => {
     await unlockScale();
     await systemService.launchShip(TEST_PLAYER_ID, 'ferryn');
     await expect(systemService.launchShip(TEST_PLAYER_ID, 'ferryn'))
-      .rejects.toThrow(/tránsito/);
+      .rejects.toThrow(/ya está en camino/);
   });
 
   test('respeta el orden secuencial', async () => {

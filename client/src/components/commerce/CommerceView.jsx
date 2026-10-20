@@ -51,7 +51,7 @@ function CaravanSection({ resources }) {
       const { data } = await api.get('/commerce/caravan');
       setCaravan(data);
     } catch {
-      addNotification('Error al cargar el convoy', 'error');
+      addNotification('Error al cargar la caravana', 'error');
     } finally {
       setLoading(false);
     }
@@ -93,12 +93,12 @@ function CaravanSection({ resources }) {
     return (
       <div className="text-center py-6">
         <span className="text-2xl animate-spin inline-block">🎠</span>
-        <p className="text-gray-400 text-xs mt-2">Convocando convoy...</p>
+        <p className="text-gray-400 text-xs mt-2">Llamando a la caravana...</p>
       </div>
     );
   }
 
-  if (!caravan) return <p className="text-gray-400 text-xs text-center py-4">Sin convoy disponible.</p>;
+  if (!caravan) return <p className="text-gray-400 text-xs text-center py-4">Sin caravana disponible.</p>;
 
   const departs = new Date(caravan.departs_at);
   const now = new Date();
@@ -241,7 +241,7 @@ function QuickSellSection({ resources }) {
       <div className="game-card mb-3 py-2 px-3">
         <p className="text-[10px] text-gray-400">
           Precio fijo al <span className="text-yellow-400 font-bold">70%</span> del valor de mercado.
-          Siempre disponible, sin esperar convoy.
+          Siempre disponible, sin esperar caravana.
         </p>
       </div>
       <div className="space-y-1">
@@ -374,7 +374,7 @@ const DEFAULT_TAB = {
 };
 
 const TABS = [
-  { id: 'caravan',  label: 'Convoy',      icon: '🚚' },
+  { id: 'caravan',  label: 'Caravana',      icon: '🚚' },
   { id: 'sell',     label: 'Venta rápida', icon: '💰' },
   { id: 'missions', label: 'Misiones',     icon: '📜' },
 ];

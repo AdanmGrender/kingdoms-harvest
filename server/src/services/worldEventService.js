@@ -87,8 +87,8 @@ const EVENT_TYPES = {
     duration: 45,
   },
   abandoned_caravan: {
-    title: 'Convoy Abandonado',
-    description: 'Un convoy fue dejado atrás bajo fuego. Su carga te espera.',
+    title: 'Caravana Abandonada',
+    description: 'Una caravana quedó abandonada en el camino. Su carga te espera.',
     icon: '🚚',
     rarity: 'uncommon',
     rewards: [

@@ -1,5 +1,5 @@
 /**
- * waveDefenseService — Marea Disforme (F3 idle). DB in-memory.
+ * waveDefenseService — Marea de la Mácula (F3 idle). DB in-memory.
  */
 const { initTestDb, seedTestData, TEST_PLAYER_ID } = require('./setup');
 const { WAVE_CONFIG } = require('../../shared/gameConfig');

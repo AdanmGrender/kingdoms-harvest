@@ -21,31 +21,31 @@ const SEASON_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 // ---- RECURSOS ----
 const RESOURCES = {
   // Básicos
-  WHEAT: { id: 'wheat', name: 'Grano Sintético', icon: '🌾', category: 'basic' },
-  WOOD: { id: 'wood', name: 'Chatarra', icon: '⚙️', category: 'basic' },
-  STONE: { id: 'stone', name: 'Ferrocreto', icon: '🪨', category: 'basic' },
-  IRON: { id: 'iron', name: 'Acero', icon: '⛏️', category: 'basic' },
-  WATER: { id: 'water', name: 'Agua Filtrada', icon: '💧', category: 'basic' },
-  GOLD: { id: 'gold', name: 'Créditos', icon: '🪙', category: 'currency' },
+  WHEAT: { id: 'wheat', name: 'Trigo Votivo', icon: '🌾', category: 'basic' },
+  WOOD: { id: 'wood', name: 'Madera', icon: '⚙️', category: 'basic' },
+  STONE: { id: 'stone', name: 'Piedra', icon: '🪨', category: 'basic' },
+  IRON: { id: 'iron', name: 'Hierro', icon: '⛏️', category: 'basic' },
+  WATER: { id: 'water', name: 'Agua de Pozo', icon: '💧', category: 'basic' },
+  GOLD: { id: 'gold', name: 'Coronas', icon: '🪙', category: 'currency' },
 
   // Procesados
-  BREAD: { id: 'bread', name: 'Raciones', icon: '🥫', category: 'processed', recipe: { wheat: 3 } },
-  PLANKS: { id: 'planks', name: 'Placas de Blindaje', icon: '🔳', category: 'processed', recipe: { wood: 2 } },
-  INGOTS: { id: 'ingots', name: 'Aleación', icon: '🔩', category: 'processed', recipe: { iron: 2 } },
-  FLOUR: { id: 'flour', name: 'Polvo Nutriente', icon: '🌫️', category: 'processed', recipe: { wheat: 2 } },
-  CHEESE: { id: 'cheese', name: 'Proteína Cultivada', icon: '🧫', category: 'processed', recipe: { milk: 2 } },
+  BREAD: { id: 'bread', name: 'Pan Negro', icon: '🥫', category: 'processed', recipe: { wheat: 3 } },
+  PLANKS: { id: 'planks', name: 'Tablones', icon: '🔳', category: 'processed', recipe: { wood: 2 } },
+  INGOTS: { id: 'ingots', name: 'Lingotes', icon: '🔩', category: 'processed', recipe: { iron: 2 } },
+  FLOUR: { id: 'flour', name: 'Harina', icon: '🌫️', category: 'processed', recipe: { wheat: 2 } },
+  CHEESE: { id: 'cheese', name: 'Queso Curado', icon: '🧫', category: 'processed', recipe: { milk: 2 } },
 
   // Raros (solo por misiones/conquista)
-  CRYSTAL: { id: 'crystal', name: 'Cristal de Energía', icon: '💎', category: 'rare' },
+  CRYSTAL: { id: 'crystal', name: 'Ascua de Faro', icon: '💎', category: 'rare' },
   RELIC: { id: 'relic', name: 'Reliquia Sagrada', icon: '⚱️', category: 'rare' },
-  BLUEPRINT: { id: 'blueprint', name: 'Plano Arcanotécnico', icon: '📜', category: 'rare' },
+  BLUEPRINT: { id: 'blueprint', name: 'Tratado de Ingenios', icon: '📜', category: 'rare' },
 };
 
 // ---- CULTIVOS ----
 const CROPS = {
   wheat: {
     id: 'wheat',
-    name: 'Grano Sintético',
+    name: 'Trigo Votivo',
     icon: '🌾',
     growthTime: 30 * 60 * 1000, // 30 min
     yield: { min: 3, max: 6 },
@@ -56,7 +56,7 @@ const CROPS = {
   },
   carrot: {
     id: 'carrot',
-    name: 'Raíz Nutritiva',
+    name: 'Nabo Amargo',
     icon: '🥕',
     growthTime: 20 * 60 * 1000, // 20 min
     yield: { min: 2, max: 5 },
@@ -67,7 +67,7 @@ const CROPS = {
   },
   potato: {
     id: 'potato',
-    name: 'Tubérculo Vat',
+    name: 'Papa Negra',
     icon: '🥔',
     growthTime: 45 * 60 * 1000, // 45 min
     yield: { min: 4, max: 8 },
@@ -78,7 +78,7 @@ const CROPS = {
   },
   tomato: {
     id: 'tomato',
-    name: 'Fruto Hidropónico',
+    name: 'Manzana de Horca',
     icon: '🍅',
     growthTime: 60 * 60 * 1000, // 1 hora
     yield: { min: 3, max: 7 },
@@ -89,7 +89,7 @@ const CROPS = {
   },
   pumpkin: {
     id: 'pumpkin',
-    name: 'Bulbo Fungoide',
+    name: 'Calabaza Hinchada',
     icon: '🍄',
     growthTime: 120 * 60 * 1000, // 2 horas
     yield: { min: 2, max: 4 },
@@ -100,7 +100,7 @@ const CROPS = {
   },
   corn: {
     id: 'corn',
-    name: 'Maíz Mutante',
+    name: 'Centeno Retorcido',
     icon: '🌽',
     growthTime: 90 * 60 * 1000, // 1.5 horas
     yield: { min: 3, max: 6 },
@@ -111,7 +111,7 @@ const CROPS = {
   },
   grape: {
     id: 'grape',
-    name: 'Baya Fermentable',
+    name: 'Uva de Lagar',
     icon: '🍇',
     growthTime: 180 * 60 * 1000, // 3 horas
     yield: { min: 4, max: 8 },
@@ -126,7 +126,7 @@ const CROPS = {
 const ANIMALS = {
   chicken: {
     id: 'chicken',
-    name: 'Ave Clonada',
+    name: 'Gallina Flaca',
     icon: '🐔',
     product: 'egg',
     productName: 'Huevo',
@@ -140,7 +140,7 @@ const ANIMALS = {
   },
   cow: {
     id: 'cow',
-    name: 'Bestia de Carga',
+    name: 'Buey de Tiro',
     icon: '🐄',
     product: 'milk',
     productName: 'Nutrileche',
@@ -154,7 +154,7 @@ const ANIMALS = {
   },
   sheep: {
     id: 'sheep',
-    name: 'Lanuda Mutante',
+    name: 'Oveja Sarnosa',
     icon: '🐑',
     product: 'wool',
     productName: 'Fibra',
@@ -173,7 +173,7 @@ const BUILDINGS = {
   // Zona Agrícola
   farm_plot: {
     id: 'farm_plot',
-    name: 'Cúpula Hidropónica',
+    name: 'Huerto Votivo',
     icon: '🌱',
     zone: 'agricultural',
     maxLevel: 10,
@@ -188,7 +188,7 @@ const BUILDINGS = {
   },
   barn: {
     id: 'barn',
-    name: 'Depósito de Suministros',
+    name: 'Granero',
     icon: '📦',
     zone: 'agricultural',
     maxLevel: 10,
@@ -203,7 +203,7 @@ const BUILDINGS = {
   },
   mill: {
     id: 'mill',
-    name: 'Procesadora de Raciones',
+    name: 'Molino',
     icon: '🏭',
     zone: 'agricultural',
     maxLevel: 5,
@@ -218,7 +218,7 @@ const BUILDINGS = {
   },
   sawmill: {
     id: 'sawmill',
-    name: 'Planta de Salvamento',
+    name: 'Aserradero',
     icon: '♻️',
     zone: 'agricultural',
     maxLevel: 5,
@@ -233,7 +233,7 @@ const BUILDINGS = {
   },
   smithy: {
     id: 'smithy',
-    name: 'Fundición',
+    name: 'Herrería',
     icon: '⚒️',
     zone: 'agricultural',
     maxLevel: 5,
@@ -248,7 +248,7 @@ const BUILDINGS = {
   },
   stable: {
     id: 'stable',
-    name: 'Corral de Bestias',
+    name: 'Establo',
     icon: '🐾',
     zone: 'agricultural',
     maxLevel: 5,
@@ -263,7 +263,7 @@ const BUILDINGS = {
   },
   house: {
     id: 'house',
-    name: 'Bloque Habitacional',
+    name: 'Casa de Vecinos',
     icon: '🏢',
     zone: 'agricultural',
     maxLevel: 5,
@@ -278,7 +278,7 @@ const BUILDINGS = {
   },
   mine: {
     id: 'mine',
-    name: 'Excavación Profunda',
+    name: 'Mina de la Colina',
     icon: '⛏️',
     zone: 'agricultural',
     maxLevel: 5,
@@ -295,7 +295,7 @@ const BUILDINGS = {
   // Zona Defensiva
   wall: {
     id: 'wall',
-    name: 'Muro Bastión',
+    name: 'Muralla',
     icon: '🧱',
     zone: 'defensive',
     maxLevel: 15,
@@ -310,7 +310,7 @@ const BUILDINGS = {
   },
   tower: {
     id: 'tower',
-    name: 'Torreta Centinela',
+    name: 'Torre de Cañones',
     icon: '🗼',
     zone: 'defensive',
     maxLevel: 10,
@@ -340,7 +340,7 @@ const BUILDINGS = {
   },
   trap: {
     id: 'trap',
-    name: 'Campo de Minas',
+    name: 'Foso de Estacas',
     icon: '💣',
     zone: 'defensive',
     maxLevel: 8,
@@ -357,7 +357,7 @@ const BUILDINGS = {
   // Zona Social
   tavern: {
     id: 'tavern',
-    name: 'Cantina',
+    name: 'Taberna',
     icon: '🍺',
     zone: 'social',
     maxLevel: 5,
@@ -388,7 +388,7 @@ const BUILDINGS = {
   },
   embassy: {
     id: 'embassy',
-    name: 'Nexo de Comunicaciones',
+    name: 'Casa del Emisario',
     icon: '📡',
     zone: 'social',
     maxLevel: 3,
@@ -404,7 +404,7 @@ const BUILDINGS = {
   // Zona Noble
   throne_room: {
     id: 'throne_room',
-    name: 'Bastión de Mando',
+    name: 'Torre del Señor',
     icon: '🎖️',
     zone: 'noble',
     maxLevel: 10,
@@ -418,7 +418,7 @@ const BUILDINGS = {
   },
   library: {
     id: 'library',
-    name: 'Archivo Tecnosagrado',
+    name: 'Scriptorium',
     icon: '📚',
     zone: 'noble',
     maxLevel: 8,
@@ -450,7 +450,7 @@ const TROOPS = {
   },
   archer: {
     id: 'archer',
-    name: 'Fusilero',
+    name: 'Arcabucero',
     icon: '🎯',
     atk: 15,
     def: 5,
@@ -464,7 +464,7 @@ const TROOPS = {
   },
   cavalry: {
     id: 'cavalry',
-    name: 'Asalto Mecanizado',
+    name: 'Caballería Pesada',
     icon: '🏍️',
     atk: 20,
     def: 12,
@@ -478,7 +478,7 @@ const TROOPS = {
   },
   spearman: {
     id: 'spearman',
-    name: 'Granadero',
+    name: 'Alabardero',
     icon: '💥',
     atk: 12,
     def: 15,
@@ -492,7 +492,7 @@ const TROOPS = {
   },
   siege_ram: {
     id: 'siege_ram',
-    name: 'Vehículo de Brecha',
+    name: 'Ariete',
     icon: '🚛',
     atk: 50,
     def: 5,
@@ -511,13 +511,13 @@ const TROOPS = {
 const TECH_BRANCHES = {
   agriculture: {
     id: 'agriculture',
-    name: 'Biocultivo',
+    name: 'Labranza',
     icon: '🧬',
     techs: {
-      fertile_soil: { name: 'Sustrato Enriquecido', effect: '+20% rendimiento cultivos', cost: { gold: 100 }, level: 1 },
-      irrigation: { name: 'Riego Automatizado', effect: '-15% tiempo de cultivo', cost: { gold: 200, stone: 50 }, level: 2 },
-      selective_breeding: { name: 'Clonación Selectiva', effect: '+1 producto animal', cost: { gold: 300 }, level: 3 },
-      greenhouse: { name: 'Bio-Cúpula Sellada', effect: 'Cultivos de cualquier estación', cost: { gold: 500, crystal: 1 }, level: 5 },
+      fertile_soil: { name: 'Estiércol Bendecido', effect: '+20% rendimiento cultivos', cost: { gold: 100 }, level: 1 },
+      irrigation: { name: 'Acequias', effect: '-15% tiempo de cultivo', cost: { gold: 200, stone: 50 }, level: 2 },
+      selective_breeding: { name: 'Cría Selectiva', effect: '+1 producto animal', cost: { gold: 300 }, level: 3 },
+      greenhouse: { name: 'Invernadero de Vidrio', effect: 'Cultivos de cualquier estación', cost: { gold: 500, crystal: 1 }, level: 5 },
     },
   },
   commerce: {
@@ -526,19 +526,19 @@ const TECH_BRANCHES = {
     icon: '💰',
     techs: {
       haggling: { name: 'Negociación Dura', effect: '+10% precio de venta', cost: { gold: 100 }, level: 1 },
-      trade_routes: { name: 'Rutas de Convoy', effect: '+10% precio de venta adicional', cost: { gold: 250 }, level: 2 },
-      caravan_master: { name: 'Maestro de Convoyes', effect: '+50% de cupo de venta al convoy', cost: { gold: 400 }, level: 3 },
-      merchant_guild: { name: 'Sindicato Mercante', effect: '+2 misiones simultáneas', cost: { gold: 600, relic: 1 }, level: 5 },
+      trade_routes: { name: 'Rutas de Caravana', effect: '+10% precio de venta adicional', cost: { gold: 250 }, level: 2 },
+      caravan_master: { name: 'Maestro de Caravanas', effect: '+50% de cupo de venta a la caravana', cost: { gold: 400 }, level: 3 },
+      merchant_guild: { name: 'Gremio de Mercaderes', effect: '+2 misiones simultáneas', cost: { gold: 600, relic: 1 }, level: 5 },
     },
   },
   military: {
     id: 'military',
-    name: 'Doctrina de Guerra',
+    name: 'Arte de la Guerra',
     icon: '🪖',
     techs: {
-      sharp_blades: { name: 'Munición Perforante', effect: '+10% ATK tropas', cost: { gold: 150, ingots: 5 }, level: 1 },
-      reinforced_armor: { name: 'Blindaje Compuesto', effect: '+10% DEF tropas', cost: { gold: 200, ingots: 8 }, level: 2 },
-      tactics: { name: 'Doctrina Táctica', effect: '+15% en combate defensivo', cost: { gold: 350 }, level: 3 },
+      sharp_blades: { name: 'Pólvora Fina', effect: '+10% ATK tropas', cost: { gold: 150, ingots: 5 }, level: 1 },
+      reinforced_armor: { name: 'Coraza Templada', effect: '+10% DEF tropas', cost: { gold: 200, ingots: 8 }, level: 2 },
+      tactics: { name: 'Tácticas de Pica', effect: '+15% en combate defensivo', cost: { gold: 350 }, level: 3 },
       elite_training: { name: 'Adiestramiento Veterano', effect: 'Desbloquea tropas élite', cost: { gold: 700, blueprint: 1 }, level: 5 },
     },
   },
@@ -576,7 +576,7 @@ const FACTIONS = {
     icon: '☣️',
     color: '#228B22',
     bonus: { farming: 0.15 }, // +15% producción agrícola
-    description: 'Bioadeptos que arrancan vida al suelo muerto. Bonus: +15% producción agrícola.',
+    description: 'Herbolarios de seto que arrancan vida al suelo muerto. Bonus: +15% producción agrícola.',
   },
 };
 
@@ -605,12 +605,12 @@ const STARTER_RESOURCES = {
 
 // ---- ALDEANOS (Villager AI) ----
 const VILLAGER_ROLES = {
-  farmer: { id: 'farmer', name: 'Cultivador', icon: '🧑‍🌾', workBuildings: ['farm_plot', 'stable'] },
-  woodcutter: { id: 'woodcutter', name: 'Chatarrero', icon: '🪓', workBuildings: ['sawmill'] },
-  miner: { id: 'miner', name: 'Excavador', icon: '⛏️', workBuildings: ['mine', 'smithy'] },
+  farmer: { id: 'farmer', name: 'Labriego', icon: '🧑‍🌾', workBuildings: ['farm_plot', 'stable'] },
+  woodcutter: { id: 'woodcutter', name: 'Leñador', icon: '🪓', workBuildings: ['sawmill'] },
+  miner: { id: 'miner', name: 'Minero', icon: '⛏️', workBuildings: ['mine', 'smithy'] },
   soldier: { id: 'soldier', name: 'Guardia', icon: '🪖', workBuildings: ['barracks', 'tower', 'wall'] },
-  merchant: { id: 'merchant', name: 'Traficante', icon: '💰', workBuildings: ['market', 'tavern'] },
-  builder: { id: 'builder', name: 'Ingeniero', icon: '🔨', workBuildings: [] }, // builds any building
+  merchant: { id: 'merchant', name: 'Buhonero', icon: '💰', workBuildings: ['market', 'tavern'] },
+  builder: { id: 'builder', name: 'Maestro de Obras', icon: '🔨', workBuildings: [] }, // builds any building
 };
 
 const VILLAGER_NAMES = [
@@ -636,7 +636,7 @@ const DAY_CYCLE = {
 const SIEGE_ABILITIES = {
   arrow_rain: {
     id: 'arrow_rain',
-    name: 'Fuego de Supresión',
+    name: 'Salva de Arcabuces',
     icon: '🎯',
     description: 'Reduce defensa enemiga un 20% por 1 turno',
     cooldown: 120000, // 2 min
@@ -645,7 +645,7 @@ const SIEGE_ABILITIES = {
   },
   battering_ram: {
     id: 'battering_ram',
-    name: 'Carga de Demolición',
+    name: 'Golpe de Ariete',
     icon: '💣',
     description: 'Inflige daño masivo a muros',
     cooldown: 180000,
@@ -663,7 +663,7 @@ const SIEGE_ABILITIES = {
   },
   shield_wall: {
     id: 'shield_wall',
-    name: 'Línea de Blindaje',
+    name: 'Muro de Escudos',
     icon: '🛡️',
     description: 'Aumenta defensa un 25% por 1 turno',
     cooldown: 150000,
@@ -689,7 +689,7 @@ const SEASONAL_EVENT_DURATION_MS = 24 * 60 * 60 * 1000; // 24h per event
 const SEASONAL_EVENTS = {
   spring_bloom: {
     id: 'spring_bloom',
-    name: 'Brote de los Vats',
+    name: 'Fiesta de la Siembra',
     icon: '🧪',
     color: '#7ee87e',
     description: '+25% rendimiento de cultivos durante 24h',
@@ -698,10 +698,10 @@ const SEASONAL_EVENTS = {
   },
   harvest_festival: {
     id: 'harvest_festival',
-    name: 'Convoy de Abundancia',
+    name: 'Feria de la Cosecha',
     icon: '📦',
     color: '#ffac30',
-    description: '+20% precio de venta a convoyes y mercado',
+    description: '+20% precio de venta a caravanas y mercado',
     durationMs: SEASONAL_EVENT_DURATION_MS,
     multipliers: { commerce: 0.20 },
   },
@@ -716,7 +716,7 @@ const SEASONAL_EVENTS = {
   },
   golden_caravan: {
     id: 'golden_caravan',
-    name: 'Convoy Dorado',
+    name: 'Caravana Dorada',
     icon: '🪙',
     color: '#ffd750',
     description: '+10% recompensa KH en cosecha + venta',
@@ -772,16 +772,16 @@ const TOURNAMENT_ROTATION = ['kh_rush', 'xp_grind', 'faction_glory'];
 // `reward.kh` is paid out via tokenService when the player claims.
 const ACHIEVEMENTS = {
   first_harvest:      { id: 'first_harvest',      name: 'Primera Cosecha',     icon: '🌾', desc: 'Cosechá tu primer cultivo',                event: 'harvest',     goal: 1,   reward: { kh: 5  } },
-  green_thumb:        { id: 'green_thumb',        name: 'Mano Bioadepta',      icon: '🧪', desc: 'Cosechá 25 cultivos',                       event: 'harvest',     goal: 25,  reward: { kh: 30 } },
-  farm_master:        { id: 'farm_master',        name: 'Maestro de Vats',     icon: '🧬', desc: 'Cosechá 100 cultivos',                      event: 'harvest',     goal: 100, reward: { kh: 100 } },
-  builder_novice:     { id: 'builder_novice',     name: 'Aprendiz Ingeniero',  icon: '🔨', desc: 'Construí 5 edificios',                      event: 'build',       goal: 5,   reward: { kh: 15 } },
+  green_thumb:        { id: 'green_thumb',        name: 'Mano Verde',      icon: '🧪', desc: 'Cosechá 25 cultivos',                       event: 'harvest',     goal: 25,  reward: { kh: 30 } },
+  farm_master:        { id: 'farm_master',        name: 'Maestro de Huertos',     icon: '🧬', desc: 'Cosechá 100 cultivos',                      event: 'harvest',     goal: 100, reward: { kh: 100 } },
+  builder_novice:     { id: 'builder_novice',     name: 'Aprendiz de Albañil',  icon: '🔨', desc: 'Construí 5 edificios',                      event: 'build',       goal: 5,   reward: { kh: 15 } },
   city_planner:       { id: 'city_planner',       name: 'Arquitecto del Bastión', icon: '🏗️', desc: 'Construí 15 edificios',                  event: 'build',       goal: 15,  reward: { kh: 60 } },
   first_battle:       { id: 'first_battle',       name: 'Primer Combate',      icon: '💥', desc: 'Ganá tu primera batalla PvE',               event: 'battle_win',  goal: 1,   reward: { kh: 10 } },
   warlord:            { id: 'warlord',            name: 'Señor de la Guerra',  icon: '🛡️', desc: 'Ganá 10 batallas (PvE o PvP)',              event: 'battle_win',  goal: 10,  reward: { kh: 50 } },
   conqueror:          { id: 'conqueror',          name: 'Conquistador',        icon: '🏴', desc: 'Conquistá tu primer territorio',            event: 'conquest',    goal: 1,   reward: { kh: 25 } },
   empire:             { id: 'empire',             name: 'Imperio',             icon: '🎖️', desc: 'Conquistá 5 territorios',                    event: 'conquest',    goal: 5,   reward: { kh: 150 } },
-  scholar:            { id: 'scholar',            name: 'Tecnoerudito',        icon: '🔬', desc: 'Completá 3 investigaciones',                event: 'research',    goal: 3,   reward: { kh: 40 } },
-  rich_merchant:      { id: 'rich_merchant',      name: 'Traficante Rico',     icon: '💰', desc: 'Hacé 20 ventas a convoyes',                 event: 'sell',        goal: 20,  reward: { kh: 35 } },
+  scholar:            { id: 'scholar',            name: 'Erudito del Scriptorium',        icon: '🔬', desc: 'Completá 3 investigaciones',                event: 'research',    goal: 3,   reward: { kh: 40 } },
+  rich_merchant:      { id: 'rich_merchant',      name: 'Mercader Rico',     icon: '💰', desc: 'Hacé 20 ventas a caravanas',                 event: 'sell',        goal: 20,  reward: { kh: 35 } },
   level_5:            { id: 'level_5',            name: 'Veterano',            icon: '⭐', desc: 'Alcanzá nivel 5',                           event: 'level_up',    goal: 5,   reward: { kh: 25 } },
   level_10:           { id: 'level_10',           name: 'Leyenda',             icon: '🌟', desc: 'Alcanzá nivel 10',                          event: 'level_up',    goal: 10,  reward: { kh: 100 } },
 };
@@ -796,10 +796,10 @@ const STORM_MEAN_GAP_MS = 4 * 60 * 60 * 1000;   // media: una tormenta cada ~4h
 const WARP_STORMS = {
   velo_estatico: {
     id: 'velo_estatico',
-    name: 'Velo Estático',
+    name: 'Niebla Sorda',
     icon: '🌫️',
     color: '#7a5a8a',
-    description: 'Interferencia disforme: −25% producción y convoyes sellados.',
+    description: 'Niebla sorda: −25% producción y caravanas perdidas.',
     weight: 30,
     durationMs: [45, 90],          // minutos [min, max]
     modifiers: { farming: -0.25 },
@@ -810,7 +810,7 @@ const WARP_STORMS = {
     name: 'Marea Carmesí',
     icon: '🩸',
     color: '#b32821',
-    description: 'La disformidad hierve: +30% ATK para todos… y algo se acerca.',
+    description: 'La Mácula hierve: +30% ATK para todos… y algo se acerca.',
     weight: 20,
     durationMs: [30, 60],
     modifiers: { atk: 0.30 },
@@ -818,20 +818,20 @@ const WARP_STORMS = {
   },
   lluvia_de_energia: {
     id: 'lluvia_de_energia',
-    name: 'Lluvia de Energía',
+    name: 'Lluvia de Ascuas',
     icon: '⚡',
     color: '#4fd8c8',
-    description: 'Fragmentos de energía pura: +50% KH en cosecha y venta.',
+    description: 'Pavesas de los viejos Faros: +50% KH en cosecha y venta.',
     weight: 20,
     durationMs: [30, 60],
     modifiers: { kh_bonus: 0.50 },
   },
   susurros_del_vacio: {
     id: 'susurros_del_vacio',
-    name: 'Susurros del Vacío',
+    name: 'Susurros de la Mácula',
     icon: '👁️',
     color: '#4a4550',
-    description: 'Voces en la estática: los aldeanos sufren, la investigación se acelera +50%.',
+    description: 'Voces en los pozos: los aldeanos sufren, la investigación se acelera +50%.',
     weight: 20,
     durationMs: [60, 120],
     modifiers: { research_speed: 0.50, happiness: -10 },
@@ -875,16 +875,16 @@ const WAVE_CONFIG = {
 // oleada se gasta comprando unidades (power = coste). Nombres 100% originales.
 const WAVE_ENEMIES = {
   carroneros: { id: 'carroneros', name: 'Carroñeros del Velo', icon: '🐀', power: 4,  hp: 12,  atk: 3,  weight: 50 },
-  brutos:     { id: 'brutos',     name: 'Brutos Retorcidos',   icon: '🧟', power: 12, hp: 45,  atk: 8,  weight: 30 },
+  brutos:     { id: 'brutos',     name: 'Brutos Cornudos',   icon: '🧟', power: 12, hp: 45,  atk: 8,  weight: 30 },
   aullador:   { id: 'aullador',   name: 'Aullador del Vacío',  icon: '👁️', power: 25, hp: 70,  atk: 18, weight: 15 },
   coloso:     { id: 'coloso',     name: 'Coloso de Ceniza',    icon: '🗿', power: 60, hp: 220, atk: 30, weight: 5 },
   // Jefes (solo en oleadas boss, elegido por rotación de oleada)
-  boss_devorador: { id: 'boss_devorador', name: 'Devorador de Auroras', icon: '💀', power: 0, hp: 500, atk: 45, boss: true },
-  boss_heraldo:   { id: 'boss_heraldo',   name: 'Heraldo de la Estática', icon: '🌩️', power: 0, hp: 380, atk: 60, boss: true },
+  boss_devorador: { id: 'boss_devorador', name: 'Devorador de Faros', icon: '💀', power: 0, hp: 500, atk: 45, boss: true },
+  boss_heraldo:   { id: 'boss_heraldo',   name: 'Heraldo de la Tormenta', icon: '🌩️', power: 0, hp: 380, atk: 60, boss: true },
 };
 
 // ---- ESCALA SISTEMA (G1 idle — meta-mapa de planetas) ----
-// La escala Sistema se abre cuando el Bastión de Mando (throne_room) llega a
+// La escala Sistema se abre cuando el Torre del Señor (throne_room) llega a
 // SYSTEM_UNLOCK_LEVEL. Planeta 1 = tu mundo natal (auto-reclamado). Los demás
 // se desbloquean en orden (cada uno pide el anterior reclamado). Mandás la Nave
 // → viaje idle (travelMin) + costo → al llegar, tributo pasivo por hora para
@@ -894,32 +894,32 @@ const SYSTEM_UNLOCK_LEVEL = 3; // nivel de throne_room para abrir la escala
 const SYSTEM_PLANETS = [
   {
     id: 'cadmion', name: 'Bastión Cadmion', icon: '🏰', type: 'homeworld',
-    homeworld: true, desc: 'Tu mundo natal. El corazón de tu dominio.',
+    homeworld: true, desc: 'Tu villa amurallada. El corazón de tu dominio.',
     travelMin: 0, cost: {}, tribute: {},
   },
   {
     id: 'ferryn', name: 'Ferryn', icon: '⚙️', type: 'forge',
-    desc: 'Mundo-fundición sofocado por el humo de mil forjas.',
+    desc: 'Ciudad-fragua sofocada por el humo de mil chimeneas.',
     travelMin: 30, cost: { gold: 200, iron: 20 }, tribute: { iron: 8 },
   },
   {
     id: 'cineria', name: 'Cineria', icon: '🌋', type: 'ash',
-    desc: 'Yermo de ceniza volcánica; la piedra abunda entre las brasas.',
+    desc: 'Comarca de ceniza volcánica; la piedra abunda entre las brasas.',
     travelMin: 45, cost: { gold: 400, stone: 40 }, tribute: { stone: 12 },
   },
   {
     id: 'saltus', name: 'Saltus', icon: '🏜️', type: 'salt',
-    desc: 'Llanuras de sal donde el agua filtrada vale más que el oro.',
+    desc: 'Salinas donde el agua de pozo vale más que el oro.',
     travelMin: 60, cost: { gold: 600, water: 30 }, tribute: { water: 15 },
   },
   {
     id: 'umbral', name: 'Umbral', icon: '🌑', type: 'dark',
-    desc: 'Mundo oscuro y rico; sus mercados nunca duermen.',
+    desc: 'Ciudad oscura y rica; sus mercados nunca duermen.',
     travelMin: 90, cost: { gold: 1000 }, tribute: { gold: 20 },
   },
   {
-    id: 'nexo7', name: 'Estación Nexo-7', icon: '🛰️', type: 'station',
-    desc: 'Estación orbital olvidada; extrae cristal de energía del vacío.',
+    id: 'nexo7', name: 'Priorato de Nexo', icon: '🛰️', type: 'station',
+    desc: 'Monasterio olvidado cuyos monjes destilan ascuas de faro del Velo.',
     travelMin: 120, cost: { gold: 2000, iron: 100 }, tribute: { crystal: 1 },
   },
 ];
@@ -933,28 +933,28 @@ const SYSTEM_PLANETS = [
 const WARP_TURBULENCE_MULT = 1.5; // ×tiempo si zarpás con tormenta activa
 const GALAXY_SYSTEMS = [
   {
-    id: 'natal', name: 'Sistema Cadmion', icon: '⭐', type: 'home',
-    homeSystem: true, desc: 'Tu sistema natal, donde orbita tu dominio.',
+    id: 'natal', name: 'Marca de Cadmion', icon: '⭐', type: 'home',
+    homeSystem: true, desc: 'Tu marca natal, donde se asienta tu dominio.',
     warpMin: 0, cost: {}, tribute: {},
   },
   {
-    id: 'verglobo', name: 'Cúmulo Verglobo', icon: '🌱', type: 'verdant',
-    desc: 'Cúmulo de mundos-jardín; sus cosechas alimentan flotas enteras.',
+    id: 'verglobo', name: 'Valles de Verglobo', icon: '🌱', type: 'verdant',
+    desc: 'Valles-jardín del viejo imperio; sus cosechas alimentaban ejércitos enteros.',
     warpMin: 180, cost: { gold: 3000, crystal: 2 }, tribute: { wheat: 40, gold: 25 },
   },
   {
     id: 'kthar', name: 'Abismo de Kthar', icon: '🕳️', type: 'abyss',
-    desc: 'Grieta estelar rica en cristal de energía… y en malos augurios.',
+    desc: 'Grieta en el mundo, rica en ascuas de faro… y en malos augurios.',
     warpMin: 300, cost: { gold: 6000, crystal: 5 }, tribute: { crystal: 3, gold: 30 },
   },
   {
-    id: 'vok', name: 'Fragua Estelar Vok', icon: '🔥', type: 'forge',
-    desc: 'Estrella-fundición que escupe acero y ferrocreto sin fin.',
+    id: 'vok', name: 'Fragua Hundida de Vok', icon: '🔥', type: 'forge',
+    desc: 'Fundición hundida en la montaña que escupe hierro y piedra sin fin.',
     warpMin: 420, cost: { gold: 10000, crystal: 8 }, tribute: { iron: 50, stone: 50 },
   },
   {
     id: 'ojo_muerto', name: 'El Ojo Muerto', icon: '💀', type: 'warpscar',
-    desc: 'Sistema devorado por la Disformidad; quien lo domina, domina la ruina.',
+    desc: 'Reino devorado por la Mácula; quien lo domina, domina la ruina.',
     warpMin: 600, cost: { gold: 20000, crystal: 15 }, tribute: { gold: 80, relic: 1 },
   },
 ];
@@ -972,10 +972,10 @@ const HERO_RARITIES = {
 const HEROES = {
   aria:   { id: 'aria',   name: 'Aria, Sargento Veterana',  class: 'warrior', rarity: 'common',    sprite: 'warrior',    baseStats: { atk: 14, def: 12, hp: 90,  spd: 8,  mgk: 2  }, passive: 'Fuego Certero: +15% ATK al atacar con ventaja numérica' },
   thorin: { id: 'thorin', name: 'Torgan Escudo de Acero',   class: 'warrior', rarity: 'epic',      sprite: 'knight',     baseStats: { atk: 18, def: 20, hp: 120, spd: 5,  mgk: 1  }, passive: 'Bastión: +30% DEF cuando HP < 50%' },
-  lyra:   { id: 'lyra',   name: 'Lyra, Psíquica Menor',     class: 'mage',    rarity: 'common',    sprite: 'mage',       baseStats: { atk: 8,  def: 5,  hp: 55,  spd: 7,  mgk: 18 }, passive: 'Don Psíquico: sus poderes ignoran 10% de DEF enemiga' },
+  lyra:   { id: 'lyra',   name: 'Lyra, Bruja de Aldea',     class: 'mage',    rarity: 'common',    sprite: 'mage',       baseStats: { atk: 8,  def: 5,  hp: 55,  spd: 7,  mgk: 18 }, passive: 'Don Brujo: sus hechizos ignoran 10% de DEF enemiga' },
   zara:   { id: 'zara',   name: 'Zara, Bruja del Vacío',    class: 'mage',    rarity: 'legendary', sprite: 'wizard',     baseStats: { atk: 10, def: 6,  hp: 65,  spd: 9,  mgk: 30 }, passive: 'Maldición del Vacío: −20% ATK al enemigo objetivo durante 2 turnos' },
   finn:   { id: 'finn',   name: 'Finn el Explorador',       class: 'ranger',  rarity: 'common',    sprite: 'ranger',     baseStats: { atk: 12, def: 7,  hp: 65,  spd: 14, mgk: 3  }, passive: 'Tiro Preciso: +20% ATK contra enemigos a distancia' },
-  elena:  { id: 'elena',  name: 'Elena, Francotiradora',    class: 'ranger',  rarity: 'rare',      sprite: 'explorer',   baseStats: { atk: 15, def: 8,  hp: 70,  spd: 18, mgk: 4  }, passive: 'Evasión: 15% de esquivar ataques cuerpo a cuerpo' },
+  elena:  { id: 'elena',  name: 'Elena, Tiradora de Arcabuz',    class: 'ranger',  rarity: 'rare',      sprite: 'explorer',   baseStats: { atk: 15, def: 8,  hp: 70,  spd: 18, mgk: 4  }, passive: 'Evasión: 15% de esquivar ataques cuerpo a cuerpo' },
   viktor: { id: 'viktor', name: 'Viktor el Custodio',       class: 'paladin', rarity: 'common',    sprite: 'guard',      baseStats: { atk: 10, def: 16, hp: 100, spd: 6,  mgk: 8  }, passive: 'Aura Protectora: aliados adyacentes +10% DEF' },
   seraph: { id: 'seraph', name: 'Serafín, Capellán de Guerra', class: 'paladin', rarity: 'epic',   sprite: 'adventurer', baseStats: { atk: 12, def: 20, hp: 130, spd: 7,  mgk: 14 }, passive: 'Letanía de Hierro: restaura 8% HP al inicio de cada ronda' },
   shadow: { id: 'shadow', name: 'Sombra, Infiltradora',     class: 'rogue',   rarity: 'common',    sprite: 'traveler',   baseStats: { atk: 16, def: 5,  hp: 55,  spd: 16, mgk: 5  }, passive: 'Golpe Silencioso: primer ataque hace +40% daño' },
@@ -985,7 +985,7 @@ const HEROES = {
   morghal:  { id: 'morghal',  name: 'Morghal el Putrefacto',      class: 'warrior', rarity: 'rare',      sprite: 'guard',      baseStats: { atk: 16, def: 15, hp: 105, spd: 5,  mgk: 2  }, passive: 'Carne Putrefacta: regenera 5% HP por ronda; quien lo golpea queda envenenado (−5% ATK)' },
   azyra:    { id: 'azyra',    name: 'Azyra, Vidente del Vacío',   class: 'mage',    rarity: 'epic',      sprite: 'wizard',     baseStats: { atk: 9,  def: 6,  hp: 60,  spd: 10, mgk: 24 }, passive: 'Presciencia del Vacío: prevé los golpes — 20% de esquivar y +10% de probabilidad de crítico' },
   fenn:     { id: 'fenn',     name: 'Fenn Colmillo Gris',         class: 'rogue',   rarity: 'rare',      sprite: 'warrior',    baseStats: { atk: 19, def: 6,  hp: 62,  spd: 18, mgk: 3  }, passive: 'Frenesí Feral: +8% ATK acumulativo por ronda de combate (máx +40%)' },
-  kryx:     { id: 'kryx',     name: 'Kryx-9, Forjasacro',         class: 'mage',    rarity: 'rare',      sprite: 'mage',       baseStats: { atk: 10, def: 7,  hp: 58,  spd: 8,  mgk: 21 }, passive: 'Sobrecarga del Reactor: cada 3 rondas su siguiente descarga hace +60% daño' },
+  kryx:     { id: 'kryx',     name: 'Kryx, Fraguador Rúnico',         class: 'mage',    rarity: 'rare',      sprite: 'mage',       baseStats: { atk: 10, def: 7,  hp: 58,  spd: 8,  mgk: 21 }, passive: 'Fragua al Rojo: cada 3 rondas su siguiente descarga hace +60% daño' },
   serafina: { id: 'serafina', name: 'Serafina, Vestal de Guerra', class: 'paladin', rarity: 'legendary', sprite: 'adventurer', baseStats: { atk: 14, def: 24, hp: 150, spd: 8,  mgk: 18 }, passive: 'Fe Inquebrantable: escudo de fe grupal que absorbe 15% del daño recibido cada ronda' },
   gorr:     { id: 'gorr',     name: 'Gorr el Demoledor',          class: 'warrior', rarity: 'common',    sprite: 'guard',      baseStats: { atk: 15, def: 10, hp: 95,  spd: 6,  mgk: 1  }, passive: 'Golpe Aplastante: 20% de aturdir al objetivo, que pierde su siguiente ataque' },
   nyx:      { id: 'nyx',      name: 'Nyx, Hoja del Silencio',     class: 'rogue',   rarity: 'legendary', sprite: 'traveler',   baseStats: { atk: 24, def: 7,  hp: 70,  spd: 20, mgk: 8  }, passive: 'Sentencia Silenciosa: ejecuta enemigos bajo 15% HP y hace +50% daño a objetivos heridos' },
@@ -996,21 +996,21 @@ const HEROES = {
 // 100. `mult` multiplica el ATK efectivo del héroe para el golpe.
 const HERO_SKILLS = {
   warrior: { id: 'golpe_sismico',     name: 'Golpe Sísmico',      icon: '💢', type: 'damage',  mult: 2.2 },
-  mage:    { id: 'descarga_psiquica', name: 'Descarga Psíquica',  icon: '🧠', type: 'damage',  mult: 3.5 },
+  mage:    { id: 'descarga_psiquica', name: 'Descarga Arcana',  icon: '🧠', type: 'damage',  mult: 3.5 },
   ranger:  { id: 'disparo_perforante',name: 'Disparo Perforante', icon: '🎯', type: 'damage',  mult: 2.8 },
   paladin: { id: 'escudo_grupal',     name: 'Escudo Grupal',      icon: '🛡️', type: 'shield',  mult: 0.30 }, // reduce 30% el golpe de la ronda siguiente
   rogue:   { id: 'ejecucion',         name: 'Ejecución',          icon: '🗡️', type: 'execute', mult: 4.0 },  // ×4 contra jefes, ×2 al resto
 };
 
 const HERO_ITEMS = {
-  iron_sword:    { id: 'iron_sword',    name: 'Cuchilla de Combate',   slot: 'weapon',    icon: '⚔️', bonuses: { atk: 6 },                    rarity: 'common', description: 'Hoja sierra estándar, forjada en la fundición del bastión' },
-  magic_staff:   { id: 'magic_staff',   name: 'Báculo Psíquico',       slot: 'weapon',    icon: '🪄', bonuses: { mgk: 10, atk: 2 },           rarity: 'rare',   description: 'Canaliza el poder mental del portador en un flujo devastador' },
-  hunters_bow:   { id: 'hunters_bow',   name: 'Rifle del Cazador',     slot: 'weapon',    icon: '🔫', bonuses: { atk: 5, spd: 3 },            rarity: 'common', description: 'Culata gastada por generaciones, silencioso y mortal' },
+  iron_sword:    { id: 'iron_sword',    name: 'Espada de Munición',   slot: 'weapon',    icon: '⚔️', bonuses: { atk: 6 },                    rarity: 'common', description: 'Hoja de munición sin gracia, forjada a martillazos en la herrería del bastión' },
+  magic_staff:   { id: 'magic_staff',   name: 'Báculo de Tormenta',       slot: 'weapon',    icon: '🪄', bonuses: { mgk: 10, atk: 2 },           rarity: 'rare',   description: 'Una rama de roble partida por un rayo que todavía no se olvidó de él' },
+  hunters_bow:   { id: 'hunters_bow',   name: 'Arcabuz del Cazador',     slot: 'weapon',    icon: '🔫', bonuses: { atk: 5, spd: 3 },            rarity: 'common', description: 'Culata gastada por tres generaciones de cazadores furtivos' },
   shadow_dagger: { id: 'shadow_dagger', name: 'Daga Sombría',          slot: 'weapon',    icon: '🗡️', bonuses: { atk: 8, spd: 4 },            rarity: 'rare',   description: 'Acero negro que absorbe la luz del portador' },
-  leather_armor: { id: 'leather_armor', name: 'Peto de Fibra',         slot: 'armor',     icon: '🧥', bonuses: { def: 6, hp: 15 },            rarity: 'common', description: 'Ligero y flexible, no entorpece el movimiento' },
-  chainmail:     { id: 'chainmail',     name: 'Blindaje Compuesto',    slot: 'armor',     icon: '🛡️', bonuses: { def: 14, hp: 30 },           rarity: 'rare',   description: 'Capas de aleación forman una barrera impenetrable' },
-  mage_robe:     { id: 'mage_robe',     name: 'Manto Psíquico',        slot: 'armor',     icon: '👘', bonuses: { def: 4, mgk: 8, hp: 20 },    rarity: 'rare',   description: 'Tejido con hilos que amplifican la energía mental' },
-  speed_boots:   { id: 'speed_boots',   name: 'Botas Servoasistidas',  slot: 'accessory', icon: '👢', bonuses: { spd: 6 },                    rarity: 'common', description: 'Pistones de asistencia que permiten moverse como el viento' },
+  leather_armor: { id: 'leather_armor', name: 'Peto de Cuero',         slot: 'armor',     icon: '🧥', bonuses: { def: 6, hp: 15 },            rarity: 'common', description: 'Ligero y flexible, no entorpece el movimiento' },
+  chainmail:     { id: 'chainmail',     name: 'Cota de Malla',    slot: 'armor',     icon: '🛡️', bonuses: { def: 14, hp: 30 },           rarity: 'rare',   description: 'Mil anillas remachadas a mano por un herrero con mucha paciencia' },
+  mage_robe:     { id: 'mage_robe',     name: 'Manto del Brujo',        slot: 'armor',     icon: '👘', bonuses: { def: 4, mgk: 8, hp: 20 },    rarity: 'rare',   description: 'Bordado con runas por una abuela que nadie se atrevió a contradecir' },
+  speed_boots:   { id: 'speed_boots',   name: 'Botas de Correo',  slot: 'accessory', icon: '👢', bonuses: { spd: 6 },                    rarity: 'common', description: 'Las usaban los correos del viejo imperio; todavía huelen a camino' },
   power_ring:    { id: 'power_ring',    name: 'Anillo de Poder',       slot: 'accessory', icon: '💍', bonuses: { atk: 4, mgk: 4 },            rarity: 'rare',   description: 'Forjado en las fraguas de los señores de antaño' },
   lucky_charm:   { id: 'lucky_charm',   name: 'Amuleto de Fortuna',    slot: 'accessory', icon: '🍀', bonuses: { atk: 2, def: 2, hp: 10, spd: 2, mgk: 2 }, rarity: 'common', description: 'Talismán de hueso bendecido por un capellán errante' },
 };

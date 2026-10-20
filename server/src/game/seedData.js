@@ -42,7 +42,7 @@ const SEED_TERRITORIES = [
   { name: 'Bosque Calcinado',     grid_x: 1, grid_y: 0, type: 'forest',   defense_strength: 80,  resources_bonus: { wood: 5 } },
   { name: 'Picos del Aullido',    grid_x: 2, grid_y: 0, type: 'mountain', defense_strength: 100, resources_bonus: { stone: 5 } },
   { name: 'Cañón del Río Gris',   grid_x: 0, grid_y: 1, type: 'plains',   defense_strength: 70,  resources_bonus: { water: 5 } },
-  { name: 'Cruce de Convoyes',    grid_x: 1, grid_y: 1, type: 'plains',   defense_strength: 120, resources_bonus: { gold: 8 } },
+  { name: 'Cruce de Caravanas',    grid_x: 1, grid_y: 1, type: 'plains',   defense_strength: 120, resources_bonus: { gold: 8 } },
   { name: 'Pozo Minero IX',       grid_x: 2, grid_y: 1, type: 'mountain', defense_strength: 110, resources_bonus: { iron: 5 } },
   { name: 'Pantano Maldito',      grid_x: 0, grid_y: 2, type: 'swamp',    defense_strength: 90,  resources_bonus: { gold: 5 } },
   { name: 'Costa de Ceniza',      grid_x: 1, grid_y: 2, type: 'coast',    defense_strength: 75,  resources_bonus: { water: 8 } },

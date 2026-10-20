@@ -437,7 +437,7 @@ export default class WorldScene extends Phaser.Scene {
     const npcSpots = [
       { npcId: 'farmer',   dx:  2, dy:  5, name: 'Siervo' },       // east of farm_plots
       { npcId: 'baker',    dx:  4, dy:  0, name: 'Racionero' },    // NE of mill
-      { npcId: 'merchant', dx: -4, dy: -1, name: 'Chatarrero' },  // east of market
+      { npcId: 'merchant', dx: -4, dy: -1, name: 'Leñador' },  // east of market
       { npcId: 'knight',   dx: -5, dy:  4, name: 'Centinela' },    // east of barracks
       { npcId: 'princess', dx:  2, dy: -2, name: 'La Heredera' },  // east of throne_room
       { npcId: 'wizard',   dx:  6, dy:  0, name: 'El Augur' },     // SE of tavern

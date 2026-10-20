@@ -1,5 +1,5 @@
 /**
- * waveDefenseService — Marea Disforme (F3 idle): defensa por oleadas,
+ * waveDefenseService — Marea de la Mácula (F3 idle): defensa por oleadas,
  * 100% automática. El jugador PREPARA; un request resuelve el run entero
  * por rondas y devuelve el log para replay en el cliente.
  *
@@ -235,7 +235,7 @@ const waveDefenseService = {
 
     const heroDps = defense.heroes.reduce((s, h) => s + h.dps, 0);
     if (defense.towerDps + defense.garrisonDps + heroDps <= 0) {
-      throw new Error('Sin defensas: entrená tropas o construí torretas antes de desafiar la Marea');
+      throw new Error('Sin defensas: entrená tropas o construí torres antes de desafiar la Marea');
     }
 
     const startWave = status.nextWave;

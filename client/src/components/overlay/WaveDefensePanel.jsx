@@ -1,5 +1,5 @@
 /**
- * WaveDefensePanel — Marea Disforme (F3 idle): estado de la escalera,
+ * WaveDefensePanel — Marea de la Mácula (F3 idle): estado de la escalera,
  * botón "Desafiar la Marea" y replay animado del log de rondas.
  * El combate es 100% automático server-side; aquí solo se prepara y se mira.
  */
@@ -11,11 +11,11 @@ import EmberField from '../fx/EmberField';
 // /assets/game/enemies/<id>.png). Nombres cortos para que entren a 8px.
 const BESTIARY = [
   { id: 'carroneros',     short: 'Carroñeros', name: 'Carroñeros del Velo' },
-  { id: 'brutos',         short: 'Brutos',     name: 'Brutos Retorcidos' },
+  { id: 'brutos',         short: 'Brutos',     name: 'Brutos Cornudos' },
   { id: 'aullador',       short: 'Aullador',   name: 'Aullador del Vacío' },
   { id: 'coloso',         short: 'Coloso',     name: 'Coloso de Ceniza' },
-  { id: 'boss_devorador', short: 'Devorador',  name: 'Devorador de Auroras', boss: true },
-  { id: 'boss_heraldo',   short: 'Heraldo',    name: 'Heraldo de la Estática', boss: true },
+  { id: 'boss_devorador', short: 'Devorador',  name: 'Devorador de Faros', boss: true },
+  { id: 'boss_heraldo',   short: 'Heraldo',    name: 'Heraldo de la Tormenta', boss: true },
 ];
 
 const REPLAY_MS = 550; // cadencia del replay línea a línea
@@ -81,7 +81,7 @@ export default function WaveDefensePanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-red-900/40 shrink-0 bg-black/30">
         <div>
           <h3 className="text-red-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-            🌊 Marea Disforme
+            🌊 Marea de la Mácula
           </h3>
           <p className="text-[10px] text-gray-500">Los horrores prueban tus muros — preparate y resistí</p>
         </div>
@@ -142,7 +142,7 @@ export default function WaveDefensePanel({ onClose }) {
         )}
         {waveStatus?.nextIsBoss && !run && (
           <p className="text-center text-[11px] text-red-400 animate-pulse">
-            💀 La próxima oleada es un JEFE — reforzá muros y torretas
+            💀 La próxima oleada es un JEFE — reforzá murallas y torres
           </p>
         )}
         {waveStatus?.freeRunAvailable && !run && (

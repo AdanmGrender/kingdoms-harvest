@@ -64,7 +64,7 @@ describe('gate por dominio del Sistema', () => {
 describe('launchWarp', () => {
   test('rechaza sin dominar el sistema', async () => {
     await expect(galaxyService.launchWarp(TEST_PLAYER_ID, 'verglobo'))
-      .rejects.toThrow(/planetas de tu sistema natal/);
+      .rejects.toThrow(/plazas de tu Marca/);
   });
 
   test('surca la Disformidad, cobra el costo y queda en tránsito', async () => {

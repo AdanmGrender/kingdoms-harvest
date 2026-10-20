@@ -1,6 +1,6 @@
 /**
  * SquadPanel — formación de escuadra (F4 idle): hasta 5 héroes que defienden
- * en la Marea Disforme y pelean en PvE. Tocá un slot y elegí héroe.
+ * en la Marea de la Mácula y pelean en PvE. Tocá un slot y elegí héroe.
  */
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';

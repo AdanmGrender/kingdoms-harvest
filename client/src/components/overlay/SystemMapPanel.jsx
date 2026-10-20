@@ -79,9 +79,9 @@ export default function SystemMapPanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-900/40 shrink-0 bg-black/30">
         <div>
           <h3 className="text-cyan-300 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-            🛰️ Cartografía del Sistema
+            🗺️ Mapa de la Marca
           </h3>
-          <p className="text-[10px] text-gray-500">Extendé tu dominio planeta a planeta</p>
+          <p className="text-[10px] text-gray-500">Extendé tu dominio plaza a plaza</p>
         </div>
         <div className="flex items-center gap-1">
           {allClaimed && (
@@ -89,7 +89,7 @@ export default function SystemMapPanel({ onClose }) {
               onClick={() => setOverlay('galaxy', {})}
               className="text-[10px] px-2 py-1 rounded bg-black/40 border border-purple-700/40 text-purple-300"
             >
-              🌌 Galaxia
+              🌫️ Reinos Caídos
             </button>
           )}
           <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
@@ -101,8 +101,8 @@ export default function SystemMapPanel({ onClose }) {
         {allClaimed && (
           <div className="rounded-lg bg-purple-900/20 border border-purple-600/40 p-2 text-center">
             <p className="text-[11px] text-purple-300">
-              🌌 ¡Sistema dominado! La <b>Disformidad</b> está abierta —
-              <button onClick={() => setOverlay('galaxy', {})} className="underline ml-1">surcá la Galaxia</button>
+              🌌 ¡Marca dominada! El <b>Velo</b> se puede cruzar —
+              <button onClick={() => setOverlay('galaxy', {})} className="underline ml-1">partí a los Reinos Caídos</button>
             </p>
           </div>
         )}
@@ -111,7 +111,7 @@ export default function SystemMapPanel({ onClose }) {
           <div className="rounded-lg bg-black/40 border border-cyan-800/40 p-3 text-center">
             <p className="text-2xl mb-1">🔒</p>
             <p className="text-xs text-gray-300">
-              La escala Sistema se abre con <b className="text-cyan-300">Bastión de Mando nivel {sys.unlockLevel}</b>
+              La escala Sistema se abre con <b className="text-cyan-300">Torre del Señor nivel {sys.unlockLevel}</b>
             </p>
             <p className="text-[10px] text-gray-500 mt-1">Actual: nivel {sys.throneLevel}</p>
           </div>
@@ -123,7 +123,7 @@ export default function SystemMapPanel({ onClose }) {
             <span className="text-xl animate-pulse">🚀</span>
             <div className="flex-1 min-w-0">
               <p className="text-[11px] text-cyan-300 font-bold truncate">
-                Nave en ruta a {sys.planets.find((p) => p.id === sys.ship.target)?.name}
+                Caravana en ruta a {sys.planets.find((p) => p.id === sys.ship.target)?.name}
               </p>
               <p className="text-[10px] text-gray-400">Llega en {etaLabel(sys.ship.arrivesAt)}</p>
             </div>
@@ -177,7 +177,7 @@ export default function SystemMapPanel({ onClose }) {
               <p className="text-[11px] text-green-400 text-center">✓ Bajo tu control — rinde tributo cada hora</p>
             )}
             {sel.state === 'traveling' && (
-              <p className="text-[11px] text-cyan-300 text-center">🚀 La Nave está en camino…</p>
+              <p className="text-[11px] text-cyan-300 text-center">🚀 La caravana está en camino…</p>
             )}
           </div>
         )}

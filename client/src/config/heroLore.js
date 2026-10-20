@@ -22,15 +22,15 @@ export const HERO_LORE = {
   },
   lyra: {
     title: 'La Chispa del Velo',
-    bio: 'Lyra despertó su don escuchando la estática, sin maestro ni letanía que la frenaran. Su poder aún es pequeño, pero atraviesa el blindaje del enemigo como si la armadura fuese niebla.',
+    bio: 'Lyra despertó su don escuchando el crepitar de las velas, sin maestro ni letanía que la frenaran. Su poder aún es pequeño, pero atraviesa la coraza del enemigo como si la armadura fuese niebla.',
   },
   zara: {
     title: 'La Voz Que Maldice',
-    bio: 'Zara aprendió a beber de la Disformidad sin ahogarse en ella, y volvió con la garganta llena de palabras que no deberían pronunciarse. A quien señala, lo marchita: por dos turnos el horror combate como si le hubieran arrancado la mitad de la furia.',
+    bio: 'Zara aprendió a beber de la Mácula sin ahogarse en ella, y volvió con la garganta llena de palabras que no deberían pronunciarse. A quien señala, lo marchita: por dos turnos el horror combate como si le hubieran arrancado la mitad de la furia.',
   },
   finn: {
     title: 'El Ojo del Perímetro',
-    bio: 'Finn recorre los yermos muertos más allá del muro y vuelve con la posición exacta de cada enjambre. Aprendió a matar a distancia porque acercarse al Velo, allá afuera, es suicidio.',
+    bio: 'Finn recorre los bosques muertos más allá de la muralla y vuelve con la posición exacta de cada enjambre. Aprendió a matar a distancia porque acercarse al Velo, allá afuera, es suicidio.',
   },
   elena: {
     title: 'La Aguja Lejana',
@@ -42,7 +42,7 @@ export const HERO_LORE = {
   },
   seraph: {
     title: 'El Capellán de Hierro',
-    bio: 'Serafín recita las Letanías del Bastión mientras el acero canta, y su voz cose las heridas de la tropa entre embate y embate. Cree que la fe es una máquina: hay que alimentarla con sacrificio cada ronda o se apaga.',
+    bio: 'Serafín recita las Letanías del Bastión mientras el acero canta, y su voz cose las heridas de la tropa entre embate y embate. Cree que la fe es una fragua: hay que alimentarla con sacrificio cada ronda o se apaga.',
   },
   shadow: {
     title: 'La Que No Deja Huella',
@@ -63,15 +63,15 @@ export const HERO_LORE = {
   },
   azyra: {
     title: 'La Que Ve el Golpe',
-    bio: 'Azyra lee el futuro inmediato en el ruido de la estática y esquiva ataques que aún no ocurrieron. Sabe dónde se abrirá la guardia del enemigo un instante antes que él, y ahí clava el crítico.',
+    bio: 'Azyra lee el futuro inmediato en el humo de las velas y esquiva ataques que aún no ocurrieron. Sabe dónde se abrirá la guardia del enemigo un instante antes que él, y ahí clava el crítico.',
   },
   fenn: {
     title: 'El Colmillo Que Crece',
     bio: 'Fenn empieza cada combate frío y lo termina hecho una tormenta: cada ronda que sobrevive lo vuelve más rápido y más letal. Dejarlo pelear demasiado tiempo es el último error de muchos horrores.',
   },
   kryx: {
-    title: 'El Reactor Sagrado',
-    bio: 'Kryx-9 lleva un reactor de fe donde otros tienen corazón, y lo purga como un rito cada pocos segundos. Cuando la carga alcanza el punto rojo, su descarga funde blindaje y estandarte por igual.',
+    title: 'La Fragua Sagrada',
+    bio: 'Kryx lleva una fragua de fe encendida en el pecho, encerrada en un peto remachado, y la aviva como un rito cada pocos golpes. Cuando el hierro se pone al rojo, su descarga funde coraza y estandarte por igual.',
   },
   serafina: {
     title: 'La Fe Que Escuda',

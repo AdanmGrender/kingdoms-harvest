@@ -98,7 +98,7 @@ describe('getSquadCombatBonus', () => {
   });
 });
 
-describe('escuadra en la Marea Disforme', () => {
+describe('escuadra en la Marea de la Mácula', () => {
   test('los héroes de la escuadra pelean y disparan skills en el log', async () => {
     // DPS bajo + muralla enorme → peleas largas (≥4 rondas acumuladas) para
     // que la energía del héroe llegue a 100 y la skill aparezca en el log
@@ -116,7 +116,7 @@ describe('escuadra en la Marea Disforme', () => {
     const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
     const result = await waveDefenseService.startRun(TEST_PLAYER_ID, { rand });
 
-    expect(result.log.some((l) => l.type === 'hero_skill' && l.text.includes('Descarga Psíquica'))).toBe(true);
+    expect(result.log.some((l) => l.type === 'hero_skill' && l.text.includes('Descarga Arcana'))).toBe(true);
 
     // limpiar
     await db('player_troops').where('player_id', TEST_PLAYER_ID).delete();

@@ -109,14 +109,14 @@ const systemService = {
 
     const throne = await this._throneLevel(playerId);
     if (throne < SYSTEM_UNLOCK_LEVEL) {
-      throw new Error(`Necesitás Bastión de Mando nivel ${SYSTEM_UNLOCK_LEVEL} para viajar`);
+      throw new Error(`Necesitás Torre del Señor nivel ${SYSTEM_UNLOCK_LEVEL} para viajar`);
     }
 
     const ship = await this._getShip(playerId);
-    if (ship.status === 'traveling') throw new Error('La Nave ya está en tránsito');
+    if (ship.status === 'traveling') throw new Error('La caravana ya está en camino');
 
     const claimed = await this._claimedIds(playerId);
-    if (claimed.has(planetId)) throw new Error('Ya controlás ese planeta');
+    if (claimed.has(planetId)) throw new Error('Ya controlás esa plaza');
 
     const idx = order.indexOf(planetId);
     const prevId = order[idx - 1];

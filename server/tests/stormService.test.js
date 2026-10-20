@@ -80,12 +80,12 @@ describe('stormService — modificadores y guards', () => {
     expect(await stormService.convoysSealed()).toBe(false);
   });
 
-  test('el comercio de convoyes rechaza operaciones bajo Velo Estático', async () => {
+  test('el comercio de convoyes rechaza operaciones bajo Niebla Sorda', async () => {
     await stormService.forceStorm('velo_estatico', { durationMin: 60 });
     const commerceService = require('../src/services/commerceService');
     await expect(
       commerceService.sellToCaravan(TEST_PLAYER_ID, 'wheat', 1)
-    ).rejects.toThrow(/selló las rutas/);
+    ).rejects.toThrow(/cerró los caminos/);
   });
 });
 

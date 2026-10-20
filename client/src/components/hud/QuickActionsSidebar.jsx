@@ -9,10 +9,10 @@ import { grimBtn, grimIcon } from './grimChrome';
 
 const ACTIONS = [
   { id: 'castle', sprite: 'castle', icon: '🏠', label: 'Bastión', color: '#d9a441' },
-  { id: 'waves', sprite: 'tide', icon: '🌊', label: 'Marea Disforme', color: '#b32821' },
+  { id: 'waves', sprite: 'tide', icon: '🌊', label: 'Marea de la Mácula', color: '#b32821' },
   { id: 'missions', sprite: 'scroll', icon: '📜', label: 'Misiones', color: '#d9a441', badge: 3 },
   { id: 'build', sprite: 'blueprint', icon: '🔨', label: 'Construir', color: '#e8933a' },
-  { id: 'explore', sprite: 'star', icon: '🛰️', label: 'Sistema', color: '#4fd8c8' },
+  { id: 'explore', sprite: 'star', icon: '🗺️', label: 'Marca', color: '#4fd8c8' },
   { id: 'settings', sprite: 'gear', icon: '⚙️', label: 'Ajustes', color: '#8a8378' },
 ];
 

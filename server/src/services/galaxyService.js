@@ -111,11 +111,11 @@ const galaxyService = {
     if (!sys || sys.homeSystem) throw new Error('Destino inválido');
 
     if (!(await this._systemMastered(playerId))) {
-      throw new Error('Primero controlá todos los planetas de tu sistema natal');
+      throw new Error('Primero controlá todas las plazas de tu Marca');
     }
 
     const warp = await this._getWarp(playerId);
-    if (warp.status === 'traveling') throw new Error('El Crucero ya surca la Disformidad');
+    if (warp.status === 'traveling') throw new Error('Tu expedición ya cruza el Velo');
 
     const claimed = await this._claimedIds(playerId);
     if (claimed.has(systemId)) throw new Error('Ya controlás ese sistema');

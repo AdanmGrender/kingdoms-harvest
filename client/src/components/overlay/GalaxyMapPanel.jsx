@@ -29,7 +29,7 @@ function etaLabel(arrivesAt) {
 const STATE_STYLE = {
   claimed:   { ring: '#4ade80', tag: 'Dominado', tagColor: '#4ade80' },
   available: { ring: '#a855f7', tag: 'Alcanzable', tagColor: '#a855f7' },
-  traveling: { ring: '#4fd8c8', tag: 'En la Disformidad', tagColor: '#4fd8c8' },
+  traveling: { ring: '#4fd8c8', tag: 'En los Caminos Velados', tagColor: '#4fd8c8' },
   locked:    { ring: '#3b3b44', tag: 'Fuera de alcance', tagColor: '#6b7280' },
 };
 
@@ -72,9 +72,9 @@ export default function GalaxyMapPanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-purple-900/40 shrink-0 bg-black/40">
         <div>
           <h3 className="text-purple-300 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-            🌌 Cartografía de la Galaxia
+            🌫️ Mapa de los Reinos Caídos
           </h3>
-          <p className="text-[10px] text-gray-500">Surcá la Disformidad entre sistemas</p>
+          <p className="text-[10px] text-gray-500">Cruzá el Velo por los Caminos Velados</p>
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -88,13 +88,13 @@ export default function GalaxyMapPanel({ onClose }) {
       </div>
 
       <div className="px-4 py-3 space-y-3 overflow-y-auto flex-1">
-        {!g && <p className="text-center text-gray-500 text-xs py-6">Trazando rutas disformes…</p>}
+        {!g && <p className="text-center text-gray-500 text-xs py-6">Trazando los Caminos Velados…</p>}
 
         {g && !g.unlocked && (
           <div className="rounded-lg bg-black/40 border border-purple-800/40 p-3 text-center">
             <p className="text-2xl mb-1">🔒</p>
             <p className="text-xs text-gray-300">
-              La Galaxia se abre al <b className="text-purple-300">dominar todos los planetas de tu sistema</b>
+              Los Reinos Caídos se abren al <b className="text-purple-300">dominar todas las plazas de tu Marca</b>
             </p>
             <button
               onClick={() => setOverlay('system', {})}
@@ -111,7 +111,7 @@ export default function GalaxyMapPanel({ onClose }) {
             <span className="text-xl animate-pulse">🌀</span>
             <div className="flex-1 min-w-0">
               <p className="text-[11px] text-purple-300 font-bold truncate">
-                Crucero rumbo a {g.systems.find((s) => s.id === g.warp.target)?.name}
+                Expedición rumbo a {g.systems.find((s) => s.id === g.warp.target)?.name}
                 {g.warp.turbulent && <span className="text-red-400"> · turbulento</span>}
               </p>
               <p className="text-[10px] text-gray-400">Emerge en {etaLabel(g.warp.arrivesAt)}</p>
@@ -158,15 +158,15 @@ export default function GalaxyMapPanel({ onClose }) {
                              hover:from-purple-600 hover:to-purple-800 active:scale-95 transition-all
                              disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  🌀 Surcar la Disformidad
+                  🌀 Cruzar el Velo
                 </button>
               </>
             )}
             {sel.state === 'claimed' && (
-              <p className="text-[11px] text-green-400 text-center">✓ Sistema bajo tu dominio</p>
+              <p className="text-[11px] text-green-400 text-center">✓ Reino bajo tu dominio</p>
             )}
             {sel.state === 'traveling' && (
-              <p className="text-[11px] text-purple-300 text-center">🌀 El Crucero está en la Disformidad…</p>
+              <p className="text-[11px] text-purple-300 text-center">🌀 Tu expedición está cruzando el Velo…</p>
             )}
           </div>
         )}
