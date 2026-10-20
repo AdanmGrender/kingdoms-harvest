@@ -321,7 +321,7 @@
 
 ## Evidencia visual y medición
 
-- [ ] T16 — Crear `scripts/hub_b_evidence.js` (`design.md` §9) y correrlo en el viewport de referencia (DSF 2) contra
+- [x] T16 — Crear `scripts/hub_b_evidence.js` (`design.md` §9) y correrlo en el viewport de referencia (DSF 2) contra
   Vite dev (`:5173`) + server local (`:3001`) con cuenta nueva por `kh_device_id`. Guardar y citar, con una línea por
   archivo: `hub_inicial.webp` (cuenta real: Torre del Señor, Huerto, Granero; ranuras vacías sin nada;
   `isActive('HubSceneB')`, `getScene('WorldScene') === null`, rect del canvas y `canvas.width/height` 824×1720
@@ -331,7 +331,44 @@
   calma, `hub_resize_360x780.webp` (`canvas` 720×1560 citado), `hub_token.webp` (cuerpo 14 px CSS citado),
   `hub_fx_off.webp` (emisores 0 y `cameras.main.postPipelines.length` 0, ≥ 1 con FX activos), `config.pixelArt/antialias` y filtro lineal de cada
   `hubb_*`, `time:updated` recibido, lista de texturas no-`hubb_` vacía. Cubre: R1, R3, R4, R5, R6, R7, R10, R11, R13,
-  R14, R16, R17, R18, R19, R20, R28, R29, R38, R39, R50.
+  R14, R16, R17, R18, R19, R20, R28, R29, R38, R39, R50. Evidencia: `scripts/hub_b_evidence.js` (§9: Chromium
+  `channel: 'chromium'` + `--use-angle=d3d11 --enable-gpu`, 412×860, `hasTouch`; modos `--dpr 2|3`, `--taps`,
+  `--build`, `--sharpness`, `--preview`, `--fallback`, `--idle`, `--fps`; capturas webp q82 en `evidencia/`, reporte
+  JSON en el scratch; listeners de `EventBridge` registrados **antes** de `enterGame()`). Corrida `node
+  scripts/hub_b_evidence.js --dpr 2 --device hubb-evid-20261020` (cuenta nueva con `kh_device_id` fijo, reusada en
+  las corridas siguientes por el rate-limit de 100 req/min; 20 requests `/api` por carga) contra Vite `:5173` + server
+  Docker `:3001`: `{"hubActive":true,"worldScene":null,"scenes":["BootScene","HubSceneB"],"canvas":[824,1720],
+  "rect":[0,0,412,860],"s":2,"zoom":1,"pixelArt":false,"antialias":true,"hubbTextures":35,"scaleModes":{"0":35},
+  "nonHubb":[]}` (R1, R5, R7 — las 35 `hubb_*` en LINEAR = 0 —, R39, R50); registros reales `throne_room#150
+  farm_plot#151 farm_plot#152 barn#153` → sprites `["farm_plot","barn","throne_room"]` (R10-R12); `time:updated`
+  recibido `{"period":"morning","icon":"☀️","dayCount":1,"timeOfDay":0.2}` y `dayNight.elapsed` 121529 → 142929 en
+  23.9 s (R28); `navEntries [1,1]` antes/después de inyectar → `bldSprites.size 17` sin recarga (R14). Con FX:
+  `postPipelines 1` (`postFX.list` 0, ver enmienda R38), 3 emisores (humo ×2 + chispas), `fire true`; humo
+  `smithy@740,935` y `tavern@618,760` (R17). Trabajadores (R16): las 7 claves `farm_plot:hubb_wk_farmer_b,
+  mill:…farmer_b, sawmill:…woodcutter_a, smithy:…miner_a, mine:…miner_a, tavern:…merchant_b, market:…merchant_a`;
+  lecturas del Huerto `hubb_wk_farmer_b @+0ms` → `hubb_wk_farmer_a @+2019ms`. Obra (R13): `tavern/smithy/farm_plot/
+  throne_room: tint 8a8478 a 0.75 worker false smoke false`, `fire false`. Tormentas (R18-R20, misma sesión; α de
+  `[sky_calm, sky_storm]` a los 600 ms y estado a 1.5 s): `velo_estatico [0.49,0.51] → {tint 9a8aa6, grade
+  7a5a8a/0.18, fog 0.55}`; `marea_carmesi → {tint c0453a, grade b32821/0.22, flash 6414 ms}`; `lluvia_de_energia →
+  {tint 8a7a6a, grade e8933a/0.10, amb [hubb_ember]}`; `susurros_del_vacio → {tint 7f9a5a, grade 4a4550/0.25, amb
+  [hubb_mote]}`; `calma_falsa [0.51,0.49] → {calm 1, tint e0b860, grade d9a441/0.14, drift false}`; vuelta a calma
+  `setActiveStorm(null)` `[1,0] → {calm 1, storm 0, tint ffffff, grade α 0.00, fog 0, amb [], flash null, drift
+  true}`. Token (R29): `"+5 KH"` `fontSize 28px`, `resolution 1`, zoom 1, s 2 → cuerpo **14 px CSS**. Resize en
+  caliente 360×780 (R6): `{"canvas":[720,1560],"rect":[0,0,360,780],"zoom":0.907}`. FX apagado (R38, segunda carga,
+  17 ids + `lluvia_de_energia`): `{"emitters":0,"postPipelines":0,"fogBanks":0,"fire":false,"smoke":0}` con cielo
+  `tint 8a7a6a` y `grade e8933a/0.10` iguales a FX encendido. Consola: 0 `pageerror`; único `console.error` =
+  `favicon.ico 404` (se corrige en T21). Capturas (`evidencia/`, 824×1720 salvo indicación):
+  - `hub_inicial.webp` — cuenta real recién creada: Torre del Señor con Fuego Votivo, Huerto con siervo y Granero en
+    sus ranuras, las otras 14 vacías (sin solar); el server tenía `marea_carmesi` activa → cielo rojo real.
+  - `hub_completo.webp` — 17 ids inyectados en la misma sesión, cielo calmo: cielo, base, edificios + 7 trabajadores,
+    primer plano y humo gris saliendo de las chimeneas de herrería y taberna (R3, R17, R18).
+  - `hub_obra.webp` — taberna, herrería, Huerto y Torre del Señor atenuados/desaturados sin trabajador ni humo.
+  - `hub_worker_a.webp` / `hub_worker_b.webp` (282×198, recorte del Huerto) — siervo con la azada levantada / clavada.
+  - `hub_tormenta_{velo_estatico,marea_carmesi,lluvia_de_energia,susurros_del_vacio,calma_falsa}.webp` — lavanda con
+    bancos de niebla, rojo con destellos, cálido con brasas, verdoso con motas, dorado sin deriva; distintas entre sí.
+  - `hub_token.webp` — "+5 KH" violeta flotando sobre la Torre del Señor.
+  - `hub_resize_360x780.webp` (720×1560) — mismo hub tras el resize en caliente, cubre todo el canvas sin bandas.
+  - `hub_fx_off.webp` — `lluvia_de_energia` con FX apagado: solo tinte/gradación, sin brasas, viñeta ni fuego.
 - [ ] T17 — Corrida en el viewport alto (`--dpr 3`) y comparación con DSF 2: `canvas` 1236×2580 y rect 412×860
   citados; `hub_completo_dpr3.webp`; tabla de bounds en px CSS de los 17 edificios en ambos DSF (diferencia máxima
   ≤ 1 px CSS); tabla de texturas de arte del hub (`key, realHeight, displayHeight × zoom, ratio`) en DSF 3 (mínimo ≥
