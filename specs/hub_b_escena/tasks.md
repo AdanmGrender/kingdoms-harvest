@@ -440,12 +440,32 @@
     `hub_completo.webp` a DSF 2.
   - `hub_token_dpr3.webp` (726×528, recorte de la captura DSF 3 ampliado ×2 con vecino más cercano) — "+5 KH" con
     bordes limpios sobre la Torre del Señor, sin el borroneo de un texto rasterizado a resolución 1.
-- [ ] T18 — Taps e interacción real en DSF 2 y DSF 3 (`hasTouch`, `page.touchscreen.tap`): centro de `barn` y de
+- [x] T18 — Taps e interacción real en DSF 2 y DSF 3 (`hasTouch`, `page.touchscreen.tap`): centro de `barn` y de
   `throne_room` → `entity:selected` con su `buildingId` (4 payloads citados), cielo → `entity:deselected` (2
   citados); en DSF 2 además: tap sobre el Granero → `hub_tap_edificio.webp` con `BuildingInfoPanel` abierto;
   toolbar de construcción → `hub_construir_fantasma.webp`; Cancelar (botones desaparecen); construir un edificio
   barato → `POST /api/buildings/build` 200 citado + `hub_construir_ok.webp` (en obra). Cubre: R22, R24, R25, R26, R27,
-  R41.
+  R41. Evidencia: `node scripts/hub_b_evidence.js --dpr 2 --taps --build` y `--dpr 3 --taps` (cuenta
+  `hubb-evid-20261020`, registros reales, `hasTouch`, `page.touchscreen.tap` en el centro en px CSS de los bounds;
+  entre taps se cierra el overlay con `clearOverlay()` porque con overlay abierto el hub no emite, R23). DSF 2: `barn`
+  `(245, 527.5)` → `["entity:selected",{"type":"building","data":{"buildingId":"barn","posX":82,"level":1,
+  "isBuilding":false}}]` + `overlayState.type "building"`; `throne_room` `(206, 266)` → `["entity:selected",{"type":
+  "building","data":{"buildingId":"throne_room","posX":78,"level":1,"isBuilding":false}}]`; cielo `(206, 200)` →
+  `["entity:deselected",null]`, overlay `null`. DSF 3: mismos puntos CSS → los mismos 2 payloads de `barn` y
+  `throne_room` y `["entity:deselected",null]` (R22, R24, R41). Construcción a DSF 2 por la UI real
+  (`building:toolbar:toggle` → "Casa"): `{"placing":"house","ghost":{"key":"hubb_bld_house","x":290,"y":1125,
+  "depth":1599},"buttons":["Cancelar","Confirmar"]}` (R25); Cancelar → `{"placing":null,"ghost":null,"buttons":[]}`
+  (R27); "Casa" → Confirmar → `POST /api/buildings/build` **200** `{"success":true,"buildingId":"house","posX":76,
+  "posY":58,"buildTime":600000,…}`; eventos `[placement:started {house}, placement:ended, placement:started {house},
+  building:placed {house, 76, 58}, placement:ended]`; sin recarga el store trae `house [154, is_building 1, 76, 58]` y
+  el hub la dibuja `tint 8a8478, alpha 0.75, state construction` (R26, R27). 0 `pageerror` en ambas corridas (único
+  `console.error`: `favicon.ico 404`, T21). El server tenía `marea_carmesi` activa (cielo rojo real en las capturas).
+  - `hub_tap_edificio.webp` — tap sobre el Granero: `BuildingInfoPanel` ("Granero · Agrícola · Nivel 1", "Almacena
+    recursos del campo.", "Mejorar a Nivel 2") y su popup Info/Mejorar abiertos sobre el hub atenuado.
+  - `hub_construir_fantasma.webp` — fantasma semitransparente de la casa en su ranura (izquierda del Granero) con
+    Cancelar/Confirmar visibles.
+  - `hub_construir_ok.webp` — tras confirmar: la casa en obra (atenuada) en su ranura; la `BuildingToolbar` queda
+    abierta abajo como hoy.
 - [ ] T19 — Nitidez (`node scripts/hub_b_evidence.js --sharpness`): línea base con `devicePixelRatio` forzado a 1
   (reproduce el render anterior: canvas a px CSS ampliado ×2 por el navegador; no hay "antes" del hub B en el código,
   así que esta es la línea base válida) y corrida normal, misma región de la ranura `barn`; citar ambas varianzas del
