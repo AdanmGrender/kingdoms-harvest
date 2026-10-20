@@ -9,9 +9,12 @@
 
 ## Arte
 
-- [ ] T1 — Crear `art-b/hub/manifest.json` con el contenido exacto de `design.md` §8.2 (15 ítems, bloque
+- [x] T1 — Crear `art-b/hub/manifest.json` con el contenido exacto de `design.md` §8.2 (15 ítems, bloque
   `STYLE MATCH` en todos, sin campo `style`), `art-b/hub/process.sh` (formato de `art-b/gr/process.sh`, salidas y
-  alturas de §8.3/§5.1) y agregar `/art-b/hub/raw/` a `.gitignore`. Cubre: R35, R52.
+  alturas de §8.3/§5.1) y agregar `/art-b/hub/raw/` a `.gitignore`. Cubre: R35, R52. Evidencia: manifiesto extraído
+  literal del bloque ```json de `design.md` §8.2; `node -e` sobre `art-b/hub/manifest.json` → `items 15 style 0
+  STYLE MATCH 15`; `bash -n art-b/hub/process.sh` → `syntax-ok` (acepta `1|2` para correr una tanda); `git
+  check-ignore -v art-b/hub/raw/x.png` → `.gitignore:39:/art-b/hub/raw/`.
 - [ ] T2 — Tanda 1: `node scripts/gen_art_b.js --manifest art-b/hub/manifest.json --only
   hub_sky_calm,hub_sky_storm,hub_base,hub_fg`; procesar a `client/public/assets/b/hub/{sky_calm,sky_storm}.webp`
   (1536, sin resize) y `{base,fg}.webp` (`--width 1280`); copiar `base.webp` a `art-b/hub/refs/hub_base.webp`.
