@@ -84,9 +84,17 @@
   art of this game — …`; el preset `grimdark` completo sí se antepuso). Se deja así para no gastar otra generación
   (las hojas de contacto muestran que `throne_room`/`mine` siguen la estética); si el reviewer exige el bloque literal
   en R52, regenerar `bld_sheet_7` con el bloque completo.
-- [ ] T5 — Listar con `sharp` todos los webp nuevos (archivo, ancho, alto, KB) con el total; confirmar ancho ≤ 1536,
+- [x] T5 — Listar con `sharp` todos los webp nuevos (archivo, ancho, alto, KB) con el total; confirmar ancho ≤ 1536,
   ≤ 900 KB c/u y ≤ 4.5 MB en total (si alguno se pasa: `--quality 80` solo para ese archivo, `design.md` §8.4).
-  Cubre: R34.
+  Cubre: R34. Evidencia: `node --input-type=module` con `sharp` sobre `client/public/assets/b/{hub,buildings,workers}`
+  (29 webp): hub/base 1280×1766 714.7 KB; hub/fg 1280×529 163.6 KB; hub/sky_calm 1536×2752 721.9 KB; hub/sky_storm
+  1536×2752 780.1 KB; buildings/barn 302×176 16.4; barracks 322×160 18.5; embassy 313×368 38.1; farm_plot 302×224
+  22.1; house 258×176 15.5; library 279×368 32.0; market 329×240 31.4; mill 295×416 35.1; mine 302×224 22.0; sawmill
+  323×320 32.8; smithy 307×320 31.1; stable 293×288 28.3; tavern 291×304 29.4; throne_room 453×544 66.1; tower
+  226×192 12.6; trap 128×128 7.6; wall 338×192 21.5; workers/farmer_a 143×208 10.6; farmer_b 177×208 11.3;
+  merchant_a 141×208 11.1; merchant_b 162×208 11.9; miner_a 126×208 9.5; miner_b 185×208 10.6; woodcutter_a
+  141×208 10.4; woodcutter_b 203×208 11.8 (KB) → `files 29 maxW 1536 maxKB 780.1 total 2.86MB`: ancho ≤ 1536, ≤ 900
+  KB c/u, total 2.86 MB ≤ 4.5 MB; ningún archivo necesitó `--quality 80`.
 
 ## Lógica pura
 
