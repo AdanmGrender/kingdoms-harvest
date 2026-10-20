@@ -73,5 +73,10 @@
     "id": "wk_sheet_merchant", "kind": "ui", "aspect": "16:9",
     "refs": ["art-b/gr/refs/anchor.webp"],
     "prompt": "STYLE MATCH: exactly the same look as the reference combat art of this game — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette with rare sickly green glow and candle orange, heroic chunky exaggerated proportions, decaying half-timbered Renaissance German town, grotesque darkly humorous details. — exactly TWO full-body figures of the SAME character side by side, LEFT pose A and RIGHT pose B, same scale, wide empty gap between them, no inset panels, no ground, three-quarter view facing right; a NEW character, not the reference: a fat shifty merchant-innkeeper in slashed puffed sleeves and an absurd plumed hat, a coin purse on the belt; LEFT: holding up a jingling coin purse with a crooked grin; RIGHT: raising a foaming tankard and shouting"
+  },
+  {
+    "id": "bld_sheet_7", "kind": "ui", "aspect": "16:9",
+    "refs": ["art-b/gr/refs/bg_combat.webp", "art-b/hub/refs/hub_base.webp"],
+    "prompt": "STYLE MATCH: exactly the same look as the reference combat art of this game — a sprite sheet with exactly TWO separate buildings of the same decaying Renaissance German walled village, side by side left to right with a wide empty gap between them, each standing on its own small patch of muddy ground and each fully inside the image with empty background margin on every side, three-quarter view from slightly above, consistent lighting, no people, no animals, no text, no letters: (1) on the LEFT, much taller than the other, the lord's keep: a tall crooked stone castle keep with oversized slate roofs, dried-blood crimson banners, wooden hoardings, arrow slits, a ridiculous gilded weathercock bent by the wind, and a big iron brazier on its tallest tower holding a large votive fire; (2) on the RIGHT, a mine entrance dug into a small rocky outcrop with timber supports, a lantern and a minecart on rails full of stone and iron ore"
   }
 ]

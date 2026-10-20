@@ -34,11 +34,32 @@
   verde enfermizo solo en el resplandor del cielo de tormenta, humor negro (cuervo robando un sombrero emplumado en
   `sky_calm`, cuervo con yelmito en la horca de la base, calavera con gorra emplumada en fg); base sin casas ni
   personas, 5 terrazas vacías + cima libre, murallas sin huecos ni halo; sin texto ni iconografía ajena. Pasa → tanda 2.
-- [ ] T3 — Tanda 2: generar `bld_throne_room`, `bld_sheet_1..6` y `wk_sheet_{farmer,woodcutter,miner,merchant}`;
+- [x] T3 — Tanda 2: generar `bld_throne_room`, `bld_sheet_1..6` y `wk_sheet_{farmer,woodcutter,miner,merchant}`;
   medir componentes conexos y escribir los `--crop` literales en `process.sh`; procesar a
   `client/public/assets/b/buildings/<id>.webp` (17, `--height` de la tabla §5.1; citar por id alto del recorte ≥
   `--height`, regla de no ampliación §8.3) y `client/public/assets/b/workers/<kind>_{a,b}.webp` (8, `--height 208`).
-  Cubre: R34, R35, R42, R43.
+  Cubre: R34, R35, R42, R43. Evidencia: `gen_art_b.js --only` de los 11 ítems de la tanda 2 → crudos en
+  `art-b/hub/raw/` (gitignored). **Regenerados:** `bld_throne_room` falló 2 veces (v1/v2: insertos y "kit de piezas")
+  y `mine` de `bld_sheet_5` quedó cortada por el borde → ítem nuevo `bld_sheet_7` en el manifiesto (hoja de 2:
+  torre del señor + mina, refs del spike + `hub_base`; §8.2 "regenerar … y documentarlo") del que salen
+  `throne_room.webp` y `mine.webp`; `bld_throne_room` queda en el manifiesto sin usarse (crudos `_v1/_v2` descartados).
+  Nota R52: el prompt de `bld_sheet_7` empieza con `STYLE MATCH:` pero con el bloque abreviado (el preset `grimdark`
+  completo de `gen_art_b.js` se antepuso igual, `buildPrompt`); ver chequeo en T4. `--crop` literales = bbox de
+  componentes conexos (escala 1/4, tol 38) + 8 px; `farm_plot` cortado en y=1266 (banda de niebla debajo).
+  `--height` = `ceil16(1.5 × alto mostrado real)` (§5.1): con las ranuras actuales 9 edificios quedan limitados por el
+  ancho de la caja (alto mostrado = w / aspecto) y con la tabla daban reducción a DPR 2 de hasta 4.04× (tower),
+  3.38× (barracks), 2.75× (barn), 2.49× (house), 2.26× (mine) > 2.25 → recalculados: throne_room 704→544,
+  tower 480→192, barracks 336→160, tavern 320→304, market 304→240, mill 464→416, house 272→176, barn 320→176,
+  mine 336→224 (documentado en `process.sh`; T12 recalcula si cambia una ranura). `NODE=… bash art-b/hub/process.sh
+  2` → 25 `✓`. Alto del recorte ≥ `--height` (no ampliación) por id: throne_room 1460≥544, mine 936≥224, library
+  1428≥368, embassy 1416≥368, tower 804≥192, wall 764≥192, barracks 724≥160, tavern 944≥304, market 704≥240,
+  smithy 868≥320, mill 1420≥416, house 724≥176, barn 716≥176, sawmill 1024≥320, stable 980≥288, farm_plot
+  1066≥224, trap 1062≥128; trabajadores (8) recortes de 1248-1420 de alto ≥ 208, `--flip` en farmer y miner.
+  Relación fuente/pantalla con `HUB_SLOTS`/`WORKER_BY_BUILDING` (sharp + `hubLayout.js`, previa a la medición en
+  escena de T17): mínimo a DPR 3 = 1.007 (stable) ≥ 0.97, máximo a DPR 2 = 1.733 (farmer/merchant h 120) ≤ 2.25.
+  Revisión (leader/owner y re-chequeo propio en hoja ampliada): 17 edificios y 8 trabajadores limpios, una sola
+  figura/edificio por archivo, sin cabezas/miembros extra ni armas fantasma, sin halos grises, sin texto ni
+  iconografía ajena; trabajadores con la acción hacia la derecha (merchant/miner en 3/4 casi frontal).
 - [ ] T4 — Crear `scripts/contact_sheet_b.js` y generar `evidencia/contact_hub_capas.webp`,
   `evidencia/contact_hub_edificios.webp`, `evidencia/contact_hub_trabajadores.webp` y
   `evidencia/contact_hub_vs_spike.webp`; escribir la revisión (sin figuras/cabezas extra, trabajadores mirando a la

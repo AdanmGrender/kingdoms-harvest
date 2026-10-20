@@ -21,6 +21,38 @@ if [ "$T" != 2 ]; then
 fi
 
 if [ "$T" != 1 ]; then
-  # Tanda 2: edificios (17) y trabajadores (8)
-  p $R/bld_throne_room.png $O/buildings/throne_room.webp --height 704
+  # Tanda 2: edificios (17). Crops = bbox de componentes conexos (escala 1/4, tol 38) + 8 px de margen.
+  # throne_room y mine salen de bld_sheet_7 (bld_throne_room suelto falló 2 veces: insertos/kit de piezas; mine de
+  # bld_sheet_5 quedó cortada por el borde). farm_plot se corta en y=1266: bajo esa línea hay una banda de niebla.
+  # --height = ceil16(1.5 × alto mostrado real) (design.md §5.1): en los limitados por ancho de la caja (throne_room,
+  # tower, barracks, tavern, market, mill, house, barn, mine) el alto mostrado es w / aspecto, no h → altura menor
+  # para no reducir > 2.25× a DPR 2 (R43) sin ampliar a DPR 3 (R42). Si T12 cambia una ranura, se recalcula.
+  B=$O/buildings
+  p $R/bld_sheet_7.png $B/throne_room.webp --crop 116,28,1216,1460  --min-hole 0.00001 --height 544
+  p $R/bld_sheet_7.png $B/mine.webp        --crop 1424,480,1260,936 --min-hole 0.00001 --height 224
+  p $R/bld_sheet_1.png $B/library.webp     --crop 160,28,1084,1428  --min-hole 0.00001 --height 368
+  p $R/bld_sheet_1.png $B/embassy.webp     --crop 1356,44,1204,1416 --min-hole 0.00001 --height 368
+  p $R/bld_sheet_2.png $B/tower.webp       --crop 112,8,948,804     --min-hole 0.00001 --height 192
+  p $R/bld_sheet_2.png $B/wall.webp        --crop 1292,48,1344,764  --min-hole 0.00001 --height 192
+  p $R/bld_sheet_2.png $B/barracks.webp    --crop 636,792,1456,724  --min-hole 0.00001 --height 160
+  p $R/bld_sheet_3.png $B/tavern.webp      --crop 12,240,904,944    --min-hole 0.00001 --height 304
+  p $R/bld_sheet_3.png $B/market.webp      --crop 916,472,964,704   --min-hole 0.00001 --height 240
+  p $R/bld_sheet_3.png $B/smithy.webp      --crop 1908,304,836,868  --min-hole 0.00001 --height 320
+  p $R/bld_sheet_4.png $B/mill.webp        --crop 84,44,1008,1420   --min-hole 0.00001 --height 416
+  p $R/bld_sheet_4.png $B/house.webp       --crop 1292,40,1068,724  --min-hole 0.00001 --height 176
+  p $R/bld_sheet_4.png $B/barn.webp        --crop 1476,772,1228,716 --min-hole 0.00001 --height 176
+  p $R/bld_sheet_5.png $B/sawmill.webp     --crop 24,192,1032,1024  --min-hole 0.00001 --height 320
+  p $R/bld_sheet_5.png $B/stable.webp      --crop 900,304,1012,980  --min-hole 0.00001 --height 288
+  p $R/bld_sheet_6.png $B/farm_plot.webp   --crop 52,200,1420,1066  --min-hole 0.00001 --height 224
+  p $R/bld_sheet_6.png $B/trap.webp        --crop 1548,204,1064,1062 --min-hole 0.00001 --height 128
+  # Trabajadores (8): pose A = figura izquierda, B = derecha; --flip donde miran a la izquierda.
+  W=$O/workers
+  p $R/wk_sheet_farmer.png     $W/farmer_a.webp     --crop 156,44,976,1420   --height 208 --flip
+  p $R/wk_sheet_farmer.png     $W/farmer_b.webp     --crop 1420,80,1176,1384 --height 208 --flip
+  p $R/wk_sheet_woodcutter.png $W/woodcutter_a.webp --crop 208,64,920,1356   --height 208
+  p $R/wk_sheet_woodcutter.png $W/woodcutter_b.webp --crop 1396,176,1216,1248 --height 208
+  p $R/wk_sheet_miner.png      $W/miner_a.webp      --crop 200,48,860,1416   --height 208 --flip
+  p $R/wk_sheet_miner.png      $W/miner_b.webp      --crop 1384,168,1172,1292 --height 208 --flip
+  p $R/wk_sheet_merchant.png   $W/merchant_a.webp   --crop 192,96,948,1396   --height 208
+  p $R/wk_sheet_merchant.png   $W/merchant_b.webp   --crop 1496,76,1100,1416 --height 208
 fi
