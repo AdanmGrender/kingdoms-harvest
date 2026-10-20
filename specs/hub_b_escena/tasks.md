@@ -369,11 +369,77 @@
   - `hub_token.webp` — "+5 KH" violeta flotando sobre la Torre del Señor.
   - `hub_resize_360x780.webp` (720×1560) — mismo hub tras el resize en caliente, cubre todo el canvas sin bandas.
   - `hub_fx_off.webp` — `lluvia_de_energia` con FX apagado: solo tinte/gradación, sin brasas, viñeta ni fuego.
-- [ ] T17 — Corrida en el viewport alto (`--dpr 3`) y comparación con DSF 2: `canvas` 1236×2580 y rect 412×860
+- [x] T17 — Corrida en el viewport alto (`--dpr 3`) y comparación con DSF 2: `canvas` 1236×2580 y rect 412×860
   citados; `hub_completo_dpr3.webp`; tabla de bounds en px CSS de los 17 edificios en ambos DSF (diferencia máxima
   ≤ 1 px CSS); tabla de texturas de arte del hub (`key, realHeight, displayHeight × zoom, ratio`) en DSF 3 (mínimo ≥
   0.97) y DSF 2 (máximo ≤ 2.25), pegada acá; `Text` de "+N KH" con cuerpo 14 px CSS y `style.resolution ≥ zoom` +
-  `hub_token_dpr3.webp`. Cubre: R4, R5, R29, R39, R40, R42, R43, R44.
+  `hub_token_dpr3.webp`. Cubre: R4, R5, R29, R39, R40, R42, R43, R44. Evidencia: `node scripts/hub_b_evidence.js --dpr 3
+  --device hubb-evid-20261020` → `{"hubActive":true,"worldScene":null,"canvas":[1236,2580],"rect":[0,0,412,860],
+  "s":3,"zoom":1.5,"pixelArt":false,"antialias":true,"hubbTextures":35,"scaleModes":{"0":35},"nonHubb":[]}` (R5,
+  R39, R4: zoom 1.5 cubre 1236×2580 sin bandas); 0 `pageerror` (único `console.error`: `favicon.ico 404`, T21).
+  Token (R29, R44): `"+5 KH"` `fontSize 28px`, `style.resolution 1.5` ≥ zoom 1.5, cuerpo `28 × 1.5 / 3` = **14 px
+  CSS** (a DSF 2: 14 px CSS con resolution 1 ≥ zoom 1, T16). Bounds en px CSS `[x, y, w, h]` de los 17 edificios
+  (`(bounds − worldView) × zoom / s`), **diferencia máxima DSF 2 vs DSF 3 = 0.00 px CSS** (R40):
+
+  | id | DSF 2 | DSF 3 | Δ máx |
+  |---|---|---|---|
+  | `farm_plot` | 74.38, 620, 101.25, 75 | 74.38, 620, 101.25, 75 | 0.00 |
+  | `barn` | 185, 492.5, 120, 70 | 185, 492.5, 120, 70 | 0.00 |
+  | `mill` | 24.95, 442.5, 85.11, 120 | 24.95, 442.5, 85.11, 120 | 0.00 |
+  | `sawmill` | 123.43, 542.5, 98.14, 97.5 | 123.43, 542.5, 98.14, 97.5 | 0.00 |
+  | `smithy` | 296.97, 462.5, 96.05, 100 | 296.97, 462.5, 96.05, 100 | 0.00 |
+  | `stable` | 217.95, 552.5, 89.11, 87.5 | 217.95, 552.5, 89.11, 87.5 | 0.00 |
+  | `house` | 97.34, 497.5, 95.31, 65 | 97.34, 497.5, 95.31, 65 | 0.00 |
+  | `mine` | 284.41, 557.5, 111.18, 82.5 | 284.41, 557.5, 111.18, 82.5 | 0.00 |
+  | `wall` | 177.81, 630, 114.38, 65 | 177.81, 630, 114.38, 65 | 0.00 |
+  | `tower` | 26.42, 382.5, 112.15, 95 | 26.42, 382.5, 112.15, 95 | 0.00 |
+  | `barracks` | 132.03, 402.5, 150.94, 75 | 132.03, 402.5, 150.94, 75 | 0.00 |
+  | `trap` | 305, 645, 50, 50 | 305, 645, 50, 50 | 0.00 |
+  | `tavern` | 277.3, 372.5, 100.41, 105 | 277.3, 372.5, 100.41, 105 | 0.00 |
+  | `market` | 11.73, 555, 116.54, 85 | 11.73, 555, 116.54, 85 | 0.00 |
+  | `embassy` | 276.56, 230, 114.88, 135 | 276.56, 230, 114.88, 135 | 0.00 |
+  | `throne_room` | 123.61, 167, 164.78, 198 | 123.61, 167, 164.78, 198 | 0.00 |
+  | `library` | 19.98, 220, 110.04, 145 | 19.98, 220, 110.04, 145 | 0.00 |
+
+  Texturas de arte del hub (`key, frame.realHeight, displayHeight × zoom, ratio`; 27 objetos visibles con los 17 ids y
+  los 4 tipos de trabajador; `hubb_sky_storm` está en α 0 con cielo calmo y tiene el mismo tamaño que `hubb_sky_calm`).
+  DSF 3: **mínimo 1.004** (`hubb_bld_market`) ≥ 0.97 (R42), máximo 1.154. DSF 2: **máximo 1.724**
+  (`hubb_wk_farmer_a`) ≤ 2.25 (R43), mínimo 1.506 (las poses de los trabajadores varían entre corridas):
+
+  | key (DSF 3) | realHeight | disp × zoom DSF 3 | ratio DSF 3 | key / disp × zoom DSF 2 | ratio DSF 2 |
+  |---|---|---|---|---|---|
+  | `hubb_sky_calm` | 2752 | 2711.4 | 1.015 | `hubb_sky_calm` 1815.5 | 1.516 |
+  | `hubb_base` | 1766 | 1705.3 | 1.036 | `hubb_base` 1136.9 | 1.553 |
+  | `hubb_bld_throne_room` | 608 | 594 | 1.024 | `hubb_bld_throne_room` 396 | 1.535 |
+  | `hubb_bld_embassy` | 416 | 405 | 1.027 | `hubb_bld_embassy` 270 | 1.541 |
+  | `hubb_bld_library` | 448 | 435 | 1.03 | `hubb_bld_library` 290 | 1.545 |
+  | `hubb_bld_tower` | 288 | 285 | 1.011 | `hubb_bld_tower` 190 | 1.516 |
+  | `hubb_bld_barracks` | 240 | 225 | 1.067 | `hubb_bld_barracks` 150 | 1.6 |
+  | `hubb_bld_tavern` | 320 | 315 | 1.016 | `hubb_bld_tavern` 210 | 1.524 |
+  | `hubb_wk_merchant_b` | 208 | 181.3 | 1.147 | `hubb_wk_merchant_a` 121 | 1.719 |
+  | `hubb_bld_barn` | 224 | 210 | 1.067 | `hubb_bld_barn` 140 | 1.6 |
+  | `hubb_bld_mill` | 368 | 360 | 1.022 | `hubb_bld_mill` 240 | 1.533 |
+  | `hubb_bld_smithy` | 304 | 300 | 1.013 | `hubb_bld_smithy` 200 | 1.52 |
+  | `hubb_bld_house` | 208 | 195 | 1.067 | `hubb_bld_house` 130 | 1.6 |
+  | `hubb_wk_farmer_b` | 208 | 180.2 | 1.154 | `hubb_wk_farmer_a` 120.7 | 1.724 |
+  | `hubb_wk_miner_a` | 208 | 196.3 | 1.06 | `hubb_wk_miner_a` 131.1 | 1.586 |
+  | `hubb_bld_sawmill` | 304 | 292.5 | 1.039 | `hubb_bld_sawmill` 195 | 1.559 |
+  | `hubb_bld_stable` | 272 | 262.5 | 1.036 | `hubb_bld_stable` 175 | 1.554 |
+  | `hubb_bld_mine` | 256 | 247.5 | 1.034 | `hubb_bld_mine` 165 | 1.552 |
+  | `hubb_bld_market` | 256 | 255 | 1.004 | `hubb_bld_market` 170 | 1.506 |
+  | `hubb_wk_woodcutter_a` | 208 | 195.7 | 1.063 | `hubb_wk_woodcutter_b` 131.8 | 1.578 |
+  | `hubb_wk_miner_b` | 208 | 197.3 | 1.054 | `hubb_wk_miner_a` 131.7 | 1.58 |
+  | `hubb_wk_merchant_b` | 208 | 189.4 | 1.098 | `hubb_wk_merchant_b` 125.3 | 1.66 |
+  | `hubb_bld_farm_plot` | 240 | 225 | 1.067 | `hubb_bld_farm_plot` 150 | 1.6 |
+  | `hubb_bld_wall` | 208 | 195 | 1.067 | `hubb_bld_wall` 130 | 1.6 |
+  | `hubb_bld_trap` | 160 | 150 | 1.067 | `hubb_bld_trap` 100 | 1.6 |
+  | `hubb_wk_farmer_b` | 208 | 190 | 1.095 | `hubb_wk_farmer_b` 125.7 | 1.655 |
+  | `hubb_fg` | 529 | 510.8 | 1.036 | `hubb_fg` 340.5 | 1.553 |
+
+  - `hub_completo_dpr3.webp` (1236×2580) — los 17 edificios y 7 trabajadores, cielo calmo, misma composición que
+    `hub_completo.webp` a DSF 2.
+  - `hub_token_dpr3.webp` (726×528, recorte de la captura DSF 3 ampliado ×2 con vecino más cercano) — "+5 KH" con
+    bordes limpios sobre la Torre del Señor, sin el borroneo de un texto rasterizado a resolución 1.
 - [ ] T18 — Taps e interacción real en DSF 2 y DSF 3 (`hasTouch`, `page.touchscreen.tap`): centro de `barn` y de
   `throne_room` → `entity:selected` con su `buildingId` (4 payloads citados), cielo → `entity:deselected` (2
   citados); en DSF 2 además: tap sobre el Granero → `hub_tap_edificio.webp` con `BuildingInfoPanel` abierto;
