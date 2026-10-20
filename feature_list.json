@@ -54,7 +54,7 @@
         "Sin cambios de economía ni de API; suites de server y cliente sin regresiones; consola sin errores; >= 50 fps medidos en headless con GPU"
       ],
       "sdd": true,
-      "status": "pending",
+      "status": "spec_ready",
       "assignee": "p-kh"
     },
     {
