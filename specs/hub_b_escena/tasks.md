@@ -278,9 +278,28 @@
   `(477, 408)` (brasero), chispas máx. 11. Con `smithy`, `tavern`, `farm_plot`, `throne_room` en obra (`setState`
   sin recarga): `tint 8a8478 a 0.75 worker false smoke false` en los 4 y `fire false` (R13). Recorte de chimenea con
   humo visible revisado a ojo (scratch). 0 `pageerror`.
-- [ ] T14 — Ambiente de tormenta (`design.md` §5.3, §6.5): cielos con cross-fade, tinte, `grade`, niebla, emisores
+- [x] T14 — Ambiente de tormenta (`design.md` §5.3, §6.5): cielos con cross-fade, tinte, `grade`, niebla, emisores
   `embers_fall`/`motes_rise`, `flash`, `cloudDrift`; todo condicionado a `AmbientSystem.enabledInSettings()` salvo
-  cielo/tinte/`grade`. Cubre: R18, R19, R20, R21, R38.
+  cielo/tinte/`grade`. Cubre: R18, R19, R20, R21, R38. Evidencia: `HubSceneB.applyStorm` (implementado en el commit de
+  T11): firma `ambienceSignature + grade`; contador de 1200 ms (`Sine.easeInOut`, `instant` sin tween) que funde α de
+  `sky_calm`/`sky_storm`, tinte del cielo y color/α de `grade`; `skyDrift.pause()/resume()` por `cloudDrift`; con FX:
+  5 bancos `hubb_fog` (α 0.55) en la banda media, emisores `embers_fall` (diagonal, ≤ 80 vivas, cada 90 ms) y
+  `motes_rise` (≤ 60, cada 120 ms) creados una vez y prendidos/apagados, `flash` = `delayedCall` aleatorio en
+  `everyMs` + rectángulo `ADD` α 0 → 0.35 → 0 en 220 ms. Playwright DSF 2 (17 ids, `setActiveStorm` en la misma
+  sesión, lectura 1.5 s después de cada cambio): `velo_estatico {calm 0, storm 1, tint 9a8aa6, grade 7a5a8a/0.18, fog
+  0.55, amb [], flash null, drift true}`; `marea_carmesi {tint c0453a, grade b32821/0.22, fog 0, flash 7719 ms}`;
+  `lluvia_de_energia {tint 8a7a6a, grade e8933a/0.10, amb [hubb_ember]}`; `susurros_del_vacio {tint 7f9a5a, grade
+  4a4550/0.25, amb [hubb_mote]}`; `calma_falsa {calm 1, storm 0, tint e0b860, grade d9a441/0.14, drift false}`;
+  `{id:'desconocida', color:'#123456'} → tint 123456, grade 123456/0.15`; color `'rojo'` → `8a8478/0.15` sin error
+  (R21); `null → {calm 1, storm 0, tint ffffff, grade α 0.00, fog 0, amb [], flash null, drift true}` (R18). Fundido:
+  α de `sky_storm` a los 600 ms = 0.50-0.51 en los cambios calma↔tormenta y estado final completo a 1.5 s (≤ 1.5 s,
+  R20). Hoja de revisión (scratch) de las 6 capturas: calma sepia, Niebla Sorda lavanda con bancos, Marea Carmesí roja,
+  Lluvia de Ascuas cálida con brasas, Susurros verdoso con motas, Calma Falsa dorada — las 6 se distinguen (R19). Con
+  `localStorage.kh_ambient_fx = 'false'`: `lluvia_de_energia`/`velo_estatico`/calma → `emitters 0, fogBanks 0, fire
+  false, smoke 0, postPipelines 0`, cielo/tinte/`grade` iguales a FX encendido (R38). **Nota para T16 (R38):** en
+  Phaser 3.90 los FX de cámara se instalan como post-pipelines y `cameras.main.postFX.list` queda **siempre** vacío
+  (con FX encendido también da 0); la medición que distingue es `cameras.main.postPipelines.length` (FX encendido → 1,
+  la viñeta `FX_VIGNETTE` "7"; apagado → 0). 0 `pageerror`.
 - [ ] T15 — Construcción desde el hub (`design.md` §6.4): `building:startPlacement` → fantasma +
   `placement:started`; `building:confirmPlacement` → `findFreeTile` → `building:placed` (o notificación);
   `building:cancelPlacement` → `placement:ended`. Cubre: R25, R26, R27.
