@@ -60,12 +60,30 @@
   Revisión (leader/owner y re-chequeo propio en hoja ampliada): 17 edificios y 8 trabajadores limpios, una sola
   figura/edificio por archivo, sin cabezas/miembros extra ni armas fantasma, sin halos grises, sin texto ni
   iconografía ajena; trabajadores con la acción hacia la derecha (merchant/miner en 3/4 casi frontal).
-- [ ] T4 — Crear `scripts/contact_sheet_b.js` y generar `evidencia/contact_hub_capas.webp`,
+- [x] T4 — Crear `scripts/contact_sheet_b.js` y generar `evidencia/contact_hub_capas.webp`,
   `evidencia/contact_hub_edificios.webp`, `evidencia/contact_hub_trabajadores.webp` y
   `evidencia/contact_hub_vs_spike.webp`; escribir la revisión (sin figuras/cabezas extra, trabajadores mirando a la
   derecha, recorte limpio, sin texto ni iconografía ajena; trazo de grabado, paleta tierra + verde enfermizo,
   proporciones heroicas, humor negro como el spike). Chequeo con Node del manifiesto (sin `style` ≠ `grimdark`,
-  `refs` permitidas, prefijo `STYLE MATCH`) citado. Cubre: R35, R52.
+  `refs` permitidas, prefijo `STYLE MATCH`) citado. Cubre: R35, R52. Evidencia: `scripts/contact_sheet_b.js` ya existía (creado en T2,
+  commit 1be7aa7); `KH_SCRATCH=… node scripts/contact_sheet_b.js --out …` → `✓ contact_hub_capas.webp 2813x693 (4
+  imágenes)`, `✓ contact_hub_edificios.webp 2883x1031 (17)`, `✓ contact_hub_trabajadores.webp 2131x353 (8)`, `✓
+  contact_hub_vs_spike.webp 2614x533 (7)` (regeneradas tras el reproceso de T3). `contact_hub_capas`: cielos calmo
+  (cuervo con sombrero robado) y de tormenta (resplandor verde enfermizo), base y fg recortados limpios, sin halos
+  grises ni huecos, sin texto. `contact_hub_edificios`: 17 sprites, uno por archivo, sin personas (el muñeco de
+  práctica de `barracks` y el espantapájaros de `farm_plot` son pedidos del prompt), sin texto (el cartel de
+  `tavern` es una jarra), sin iconografía ajena, recorte limpio. `contact_hub_trabajadores`: 8 poses, una figura
+  cada una, sin cabezas/miembros extra ni armas fantasma, acción hacia la derecha. `contact_hub_vs_spike`
+  (`bg/combat_crypt` + `heroes/mage_idle` junto a base, throne_room, tavern, mill, farmer_a): mismo trazo de grabado
+  con rayado cruzado y aguadas oscuras, paleta umbra/sepia/ocre/hueso con naranja de vela (brasero de la torre,
+  ventana de la taberna) y verde enfermizo en el musgo/cielo de tormenta como el bastón del mago, proporciones
+  pesadas y exageradas (manos y pies enormes del siervo), humor negro (veleta dorada torcida, calavera con gorra
+  emplumada, cuervo con yelmito en la horca). Chequeo Node de `art-b/hub/manifest.json` → `items 16
+  style!=grimdark 0 refs fuera 0 prefijo STYLE MATCH 16/16`; bloque `STYLE MATCH` completo de §8.2 15/16 — falta en
+  `bld_sheet_7` (regeneración de T3, prefijo abreviado `STYLE MATCH: exactly the same look as the reference combat
+  art of this game — …`; el preset `grimdark` completo sí se antepuso). Se deja así para no gastar otra generación
+  (las hojas de contacto muestran que `throne_room`/`mine` siguen la estética); si el reviewer exige el bloque literal
+  en R52, regenerar `bld_sheet_7` con el bloque completo.
 - [ ] T5 — Listar con `sharp` todos los webp nuevos (archivo, ancho, alto, KB) con el total; confirmar ancho ≤ 1536,
   ≤ 900 KB c/u y ≤ 4.5 MB en total (si alguno se pasa: `--quality 80` solo para ese archivo, `design.md` §8.4).
   Cubre: R34.
