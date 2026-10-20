@@ -496,10 +496,27 @@
   client/src/components/campaign/CombatInstancePanel.jsx` → salida vacía (0 líneas, exit 0) (R49).
   - `preview_world.webp` — `?preview=world`: mundo pixel-art legacy (`WorldScene`) con el cartel "ISO PREVIEW · no
     auth", NPCs con nombre y terreno nocturno, igual que antes de la feature.
-- [ ] T21 — Robustez y consola: corrida con `page.route` abortando `**/assets/b/buildings/barn.webp` y
+- [x] T21 — Robustez y consola: corrida con `page.route` abortando `**/assets/b/buildings/barn.webp` y
   `**/assets/b/hub/sky_calm.webp` → `hub_fallback.webp`, 0 `pageerror` (citar los `console.error` de red excluidos);
   corrida limpia de carga + 30 s en reposo → 0 `console.error` y 0 `pageerror`. Actualizar `docs/project-spec.md`
-  §9.2 (payload `{ type, data }` de `entity:selected` y `HubSceneB` como emisor). Cubre: R30, R32.
+  §9.2 (payload `{ type, data }` de `entity:selected` y `HubSceneB` como emisor). Cubre: R30, R32. Evidencia:
+  **favicon** (decisión del leader: el único `console.error` de T10-T20 era `favicon.ico 404`, no hay favicon en
+  `client/public/`): `client/public/favicon.svg` nuevo (Fuego Votivo naranja `#e8933a` con corazón hueso sobre brasero
+  roble/latón `#332f2b`/`#d9a441`, fondo `#1a1512`, 478 B, sin dependencias) + `<link rel="icon"
+  type="image/svg+xml" href="/favicon.svg" />` en `client/index.html` → Chromium ya no pide `/favicon.ico`.
+  `node scripts/hub_b_evidence.js --fallback` (R30, `page.route` aborta `**/assets/b/buildings/barn.webp` y
+  `**/assets/b/hub/sky_calm.webp`, 17 ids): `{"missing":["hubb_sky_calm","hubb_bld_barn"],"barn":"hubb_placeholder",
+  "skyCalm":"hubb_sky_fallback","sprites":17,"active":true,"pageerrors":[]}`; 2 `console.warn` propios
+  (`[HubSceneB] textura faltante, se usa placeholder: hubb_sky_calm` / `hubb_bld_barn`); `console.error` **excluidos**
+  (solo red de las URLs bloqueadas, 3 por URL por los reintentos del loader de Phaser): `Failed to load resource:
+  net::ERR_FAILED @ …/assets/b/hub/sky_calm.webp` ×3 y `… @ …/assets/b/buildings/barn.webp` ×3. `node
+  scripts/hub_b_evidence.js --idle` (R32, carga limpia + 30 s en reposo, cuenta `hubb-evid-20261020`) →
+  `{"active":true,"consoleErrors":[],"pageerrors":[],"http":[],"apiRequests":20}`: **0 `console.error`, 0
+  `pageerror`**, sin respuestas HTTP ≥ 400. `docs/project-spec.md` §9.2: `entity:selected` → payload `{ type, data }`
+  (edificio: `type: 'building'`, `data: { buildingId, posX, level, isBuilding }`) emitido por `HubSceneB` (hub) y
+  `SelectionSystem` (preview); `entity:deselected` con los mismos emisores; `placement:started` → `{ buildingId }`.
+  - `hub_fallback.webp` — cielo con el degradado `hubb_sky_fallback` y el placeholder roble con borde latón en la
+    ranura del Granero; el resto del hub (16 edificios, trabajadores, Fuego Votivo) sigue dibujado.
 - [ ] T22 — fps: 17 edificios + `lluvia_de_energia`, Chromium `--use-angle=d3d11 --enable-gpu`, 20 muestras de
   `loop.actualFps` + rAF; DSF 2 → `evidencia/fps.json` (promedio ≥ 50, citar promedio y mínimo); DSF 3 →
   `evidencia/fps_dpr3.json` (informativo, citar). Si DSF 2 < 50: aplicar las palancas de `design.md` §6.6 en orden y

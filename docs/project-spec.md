@@ -522,8 +522,8 @@ LIMPIEZA: Todo useEffect que registre un listener DEBE devolver cleanup:
 |--------|---------|-----------|-------------|
 | `overlay:open` | `{ type, data }` | Phaser → React | Abre panel |
 | `overlay:close` | — | React → Phaser | Cierra panel |
-| `entity:selected` | `{ entityType, data }` | Phaser → React | Toque en entidad |
-| `entity:deselected` | — | Phaser → React | Deselección |
+| `entity:selected` | `{ type, data }` (edificio: `type: 'building'`, `data: { buildingId, posX, level, isBuilding }`) | Phaser → React | Toque en entidad; lo emiten `HubSceneB` (hub) y `SelectionSystem` (preview) |
+| `entity:deselected` | — | Phaser → React | Deselección (tap fuera de entidades; `HubSceneB` y `SelectionSystem`) |
 | `building:placed` | `{ buildingId, x, y }` | React → Phaser | Confirmar placement |
 | `building:addToScene` | `{ buildingId, posX, posY }` | React → Phaser | Añadir edificio |
 | `building:startPlacement` | `{ buildingId, tileIndex }` | React → Phaser | Iniciar modo colocación |
@@ -533,7 +533,7 @@ LIMPIEZA: Todo useEffect que registre un listener DEBE devolver cleanup:
 | `time:updated` | `{ icon, period, dayCount }` | Phaser → React | Ciclo día/noche (cada 10 min) |
 | `game:notification` | `{ text, type }` | cualquiera → React | Toast UI |
 | `game:input` | `{ enabled }` | React → Phaser | Lock/unlock input |
-| `placement:started` | — | Phaser → React | Modo colocación activo |
+| `placement:started` | `{ buildingId }` (`HubSceneB`) | Phaser → React | Modo colocación activo |
 | `placement:ended` | — | Phaser → React | Modo colocación terminado |
 
 ---
