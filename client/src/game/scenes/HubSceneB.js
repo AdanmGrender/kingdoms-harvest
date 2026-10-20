@@ -490,9 +490,10 @@ export default class HubSceneB extends Phaser.Scene {
     this.clearGhost();
     this.placing = buildingId;
     const ghost = this.add.image(slot.x, slot.y, this.tex(`hubb_bld_${buildingId}`, 'hubb_placeholder'))
-      .setOrigin(0.5, 1).setDepth(HUB_DEPTHS.fog - 1).setAlpha(0.5);
+      .setOrigin(0.5, 1).setDepth(HUB_DEPTHS.fog - 1).setAlpha(0.75);
     ghost.setScale(Math.min(slot.w / ghost.width, slot.h / ghost.height));
-    this.tweens.add({ targets: ghost, alpha: 0.3, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    // Pulso 0.75 ↔ 0.45: con α ≤ 0.5 el grabado sepia se perdía sobre el barro de la terraza.
+    this.tweens.add({ targets: ghost, alpha: 0.45, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     this.ghost = ghost;
     EventBridge.emit('placement:started', { buildingId });
   }

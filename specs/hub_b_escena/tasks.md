@@ -300,9 +300,24 @@
   Phaser 3.90 los FX de cámara se instalan como post-pipelines y `cameras.main.postFX.list` queda **siempre** vacío
   (con FX encendido también da 0); la medición que distingue es `cameras.main.postPipelines.length` (FX encendido → 1,
   la viñeta `FX_VIGNETTE` "7"; apagado → 0). 0 `pageerror`.
-- [ ] T15 — Construcción desde el hub (`design.md` §6.4): `building:startPlacement` → fantasma +
+- [x] T15 — Construcción desde el hub (`design.md` §6.4): `building:startPlacement` → fantasma +
   `placement:started`; `building:confirmPlacement` → `findFreeTile` → `building:placed` (o notificación);
-  `building:cancelPlacement` → `placement:ended`. Cubre: R25, R26, R27.
+  `building:cancelPlacement` → `placement:ended`. Cubre: R25, R26, R27. Evidencia: `HubSceneB.startPlacement /
+  confirmPlacement / endPlacement` (handlers propios de EventBridge, quitados en `teardown`): fantasma = sprite del id
+  (o `hubb_placeholder`) en su ranura, depth `fog − 1`, α 0.75 ↔ 0.45 con pulso (con 0.5 ↔ 0.3 de §6.4 el grabado
+  sepia casi no se veía sobre el barro: revisado en recorte, ahora se lee la casa semitransparente);
+  `placement:started { buildingId }`; confirmar → `findFreeTile(store.buildings, id)` → `building:placed { buildingId,
+  posX, posY }` o `game:notification` 'No queda lugar en el Bastión para esa obra' si `null` (caso cubierto por el
+  Vitest `tablero lleno → null` de T8); fin/cancelación → quita fantasma y emite `placement:ended`; `addToScene` y
+  `camera:centerOnCastle` no se escuchan a propósito. Playwright DSF 2 contra el server Docker (cuenta nueva, UI
+  real: `building:toolbar:toggle` → botón "Casa" de `BuildingToolbar`): `{"placing":"house","ghost":{"key":
+  "hubb_bld_house","x":290,"y":1125,"depth":1599},"buttons":["Cancelar","Confirmar"]}` (R25); Cancelar →
+  `{"placing":null,"ghost":null,"buttons":[]}` (R27); de nuevo "Casa" → Confirmar → `POST /api/buildings/build` **200**
+  `{"success":true,"buildingId":"house","posX":76,"posY":58,"buildTime":600000,…}` (celda libre de `findFreeTile` junto
+  a los 4 registros iniciales; el server la aceptó) y eventos `[placement:started {house}, placement:ended,
+  placement:started {house}, building:placed {house, 76, 58}, placement:ended]`; sin recarga, el store trae `house`
+  `[141, is_building 1, 76, 58]` y el hub la dibuja en obra (`tint 8a8478, alpha 0.75, state construction`) (R26).
+  0 `pageerror`. `cd client && npx vitest run` → `Tests 1 failed | 146 passed (147)` (known_failure GameHUD Lv5).
 
 ## Evidencia visual y medición
 
