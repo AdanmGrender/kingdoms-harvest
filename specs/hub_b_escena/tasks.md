@@ -484,10 +484,18 @@
   - `nitidez_s1.webp` (243×140) — Granero con la línea base: contornos lavados y rayado empastado.
   - `nitidez_s2.webp` (243×140) — Granero a resolución de dispositivo: tablas, sacos, rueda y rayado definidos.
   - `nitidez_comparacion.webp` (1482×420) — ambos recortes lado a lado ampliados ×3 con vecino más cercano.
-- [ ] T20 — Entradas que no son el hub: `?preview=world` en DSF 2 → `canvas.width === 412`,
+- [x] T20 — Entradas que no son el hub: `?preview=world` en DSF 2 → `canvas.width === 412`,
   `isActive('WorldScene')`, 0 `pageerror`, `preview_world.webp`; dioramas de combate: `GET
   /assets/game/dioramas/{battle_ruins,battle_tide,boss_arena}.png` → 200 y `git diff --stat` vacío de esos archivos y
-  `CombatInstancePanel.jsx` (citar). Cubre: R46, R49.
+  `CombatInstancePanel.jsx` (citar). Cubre: R46, R49. Evidencia: `node scripts/hub_b_evidence.js --preview` (DSF 2,
+  `?preview=world`) → `{"canvas":[412,860],"worldActive":true,"pixelArt":true,"entry":"preview","scenes":
+  ["BootScene","WorldScene","IsoScene","IsoWorldScene"],"pageerrors":[],"apiRequests":0}` (R46: `Scale.RESIZE` a px
+  CSS, `canvas.width === 412`); dioramas por Vite dev: `battle_ruins 200 image/png 1564473B`, `battle_tide 200
+  image/png 1458738B`, `boss_arena 200 image/png 1576064B`; `git diff --stat feat/art-direction-b...HEAD --
+  client/public/assets/game/dioramas/{battle_ruins,battle_tide,boss_arena}.png
+  client/src/components/campaign/CombatInstancePanel.jsx` → salida vacía (0 líneas, exit 0) (R49).
+  - `preview_world.webp` — `?preview=world`: mundo pixel-art legacy (`WorldScene`) con el cartel "ISO PREVIEW · no
+    auth", NPCs con nombre y terreno nocturno, igual que antes de la feature.
 - [ ] T21 — Robustez y consola: corrida con `page.route` abortando `**/assets/b/buildings/barn.webp` y
   `**/assets/b/hub/sky_calm.webp` → `hub_fallback.webp`, 0 `pageerror` (citar los `console.error` de red excluidos);
   corrida limpia de carga + 30 s en reposo → 0 `console.error` y 0 `pageerror`. Actualizar `docs/project-spec.md`
