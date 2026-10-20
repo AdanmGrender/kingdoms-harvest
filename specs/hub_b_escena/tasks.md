@@ -215,7 +215,7 @@
   `entity:selected` / `entity:deselected`, `DayNightSystem` con overlay oculto, `token:earned` → `emitTokenGain` con
   `fontSize 28`, `resolution = textResolutionFor(zoom)` y depth de partículas, `teardown` que quita solo sus
   handlers. Cubre: R3, R4, R6, R7, R10, R11, R13, R14, R22, R23, R24, R28, R29, R30, R31, R41, R44. Evidencia:
-  `HubSceneB.js` (≈480 líneas) según §6.1-§6.3: `init` lee `renderScale`; `preload` carga `HUB_TEXTURES` con
+  `HubSceneB.js` (536 líneas) según §6.1-§6.3: `init` lee `renderScale`; `preload` carga `HUB_TEXTURES` con
   `loaderror` → `missing` + `console.warn`; `makeTextures` (`hubb_fog/spark/ember/mote/placeholder/sky_fallback`);
   `setFilter(LINEAR)` por textura cargada; capas cielo ×2 (cover × 1.04, deriva × 1.025 por contador común), base y fg
   a 824 de ancho, `grade`/flash a pantalla completa, todo con `HUB_DEPTHS`; `applyViewport` + `scale.on('resize')`;
@@ -236,9 +236,31 @@
   cielo `hubb_sky_fallback`, `missing = [hubb_sky_calm, hubb_bld_barn]`, 2 `console.warn` propios y 0 `pageerror`
   (R30). Sin `pageerror` en ninguna corrida. `cd client && npx vitest run` → `Tests 1 failed | 146 passed (147)`
   (known_failure GameHUD Lv5); `vite build` (a un outDir temporal) → `✓ built in 6.91s`.
-- [ ] T12 — Medir con Playwright los rects reales de `TopResourceBar`, `QuestRail`, botonera, `BottomNavBar` y barras
+- [x] T12 — Medir con Playwright los rects reales de `TopResourceBar`, `QuestRail`, botonera, `BottomNavBar` y barras
   laterales; confirmar o ajustar `SAFE_*` y `HUB_SLOTS` (re-correr T8; si cambia algún `h`, recalcular su `--height`
-  y reprocesar, `design.md` §5.1). Cubre: R9.
+  y reprocesar, `design.md` §5.1). Cubre: R9. Evidencia: Playwright DSF 2 (412×860, cuenta nueva) — unión de los rects
+  de las hojas visibles de cada bloque de chrome, px CSS `[x0, y0, x1, y1]`: `TopResourceBar` `[26,18,391,61]`
+  (contenedor hasta y 66), `QuestRail` hasta **y 123** (con su banda; hojas `[64,88,283,114]`), botonera de
+  `BastionHub` `[12,698,400,748]` (empieza en **y 698**), `BottomNavBar` `[12,788,400,852]`, `QuickActionsSidebar`
+  `[8,80,52,384]` (termina en **x 52**), `EventSidebar` `[356,80,404,328]` (empieza en **x 356**), `SocialSidebar`
+  `[360,564,404,764]`, `StormBanner` ausente sin tormenta. En lógicos (× 2): `SAFE_TOP 250` ≥ 246 ✓, `SAFE_BOTTOM 1390`
+  ≤ 1396 ✓, `SAFE_LEFT 110` ≥ 104 ✓, `SAFE_RIGHT` **714 → 712** (= 356 × 2; ninguna ancla lo pasa). **Ranuras
+  agrandadas** (decisión del leader: el hub tiene que leerse en un teléfono; tower se veía de 119 px lógicos y barracks de
+  99): 5 filas sobre las terrazas de `hub_base` (cima 730, terraza 1 955, terraza 2 1125, terraza 3 1280/1390), cada
+  caja = alto objetivo × aspecto del webp (+2 px) para que el alto mostrado sea `h`; `--height = ceil16(1.5 × h)`
+  recalculado en `art-b/hub/process.sh` y **reprocesado desde los crudos existentes** (sin generación nueva):
+  library (150, 730) 222×290 → `--height 448`; throne_room (412, 730) 332×396 → `--height 608`; embassy (668, 730) 232×270 → `--height 416`; tower (165, 955) 226×190 → `--height 288`; barracks (415, 955) 304×150 → `--height 240`; tavern (655, 955) 204×210 → `--height 320`; mill (135, 1125) 173×240 → `--height 368`; house (290, 1125) 193×130 → `--height 208`; barn (490, 1125) 243×140 → `--height 224`; smithy (690, 1125) 194×200 → `--height 304`; market (140, 1280) 236×170 → `--height 256`; sawmill (345, 1280) 199×195 → `--height 304`; stable (525, 1280) 181×175 → `--height 272`; mine (680, 1280) 225×165 → `--height 256`; farm_plot (250, 1390) 205×150 → `--height 240`; wall (470, 1390) 231×130 → `--height 208`; trap (660, 1390) 102×100 → `--height 160`. Tower 119 → 190 px lógicos (×1.6), barracks 99 → 150 (×1.5); alto del recorte de origen ≥
+  `--height` en los 17 (no ampliación). Fuego Votivo `(65, −322)`, humo tavern `(−37, −195)` y smithy `(50, −190)`
+  medidos sobre la captura (brasero y chimeneas reales); trabajadores `sawmill dx 85`, `smithy dx −70`, `mine dx −60
+  dy 10` para no pisar el granero/establo. `NODE=… bash art-b/hub/process.sh 2` → 25 `✓` (17 edificios cambiados, 8
+  trabajadores byte-idénticos). `npx vitest run src/tests/hubLayout.test.js` → `Tests 82 passed (82)` (invariantes
+  R9 con los valores nuevos; anclas a ≥ 111.8 entre sí). Relación fuente/pantalla medida en escena con los 17 ids y 7
+  trabajadores (`frame.realHeight / (displayHeight × zoom)`, 28 objetos de arte): DSF 3 mínimo **1.004** (market) ≥
+  0.97, máximo 1.15 (merchant); DSF 2 máximo **1.723** (merchant/farmer h 120) ≤ 2.25, mínimo 1.506. Presupuesto R34
+  tras el reproceso: `files 29 maxW 1536 maxKB 780.1 total 2.94MB` (edificios 10.9-78.5 KB). Hojas
+  `evidencia/contact_hub_edificios.webp` (3349×572, 17) y `evidencia/contact_hub_vs_spike.webp` (2023×413, 7)
+  regeneradas con los webp nuevos: mismos recortes, limpios, uno por archivo, sin texto. `cd client && npx vitest
+  run` → `Tests 1 failed | 146 passed (147)` (known_failure GameHUD Lv5).
 - [ ] T13 — Trabajadores y humo (`design.md` §5.2, §6.2): alternancia de poses con normalización por alto,
   respiración, desfase aleatorio; humo de `smithy` y `tavern`; Fuego Votivo en `throne_room`. Cubre: R16, R17.
 - [ ] T14 — Ambiente de tormenta (`design.md` §5.3, §6.5): cielos con cross-fade, tinte, `grade`, niebla, emisores

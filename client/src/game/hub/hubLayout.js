@@ -4,11 +4,12 @@
 export const HUB_W = 824;
 export const HUB_H = 1720;
 
-// Banda visible no tapada por el chrome en 412×860 (valores lógicos = css × 2). Se confirman midiendo el DOM.
+// Banda visible no tapada por el chrome en 412×860 (valores lógicos = css × 2), medida en el DOM real (T12): QuestRail
+// termina en 123 px CSS, la botonera empieza en 698, QuickActionsSidebar termina en x 52 y EventSidebar empieza en 356.
 export const SAFE_TOP = 250; // bajo TopResourceBar + QuestRail
 export const SAFE_BOTTOM = 1390; // sobre botonera de BastionHub + BottomNavBar
 export const SAFE_LEFT = 110; // a la derecha de QuickActionsSidebar (left-2, w-11)
-export const SAFE_RIGHT = 714; // a la izquierda de EventSidebar/SocialSidebar
+export const SAFE_RIGHT = 712; // a la izquierda de EventSidebar/SocialSidebar
 
 export const HUB_DEPTHS = {
   sky: 0,
@@ -36,25 +37,26 @@ export const TILE_SIZES = {
   tavern: [2, 2], market: [3, 2], embassy: [3, 3], throne_room: [4, 4], library: [2, 2],
 };
 
-// Ancla = centro-abajo del sprite, en el espacio lógico 824×1720 (design.md §5.1).
+// Ancla = centro-abajo del sprite, en el espacio lógico 824×1720 (design.md §5.1). Ranuras agrandadas en T12 para que
+// el hub se lea en un teléfono (cada caja = alto objetivo × aspecto del webp; --height en art-b/hub/process.sh).
 export const HUB_SLOTS = {
-  library: { x: 175, y: 700, w: 220, h: 240 },
-  throne_room: { x: 412, y: 720, w: 300, h: 460, fire: { dx: 0, dy: -423 } },
-  embassy: { x: 650, y: 700, w: 220, h: 240 },
-  tower: { x: 130, y: 900, w: 140, h: 320 },
-  barracks: { x: 300, y: 905, w: 200, h: 220 },
-  tavern: { x: 500, y: 910, w: 190, h: 210, smoke: { dx: -40, dy: -190 } },
-  market: { x: 690, y: 915, w: 210, h: 200 },
-  mill: { x: 135, y: 1110, w: 190, h: 300 },
-  house: { x: 300, y: 1100, w: 160, h: 180 },
-  barn: { x: 470, y: 1115, w: 200, h: 210 },
-  smithy: { x: 670, y: 1120, w: 210, h: 210, smoke: { dx: 45, dy: -195 } },
-  sawmill: { x: 130, y: 1310, w: 220, h: 210 },
-  farm_plot: { x: 330, y: 1320, w: 220, h: 140 },
-  stable: { x: 520, y: 1310, w: 200, h: 190 },
-  mine: { x: 690, y: 1305, w: 200, h: 220 },
-  wall: { x: 230, y: 1385, w: 280, h: 120 },
-  trap: { x: 560, y: 1385, w: 150, h: 80 },
+  library: { x: 150, y: 730, w: 222, h: 290 },
+  throne_room: { x: 412, y: 730, w: 332, h: 396, fire: { dx: 65, dy: -322 } },
+  embassy: { x: 668, y: 730, w: 232, h: 270 },
+  tower: { x: 165, y: 955, w: 226, h: 190 },
+  barracks: { x: 415, y: 955, w: 304, h: 150 },
+  tavern: { x: 655, y: 955, w: 204, h: 210, smoke: { dx: -37, dy: -195 } },
+  mill: { x: 135, y: 1125, w: 173, h: 240 },
+  house: { x: 290, y: 1125, w: 193, h: 130 },
+  barn: { x: 490, y: 1125, w: 243, h: 140 },
+  smithy: { x: 690, y: 1125, w: 194, h: 200, smoke: { dx: 50, dy: -190 } },
+  market: { x: 140, y: 1280, w: 236, h: 170 },
+  sawmill: { x: 345, y: 1280, w: 199, h: 195 },
+  stable: { x: 525, y: 1280, w: 181, h: 175 },
+  mine: { x: 680, y: 1280, w: 225, h: 165 },
+  farm_plot: { x: 250, y: 1390, w: 205, h: 150 },
+  wall: { x: 470, y: 1390, w: 231, h: 130 },
+  trap: { x: 660, y: 1390, w: 102, h: 100 },
 };
 
 export const WORKER_KINDS = ['farmer', 'woodcutter', 'miner', 'merchant'];
@@ -63,9 +65,9 @@ export const WORKER_KINDS = ['farmer', 'woodcutter', 'miner', 'merchant'];
 export const WORKER_BY_BUILDING = {
   farm_plot: { kind: 'farmer', dx: 80, dy: 0, h: 125, periodMs: 900 },
   mill: { kind: 'farmer', dx: 75, dy: 5, h: 120, periodMs: 1100 },
-  sawmill: { kind: 'woodcutter', dx: 90, dy: 5, h: 130, periodMs: 700 },
-  smithy: { kind: 'miner', dx: -100, dy: 5, h: 130, periodMs: 650 },
-  mine: { kind: 'miner', dx: -95, dy: 5, h: 130, periodMs: 750 },
+  sawmill: { kind: 'woodcutter', dx: 85, dy: 5, h: 130, periodMs: 700 },
+  smithy: { kind: 'miner', dx: -70, dy: 5, h: 130, periodMs: 650 },
+  mine: { kind: 'miner', dx: -60, dy: 10, h: 130, periodMs: 750 },
   tavern: { kind: 'merchant', dx: -85, dy: 8, h: 120, periodMs: 1400 },
   market: { kind: 'merchant', dx: -95, dy: 8, h: 125, periodMs: 1600 },
 };
