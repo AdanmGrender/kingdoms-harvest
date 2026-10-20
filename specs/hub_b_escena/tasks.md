@@ -123,7 +123,7 @@
   `findFreeTile` en anillos desde `(78, 60)` con la AABB de `buildingService.validatePlacement` y huella por defecto
   2×2); sin cambios necesarios. `grep -nE "^import|require\(" client/src/game/hub/hubLayout.js` → sin resultados
   (exit 1: no importa `phaser` ni el store). Verificado por los 82 tests de T8.
-- [ ] T8 — Crear `client/src/tests/hubLayout.test.js` (Vitest): `HUB_DEPTHS` creciente; `computeHubViewport` en
+- [x] T8 — Crear `client/src/tests/hubLayout.test.js` (Vitest): `HUB_DEPTHS` creciente; `computeHubViewport` en
   824×1720 (zoom 1), 1236×2580 (1.5), 412×860 (0.5), 720×1560 y 1536×2048, sin bandas; `HUB_SLOTS` vs
   `Object.keys(BUILDINGS)` y `TILE_SIZES` vs `tileWidth/tileHeight` (leídos con `createRequire` de
   `shared/gameConfig.js`); invariantes de ranuras; `selectHubBuildings` (starter de `playerService`, vacío, no-array,
@@ -132,7 +132,23 @@
   firmas distintas; `isTap` (slop 12, 24, 36); `shouldAcceptTap`; `buildSelectionPayload`; `TOKEN_FONT_PX === 28`;
   `findFreeTile` (sin solapes con los 4 registros iniciales, huellas 1×1/3×3/4×4, tablero lleno → `null`). Correr
   `cd client && npx vitest run src/tests/hubLayout.test.js`. Cubre: R3, R4, R6, R8, R9, R10, R11, R12, R13, R15, R17,
-  R18, R19, R21, R22, R23, R24, R26, R29, R31.
+  R18, R19, R21, R22, R23, R24, R26, R29, R31. Evidencia: `client/src/tests/hubLayout.test.js` (lee `BUILDINGS` y
+  `WARP_STORMS` con `createRequire` de `shared/gameConfig.js`). `npx vitest run src/tests/hubLayout.test.js` → `Tests
+  82 passed (82)`: `HUB_DEPTHS` estrictamente creciente en el orden de R3 y edificios+trabajadores bajo `fog`;
+  `computeHubViewport` 824×1720 → 1, 1236×2580 → 1.5, 412×860 → 0.5 y, para esos más 720×1560 y 1536×2048, cover
+  uniforme, vista centrada dentro de 824×1720 (sin bandas) y `scroll = centro − tamaño/2`; `HUB_SLOTS`/`BUILDING_IDS`
+  = `Object.keys(BUILDINGS)` (17, mismo orden), `TILE_SIZES` = `tileWidth/tileHeight`, `STORM_AMBIENCE` = ids de
+  `WARP_STORMS`; invariantes R9 de las 17 ranuras (caja en 0..824 × `SAFE_TOP..SAFE_BOTTOM`, ancla en
+  `SAFE_LEFT..SAFE_RIGHT`, anclas ≥ 80); `selectHubBuildings` con el starter de `playerService` (throne_room,
+  farm_plot ×2 → 1 sprite id 2, barn), 17 ids, vacío, no-array (`undefined, null, 'x', 42, {}`), `null`/`undefined`/id
+  desconocido/sin `building_id` ignorados, en obra sin trabajador; `pickRepresentative` (mayor nivel construido, menor
+  id a igual nivel, en obra de menor id); `buildingVisualState` con booleanos y 0/1 de sql.js; `WORKER_BY_BUILDING` = 7
+  ids con `produces`; humo de `smithy`/`tavern`; `stormAmbience` null/undefined → calma, 5 ids → su fila, 6 firmas
+  distintas, desconocido `#123456` → tinte `0x123456`, colores inválidos → `0x8a8478` sin lanzar; `isTap` slop 12/24/36
+  y 500 ms; `shouldAcceptTap`; `buildSelectionPayload`; `TOKEN_FONT_PX === 28`; `HUB_TEXTURES` 29 claves `hubb_*`;
+  `findFreeTile` sin solapes con los 4 registros iniciales para huellas 1×1/2×2/3×3/4×4, 20 colocaciones sucesivas sin
+  solape, tablero lleno → `null`. Suite completa `cd client && npx vitest run` → `Test Files 1 failed | 5 passed (6)`,
+  `Tests 1 failed | 146 passed (147)`; único fallo = known_failure `GameHUD.test.jsx > renders player level as Lv5`.
 
 ## Retiro del hub viejo
 
