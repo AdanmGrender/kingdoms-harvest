@@ -545,10 +545,23 @@
   server shared` → salida vacía (0 líneas, exit 0, R36). Tope de fondos actualizado: `docs/architecture.md` §9 y
   `docs/art-direction-b.md` (riesgo de peso del APK) → "fondos ≤ 1080 px de ancho; capas del hub hasta 1536 px
   (render a DPR 3, ver `specs/hub_b_escena/design.md` §8.4)".
-- [ ] T24 — Build y suites: `cd client && npx vite build` (exit 0, citar `✓ built in …` y chunks);
+- [x] T24 — Build y suites: `cd client && npx vite build` (exit 0, citar `✓ built in …` y chunks);
   `cd server && npx jest --runInBand --forceExit` (citar `Tests: N passed`) y `cd client && npx vitest run` (citar
   totales; único fallo tolerado: `GameHUD.test.jsx > renders player level as Lv5`). Sin temporales, crudos 2K ni
-  `.webm` en el diff. Cubre: R37, R51.
+  `.webm` en el diff. Cubre: R37, R51. Evidencia: `cd client && npx vite build` (vite 6.4.1) → **exit 0**, `✓ 223
+  modules transformed`, `dist/index.html 0.83 kB`, `dist/assets/index-Yk7ReV61.css 44.62 kB (gzip 8.69)`,
+  `dist/assets/index-BpSduZi0.js 658.09 kB (gzip 189.04)`, `dist/assets/phaser-Czz4FBZH.js 1,481.77 kB (gzip
+  339.84)`, `✓ built in 21.31s` (solo el aviso de chunks > 500 kB, preexistente) (R51). `cd server && npx jest
+  --runInBand --forceExit` → `Test Suites: 25 passed, 25 total`, **`Tests: 388 passed, 388 total`**. `cd client &&
+  npx vitest run` → `Test Files 1 failed | 5 passed (6)`, **`Tests 1 failed | 146 passed (147)`**; único fallo =
+  known_failure `GameHUD.test.jsx > GameHUD > renders player level as Lv5` (R37). Contenedor: `docker compose -f
+  docker-compose.local.yml up -d --build` → exit 0, `kingdoms-harvest Recreated/Started`, `Up (healthy)`; `docker logs
+  --tail 25 kingdoms-harvest` sin errores (`configuración de producción validada`, migraciones y tick OK, solo los
+  avisos `[env] ⚠` de siempre: TON/REDIS/SENTRY sin setear); `GET /` → 200, `GET /favicon.svg` → 200
+  `image/svg+xml`, `GET /assets/b/hub/base.webp` → 200. Diff limpio: `git diff --diff-filter=AM --name-only
+  feat/art-direction-b...HEAD | grep -iE "\.webm|\.rar|/raw/|\.png$"` → vacío (exit 1; el único `.png` del diff es
+  el borrado de `hub_bastion.png`); `combat-demo.webm`/`movement-demo.webm` y `.superpowers/` siguen sin versionar,
+  `art-b/hub/raw/` gitignored; `evidencia/` = 31 archivos (webp + `fps*.json`), 5.9 MB, sin PNG crudos.
 
 ## Bloqueado
 
