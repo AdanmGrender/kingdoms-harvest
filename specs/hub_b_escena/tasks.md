@@ -98,13 +98,20 @@
 
 ## Lógica pura
 
-- [ ] T6 — Crear `client/src/game/display.js` (`design.md` §4.1) y `client/src/tests/display.test.js`:
+- [x] T6 — Crear `client/src/game/display.js` (`design.md` §4.1) y `client/src/tests/display.test.js`:
   `computeRenderScale` (`0.5, 1, 2, 2.625, 3, 4, undefined, NaN`), `computeBackingSize` (412×860 @2 → 824×1720 zoom
   0.5; @3 → 1236×2580), `buildDisplaySettings` hub vs preview (preview idéntico a la config actual: `RESIZE`,
   `pixelArt: true`, 4 escenas legacy; hub: `NONE`, `pixelArt: false`, `antialias: true`, `['BootScene',
   'HubSceneB']`), `resolveStartScene` (hub, `isoMode`, `?iso=1`, preview por defecto, entry desconocido),
   `textResolutionFor` (`0.5, 1, 1.5`). Correr `cd client && npx vitest run src/tests/display.test.js`.
-  Cubre: R1, R22, R39, R44, R46.
+  Cubre: R1, R22, R39, R44, R46. Evidencia: `display.js` revisado contra §4.1 (cabecera, `MAX_RENDER_SCALE 3`, `TAP_SLOP_CSS 12`,
+  `computeRenderScale` no finito → 1, `computeBackingSize` con `round`, hub `NONE`/`pixelArt false`/`antialias
+  true`/`roundPixels false`/`['BootScene','HubSceneB']`, preview = config actual, entry desconocido → preview, css ≤ 0
+  → 1, `resolveStartScene` y `textResolutionFor = max(1, zoom)`); sin cambios necesarios. `npx vitest run
+  src/tests/display.test.js` → `Tests 26 passed (26)` (incluye `2.625 → 2.625`, `NaN → 1`, 412×860 @2 → 824×1720
+  zoom 0.5, @3 → 1236×2580, preview `toEqual` la config actual, `?iso=1` → `IsoScene`). Suite completa `npx vitest
+  run` → `Test Files 1 failed | 4 passed (5)`, `Tests 1 failed | 64 passed (65)`; único fallo = known_failure
+  `GameHUD.test.jsx > renders player level as Lv5`.
 - [ ] T7 — Crear `client/src/game/hub/hubLayout.js` con constantes y funciones de `design.md` §4.2-§5 (sin importar
   `phaser` ni el store). Cubre: R3, R4, R6, R8, R9, R10, R11, R12, R13, R15, R17, R18, R19, R21, R22, R23, R24, R26,
   R29, R31.
