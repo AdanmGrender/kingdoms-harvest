@@ -183,12 +183,32 @@
 
 ## Escena e integración
 
-- [ ] T10 — Entrada y resolución (`design.md` §7.1): `buildGameConfig(settings)` en `client/src/game/config.js`;
+- [x] T10 — Entrada y resolución (`design.md` §7.1): `buildGameConfig(settings)` en `client/src/game/config.js`;
   `PhaserGame.jsx` con prop `entry`, medición del contenedor, registry `entry`/`renderScale`, `handleResize` con
   `setZoom(1/s)` + `resize(round(w·s), round(h·s))` y cleanup de `resize` y `orientationchange`; `BootScene` despacha
   a `HubSceneB` sin preload legacy en la entrada hub; `ParticleSystem.emitTokenGain(x, y, amount, opts)` con defaults
   actuales; `BastionHub.jsx` con canvas a viewport completo, capa de chrome `pointer-events-none` y
-  `<PhaserGame entry="hub" />`. Cubre: R1, R5, R6, R7, R39, R46, R50.
+  `<PhaserGame entry="hub" />`. Cubre: R1, R5, R6, R7, R39, R46, R50. Evidencia: `config.js` sin `default export`,
+  `buildGameConfig(settings)` (`Phaser.Scale[mode]`, `NO_CENTER` en hub, `zoom`, `pixelArt/antialias/roundPixels`
+  arriba y en `render`, escenas por nombre); `PhaserGame.jsx` prop `entry` (default `'preview'`), mide
+  `#phaser-container`, registry `entry`/`renderScale`, `handleResize` hub = `computeRenderScale` →
+  `computeBackingSize` → `setZoom(1/s)` si cambió `s` + `resize`, `orientationchange` con nombre y quitado en el
+  cleanup; `BootScene` vuelve en `preload()` si `entry === 'hub'` y en `create()` despacha con `resolveStartScene` antes
+  del chroma-key; `ParticleSystem.emitTokenGain(x, y, amount, { fontSize = 14, resolution = 1, depth = 25 })` (trazo y
+  recorrido × `fontSize/14`, defaults = mundo); `BastionHub` = canvas `absolute inset-0` + capa de chrome
+  `pointer-events-none` (riel y botonera `pointer-events-auto`, `flex-1` vacío), comentarios de prueba borrados.
+  `HubSceneB.js` stub (carga `HUB_TEXTURES`, base + viewport) para que la entrada compile; se completa en T11.
+  Playwright (cuenta nueva, Vite dev + server Docker): DSF 2 → `{"hub":true,"world":null,"entry":"hub","s":2,
+  "canvas":[824,1720],"rect":[0,0,412,860],"pixelArt":false,"antialias":true,"roundPixels":false,"nonHubb":[],
+  "linear":{"0":29},"zoom":1}`; `setViewportSize(360, 780)` en caliente → `"canvas":[720,1560],"rect":[0,0,360,780]`,
+  zoom 0.907 (cover); DSF 3 → `"s":3,"canvas":[1236,2580],"rect":[0,0,412,860]`, zoom 1.5, 29 `hubb_*` en LINEAR (0),
+  0 texturas no-`hubb_`; `?preview=world` → `{"w":412,"h":860,"world":true,"pixelArt":true,"entry":"preview",
+  "scenes":["BootScene","WorldScene","IsoScene","IsoWorldScene"]}`, 0 `pageerror`. Grep de R47 (`git grep -nE
+  "hubMode|hub_bastion|…|hub=legacy" -- client/src client/public scripts docs/project-spec.md`) → vacío, exit 1.
+  Consola: 0 `pageerror`; el único `console.error` propio de la página es `favicon.ico 404` (preexistente, no hay
+  favicon en `client/public/`; a resolver/excluir en T21) — corridas seguidas con cuentas nuevas disparan además el
+  rate-limit del server (429), ajeno al hub. `cd client && npx vitest run` → `Tests 1 failed | 146 passed (147)`
+  (único fallo: known_failure GameHUD Lv5).
 - [ ] T11 — Crear `client/src/game/scenes/HubSceneB.js` (`design.md` §6.1-§6.3): `renderScale` del registry, preload
   de `HUB_TEXTURES` con registro de faltantes, texturas generadas, filtro lineal, capas, viewport + resize,
   `syncBuildings` con estado en obra, suscripción al store con cleanup, tap con `slop = 12 × s` →
