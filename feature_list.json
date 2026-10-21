@@ -180,8 +180,8 @@
         "Test Vitest que cubra el payload {buildingId}"
       ],
       "sdd": false,
-      "status": "pending",
-      "assignee": null
+      "status": "in_progress",
+      "assignee": "p-kh"
     }
   ]
 }
