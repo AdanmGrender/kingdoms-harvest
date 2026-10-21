@@ -1,0 +1,94 @@
+{
+  "objetos": [
+    {
+      "key": "plot:2",
+      "texture": "hubb_pickup_placeholder",
+      "hitLogical": [
+        88,
+        88
+      ]
+    },
+    {
+      "key": "plot:3",
+      "texture": "hubb_pickup_placeholder",
+      "hitLogical": [
+        88,
+        88
+      ]
+    },
+    {
+      "key": "plot:4",
+      "texture": "hubb_pickup_placeholder",
+      "hitLogical": [
+        88,
+        88
+      ]
+    },
+    {
+      "key": "animal:2",
+      "texture": "hubb_pickup_placeholder",
+      "hitLogical": [
+        88,
+        88
+      ]
+    },
+    {
+      "key": "animal:3",
+      "texture": "hubb_pickup_placeholder",
+      "hitLogical": [
+        88,
+        88
+      ]
+    }
+  ],
+  "todosConPlaceholder": true,
+  "captura": "recoleccion_fallback.webp 824x1720 332KB",
+  "tapConPlaceholder": {
+    "tapped": "plot:2",
+    "requests": [
+      {
+        "url": "/api/farm/harvest",
+        "body": "{\"plotId\":2}",
+        "t": 1792590175418
+      }
+    ]
+  },
+  "advertencias": [
+    "[HubSceneB] textura faltante, se usa placeholder: hubb_pk_sack",
+    "[HubSceneB] textura faltante, se usa placeholder: hubb_pk_egg_basket",
+    "[HubSceneB] textura faltante, se usa placeholder: hubb_pk_milk_pail",
+    "[HubSceneB] textura faltante, se usa placeholder: hubb_pk_wool_bale"
+  ],
+  "pageerrors": [],
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/sack.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/egg_basket.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/milk_pail.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/sack.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/egg_basket.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/milk_pail.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/wool_bale.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/sack.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/egg_basket.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/milk_pail.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/wool_bale.webp",
+    "Failed to load resource: net::ERR_FAILED @ http://localhost:5173/assets/b/pickups/wool_bale.webp"
+  ],
+  "consoleWarns": [
+    "[Telegram.WebApp] Header color is not supported in version 6.0",
+    "[Telegram.WebApp] Background color is not supported in version 6.0",
+    "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "[Telegram.WebApp] Header color is not supported in version 6.0",
+    "[Telegram.WebApp] Background color is not supported in version 6.0",
+    "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "[Telegram.WebApp] Closing confirmation is not supported in version 6.0",
+    "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "[Telegram.WebApp] Closing confirmation is not supported in version 6.0",
+    "[HubSceneB] textura faltante, se usa placeholder: hubb_pk_sack",
+    "[HubSceneB] textura faltante, se usa placeholder: hubb_pk_egg_basket",
+    "[HubSceneB] textura faltante, se usa placeholder: hubb_pk_milk_pail",
+    "[HubSceneB] textura faltante, se usa placeholder: hubb_pk_wool_bale"
+  ],
+  "http4xx5xx": []
+}

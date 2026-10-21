@@ -1,0 +1,22 @@
+[
+  {
+    "id": "pickup_sack", "kind": "ui", "aspect": "1:1",
+    "refs": ["art-b/hub/refs/hub_base.webp"],
+    "prompt": "STYLE MATCH: exactly the same look as the reference combat art of this game — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette with rare sickly green glow and candle orange, heroic chunky exaggerated proportions, decaying half-timbered Renaissance German town, grotesque darkly humorous details. — ONE single small prop for a mobile game, centered with generous margin around it, seen from slightly above in three-quarter view, chunky readable silhouette, no people, no animals, no text, no letters, no ground, no cast shadow: a tied burlap sack of harvested grain, patched and mud-stained, rope-cinched neck with golden grain spilling out of the top, one absurd tiny feather stuck in the knot"
+  },
+  {
+    "id": "pickup_egg_basket", "kind": "ui", "aspect": "1:1",
+    "refs": ["art-b/hub/refs/hub_base.webp"],
+    "prompt": "STYLE MATCH: exactly the same look as the reference combat art of this game — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette with rare sickly green glow and candle orange, heroic chunky exaggerated proportions, decaying half-timbered Renaissance German town, grotesque darkly humorous details. — ONE single small prop for a mobile game, centered with generous margin around it, seen from slightly above in three-quarter view, chunky readable silhouette, no people, no animals, no text, no letters, no ground, no cast shadow: a battered wicker basket holding a heap of pale speckled eggs, a rag cloth half draped over the rim, one cracked egg"
+  },
+  {
+    "id": "pickup_milk_pail", "kind": "ui", "aspect": "1:1",
+    "refs": ["art-b/hub/refs/hub_base.webp"],
+    "prompt": "STYLE MATCH: exactly the same look as the reference combat art of this game — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette with rare sickly green glow and candle orange, heroic chunky exaggerated proportions, decaying half-timbered Renaissance German town, grotesque darkly humorous details. — ONE single small prop for a mobile game, centered with generous margin around it, seen from slightly above in three-quarter view, chunky readable silhouette, no people, no animals, no text, no letters, no ground, no cast shadow: a dented wooden pail with iron hoops, filled to the brim with frothy white milk, a wooden ladle hooked on the rim"
+  },
+  {
+    "id": "pickup_wool_bale", "kind": "ui", "aspect": "1:1",
+    "refs": ["art-b/hub/refs/hub_base.webp"],
+    "prompt": "STYLE MATCH: exactly the same look as the reference combat art of this game — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette with rare sickly green glow and candle orange, heroic chunky exaggerated proportions, decaying half-timbered Renaissance German town, grotesque darkly humorous details. — ONE single small prop for a mobile game, centered with generous margin around it, seen from slightly above in three-quarter view, chunky readable silhouette, no people, no animals, no text, no letters, no ground, no cast shadow: a bound bale of greasy off-white sheep wool tied with rough cord, tufts sticking out, a pair of rusty shears tucked under the cord"
+  }
+]

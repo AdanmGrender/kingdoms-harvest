@@ -121,3 +121,39 @@ describe('gameStore — requestWithdrawalOTP', () => {
     expect(useGameStore.getState().withdrawalOTP).toBeNull();
   });
 });
+
+describe('gameStore — recolección (hub_b_recoleccion)', () => {
+  beforeEach(() => {
+    useGameStore.setState({ addNotification: vi.fn(), loadAnimals: vi.fn(), loadPlots: vi.fn(), refreshResources: vi.fn() });
+  });
+
+  it('collectAnimalProduct devuelve data en éxito y recarga (R16)', async () => {
+    api.post.mockResolvedValueOnce({ data: { message: 'Huevos x2', product: 'egg' } });
+    const res = await useGameStore.getState().collectAnimalProduct(7);
+    expect(api.post).toHaveBeenCalledWith('/farm/animals/collect', { animalId: 7 });
+    expect(res).toEqual({ message: 'Huevos x2', product: 'egg' });
+    expect(useGameStore.getState().loadAnimals).toHaveBeenCalled();
+    expect(useGameStore.getState().refreshResources).toHaveBeenCalled();
+  });
+
+  it('collectAnimalProduct devuelve null en error y notifica (R23)', async () => {
+    const err = new Error('x');
+    err.response = { data: { error: 'Aún no está listo' } };
+    api.post.mockRejectedValueOnce(err);
+    const res = await useGameStore.getState().collectAnimalProduct(7);
+    expect(res).toBeNull();
+    expect(useGameStore.getState().addNotification).toHaveBeenCalledWith('Aún no está listo', 'error');
+    expect(useGameStore.getState().loadAnimals).not.toHaveBeenCalled();
+  });
+
+  it('harvestCrop sigue rechazando en error y recarga con refreshResources en éxito (R22, R23)', async () => {
+    api.post.mockResolvedValueOnce({ data: { message: 'ok', tokensAwarded: 0 } });
+    await useGameStore.getState().harvestCrop(3);
+    expect(api.post).toHaveBeenCalledWith('/farm/harvest', { plotId: 3 });
+    expect(useGameStore.getState().loadPlots).toHaveBeenCalled();
+    expect(useGameStore.getState().refreshResources).toHaveBeenCalled();
+
+    api.post.mockRejectedValueOnce(new Error('400'));
+    await expect(useGameStore.getState().harvestCrop(3)).rejects.toThrow('400');
+  });
+});

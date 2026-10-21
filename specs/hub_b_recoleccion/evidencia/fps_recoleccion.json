@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-21T13:42:26.262Z",
+  "dpr": 2,
+  "viewport": [
+    412,
+    860
+  ],
+  "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "chromiumArgs": [
+    "--use-angle=d3d11",
+    "--enable-gpu"
+  ],
+  "scenario": "hub con 6 objetos de recolección visibles (3 parcelas listas + 3 animales listos), FX desactivados como en hub_b_escena/fps.json",
+  "pickupsVisible": 6,
+  "byHost": {
+    "farm_plot": 3,
+    "stable": 3
+  },
+  "actualFps": {
+    "avg": 171.6,
+    "min": 137.2
+  },
+  "raf": {
+    "avg": 180,
+    "min": 179.1
+  },
+  "pageerrors": 0,
+  "shot": "recoleccion_6_objetos.webp 824x1720 332KB",
+  "samples": [
+    {
+      "actualFps": 137.2,
+      "raf": 180.2
+    },
+    {
+      "actualFps": 147.9,
+      "raf": 180.1
+    },
+    {
+      "actualFps": 155.9,
+      "raf": 180
+    },
+    {
+      "actualFps": 161.9,
+      "raf": 179.9
+    },
+    {
+      "actualFps": 166.5,
+      "raf": 180.1
+    },
+    {
+      "actualFps": 169.8,
+      "raf": 179.1
+    },
+    {
+      "actualFps": 172.4,
+      "raf": 180.9
+    },
+    {
+      "actualFps": 174.3,
+      "raf": 180
+    },
+    {
+      "actualFps": 176,
+      "raf": 180
+    },
+    {
+      "actualFps": 177,
+      "raf": 179.7
+    },
+    {
+      "actualFps": 178,
+      "raf": 179.7
+    },
+    {
+      "actualFps": 178.5,
+      "raf": 180.2
+    },
+    {
+      "actualFps": 178.9,
+      "raf": 180.4
+    },
+    {
+      "actualFps": 179.1,
+      "raf": 180
+    },
+    {
+      "actualFps": 179.4,
+      "raf": 180
+    },
+    {
+      "actualFps": 179.5,
+      "raf": 180
+    },
+    {
+      "actualFps": 179.6,
+      "raf": 180
+    },
+    {
+      "actualFps": 180,
+      "raf": 180
+    },
+    {
+      "actualFps": 180,
+      "raf": 179.9
+    },
+    {
+      "actualFps": 180,
+      "raf": 179.3
+    }
+  ]
+}

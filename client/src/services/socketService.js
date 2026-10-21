@@ -32,6 +32,8 @@ export function connectSocket(initData) {
   });
 
   socket.on('animal_ready', ({ animalType }) => {
+    // Recarga para que HubSceneB muestre el objeto de recolección sin abrir el panel de granja.
+    useGameStore.getState().loadAnimals();
     EventBridge.emit('game:notification', {
       text: `🐄 Tu ${animalType} tiene productos listos para recolectar`,
       type: 'info',
@@ -44,6 +46,7 @@ export function connectSocket(initData) {
   });
 
   socket.on('crop_ready', ({ count }) => {
+    useGameStore.getState().loadPlots();
     EventBridge.emit('game:notification', {
       text: `🌾 ${count} cultivo${count > 1 ? 's' : ''} listo${count > 1 ? 's' : ''} para cosechar`,
       type: 'success',
