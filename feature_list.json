@@ -124,10 +124,12 @@
       "id": 8,
       "name": "ui_kit_b",
       "title": "Kit de UI e íconos B en todo el chrome React (B3)",
-      "description": "IM Fell English en todo el juego, tokens Tailwind, componentes Panel/Button/PortraitRing/Bar y ~40 íconos ilustrados que reemplazan los emojis.",
+      "description": "IM Fell English en todo el juego, tokens Tailwind, componentes Panel/Button/PortraitRing/Bar e íconos ilustrados B que reemplazan los emojis y el set grim_icons viejo. Dirección de arte (entrada obligatoria del spec): docs/art-direction/ui-kit-b.md.",
       "acceptance": [
         "Cero emojis como íconos en la UI",
-        "Sin Google Fonts; tipografía empaquetada"
+        "Sin Google Fonts; tipografía empaquetada",
+        "Cumple docs/art-direction/ui-kit-b.md: tokens §3, componentes §5, íconos estilo B con las reglas §6.1, KH con ícono único §6.2, hoja nueva manteniendo los nombres de grimIconSheet §6.3",
+        "Revisión de arte de p-kh aprobada sobre la hoja de contacto 24/32/48 px y capturas 412x860 (§7)"
       ],
       "sdd": true,
       "status": "pending",

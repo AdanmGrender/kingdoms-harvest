@@ -1,0 +1,18 @@
+[
+  {
+    "id": "icon_test_a_engraved",
+    "kind": "ui",
+    "aspect": "1:1",
+    "refs": ["art-b/gr/refs/bg_combat.webp"],
+    "out": "art-b/uikit/raw/icon_test_a_engraved.png",
+    "prompt": "a 3 by 3 grid of NINE separate game inventory icons, each a single object centred in its own cell with wide empty gaps between cells, no frames, no circles, no backgrounds behind the objects, NO characters, NO hands. Hand-coloured woodcut engraving style: bold black ink outline, fine cross-hatching for shading, earthy palette of umber, ochre, bone, rust and tarnished brass. Each object drawn large and chunky with a strong readable silhouette, slightly tilted three-quarter view. Row 1: (1) a small stack of three thick worn gold crown coins stamped with a crude crown, (2) a tied sheaf of ripe wheat, (3) a bundle of three split firewood logs tied with rope. Row 2: (4) a rough grey quarried stone block with a chisel mark, (5) a single dark iron ingot with a dent, (6) a heavy minted bronze-gold seal medallion with a raised wheat sheaf and crown, thicker and more ornate than the coins, a red wax drip on its rim. Row 3: (7) a glowing orange ember crystal shard like a coal from a beacon fire, hot light inside, (8) a crossed blacksmith hammer and mason trowel, (9) an old iron key crossed with a goose quill. Use the reference only for palette and mood"
+  },
+  {
+    "id": "icon_test_b_bold",
+    "kind": "ui",
+    "aspect": "1:1",
+    "refs": ["art-b/gr/refs/bg_combat.webp"],
+    "out": "art-b/uikit/raw/icon_test_b_bold.png",
+    "prompt": "a 3 by 3 grid of NINE separate SMALL-SIZE game icons designed to stay readable at 32 pixels, each a single object centred in its own cell with wide empty gaps between cells, no frames, no circles, no backgrounds behind the objects, NO characters, NO hands. Simplified woodcut print style: very thick black ink outline, large flat areas of colour, only a few bold hatching strokes, no fine detail, earthy palette of umber, ochre, bone, rust and tarnished brass with one bright accent per icon. Each object fills most of its cell, straight front or slight three-quarter view, iconic silhouette. Row 1: (1) a small stack of three thick gold crown coins stamped with a crude crown, (2) a tied sheaf of wheat, (3) a bundle of three firewood logs tied with rope. Row 2: (4) a grey quarried stone block, (5) a dark iron ingot, (6) a heavy bronze-gold seal medallion with a raised wheat sheaf and crown and a red wax drip on its rim. Row 3: (7) a glowing orange ember crystal shard, (8) a crossed hammer and mason trowel, (9) an iron key crossed with a goose quill. Use the reference only for palette and mood"
+  }
+]

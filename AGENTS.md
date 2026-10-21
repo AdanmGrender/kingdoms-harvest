@@ -21,6 +21,7 @@
 | `docs/specs.md` | Proceso SDD: EARS, puerta humana | Antes de redactar o leer un spec |
 | `docs/project-spec.md` | Contratos de dominio: API, DB (sql.js), servicios, economía KH, seguridad, EventBridge | Si tocás server, dinero o Phaser↔React |
 | `docs/art-direction-b.md` | Contrato visual grimdark renacentista + fases | Arte, UI, escenas |
+| `docs/art-direction/` | Briefs de dirección de arte por feature (p. ej. `ui-kit-b.md`) | Antes de especificar una feature con arte |
 | `docs/lore.md`, `docs/lore-glosario.md` | Canon v2 y nombres v1→v2 | Cualquier texto visible |
 | `.claude/agents/` | `leader`, `spec_author`, `implementer`, `reviewer` | Si orquestás |
 | `client/src/` | React (chrome) + Phaser (escenas) + Zustand + axios | Implementar cliente |
