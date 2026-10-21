@@ -122,6 +122,7 @@ export default function TopResourceBar() {
           {MAIN_RESOURCES.map((r) => (
             <div
               key={r.key}
+              data-resource={r.key}
               className="flex items-center gap-0.5 px-1.5 py-1 rounded-md"
               style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
             >

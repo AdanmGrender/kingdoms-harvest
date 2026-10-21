@@ -501,8 +501,10 @@ const useGameStore = create((set, get) => ({
       get().addNotification(data.message, 'success');
       get().loadAnimals();
       get().refreshResources();
+      return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'Error', 'error');
+      return null;
     }
   },
 

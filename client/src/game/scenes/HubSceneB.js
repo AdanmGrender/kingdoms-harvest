@@ -12,6 +12,10 @@ import {
   computeHubViewport, selectHubBuildings, stormAmbience, ambienceSignature, isTap, shouldAcceptTap,
   buildSelectionPayload, findFreeTile,
 } from '../hub/hubLayout';
+import {
+  PICKUP_TEXTURES, PICKUP_H, PICKUP_BOB, PICKUP_FLY_MS, PICKUP_REFRESH_MS,
+  pickupPosition, pickupHitSize, cssToWorld, createPickupController,
+} from '../hub/hubPickups';
 
 const SKY_COVER_BOOST = 1.04; // como el fondo del spike: cover × 1.04 con deriva a × 1.025
 const SKY_DRIFT = 1.025;
@@ -48,6 +52,10 @@ export default class HubSceneB extends Phaser.Scene {
     this.ghost = null;
     this.down = null;
     this.tornDown = false;
+    this.pickups = null;
+    this.pickupTimer = null;
+    this.pickupSprites = new Map();
+    this.flyingPickups = new Set();
   }
 
   preload() {
@@ -56,11 +64,15 @@ export default class HubSceneB extends Phaser.Scene {
       console.warn('[HubSceneB] textura faltante, se usa placeholder:', file.key);
     });
     for (const { key, url } of HUB_TEXTURES) this.load.image(key, url);
+    for (const { key, url } of PICKUP_TEXTURES) this.load.image(key, url);
   }
 
   create() {
     this.makeTextures();
     for (const { key } of HUB_TEXTURES) {
+      if (this.hasTex(key)) this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
+    }
+    for (const { key } of PICKUP_TEXTURES) {
       if (this.hasTex(key)) this.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
     }
 
@@ -70,12 +82,16 @@ export default class HubSceneB extends Phaser.Scene {
 
     if (this.fxOn && this.cameras.main.postFX) this.cameras.main.postFX.addVignette(0.5, 0.48, 0.92, 0.42);
 
+    this.setupPickups();
     const state = useGameStore.getState();
     this.syncBuildings(state.buildings);
     this.applyStorm(state.activeStorm, { instant: true });
     this.unsub = useGameStore.subscribe((s, prev) => {
       if (s.buildings !== prev.buildings) this.syncBuildings(s.buildings);
       if (s.activeStorm !== prev.activeStorm) this.applyStorm(s.activeStorm);
+      if (s.plots !== prev.plots || s.animals !== prev.animals || s.buildings !== prev.buildings) {
+        if (this.pickups) this.pickups.sync();
+      }
     });
 
     // Solo interesa el evento time:updated (TopResourceBar); el ciclo día/noche visual no es de esta feature.
@@ -85,6 +101,10 @@ export default class HubSceneB extends Phaser.Scene {
     this.particles = new ParticleSystem(this);
     this.setupInput();
     this.setupBridge();
+    this.pickups.sync();
+    this.pickupTimer = this.time.addEvent({
+      delay: PICKUP_REFRESH_MS, loop: true, callback: () => { if (this.pickups) this.pickups.sync(); },
+    });
 
     this.events.once('shutdown', this.teardown, this);
     this.events.once('destroy', this.teardown, this);
@@ -119,6 +139,12 @@ export default class HubSceneB extends Phaser.Scene {
     g.fillStyle(0x332f2b, 1); g.fillRect(0, 0, 128, 128);
     g.lineStyle(6, 0xd9a441, 1); g.strokeRect(3, 3, 122, 122);
     g.generateTexture('hubb_placeholder', 128, 128); g.clear();
+    // Respaldo del objeto de recolección (R14): saco simple, sin texto ni emoji (R12).
+    g.fillStyle(0x4a3f33, 1); g.fillEllipse(32, 40, 44, 40);
+    g.fillRect(24, 14, 16, 12);
+    g.lineStyle(3, 0xd9a441, 1); g.strokeEllipse(32, 40, 44, 40); g.strokeRect(24, 14, 16, 12);
+    g.lineBetween(20, 22, 44, 22);
+    g.generateTexture('hubb_pickup_placeholder', 64, 64); g.clear();
     for (let y = 0; y < 256; y++) { g.fillStyle(lerpColor(0x2e2a26, 0x8a8070, y / 255), 1); g.fillRect(0, y, 8, 1); }
     g.generateTexture('hubb_sky_fallback', 8, 256);
     g.destroy();
@@ -434,6 +460,111 @@ export default class HubSceneB extends Phaser.Scene {
     schedule();
   }
 
+  // ─── Objetos de recolección (hub_b_recoleccion, design.md §5) ──
+
+  setupPickups() {
+    this.pickups = createPickupController({
+      getSnapshot: () => {
+        const st = useGameStore.getState();
+        const builtIds = new Set();
+        for (const [id, entry] of this.bldSprites) if (entry.state === 'built') builtIds.add(id);
+        return { plots: st.plots, animals: st.animals, builtIds, now: Date.now() };
+      },
+      actions: {
+        harvestCrop: (id) => useGameStore.getState().harvestCrop(id),
+        collectAnimalProduct: (id) => useGameStore.getState().collectAnimalProduct(id),
+      },
+      onAdd: (p) => this.createPickup(p),
+      onRemove: (p) => this.destroyPickup(p),
+      onBusy: (p, busy) => {
+        const e = this.pickupSprites.get(p.key);
+        if (e) e.sprite.setAlpha(busy ? 0.55 : 1);
+      },
+      onCollected: (p) => this.flyPickup(p),
+    });
+  }
+
+  createPickup(p) {
+    const slot = HUB_SLOTS[p.host];
+    if (!slot) return;
+    const sprite = this.add.image(slot.x, slot.y, this.tex(`hubb_pk_${p.icon}`, 'hubb_pickup_placeholder'))
+      .setOrigin(0.5, 1).setDepth(HUB_DEPTHS.buildings + slot.y + 3);
+    const sc = PICKUP_H / sprite.height;
+    sprite.setScale(sc).setData('pickupKey', p.key);
+    const hit = pickupHitSize(sprite.width * sc, sprite.height * sc);
+    const hw = hit.w / sc;
+    const hh = hit.h / sc;
+    sprite.setInteractive(
+      new Phaser.Geom.Rectangle((sprite.width - hw) / 2, (sprite.height - hh) / 2, hw, hh),
+      Phaser.Geom.Rectangle.Contains,
+    );
+    this.pickupSprites.set(p.key, { sprite, p, bob: null, sc });
+    this.layoutPickups(p.host);
+  }
+
+  destroyPickup(p) {
+    const e = this.pickupSprites.get(p.key);
+    if (!e) return;
+    this.pickupSprites.delete(p.key);
+    if (e.bob) e.bob.remove();
+    this.tweens.killTweensOf(e.sprite);
+    e.sprite.destroy();
+    this.layoutPickups(p.host);
+  }
+
+  // Fila centrada sobre la ranura del anfitrión, por orden de id; el balanceo se rearma desde la nueva y.
+  layoutPickups(host) {
+    const slot = HUB_SLOTS[host];
+    const list = [...this.pickupSprites.values()].filter((e) => e.p.host === host)
+      .sort((a, b) => Number(a.p.id) - Number(b.p.id));
+    list.forEach((e, i) => {
+      const { x, y } = pickupPosition(slot, host, i, list.length);
+      if (e.bob) e.bob.remove();
+      e.sprite.setPosition(x, y);
+      e.bob = this.tweens.add({
+        targets: e.sprite, y: y - PICKUP_BOB, duration: rnd(900, 1200), yoyo: true, repeat: -1,
+        ease: 'Sine.easeInOut', delay: rnd(0, 600),
+      });
+    });
+  }
+
+  // Selector armado solo con claves del catálogo (crop_id / egg|milk|wool), nunca con texto del usuario.
+  counterTarget(resourceKey) {
+    const cam = this.cameras.main;
+    const el = typeof document !== 'undefined'
+      ? document.querySelector(`[data-resource="${resourceKey}"]`) : null;
+    let point = null;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      point = { cssX: r.left + r.width / 2, cssY: r.top + r.height / 2 };
+    }
+    return cssToWorld(point, {
+      canvasRect: this.game.canvas.getBoundingClientRect(),
+      renderScale: this.renderScale,
+      worldView: cam.worldView,
+      zoom: cam.zoom,
+    });
+  }
+
+  flyPickup(p) {
+    const e = this.pickupSprites.get(p.key);
+    if (!e) return;
+    this.pickupSprites.delete(p.key);
+    if (e.bob) e.bob.remove();
+    this.tweens.killTweensOf(e.sprite);
+    this.layoutPickups(p.host);
+    const { sprite } = e;
+    const dest = this.counterTarget(p.resourceKey);
+    sprite.disableInteractive();
+    sprite.setAlpha(1).setDepth(HUB_DEPTHS.particles);
+    this.flyingPickups.add(sprite);
+    this.tweens.add({
+      targets: sprite, x: dest.x, y: dest.y, scale: e.sc * 0.35, alpha: 0.2,
+      duration: PICKUP_FLY_MS, ease: 'Cubic.easeIn',
+      onComplete: () => { this.flyingPickups.delete(sprite); sprite.destroy(); },
+    });
+  }
+
   // ─── Input (design.md §6.3) ────────────────────────────────
 
   setupInput() {
@@ -447,6 +578,12 @@ export default class HubSceneB extends Phaser.Scene {
       const up = { x: pointer.x, y: pointer.y, t: this.time.now };
       if (!isTap(down, up, TAP_SLOP_CSS * this.renderScale)) return;
       if (!shouldAcceptTap(useGameStore.getState().overlayState)) return;
+      // Un objeto de recolección tiene prioridad sobre el edificio que tiene detrás (R17).
+      const pk = (over || []).find((o) => o.getData && o.getData('pickupKey'));
+      if (pk) {
+        if (this.pickups) this.pickups.tap(pk.getData('pickupKey'));
+        return;
+      }
       const target = (over || []).find((o) => o.getData && o.getData('buildingId'));
       if (target) {
         const base = target.getData('baseScale');
@@ -526,6 +663,21 @@ export default class HubSceneB extends Phaser.Scene {
   teardown() {
     if (this.tornDown) return;
     this.tornDown = true;
+    if (this.pickups) this.pickups.dispose();
+    this.pickups = null;
+    if (this.pickupTimer) this.pickupTimer.remove();
+    this.pickupTimer = null;
+    for (const e of this.pickupSprites.values()) {
+      if (e.bob) e.bob.remove();
+      this.tweens.killTweensOf(e.sprite);
+      e.sprite.destroy();
+    }
+    this.pickupSprites.clear();
+    for (const sprite of this.flyingPickups) {
+      this.tweens.killTweensOf(sprite);
+      sprite.destroy();
+    }
+    this.flyingPickups.clear();
     if (this.unsub) this.unsub();
     this.unsub = null;
     if (this.bridge) for (const [evt, fn] of Object.entries(this.bridge)) EventBridge.off(evt, fn);
