@@ -14,3 +14,6 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 
 ### Changed
 - Lore v2 grimdark renacentista en todos los textos visibles; glosario v1→v2 (`lore_v2`)
+
+### Fixed
+- El popup de edificio muestra el nombre real (lore v2) y su nivel máximo (`fix_building_popup_id`)
