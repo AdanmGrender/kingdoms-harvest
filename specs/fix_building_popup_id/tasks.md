@@ -1,0 +1,13 @@
+# Tasks — `fix_building_popup_id` (feature 12, `sdd: false`)
+
+> Sin requirements.md/design.md (`sdd: false`): los criterios son el `acceptance` de `feature_list.json`.
+> A1 = tocar un edificio en el hub muestra su nombre real y acciones; A2 = test Vitest que cubra el payload `{buildingId}`.
+> Branch: `feature/fix_building_popup_id` (desde `feat/art-direction-b`).
+>
+> Emisores de `entity:selected` revisados: `HubSceneB.js:456` → `buildSelectionPayload` (`{ type: 'building', data: { buildingId, posX, level, isBuilding } }`, contrato R22 de `hubLayout.test.js`, sin cambios);
+> `SelectionSystem.js:129` (`{ type, data: entry.data }`; `WorldScene.js:514/578` registra edificios con `{ buildingId }` → también corregido por el fix); `IsoWorldScene.js:341/499` (usan `entityType`, no `type`, y `building_id` → el popup no los recibe; sin cambios).
+> `OverlayManager.jsx` ya lee `data.buildingId` (`handleSelection` línea 64 + `BuildingPanel` línea 374): consistente, sin cambios.
+
+- [x] T1 — Test RED `client/src/tests/BuildingInfoPopup.test.jsx` (EventBridge real + Testing Library): payload de `buildSelectionPayload({ building_id: 'farm_plot', level: 2, ... })` debe mostrar `Huerto Votivo` y `Nv. 2 / 10` sin `Edificio`/🏠; payload legado `{ building_id: 'barn' }` muestra `Granero`; cada id de `shared/gameConfig.js` BUILDINGS muestra su nombre lore v2 y maxLevel. Cubre: A2. Evidencia: commit `ad39914`; `npx vitest run src/tests/BuildingInfoPopup.test.jsx` antes del fix → `Tests  2 failed | 1 passed (3)` (`Unable to find an element with the text: Huerto Votivo`; el DOM renderizado mostraba `Edificio`); el caso legado pasaba ya (lee `building_id`).
+- [x] T2 — Fix en el consumidor `client/src/components/hud/BuildingInfoPopup.jsx`: `const buildingId = selected.buildingId ?? selected.building_id` y `BUILDING_META` como espejo de name/maxLevel de `shared/gameConfig.js` BUILDINGS (lore v2: `Huerto Votivo`, `Torre del Señor`, `Scriptorium`, `Casa del Emisario`, `Torre de Cañones`, `Mercado Negro`, `Foso de Estacas`…; id `blacksmith` inexistente → `smithy`; añadidos `house`, `mine`, `trap`). Sin cambios en ids ni emisores. Cubre: A1, A2. Evidencia: commit `f75145b`; `npx vitest run src/tests/BuildingInfoPopup.test.jsx` → `Test Files  1 passed (1)`, `Tests  3 passed (3)`.
+- [x] T3 — Suites completas. Cubre: A1, A2. Evidencia: `cd client && npx vitest run` → `Test Files  1 failed | 6 passed (7)`, `Tests  1 failed | 149 passed (150)`; único fallo `src/tests/GameHUD.test.jsx > GameHUD > renders player level as Lv5` (en `rules.known_failures`). `cd server && npx jest --runInBand --forceExit` → `Test Suites: 25 passed, 25 total`, `Tests: 388 passed, 388 total`.
