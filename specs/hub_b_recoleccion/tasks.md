@@ -1,0 +1,23 @@
+# Tasks — `hub_b_recoleccion` (feature 4, B1.2)
+
+> Orden de ejecución. Cada tarea cierra con `Evidencia:` inline (`docs/conventions.md`). Marcar `[x]` solo con evidencia.
+> Rama `feature/hub_b_recoleccion`. Commits `tipo(scope): descripción` en español.
+
+- [ ] T1 — Crear `art-b/pickups/manifest.json` (4 ítems: `pickup_sack`, `pickup_egg_basket`, `pickup_milk_pail`, `pickup_wool_bale`; bloque `STYLE MATCH` y `refs` como `art-b/hub/manifest.json`) y `art-b/pickups/process.sh`; agregar `/art-b/pickups/raw/` a `.gitignore`. Cubre: R13.
+- [ ] T2 — Generar los 4 objetos con `scripts/gen_art_b.js` y procesarlos con `scripts/process_art_b.js` (`--height 128`, fondo transparente) a `client/public/assets/b/pickups/{sack,egg_basket,milk_pail,wool_bale}.webp`; hoja de contacto con `scripts/contact_sheet_b.js` en `evidencia/pickups_contacto.webp`. Si la generación no está disponible, NO sustituir: mover T2–T3 a `## Bloqueado` y seguir con T4+ usando el placeholder. Cubre: R13.
+- [ ] T3 — Revisión visual de la hoja de contacto (estilo coherente con `hub/base`, legible a ≈ 42 px CSS) y regenerar los que no pasen. Cubre: R13, R12.
+- [ ] T4 — Crear `client/src/game/hub/hubPickups.js` con constantes, `PICKUP_ICONS`, `PICKUP_TEXTURES`, `selectPickups`, `pickupPosition`, `pickupHitSize`, `cssToWorld`. Cubre: R1, R2, R3, R4, R9, R10, R18, R21, R24, R27.
+- [ ] T5 — Agregar `createPickupController` (`sync`, `tap`, `dispose`, `has`) a `hubPickups.js`. Cubre: R5, R15, R16, R17, R19, R23, R30.
+- [ ] T6 — Escribir `client/src/tests/hubPickups.test.js`: `selectPickups` (parcela lista/no lista, animal listo/no listo/sin `next_production_at`, `animal_id` desconocido, edificio ausente o en construcción, tope 3 por anfitrión y orden por `id`, anfitriones ≠ `farm_plot`/`stable` nunca aparecen); `ANIMAL_PRODUCT` contra `ANIMALS` de `shared/gameConfig.js`; `pickupPosition` dentro del área segura para count 1..3; `pickupHitSize` ≥ 88; `cssToWorld` a DPR 1/2/3; controlador (diff de claves, doble tap → 1 llamada, éxito → `onCollected`, rechazo y `null` → `onBusy(false)` sin vuelo, `dispose` con respuesta tardía), con reloj falso para R6. Cubre: R1, R2, R3, R4, R5, R6, R9, R10, R15, R16, R17, R18, R19, R21, R23, R24, R27, R30.
+- [ ] T7 — `gameStore.collectAnimalProduct`: devolver `data` en éxito y `null` en el `catch` (sin cambiar notificaciones ni recargas); ampliar `client/src/tests/gameStore.test.js` con los dos casos y verificar que `harvestCrop` sigue rechazando y recarga con `refreshResources()`. Cubre: R16, R22, R23.
+- [ ] T8 — `socketService.js`: `crop_ready` → `useGameStore.getState().loadPlots()`, `animal_ready` → `loadAnimals()`, conservando el aviso actual; test del handler si el archivo ya tiene suite, o prueba manual citada. Cubre: R7, R8.
+- [ ] T9 — `TopResourceBar.jsx`: `data-resource={r.key}` en el contenedor de cada recurso, sin cambios de estilo; test de render que verifica el atributo para cada `MAIN_RESOURCES`. Cubre: R31.
+- [ ] T10 — `HubSceneB.js`: precargar `PICKUP_TEXTURES`, textura `hubb_pickup_placeholder` generada, `createPickupController` en `create()` con `onAdd`/`onRemove`/`onBusy`/`onCollected`, reposicionado por anfitrión, balanceo, `syncPickups` por suscripción al store y `time.addEvent` de 5 s. Cubre: R1, R2, R3, R4, R5, R6, R9, R10, R11, R12, R14.
+- [ ] T11 — `HubSceneB.js`: `setupInput` con prioridad del objeto sobre el edificio (sin `entity:selected` en ese tap), `flyPickup` + `counterTarget` (`data-resource`, fallback), `teardown` (controlador, temporizador, sprites, tweens). Cubre: R15, R16, R17, R19, R20, R21, R22, R25, R30.
+- [ ] T12 — Verificar R26 y R28: `git diff --stat feature/hub_b_escena...HEAD -- server shared` vacío y ningún `EventBridge.emit` nuevo (`git diff | grep EventBridge.emit`). Cubre: R26, R27, R28.
+- [ ] T13 — Playwright 412×860 @2x (`SKIP_AUTH=true`, datos sembrados o interceptados): captura con objetos junto a `farm_plot` y `stable`; vuelo a mitad; contador antes/después; request único a `/api/farm/harvest` o `/animals/collect`; caso con `webp` bloqueados (placeholder); log de consola. Guardar en `specs/hub_b_recoleccion/evidencia/` (`*.webp`, `consola.txt`). Cubre: R1, R2, R10, R11, R12, R14, R15, R16, R17, R20, R22, R33.
+- [ ] T14 — Medir fps con 6 objetos visibles (harness de `hub_b_escena`) y guardar `evidencia/fps_recoleccion.json` (≥ 50). Cubre: R29.
+- [ ] T15 — Correr `cd client && npx vitest run` completo y citar la salida; solo `known_failures` aceptados. Cubre: R32.
+
+## Bloqueado
+

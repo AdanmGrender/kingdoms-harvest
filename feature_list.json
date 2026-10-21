@@ -77,8 +77,8 @@
         "Sin cambios de economía"
       ],
       "sdd": true,
-      "status": "pending",
-      "assignee": null
+      "status": "spec_ready",
+      "assignee": "spec-author"
     },
     {
       "id": 5,
