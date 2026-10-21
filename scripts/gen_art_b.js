@@ -14,6 +14,7 @@
  *  - actor → fondo liso claro para recortar (process_art_b.js)
  *  - scene → fondo/escena completa, sin personajes
  *  - ui    → hoja de piezas de interfaz sobre fondo liso
+ *  - prop  → UN solo objeto centrado sobre fondo liso claro, sin suelo (pickups de recolección)
  * Docs: docs/art-direction-b.md
  */
 const fs = require('fs');
@@ -54,6 +55,10 @@ const KIND_SUFFIX = {
   actor: 'NOT on parchment or paper texture. Single character, full body fully visible head to feet with margin around it, '
     + 'isolated on a perfectly flat uniform light grey (#d0d0d0) background, '
     + 'no ground, no floor, no cast shadow, no other objects.',
+  prop: 'NOT on parchment or paper texture. Exactly ONE single object (never a sheet, set or group of several), centered, '
+    + 'fully visible with generous margin on every side, seen from slightly above in three-quarter view, '
+    + 'isolated on a perfectly flat uniform light grey (#d0d0d0) background with nothing else in the image: '
+    + 'no ground, no floor strip, no scene, no cast shadow, no other objects or tools, no text.',
   scene: 'Environment only: absolutely no characters, no people, no creatures.',
   ui: 'NOT on parchment paper. Game UI asset sheet: separate clean elements laid out in a grid with generous spacing '
     + 'on a perfectly flat uniform light grey (#d0d0d0) background, front orthographic view, no text, no letters.',
