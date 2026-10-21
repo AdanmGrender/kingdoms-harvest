@@ -545,6 +545,12 @@
   server shared` → salida vacía (0 líneas, exit 0, R36). Tope de fondos actualizado: `docs/architecture.md` §9 y
   `docs/art-direction-b.md` (riesgo de peso del APK) → "fondos ≤ 1080 px de ancho; capas del hub hasta 1536 px
   (render a DPR 3, ver `specs/hub_b_escena/design.md` §8.4)".
+  Fix review 1: comentarios del hub viejo borrados (`NPC.js` l. 53-54 y `Villager.js` l. 52-53 → solo "Contorno claro
+  fino → el personaje resalta del piso grimdark oscuro."; `App.jsx` l. 221 → "hub Bastión (HubSceneB a pantalla
+  completa + QuestRail, vía BastionHub)"); grep ampliado `git grep -nE "painterly|base compacta" -- client/src/game
+  client/src/App.jsx client/src/components/hub` → 1 sola línea, `client/src/App.jsx:229` (overlays painterly de
+  combate/héroes, permitido por la review), nada del hub viejo; `cd client && npx vitest run` → `Test Files 1 failed |
+  5 passed (6)`, `Tests 1 failed | 146 passed (147)`, único fallo = known_failure GameHUD Lv5.
 - [x] T24 — Build y suites: `cd client && npx vite build` (exit 0, citar `✓ built in …` y chunks);
   `cd server && npx jest --runInBand --forceExit` (citar `Tests: N passed`) y `cd client && npx vitest run` (citar
   totales; único fallo tolerado: `GameHUD.test.jsx > renders player level as Lv5`). Sin temporales, crudos 2K ni
