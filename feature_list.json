@@ -167,7 +167,7 @@
         "cd client && npx vitest run sin fallos"
       ],
       "sdd": false,
-      "status": "in_progress",
+      "status": "done",
       "assignee": "implementer"
     },
     {
