@@ -6,21 +6,26 @@ import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 
+// Espejo de name/maxLevel de shared/gameConfig.js BUILDINGS (lore v2) — mantener en sync
+// (lo verifica BuildingInfoPopup.test.jsx).
 const BUILDING_META = {
-  throne_room: { name: 'Salón del Trono', icon: '🏰', maxLevel: 15 },
-  farm_plot: { name: 'Parcela de Cultivo', icon: '🌾', maxLevel: 5 },
+  throne_room: { name: 'Torre del Señor', icon: '🏰', maxLevel: 10 },
+  farm_plot: { name: 'Huerto Votivo', icon: '🌾', maxLevel: 10 },
   barn: { name: 'Granero', icon: '🛖', maxLevel: 10 },
-  mill: { name: 'Molino', icon: '🌀', maxLevel: 10 },
-  sawmill: { name: 'Aserradero', icon: '🪵', maxLevel: 10 },
-  blacksmith: { name: 'Herrería', icon: '⚒️', maxLevel: 10 },
-  stable: { name: 'Establo', icon: '🐎', maxLevel: 10 },
+  mill: { name: 'Molino', icon: '🌀', maxLevel: 5 },
+  sawmill: { name: 'Aserradero', icon: '🪵', maxLevel: 5 },
+  smithy: { name: 'Herrería', icon: '⚒️', maxLevel: 5 },
+  stable: { name: 'Establo', icon: '🐎', maxLevel: 5 },
+  house: { name: 'Casa de Vecinos', icon: '🏘️', maxLevel: 5 },
+  mine: { name: 'Mina de la Colina', icon: '⛏️', maxLevel: 5 },
   barracks: { name: 'Cuartel', icon: '⚔️', maxLevel: 10 },
-  tower: { name: 'Torre', icon: '🗼', maxLevel: 10 },
-  wall: { name: 'Muralla', icon: '🧱', maxLevel: 10 },
-  tavern: { name: 'Taberna', icon: '🍺', maxLevel: 10 },
-  market: { name: 'Mercado', icon: '🏪', maxLevel: 10 },
-  library: { name: 'Biblioteca', icon: '📚', maxLevel: 10 },
-  embassy: { name: 'Embajada', icon: '🏛️', maxLevel: 10 },
+  tower: { name: 'Torre de Cañones', icon: '🗼', maxLevel: 10 },
+  wall: { name: 'Muralla', icon: '🧱', maxLevel: 15 },
+  trap: { name: 'Foso de Estacas', icon: '🪤', maxLevel: 8 },
+  tavern: { name: 'Taberna', icon: '🍺', maxLevel: 5 },
+  market: { name: 'Mercado Negro', icon: '🏪', maxLevel: 5 },
+  library: { name: 'Scriptorium', icon: '📚', maxLevel: 8 },
+  embassy: { name: 'Casa del Emisario', icon: '🏛️', maxLevel: 3 },
 };
 
 export default function BuildingInfoPopup() {
@@ -42,8 +47,10 @@ export default function BuildingInfoPopup() {
 
   if (!selected) return null;
 
-  const meta = BUILDING_META[selected.building_id] || {
-    name: selected.building_id || 'Edificio',
+  // entity:selected del hub trae buildingId (buildSelectionPayload); building_id = emisores legados.
+  const buildingId = selected.buildingId ?? selected.building_id;
+  const meta = BUILDING_META[buildingId] || {
+    name: buildingId || 'Edificio',
     icon: '🏠',
     maxLevel: 10,
   };
