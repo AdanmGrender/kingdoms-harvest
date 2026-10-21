@@ -1,6 +1,55 @@
 # Review — feature 3 `hub_b_escena`
 
-**Veredicto:** CHANGES_REQUESTED
+**Veredicto:** APPROVED
+
+## Re-revisión (2026-10-20)
+
+Revisado en `feature/hub_b_escena` @ `e2cb07b`. Los 2 cambios requeridos de la revisión 1 están resueltos.
+
+1. **Cambio requerido 1 (R47, comentarios del hub viejo) — resuelto en `e2cb07b`.**
+   - `git show e2cb07b --stat` → `client/src/App.jsx` (+3/−3), `client/src/game/entities/NPC.js` (−2),
+     `client/src/game/entities/Villager.js` (+1/−2), `specs/hub_b_escena/tasks.md` (+6).
+   - Solo comentarios: `git diff -U0 e2cb07b~1 e2cb07b -- client | grep -E '^[+-][^+-]' | grep -vE '^[+-]\s*//'` →
+     vacío (exit 1); ninguna línea de código cambiada. `addRimGlow(this)` / `addRimGlow(this.sprite)` siguen igual.
+   - `NPC.js:53-54` borradas (queda "Contorno claro fino → el personaje resalta del piso grimdark oscuro.");
+     `Villager.js:52-53` → esa misma línea; `App.jsx:221-223` → "hub Bastión (HubSceneB a pantalla completa +
+     QuestRail, vía BastionHub)".
+   - `git grep -nE "painterly|base compacta" -- client/src/game client/src/App.jsx client/src/components/hub` → una sola
+     línea: `client/src/App.jsx:229: si no, sangra pixel/candy sobre los overlays painterly (combate,` (overlays de
+     combate/héroes, permitido). Nada del hub viejo.
+   - Grep original de R47/T23 (`hubMode|hub_bastion|zone_hub|buildHubAnchor|buildHubZones|hubZonesBuilt|hubPainterly|hub=legacy`
+     sobre `client/src client/public scripts docs/project-spec.md`) → vacío, exit 1.
+   - La evidencia del fix está en T23 (`tasks.md:548-553`) con el grep ampliado y el Vitest citados.
+2. **Cambio requerido 2 (cabecera de `tasks.md`) — resuelto en `f3b2782`.** `tasks.md:8` ahora dice "Aprobada por el
+   owner el 2026-10-20 (commit `e970838`); estado `in_progress`." (antes: "Estado: `spec_ready`, esperando aprobación").
+
+Suites corridas por el reviewer en `e2cb07b`:
+- `cd server && npx jest --runInBand --forceExit` → `Test Suites: 25 passed, 25 total`, **`Tests: 388 passed, 388 total`**.
+- `cd client && npx vitest run` → `Test Files 1 failed | 5 passed (6)`, **`Tests 1 failed | 146 passed (147)`**; único
+  fallo = `src/tests/GameHUD.test.jsx > GameHUD > renders player level as Lv5` (known_failure tolerado). Igual que en la
+  revisión 1, sin regresiones.
+
+Tasks y trazabilidad (verificación puntual):
+- 24 tasks `- [x] T<n>`, ninguna `- [ ]`, todas con `Evidencia:` (script sobre `tasks.md`); `## Bloqueado` → "(vacío)".
+- 52 `### R<n>` en `requirements.md`; cada `R1`..`R52` aparece en `tasks.md` (R2 solo como eliminado en la cabecera).
+  R47 queda cubierto ahora: T9/T23 + grep ampliado arriba. El resto de la trazabilidad se verificó en la revisión 1
+  (abajo) y los commits nuevos no la tocan.
+- R47: [x] (antes `[ ]`). T9 y T23: sin observaciones pendientes.
+
+Observaciones no bloqueantes (siguen en pie, salvo la primera):
+- Los punteros colgados a `docs/superpowers/` quedaron corregidos en `f3b2782` (`docs/project-spec.md`,
+  `scripts/gen_art_b.js`, `spikes/001-combat-b/README.md`); `git grep -n "docs/superpowers" -- docs scripts spikes` →
+  vacío. Sigue pendiente para el leader confirmar con el owner que sacar `docs/superpowers/` del repo era intencional.
+- `BuildingInfoPopup.jsx:45` lee `building_id` y los emisores mandan `buildingId` (preexistente; ya en el backlog como
+  `fix_building_popup_id` según `f3b2782`).
+- `HUB_DEPTHS.skyFx` sin uso en `hubLayout.js:16`.
+- `TILE_SIZES`/`BUILDING_IDS` espejados de `shared/gameConfig.js`, justificado y cubierto por test.
+
+---
+
+## Revisión 1 (2026-10-20) — historial
+
+**Veredicto (revisión 1):** CHANGES_REQUESTED
 
 Alcance revisado: `git log feat/art-direction-b..feature/hub_b_escena` (28 commits, `12e6456`..`a7f259a`) y
 `git diff --stat feat/art-direction-b...feature/hub_b_escena` (102 archivos, +4453 / −2932).
