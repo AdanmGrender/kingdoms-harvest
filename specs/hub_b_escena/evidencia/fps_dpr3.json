@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-20T20:00:13.865Z",
+  "dpr": 3,
+  "viewport": [
+    412,
+    860
+  ],
+  "canvas": [
+    1236,
+    2580
+  ],
+  "sprites": 17,
+  "emitters": 4,
+  "renderer": "WEBGL",
+  "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "chromiumArgs": [
+    "--use-angle=d3d11",
+    "--enable-gpu"
+  ],
+  "scenario": "17 edificios + lluvia_de_energia, FX activos",
+  "actualFps": {
+    "avg": 173.5,
+    "min": 147
+  },
+  "raf": {
+    "avg": 180,
+    "min": 179.6
+  },
+  "pageerrors": 0,
+  "samples": [
+    {
+      "actualFps": 147,
+      "raf": 180,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 155.2,
+      "raf": 179.6,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 161.4,
+      "raf": 180.2,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 166.1,
+      "raf": 180.1,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 169.5,
+      "raf": 180.1,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 172.2,
+      "raf": 179.9,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 174.1,
+      "raf": 179.8,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 175.6,
+      "raf": 180.1,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 176.7,
+      "raf": 179.6,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 177.5,
+      "raf": 180.5,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 178.1,
+      "raf": 180.1,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 178.6,
+      "raf": 179.9,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 179.2,
+      "raf": 180.1,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 179.4,
+      "raf": 179.9,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 179.6,
+      "raf": 180,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 179.7,
+      "raf": 180,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 179.7,
+      "raf": 180,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 179.8,
+      "raf": 180,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 179.9,
+      "raf": 180,
+      "storm": "lluvia_de_energia"
+    },
+    {
+      "actualFps": 179.9,
+      "raf": 180,
+      "storm": "lluvia_de_energia"
+    }
+  ]
+}

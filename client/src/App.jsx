@@ -219,9 +219,9 @@ function App() {
   // Menú de inicio (F1 idle) — una vez por sesión, antes de entrar al juego
   if (!menuDismissed) return <MainMenu />;
 
-  // Entrada por defecto = hub Bastión (base compacta + QuestRail); el mundo
-  // 160×120 paseable queda detrás de ?preview=world / ?iso=1 (rama ISO_PREVIEW
-  // arriba, sin tocar).
+  // Entrada por defecto = hub Bastión (HubSceneB a pantalla completa +
+  // QuestRail, vía BastionHub); el mundo 160×120 paseable queda detrás de
+  // ?preview=world / ?iso=1 (rama ISO_PREVIEW arriba, sin tocar).
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
       <BastionHub />

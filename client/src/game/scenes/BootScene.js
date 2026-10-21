@@ -1,8 +1,9 @@
 /**
- * BootScene: Loads all game assets and shows a progress bar.
- * Transitions to WorldScene when complete.
+ * BootScene: despacha la escena inicial. En la entrada hub va directo a HubSceneB (que carga su propio arte B);
+ * en preview carga el arte legacy con barra de progreso y sigue a WorldScene / IsoScene / IsoWorldScene.
  */
 import Phaser from 'phaser';
+import { resolveStartScene } from '../display';
 
 export default class BootScene extends Phaser.Scene {
   constructor() {
@@ -10,6 +11,9 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    // Entrada hub: sin barra de carga ni arte legacy (R50).
+    if (this.registry.get('entry') === 'hub') return;
+
     // ─── Progress bar ───
     const { width, height } = this.cameras.main;
     const barW = Math.min(300, width * 0.6);
@@ -147,16 +151,19 @@ export default class BootScene extends Phaser.Scene {
         this.load.image(`zone_${fam}_${i}`, `/assets/game/zones/zone_${fam}_${i}.png`);
       }
     }
-    // Ancla ÚNICA del hub: una sola imagen que cubre el viewport de la vista
-    // fija del Bastión, tapando la cruz donde se juntan 4 anclas de zona
-    // (el hub caía justo en esa esquina → terreno "partido en 4").
-    this.load.image('zone_hub', '/assets/game/zones/zone_hub.png');
-    // Fondo painterly del hub (escenario vivo Fase A): el diorama del Bastión
-    // como piso del hub, con personajes/animales animados por encima.
-    this.load.image('hub_bastion', '/assets/game/dioramas/hub_bastion.png');
   }
 
   create() {
+    const target = resolveStartScene({
+      entry: this.registry.get('entry'),
+      isoMode: !!this.registry.get('isoMode'),
+      search: window.location.search,
+    });
+    if (target === 'HubSceneB') {
+      this.scene.start(target);
+      return;
+    }
+
     // ─── Chroma-key: old spritesheets have solid white backgrounds that must
     // be punched out to transparent before use. Terrain/Kenney tiles already
     // have alpha and are skipped.
@@ -173,13 +180,6 @@ export default class BootScene extends Phaser.Scene {
     this.createNPCAnimations();
     this.createAnimalAnimations();
 
-    // Scene selection: registry isoMode flag (set by IsoWorldScene experiment)
-    // or URL param ?iso=1 lands on the legacy IsoScene. Default is WorldScene.
-    const params = new URLSearchParams(window.location.search);
-    const isoModeFlag = this.game.registry.get('isoMode');
-    let target = 'WorldScene';
-    if (isoModeFlag) target = 'IsoWorldScene';
-    else if (params.get('iso') === '1') target = 'IsoScene';
     this.scene.start(target);
   }
 

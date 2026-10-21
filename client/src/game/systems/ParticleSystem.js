@@ -52,19 +52,23 @@ export default class ParticleSystem {
   /**
    * Floating "+X KH" token gain text at a world position.
    * Floats upward and fades out over 1.8 seconds.
+   * opts (hub B): fontSize en px de mundo, resolution de rasterizado y depth; el trazo y el recorrido escalan con
+   * fontSize / 14 para que se vea igual en pantalla. Defaults = comportamiento del mundo.
    */
-  emitTokenGain(x, y, amount) {
-    const text = this.scene.add.text(x, y - 20, `+${amount} KH`, {
+  emitTokenGain(x, y, amount, { fontSize = 14, resolution = 1, depth = 25 } = {}) {
+    const k = fontSize / 14;
+    const text = this.scene.add.text(x, y - 20 * k, `+${amount} KH`, {
       fontFamily: 'MedievalSharp, serif',
-      fontSize: '14px',
+      fontSize: `${fontSize}px`,
       color: '#c084fc',      // purple-400, matches token UI
       stroke: '#000000',
-      strokeThickness: 3,
-    }).setDepth(25).setOrigin(0.5);
+      strokeThickness: 3 * k,
+    }).setDepth(depth).setOrigin(0.5);
+    text.setResolution(resolution);
 
     this.scene.tweens.add({
       targets: text,
-      y: y - 80,
+      y: y - 80 * k,
       alpha: { from: 1, to: 0 },
       duration: 1800,
       ease: 'Power2',
