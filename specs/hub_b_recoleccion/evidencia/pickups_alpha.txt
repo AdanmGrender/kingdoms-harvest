@@ -1,0 +1,5 @@
+egg_basket.webp 134x128 esquinas_alpha=[0,0,0,0] borde_transparente=520/520 opaco=61% componentes(a>8)=1 [10451] OK
+milk_pail.webp 105x128 esquinas_alpha=[0,0,0,0] borde_transparente=462/462 opaco=69% componentes(a>8)=1 [9290] OK
+sack.webp 116x128 esquinas_alpha=[0,0,0,0] borde_transparente=484/484 opaco=69% componentes(a>8)=1 [10232] OK
+wool_bale.webp 161x128 esquinas_alpha=[0,0,0,0] borde_transparente=574/574 opaco=63% componentes(a>8)=2 [13029,1] OK
+TODOS OK

@@ -1,0 +1,184 @@
+{
+  "pickupsInicial": [
+    {
+      "key": "plot:1",
+      "host": "farm_plot",
+      "icon": "sack",
+      "resourceKey": "wheat",
+      "texture": "hubb_pk_sack",
+      "x": 180,
+      "y": 1382.4,
+      "depth": 1493,
+      "displayH": 84,
+      "hitLogical": [
+        88,
+        88
+      ],
+      "overBuilding": true
+    },
+    {
+      "key": "plot:2",
+      "host": "farm_plot",
+      "icon": "sack",
+      "resourceKey": "carrot",
+      "texture": "hubb_pk_sack",
+      "x": 250,
+      "y": 1380.7,
+      "depth": 1493,
+      "displayH": 84,
+      "hitLogical": [
+        88,
+        88
+      ],
+      "overBuilding": true
+    },
+    {
+      "key": "plot:3",
+      "host": "farm_plot",
+      "icon": "sack",
+      "resourceKey": "wheat",
+      "texture": "hubb_pk_sack",
+      "x": 320,
+      "y": 1379.1,
+      "depth": 1493,
+      "displayH": 84,
+      "hitLogical": [
+        88,
+        88
+      ],
+      "overBuilding": true
+    },
+    {
+      "key": "animal:1",
+      "host": "stable",
+      "icon": "egg_basket",
+      "resourceKey": "egg",
+      "texture": "hubb_pk_egg_basket",
+      "x": 455,
+      "y": 1272,
+      "depth": 1383,
+      "displayH": 84,
+      "hitLogical": [
+        88,
+        88
+      ],
+      "overBuilding": true
+    },
+    {
+      "key": "animal:2",
+      "host": "stable",
+      "icon": "milk_pail",
+      "resourceKey": "milk",
+      "texture": "hubb_pk_milk_pail",
+      "x": 525,
+      "y": 1270.7,
+      "depth": 1383,
+      "displayH": 84,
+      "hitLogical": [
+        88,
+        88
+      ],
+      "overBuilding": true
+    },
+    {
+      "key": "animal:3",
+      "host": "stable",
+      "icon": "wool_bale",
+      "resourceKey": "wool",
+      "texture": "hubb_pk_wool_bale",
+      "x": 595,
+      "y": 1271.7,
+      "depth": 1383,
+      "displayH": 84,
+      "hitLogical": [
+        88,
+        88
+      ],
+      "overBuilding": true
+    }
+  ],
+  "captura_objetos": "recoleccion_objetos.webp 824x1720 332KB",
+  "safe": {
+    "SAFE_LEFT": 110,
+    "SAFE_RIGHT": 712,
+    "SAFE_TOP": 250,
+    "SAFE_BOTTOM": 1390,
+    "fog": 1600
+  },
+  "dentroZonaSegura": true,
+  "depthBajoFog": true,
+  "captura_antes_tap": "recoleccion_antes_tap.webp 824x1720 332KB",
+  "captura_vuelo": "recoleccion_vuelo.webp 824x1720 330KB",
+  "vuelo_en_curso": {
+    "volando": 1,
+    "entityEventsPorEseTap": 0
+  },
+  "cosecha": {
+    "requests": [
+      {
+        "url": "/api/farm/harvest",
+        "body": "{\"plotId\":1}",
+        "t": 1792590156507
+      }
+    ],
+    "contadorWheatAntes": {
+      "dom": "30",
+      "store": 30
+    },
+    "contadorWheatDespues": {
+      "dom": "34",
+      "store": 34
+    }
+  },
+  "captura_despues_tap": "recoleccion_despues_tap.webp 824x1720 332KB",
+  "pickupsTrasCosecha": [
+    "plot:2",
+    "plot:3",
+    "animal:1",
+    "animal:2",
+    "animal:3",
+    "plot:4"
+  ],
+  "animal": {
+    "tapped": "animal:1",
+    "resourceKey": "egg",
+    "requests": [
+      {
+        "url": "/api/farm/animals/collect",
+        "body": "{\"animalId\":1}",
+        "t": 1792590160559
+      }
+    ],
+    "vueloMs": 607,
+    "entityEventsPorEseTap": 0,
+    "destinoFallbackSinContador": null
+  },
+  "tapEdificioSinObjeto": {
+    "edificio": "barn",
+    "eventos": [
+      "entity:selected:building"
+    ]
+  },
+  "pickupsFinales": [
+    "plot:2",
+    "plot:3",
+    "animal:2",
+    "animal:3",
+    "plot:4"
+  ],
+  "pageerrors": [],
+  "consoleErrors": [],
+  "consoleWarns": [
+    "[Telegram.WebApp] Header color is not supported in version 6.0",
+    "[Telegram.WebApp] Background color is not supported in version 6.0",
+    "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "[Telegram.WebApp] Header color is not supported in version 6.0",
+    "[Telegram.WebApp] Background color is not supported in version 6.0",
+    "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "[Telegram.WebApp] Closing confirmation is not supported in version 6.0",
+    "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "[Telegram.WebApp] Closing confirmation is not supported in version 6.0"
+  ],
+  "http4xx5xx": []
+}
