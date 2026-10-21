@@ -15,9 +15,7 @@
     ],
     "sdd_required_when": "feature has \"sdd\": true",
     "integration_branch": "feat/art-direction-b",
-    "known_failures": [
-      "client: src/tests/GameHUD.test.jsx > GameHUD > renders player level as Lv5 (preexistente, ver feature fix_test_gamehud_lv5)"
-    ]
+    "known_failures": []
   },
   "features": [
     {
@@ -169,8 +167,8 @@
         "cd client && npx vitest run sin fallos"
       ],
       "sdd": false,
-      "status": "pending",
-      "assignee": null
+      "status": "in_progress",
+      "assignee": "implementer"
     },
     {
       "id": 12,

@@ -26,9 +26,10 @@ beforeEach(() => {
 });
 
 describe('GameHUD', () => {
-  it('renders player level as Lv5', () => {
+  it('renders player level as 5 in the level badge', () => {
+    // GameHUD.jsx:126 — badge circular de 28px con el número a secas (rediseño RTS HUD v3, 99525ca)
     render(<GameHUD />);
-    expect(screen.getByText('Lv5')).toBeInTheDocument();
+    expect(screen.getByText('5')).toBeInTheDocument();
   });
 
   it('renders player display name', () => {
