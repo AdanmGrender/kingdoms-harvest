@@ -4,6 +4,7 @@
  * pasa a celdas transparentes de 192 px (llave de color por flood-fill desde el borde de cada celda).
  *
  *   node scripts/process_icon_sheets.js [--tol 44] [--glyph 172]
+ *   node scripts/process_icon_sheets.js --single <nombre> <art-b/uikit/raw/x.png>   (un objeto por imagen)
  *
  * Lee  art-b/uikit/icon_sheets.json  { sheets: {id: [9 nombres|null]}, reuse: {id: {nombre: celda1..9}} }
  *      art-b/uikit/raw/<id>.png        (crudos, ignorados por git)
@@ -90,9 +91,9 @@ function cutout(data, w, h) {
   };
 }
 
-async function processCell(file, col, row, name, report) {
+async function processCell(file, col, row, name, report, div = 3) {
   const meta = await sharp(file).metadata();
-  const cw = Math.floor(meta.width / 3), ch = Math.floor(meta.height / 3);
+  const cw = Math.floor(meta.width / div), ch = Math.floor(meta.height / div);
   const { data, info } = await sharp(file).extract({ left: col * cw, top: row * ch, width: cw, height: ch })
     .ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const r = cutout(data, info.width, info.height);
@@ -109,6 +110,16 @@ async function processCell(file, col, row, name, report) {
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
+  const si = process.argv.indexOf('--single');
+  if (si > 0) {
+    // Un solo objeto por imagen (gen_art_b --kind prop): toda la imagen es la «celda».
+    // No toca las demás celdas ni report.json.
+    const name = process.argv[si + 1], file = path.resolve(ROOT, process.argv[si + 2]);
+    const report = {};
+    await processCell(file, 0, 0, name, report, 1);
+    console.log(JSON.stringify(report[name]));
+    return;
+  }
   const cfg = JSON.parse(fs.readFileSync(path.join(UIKIT, 'icon_sheets.json'), 'utf8'));
   const report = {};
   for (const [id, names] of Object.entries(cfg.sheets)) {

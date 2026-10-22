@@ -5,7 +5,7 @@
  *
  *   node scripts/icon_contact_sheet.js [--sheet client/public/assets/b/ui/icons.webp]
  *        [--config art-b/uikit/candidate/grimIconSheet.generated.js]
- *        [--out specs/ui_kit_b/evidencia/iconos_contacto.webp] [--cols 6]
+ *        [--out specs/ui_kit_b/evidencia/iconos_contacto.webp] [--cols 6] [--only nombre1,nombre2]
  *
  * Requiere NODE_PATH al node_modules con playwright y sharp (repo principal).
  * El config se lee como texto (es ESM generado); no se importa.
@@ -29,7 +29,9 @@ const SIZES = [24, 32, 48];
   const cfg = fs.readFileSync(CONFIG, 'utf8');
   const num = (k) => Number(new RegExp(`${k} = (\\d+)`).exec(cfg)[1]);
   const W = num('GRIM_SHEET_W'), H = num('GRIM_SHEET_H'), CELL = num('GRIM_CELL');
-  const icons = [...cfg.matchAll(/^\s+([a-z_]+): \{ col: (\d+), row: (\d+) \},/gm)].map((m) => ({ name: m[1], col: +m[2], row: +m[3] }));
+  const only = arg('only', null);
+  const icons = [...cfg.matchAll(/^\s+([a-z_]+): \{ col: (\d+), row: (\d+) \},/gm)].map((m) => ({ name: m[1], col: +m[2], row: +m[3] }))
+    .filter((ic) => !only || only.split(',').includes(ic.name));
   const url = pathToFileURL(SHEET).href;
   const cell = (ic, s) => `<span class="i" style="width:${s}px;height:${s}px;background:url(${url}) ${-ic.col * s}px ${-ic.row * s}px/${(W / CELL) * s}px ${(H / CELL) * s}px no-repeat"></span>`;
   const figs = icons.map((ic) => `<figure><div class="r">${SIZES.map((s) => cell(ic, s)).join('')}</div><figcaption>${ic.name}</figcaption></figure>`).join('');
