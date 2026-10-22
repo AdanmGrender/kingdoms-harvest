@@ -12,6 +12,7 @@ Nota: la clase `font-numeric` aún no se usa en el código, así que Tailwind no
 
 ## Veredicto
 
-PENDIENTE de p-kh/owner (design §11-Q2): decidir si los números de la barra usan IM Fell (base) o `font-numeric`.
-Consecuencia técnica: ninguna de las dos desborda a 412 px; la elección es solo de legibilidad (los dígitos de IM Fell son «old-style»).
-Se consume en T14 (etapa B). Tarea de decisión creada en el tablero para p-kh.
+- Fecha: 2026-10-21
+- Autor: p-kh
+- Veredicto: **`font-numeric`** (Alegreya Sans SC 700) para los números de la barra (R14, se aplica en T14).
+- Motivo: en IM Fell los dígitos old-style se confunden a tamaño de barra («100.0K» se lee «Ioo.oK», el 1 parece I y el 0 una o); Alegreya Sans SC da cifras de caja alta, mismo ancho y sigue siendo de época.
