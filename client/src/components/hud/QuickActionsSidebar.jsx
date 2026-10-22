@@ -46,7 +46,7 @@ export default function QuickActionsSidebar() {
   };
 
   return (
-    <div className="absolute left-2 top-32 z-20 pointer-events-none flex flex-col gap-2">
+    <div className="kh-rail kh-rail--left z-20">
       {ACTIONS.map((a) => {
         const badge = a.id === 'missions' ? missionCount : a.badge;
         return (
@@ -55,7 +55,6 @@ export default function QuickActionsSidebar() {
             icon={a.sprite}
             label={a.label}
             accent={a.color}
-            iconSize={a.id === 'castle' ? 40 : 32}
             title={a.label}
             onClick={() => handleAction(a.id)}
           >

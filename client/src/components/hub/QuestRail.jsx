@@ -10,21 +10,22 @@ export default function QuestRail() {
 
   useEffect(() => { loadCampaignMap(); }, [loadCampaignMap]);
   const next = nodes.find((n) => n.status === 'available');
+  const label = next ? next.name : 'Acto completado ✓';
 
   return (
-    // pl-16: despeja la columna del QuickActionsSidebar (left-2 + w-11 ≈ 52px),
-    // que flota sobre este riel y tapaba el label "Objetivo:".
-    <div className="w-full pl-16 pr-3 py-2 flex items-center gap-2 overflow-x-auto"
+    // Franja entre las dos columnas de rieles (BastionHub la centra con mx-20): sin pl-16 de compensación.
+    <div className="w-full h-11 px-3 flex items-center gap-2 overflow-hidden"
       style={{ background: 'rgba(26,23,18,0.92)', borderBottom: '1px solid rgba(217,164,65,0.28)' }}>
-      <span className="text-yellow-400 text-xs font-bold whitespace-nowrap flex items-center gap-1">
-        <SpriteIcon name="exclamation" size={28} /> Objetivo:
+      <span className="shrink-0 text-yellow-400 text-xs font-bold whitespace-nowrap flex items-center gap-1">
+        <SpriteIcon name="exclamation" size={28} /><span className="hidden min-[400px]:inline">Objetivo:</span>
       </span>
       <button
         onClick={() => setOverlay('operations', {})}
-        className="text-white text-xs px-3 py-1 rounded whitespace-nowrap"
+        title={label}
+        className="min-w-0 flex-1 text-white text-xs text-left leading-tight px-3 h-11 rounded flex items-center"
         style={{ background: 'rgba(179,40,33,0.25)', border: '1px solid #b32821' }}
       >
-        {next ? next.name : 'Acto completado ✓'}
+        <span className="line-clamp-2 break-words">{label}</span>
       </button>
     </div>
   );

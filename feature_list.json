@@ -182,6 +182,21 @@
       "sdd": false,
       "status": "done",
       "assignee": "p-kh"
+    },
+    {
+      "id": 13,
+      "name": "fix_botones_hub",
+      "title": "Encuadre y alineación de los botones del hub",
+      "description": "Columnas laterales, fila de Operaciones y BottomNavBar del BastionHub desalineadas, con tamaños distintos, solapadas y un botón tapado a 412 px.",
+      "acceptance": [
+        "Botones de cada columna lateral con mismo ancho/alto/x (±1 px) y gap constante",
+        "Sin solapes entre botones/paneles del HUD, todos dentro del viewport (412x860 y 360x740)",
+        "Fila de Operaciones: 4 botones visibles y clickeables; táctiles >= 44x44",
+        "vitest completo verde y build OK"
+      ],
+      "sdd": false,
+      "status": "in_progress",
+      "assignee": "implementer"
     }
   ]
 }

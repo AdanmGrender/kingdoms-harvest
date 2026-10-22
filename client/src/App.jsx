@@ -232,8 +232,10 @@ function App() {
         <>
           <TopResourceBar />
           <QuickActionsSidebar />
-          <EventSidebar />
-          <SocialSidebar />
+          <div className="kh-rail kh-rail--right z-20">
+            <EventSidebar />
+            <SocialSidebar />
+          </div>
         </>
       )}
       <ConstructionTimer />

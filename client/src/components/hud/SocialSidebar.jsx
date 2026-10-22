@@ -1,5 +1,6 @@
 /**
- * SocialSidebar — Right rail lower: alliance, mail, achievements, inventory.
+ * SocialSidebar — Right rail lower: logros, alianza, rankings, mercado (fragmento dentro de
+ * `.kh-rail--right`, ver App.jsx).
  */
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
@@ -27,7 +28,7 @@ export default function SocialSidebar() {
   };
 
   return (
-    <div className="absolute right-2 bottom-24 z-20 pointer-events-none flex flex-col gap-2">
+    <>
       {SOCIAL.map((s) => (
         <IconButton
           key={s.id}
@@ -47,6 +48,6 @@ export default function SocialSidebar() {
           )}
         </IconButton>
       ))}
-    </div>
+    </>
   );
 }

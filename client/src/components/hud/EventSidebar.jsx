@@ -1,5 +1,7 @@
 /**
- * EventSidebar — Right rail upper. Shows the currently active server-wide
+ * EventSidebar — Right rail upper (evento vivo + atajos a MetaPanel). Devuelve un fragmento: App.jsx lo
+ * monta junto a SocialSidebar dentro de UNA sola columna `.kh-rail--right` (mismo ancho/alto/x y gap).
+ * Shows the currently active server-wide
  * seasonal event (if any) with a real countdown to its end, plus a few
  * static shortcuts (achievements, tech, world map) to the MetaPanel.
  */
@@ -7,7 +9,6 @@ import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import IconButton from '../ui/IconButton';
-import SpriteIcon from '../ui/SpriteIcon';
 import { KH } from '../ui/kitPieces';
 
 const SHORTCUTS = [
@@ -61,16 +62,15 @@ export default function EventSidebar() {
   };
 
   return (
-    <div className="absolute right-2 top-32 z-20 pointer-events-none flex flex-col gap-2">
+    <>
       {/* Live event button (always shown; placeholder if none active) */}
       <IconButton
+        icon="flame"
         onClick={handleEvent}
         accent={activeEvent?.color || KH.iron}
         className={activeEvent ? 'animate-pulse' : ''}
         title={activeEvent ? activeEvent.description : 'Sin evento activo'}
-        style={{ width: 52 }}
       >
-        <SpriteIcon name="flame" size={28} />
         <span className="font-numeric text-[12px] leading-tight tabular-nums" style={{ color: KH['brass-light'] }}>
           {activeEvent ? formatCountdown(activeRemaining) : '—'}
         </span>
@@ -87,6 +87,6 @@ export default function EventSidebar() {
           onClick={() => handleShortcut(item)}
         />
       ))}
-    </div>
+    </>
   );
 }
