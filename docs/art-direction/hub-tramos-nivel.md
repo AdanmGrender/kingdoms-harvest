@@ -76,7 +76,8 @@ node scripts/contact_sheet_b.js --cols 4 --out specs/hub_b_tramos_nivel/evidenci
 - `art-b/tramos/manifest.json`: ids `tier_<id>_<medio|alto|obra>`, `refs` = el `bajo` del edificio + `art-b/hub/refs/hub_base.webp`.
 - Crudos en `art-b/tramos/raw/` (ignorado por git).
 - Alturas de `process.sh` = las del `bajo` en `art-b/hub/process.sh`.
-- Puerta de arte: primero la prueba de 3 imágenes del `barn` (`medio`, `alto`, `obra`); sin veredicto de p-kh en `specs/hub_b_tramos_nivel/aprobacion_arte.md` no se generan las otras 48.
+- Puerta de arte: primero la prueba de 3 imágenes del `barn` (`medio`, `alto`, `obra`); sin veredicto de p-kh en `specs/hub_b_tramos_nivel/evidencia/aprobacion_arte.md` no se generan las otras 48.
+  Las reglas de prompt que salieron de esa prueba están en ese archivo, sección "Reglas de prompt para los 17 edificios".
 
 ## 7. Código que lo carga
 
