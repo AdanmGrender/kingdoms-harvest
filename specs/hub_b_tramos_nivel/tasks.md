@@ -12,10 +12,16 @@ Orden: lógica pura y escena (sin webp nuevos) → arte con puerta de p-kh → i
 - [ ] T8 — PRUEBA de arte: generar `medio`, `alto` y `obra` de `barn` (`--only`), procesar, hoja `evidencia/tramos_prueba.webp`. PARAR: pedir veredicto de p-kh y registrarlo en `aprobacion_arte.md` (sección "Prueba"). Sin veredicto no se sigue. Cubre: R18, R21. Progreso: generados y procesados barn_medio/alto/obra (`node scripts/gen_art_b.js --manifest art-b/tramos/manifest.json --only tier_barn_medio,tier_barn_alto,tier_barn_obra`; `bash art-b/tramos/process.sh barn`); `node scripts/verify_tiers_b.js barn` -> 3 webp, 0 fallos (400x224 104 %, 328x224 85 %, 382x224 99 % de aspecto; 78 KB); hoja evidencia/tramos_prueba.webp (2488x413). Falta veredicto de p-kh en aprobacion_arte.md (sección Prueba): sin él no se sigue
 - [ ] T9 — Generar las 48 restantes, procesarlas, `verify_tiers_b.js` (51/51), hoja `evidencia/tramos_contacto.webp` (17×4) y `tramos_anclas.webp` (throne_room, tavern, smithy). Cubre: R11, R12, R13, R14, R15, R16, R17, R18, R19, R20.
 - [ ] T10 — PUERTA DE ARTE: pedir a p-kh veredicto sobre la hoja completa; regenerar solo rechazados (R23). PARAR hasta `APROBADO` en `aprobacion_arte.md`. Cubre: R19, R22, R23.
-- [ ] T11 — Con `APROBADO`: `HUB_TEXTURES` pasa a 80 entradas (4 por edificio) y se actualiza su test. Cubre: R22, R25.
+- [ ] T11 — Con `APROBADO`: `HUB_TEXTURES` pasa a 80 entradas (4 por edificio) y se actualiza su test. Cubre: R22, R25. Verificado el conteo (sin implementar): hoy `HUB_TEXTURES` tiene 29 entradas = 4 capas (`hubLayout.js:136-139`) + 17 edificios (`hubLayout.js:140`) + 8 poses de trabajador (`hubLayout.js:141-143`), y el test lo fija en `4 + 17 + 8` (`hubLayout.test.js:377`). Con 4 texturas por edificio son 4 + 17×4 + 8 = 80, es decir, 68 de edificios incluidas las del bajo (no 68 más las de hub/workers): el 80 del spec es correcto. Al implementar, el test pasa a `4 + 17 * 4 + 8`.
 - [ ] T12 — Evidencia Playwright `scripts/hub_b_tramos_evidence.js` 412×860 @2x: capturas por tramo y en obra, ciclo de mejora (antes/durante/después, sin navegación), toque tras el cambio, bloqueo de webp, fps y consola. Cubre: R27, R28, R29, R30, R31, R33, R34, R35, R36, R38, R40, R41, R42, R44.
 - [ ] T13 — Cierre: `cd client && npx vitest run`, `git diff --stat -- server shared` vacío, `CHANGELOG.md` bajo `## [Unreleased]`, `feature_list.json`. Cubre: R39, R43.
 
 ## Bloqueado
 
-(vacío)
+T9 parcial (35/51 webp de tramo verificados, 0 fallos en esos; faltan 16). Estado tras la corrida del 2026-10-22:
+- Manifest reescrito con las reglas de prompt de p-kh (aprobacion_arte.md); `tier_barn_alto` regenerado (barn 3/3).
+- BLOQUEO DURO: la API de Gemini devolvió `402 prepayment credits depleted` (el crédito de la cuenta se agotó). Sin generar no hay T9. Hace falta que el owner recargue crédito en AI Studio.
+- Faltan por generar (402): stable_medio, stable_alto, sawmill_alto, farm_plot_alto, farm_plot_obra, trap_medio, trap_alto, trap_obra.
+- Generados pero rechazados por `verify_tiers_b.js` tras 3 intentos (webp borrados; el PNG crudo sigue en `art-b/tramos/raw/`, ignorado por git): library_alto, embassy_medio, embassy_alto, wall_medio, wall_alto, smithy_medio, smithy_alto (R13: borde/esquina con alpha > 0) y mill_alto (R13 + aspecto 89 % < 92 %). R13 falla de forma repetida en wall/embassy/smithy: conviene revisar si el fondo del generador deja halo contra el borde (p. ej. `--pad` mayor o recorte) antes de gastar más crédito en reintentos.
+- Nota técnica: en Windows `sharp` retiene el handle de los webp abiertos para medirlos; el orquestador de scratch usa `sharp.cache(false)`.
+- Por retomar: T9 (16 ítems), T10 (puerta de arte), T11–T13.
