@@ -1,0 +1,15 @@
+# consola de la corrida barra (Playwright 412x860 @2x, 2026-10-22T01:23:32.198Z)
+pageerrors: 0
+console.error: 0
+console.warn: 10
+  [Telegram.WebApp] Header color is not supported in version 6.0
+  [Telegram.WebApp] Background color is not supported in version 6.0
+  [Telegram.WebApp] Changing swipes behavior is not supported in version 6.0
+  [Telegram.WebApp] Header color is not supported in version 6.0
+  [Telegram.WebApp] Background color is not supported in version 6.0
+  [Telegram.WebApp] Changing swipes behavior is not supported in version 6.0
+  [Telegram.WebApp] Changing swipes behavior is not supported in version 6.0
+  [Telegram.WebApp] Closing confirmation is not supported in version 6.0
+  [Telegram.WebApp] Changing swipes behavior is not supported in version 6.0
+  [Telegram.WebApp] Closing confirmation is not supported in version 6.0
+http >= 400: 0

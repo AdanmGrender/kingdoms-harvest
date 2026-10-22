@@ -2,7 +2,7 @@
 /**
  * ui_kit_b_evidence.js — corrida Playwright de evidencia de ui_kit_b (specs/ui_kit_b/tasks.md T1, T7, T8, T17, T33).
  *
- *   node scripts/ui_kit_b_evidence.js --mode antes|despues|digitos|prod|barra [--url http://localhost:5173]
+ *   node scripts/ui_kit_b_evidence.js --mode antes|despues|digitos|prod|prodserver|barra [--url http://localhost:5173]
  *
  * Patrón de hub_b_pickups_evidence.js: Vite dev (:5173, proxy a :3001) y server con SKIP_AUTH=true; en `--mode prod` se usa
  * el server con NODE_ENV=production sirviendo client/dist (--url http://localhost:3001). Chromium 412×860 @2x con touch.
@@ -173,7 +173,39 @@ async function barraRun() {
   });
   const shot = await save(page, 'barra_412.webp', clip);
   await browser.close();
+  writeConsole('consola_barra.txt', 'consola de la corrida barra', logs);
   console.log(JSON.stringify({ rep, shot, pageerrors: logs.pageerrors.length }, null, 2));
+}
+
+// T17 / pendiente de A.2: server REAL con NODE_ENV=production (CSP de helmet) sirviendo client/dist. Entra al hub con
+// el botón del menú (en prod no hay __gameStore), mide la barra y registra violaciones CSP (evento + consola).
+async function prodServerRun() {
+  const { browser, page, logs } = await open(false);
+  await page.evaluate(() => { window.__cspEvents = []; document.addEventListener('securitypolicyviolation', (e) => window.__cspEvents.push(`${e.violatedDirective} ${e.blockedURI}`)); });
+  const rep = { cabeceraCSP: null, entrada: null };
+  const resp = await page.request.get(`${args.url}/`);
+  rep.cabeceraCSP = resp.headers()['content-security-policy'] || null;
+  const boton = page.getByRole('button', { name: /Entrar al Basti/ });
+  rep.entrada = (await boton.count()) ? 'boton' : 'sin-boton';
+  if (await boton.count()) await boton.first().click();
+  await page.waitForSelector('[data-resource]', { timeout: 45000 });
+  await page.waitForTimeout(3000);
+  rep.barra = await page.evaluate(() => [...document.querySelectorAll('[data-resource]')].map((el) => {
+    const row = el.parentElement;
+    return { key: el.getAttribute('data-resource'), w: Math.round(el.getBoundingClientRect().width), row: row ? { sw: row.scrollWidth, cw: row.clientWidth } : null };
+  }));
+  rep.fontsCheck = await page.evaluate(() => ({ numeric: document.fonts.check('700 16px "Alegreya Sans SC"'), body: document.fonts.check('16px "IM Fell English"') }));
+  const origin = new URL(args.url).origin;
+  rep.requestsAHostsExternos = logs.requests.filter((u) => !u.startsWith(origin) && !u.startsWith('data:') && !u.startsWith('blob:'));
+  rep.fuentesExternas = rep.requestsAHostsExternos.filter((u) => /fonts\.(googleapis|gstatic)\.com/.test(u));
+  rep.cspViolacionesEvento = await page.evaluate(() => window.__cspEvents);
+  rep.cspViolacionesConsola = logs.errors.filter((e) => /content security policy|csp/i.test(e));
+  rep.captura = await save(page, 'prod_server_barra.webp', { x: 0, y: 0, width: W, height: 300 });
+  await browser.close();
+  writeConsole('consola_prod_server.txt', `consola de la corrida prodserver (${args.url}, server real NODE_ENV=production)`, logs);
+  const out = { ...rep, pageerrors: logs.pageerrors.length, consoleErrors: logs.errors.length, http400: logs.http };
+  fs.writeFileSync(path.join(EVID, 'prod_server.json'), `${JSON.stringify(out, null, 2)}\n`);
+  console.log(JSON.stringify(out, null, 2));
 }
 
 (async () => {
@@ -182,6 +214,7 @@ async function barraRun() {
   else if (args.mode === 'despues') await panelesRun('despues');
   else if (args.mode === 'digitos') await digitosRun();
   else if (args.mode === 'prod') await prodRun();
+  else if (args.mode === 'prodserver') await prodServerRun();
   else if (args.mode === 'barra') await barraRun();
   else throw new Error(`modo desconocido: ${args.mode}`);
 })().catch((e) => { console.error(e); process.exit(1); });
