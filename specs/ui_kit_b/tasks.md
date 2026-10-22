@@ -44,17 +44,17 @@
 
 ### C3 — Reemplazo de emojis por grupos (un commit y revisión por grupo)
 
-- [ ] T25 — `client/src/tests/helpers/emoji.js` (`EMOJI_RE`, `stripComments`) y `noEmoji.test.js` (barrido de `components/`, `store/`, `services/`; lista blanca `CHAT_STICKERS`; `fallback=` en `SpriteIcon`; `size` < 28). Rojo al inicio. Cubre: R49, R50, R54, R55.
-- [ ] T26 — G1: `hud/*`, `hub/*`, `ui/*` (`TopResourceBar`, `BottomNavBar`, rieles, `BuildingInfoPopup`, `ConstructionTimer`, `QuestRail`, `BastionHub`, `NotificationPrefsPanel`). Cubre: R51, R52, R54, R55.
-- [ ] T27 — G2: `overlay/OverlayManager`, `BuildingToolbar`, `CropSelectMenu`, `GameHUD`, `HeroPanel`, `SettingsPanel`. Cubre: R51, R52, R54, R55.
-- [ ] T28 — G3: `commerce/*`, `meta/*`, `world/*`. Cubre: R51, R52, R54, R55.
-- [ ] T29 — G4: `campaign/*`, `castle/*`, `menu/*`. Cubre: R51, R54, R55.
-- [ ] T30 — G5: resto de `overlay/*` (Shop, Pass, Calendar, WarPanel, WaveDefense, Villager, Marketplace, Seasonal, WorldEvent, SystemMap, GalaxyMap, Achievement, Withdrawal, Guild, Troop, Tutorial, OfflineReport, Missions, FactionSelect, Prestige, Crafting, Squad, Dialog, Codex, StarMap, StreakBanner). Cubre: R51, R52, R54, R55.
-- [ ] T31 — G6: texto de notificaciones en `store/gameStore.js`, `services/socketService.js`, `services/api.js` sin cambiar `type`. Cubre: R53.
+- [x] T25 — `client/src/tests/helpers/emoji.js` (`EMOJI_RE`, `stripComments`) y `noEmoji.test.js` (barrido de `components/`, `store/`, `services/`; lista blanca `CHAT_STICKERS`; `fallback=` en `SpriteIcon`; `size` < 28). Rojo al inicio. Cubre: R49, R50, R54, R55. Evidencia: client/src/tests/helpers/emoji.js + noEmoji.test.js (5 tests); primera corrida en rojo (emojis en hud/overlay); ahora `npx vitest run src/tests/noEmoji.test.js` -> Tests 5 passed (5); lista blanca solo CHAT_STICKERS (AlliancesPanel.jsx).
+- [x] T26 — G1: `hud/*`, `hub/*`, `ui/*` (`TopResourceBar`, `BottomNavBar`, rieles, `BuildingInfoPopup`, `ConstructionTimer`, `QuestRail`, `BastionHub`, `NotificationPrefsPanel`). Cubre: R51, R52, R54, R55. Evidencia: hud/hub/ui sin emojis ni `fallback=`, SpriteIcon >= 28 px; noEmoji.test.js verde.
+- [x] T27 — G2: `overlay/OverlayManager`, `BuildingToolbar`, `CropSelectMenu`, `GameHUD`, `HeroPanel`, `SettingsPanel`. Cubre: R51, R52, R54, R55. Evidencia: OverlayManager, BuildingToolbar, CropSelectMenu, GameHUD, HeroPanel, SettingsPanel: ícono como nombre de sprite y <SpriteIcon/> en el render; noEmoji.test.js verde.
+- [x] T28 — G3: `commerce/*`, `meta/*`, `world/*`. Cubre: R51, R52, R54, R55. Evidencia: commerce/meta/world sin emojis (medallas -> sprite `medal`, facciones -> config/factionIcons.js); noEmoji.test.js verde.
+- [x] T29 — G4: `campaign/*`, `castle/*`, `menu/*`. Cubre: R51, R54, R55. Evidencia: campaign/castle/menu sin emojis; noEmoji.test.js verde.
+- [x] T30 — G5: resto de `overlay/*` (Shop, Pass, Calendar, WarPanel, WaveDefense, Villager, Marketplace, Seasonal, WorldEvent, SystemMap, GalaxyMap, Achievement, Withdrawal, Guild, Troop, Tutorial, OfflineReport, Missions, FactionSelect, Prestige, Crafting, Squad, Dialog, Codex, StarMap, StreakBanner). Cubre: R51, R52, R54, R55. Evidencia: resto de overlay/* convertido; `npm run build` -> built in 7.36s; vitest completo -> Test Files 19 passed, Tests 289 passed.
+- [x] T31 — G6: texto de notificaciones en `store/gameStore.js`, `services/socketService.js`, `services/api.js` sin cambiar `type`. Cubre: R53. Evidencia: store/gameStore.js y services/socketService.js: solo se quitó el emoji del texto, `type` intacto (git diff ad37567 -- src/store src/services: 14 líneas de texto); 0 emojis en store/services.
 
 ### C4 — Evidencia y cierre
 
-- [ ] T32 — `noEmoji.test.js` en verde + corrida de control con un emoji de prueba que lo hace fallar (salida citada). Cubre: R49, R50.
+- [x] T32 — `noEmoji.test.js` en verde + corrida de control con un emoji de prueba que lo hace fallar (salida citada). Cubre: R49, R50. Evidencia: control: emoji añadido a hud/ConstructionTimer.jsx -> `× ningún archivo ... Tests 1 failed | 4 passed (5)` citando components/hud/ConstructionTimer.jsx (specs/ui_kit_b/evidencia/noEmoji_control.txt); revertido -> Tests 5 passed (5).
 - [ ] T33 — Capturas «después» (hub + 4 paneles) con `ui_kit_b_evidence.js --mode despues`, `consola.txt` sin errores; barra a 412 px legible. Cubre: R56, R57, R32.
 - [ ] T34 — Cierre: vitest, build y jest en verde, `grep` de `grim_icons|gen_icons|grimChrome|MedievalSharp` vacío, `CHANGELOG.md` (al pasar a `done`, lo hace el flujo de cierre). Cubre: R48, R58.
 
