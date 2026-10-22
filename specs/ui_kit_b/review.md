@@ -1,70 +1,62 @@
-# Review — `ui_kit_b` · Etapa A (T1–T8)
+# Review — `ui_kit_b` · Etapa B (T9–T17)
 
-Revisado: rama `feature/ui_kit_b`, commit `aae5a22` (diff contra `ab85126`). Tarea `t_c345f95c`, revisión de etapa (no de feature).
+Revisado: rama `feature/ui_kit_b`, commits `94a362f`, `cfe81f6`, `9fa5ff4` (diff contra `13be087`). Tarea `t_23489989`, revisor `reviewer`, ronda 1.
 
 ## Veredicto
 
-**APPROVED — solo etapa A.** La feature `ui_kit_b` sigue `in_progress`: no se toca `feature_list.json` ni `CHANGELOG.md`. Etapas B (T9–T17) y C (T18–T34) siguen pendientes por diseño.
+**CHANGES_REQUESTED.** La etapa B está implementada y verde, pero dos de los pendientes que el review de A pedía quedan sin cerrar (CSP en T17, y la constancia de consola de R57). Ver Cambios requeridos.
 
-Condición abierta, no bloquea A: **R13 (veredicto de dígitos)** sigue `PENDIENTE` (Q2, p-kh). Bloquea T14 (etapa B), no el cierre de A. Ver Trazabilidad.
-
-## Trazabilidad (R1–R16)
-
-| R | Evidencia verificada | Estado |
-|---|---|---|
-| R1 | `grep` de `googleapis\|gstatic` en `client/index.html`, `client/src`, `client/tailwind.config.js` → solo aparece dentro del propio barrido de `client/src/tests/fontsConfig.test.js:55`. `index.html` usa `/fonts/fonts.css`. | OK |
-| R2 | `client/index.html:9` `<link rel="stylesheet" href="/fonts/fonts.css" />`; `specs/ui_kit_b/evidencia/prod_fuentes.json` `fontsCheck` true en las 3 familias. | OK |
-| R3 | `client/public/fonts/fonts.css`: exactamente 4 `@font-face` (Alegreya Sans SC 700, IM Fell English SC 400, IM Fell English 400 italic y normal); cada `url()` existe en `client/public/fonts/`. | OK |
-| R4 | Grep de `MedievalSharp\|Cinzel\|Alegreya Sans(?! SC)` en `client/src`, `index.html`, tailwind y fonts.css → vacío fuera de los tests. `grep fontFamily.*medieval` en `components/` → vacío. | OK |
-| R5 | `ls client/public/fonts`: 4 woff2 + `fonts.css` + `README.md`. `README.md` lista solo IM Fell y Alegreya Sans SC (OFL). | OK |
-| R6 | `client/tailwind.config.js:4-17` `const kh` con los 13 hex; coinciden con `fontsConfig.test.js` (KH). | OK |
-| R7 | `client/tailwind.config.js:20,37-42`: `display`, `body`, `numeric` con `serif` de respaldo, `medieval` alias de `display`. | OK |
-| R8 | `client/src/styles/index.css:12-15`: `IM Fell English`, 15px, `#14110d`, `#e6dcc3`; sin `Segoe UI`. | OK |
-| R9 | 38 archivos de `components/**` migrados a `font-display`. Ver nota de regresión visual abajo. | OK |
-| R10 | `client/src/game/fonts.js:5` `UI_FONT`; importado en `BootScene`, `NPC`, `Building`, `ParticleSystem`, `IsoWorldScene`. | OK |
-| R11 | `client/src/game/fonts.js:11-25` `loadUiFonts`; `BootScene.js` crea los textos dentro de `loadUiFonts().then(...)`. `fonts.test.js` 5/5. | OK |
-| R12 | `fonts.js`: timeout 3000 ms con `Promise.race`, `.catch(() => {})`, nunca rechaza. Cubierto por `fonts.test.js`. | OK |
-| R13 | `evidencia/digitos.md` + `digitos_im_fell.webp` + `digitos_numeric.webp` presentes; sin desborde 172/172. **Veredicto: PENDIENTE** (Q2 de p-kh). | PARCIAL (no bloquea A) |
-| R14 | Depende del veredicto de R13. Etapa B. | N/A en A |
-| R15 | `tailwind.config.js:28-35` `kingdom.*` → `kh.*`; clases `kingdom-*` intactas. `npm run build` OK. | OK |
-| R16 | `prod_fuentes.json`: `fuentesExternas: []`, `cspViolaciones: []`; `consola_prod.txt` pageerrors 0, console.error 0. Caveat en "Observaciones". | OK (con caveat) |
-
-Tasks: T1–T8 todas `[x]` con `Evidencia:` inline. T9–T34 `[ ]`, esperado para revisión de etapa A. `## Bloqueado` vacío.
+`feature_list.json` y `CHANGELOG.md` no se tocan (la feature sigue `in_progress`).
 
 ## Verificación ejecutada (reproducida por el revisor)
 
-- `cd client && npx vitest run`: 11 files, 208 passed.
+- `cd client && npx vitest run`: 16 files, 266 passed (0 failed).
 - `cd client && npm run build`: OK (solo aviso de chunk > 500 kB, preexistente).
-- `cd server && npx jest --runInBand --forceExit`: 25 suites, 388 passed en la corrida 2 y 3. **La corrida 1 tuvo 1 fallo (1 of 388)**, no reproducido después. `git diff ab85126 aae5a22 -- server shared` vacío, así que es flakiness. Ver Cambios requeridos (no bloqueante).
+- `cd server && npx jest --runInBand --forceExit`: 25 suites, 388 passed. `known_failures` sigue vacío (`feature_list.json:18`).
+- `git diff 13be087 feature/ui_kit_b -- server shared client/src/store client/src/services`: vacío (R31 OK).
+- `grimChrome.js` eliminado y sin imports (R36).
+- `TopResourceBar.jsx`: el `}} >` sobrante del review de A ya no aparece en el archivo reescrito.
 
-## Diff contra architecture y conventions (archivo:línea)
+## Trazabilidad (etapa B)
 
-- Regla 8 de `architecture.md` (tipografía empaquetada, sin Google Fonts): cumplida (`index.html:9`, `fonts.css`).
-- Regla 3 (Phaser ↔ React solo por EventBridge): `fonts.js` es un módulo puro; no crea dependencias Phaser↔React.
-- Convenciones de comentarios en español y commit `feat(ui_kit_b)`: cumplidas.
-- `BootScene.js`: el primer texto se crea tras `loadUiFonts`; el `progress` queda protegido con `if (percentText)`. Correcto.
-- Lógica de cliente pura: sin cambios de store, services ni server (`git diff --stat` vacío en `server`, `shared`).
+| R | Evidencia verificada | Estado |
+|---|---|---|
+| R17–R20 | `client/src/components/ui/Panel.jsx:14-28` variantes `oak`/`parchment` con `data-variant`; `Panel.jsx:46-49` botón `aria-label="Cerrar"` con `minWidth/minHeight: 44`. `kitComponents.test.jsx` verde. | OK |
+| R21–R25 | `ui/Button.jsx:33-34` min 44×44; `Button.jsx:21` disabled `saturate(0.4)` + `kh-iron` + `pointerEvents: none`; `ui/IconButton.jsx:32-33` 44×44. | OK |
+| R26–R28 | `ui/Bar.jsx:9,14-15,33` tono por `BAR_TONES`, `role="progressbar"`, `aria-valuenow={pct}`; `ui/PortraitRing.jsx:10,24-26,42` con y sin `src`. | OK |
+| R29 | Ningún `gradient` en `ui/{Panel,Button,IconButton,Bar,PortraitRing}.jsx` ni `kitPieces.js`; `kitStyles.test.js` verde. El `radial-gradient` de `styles/index.css:204` es `.fx-torch-vignette`, fuera del alcance de R29. | OK |
+| R30 | `.btn-primary`, `.btn-gold`, `.game-card`, `.progress-*` conservan nombre; `kitStyles.test.js` verde. | OK |
+| R14 | `components/hud/TopResourceBar.jsx:35-36` `NUM` con `font-numeric` (veredicto de `evidencia/digitos.md`, Q2). Cubierto en `TopResourceBar.test.jsx`. | OK |
+| R32 | `evidencia/barra_412.webp` citado en `tasks.md:28` (fila 372 ≤ 372). El revisor no pudo inspeccionar la imagen visualmente; se confía en la cita numérica. | OK (con reserva) |
+| R33 | `TopResourceBar.test.jsx` (8 `[data-resource]` incl. valor 0) + `pickupSources.test.jsx` (8 claves). | OK |
+| R34 | Test de `size ≥ 28` y clase `text-[12px]`+ en el número. | OK |
+| R35 | `Bar` en `TopResourceBar`, `campaign/CombatInstancePanel.jsx:175,225` (vida y energía); `barsMigration.test.js` verde. Los `width:` inline de `CombatInstancePanel.jsx:192,200,214` son retratos/iconos, no barras; `TopResourceBar.jsx:113` `width: 56` es el contenedor, el relleno pasa por `Bar`. | OK |
+| R36 | `OverlayManager`, `BottomNavBar`, `QuickActionsSidebar`, `EventSidebar`, `SocialSidebar` sobre `Panel`/`IconButton`; `hudRails.test.jsx` 9 tests verdes. | OK |
+| R37 | `npx vitest run` 266/266; `known_failures` vacío. | OK |
+| R31, R58 (suites) | Ver verificación. | OK |
+| R57 | Falta `evidencia/consola.txt` de la corrida de barra. | PARCIAL |
+
+Tasks: T9–T17 `[x]` con `Evidencia:` inline (`specs/ui_kit_b/tasks.md:20-28`). T18–T34 `[ ]`, esperado (etapa C fuera de alcance). `## Bloqueado` vacío.
+
+## Pendientes del review de A
+
+1. `TopResourceBar.jsx:99` espacio sobrante: **resuelto**.
+2. Verificar CSP contra el server real con `NODE_ENV=production` en T17, o dejar constancia explícita: **no resuelto**. `tasks.md:28` (T17) no menciona CSP; la captura se tomó contra Vite dev en :5180. La única constancia de CSP es la de T8 (`consola_prod.txt` / `prod_fuentes.json`), que sirve `client/dist` con la CSP copiada, no el server real.
+3. Jest flaky → `known_failures`: no aplica en esta ronda (388/388 verde).
 
 ## Observaciones (no bloqueantes)
 
-1. `client/src/components/hud/TopResourceBar.jsx:99`: quedó `style={{ maxWidth: '70px' }} >` con espacio antes del `>`. Estilo menor; corregir en la etapa B al tocar el archivo.
-2. R16 / T8: la prueba de prod no usó el server real con `NODE_ENV=production` (rechaza `SKIP_AUTH`). Se sirvió `client/dist` con la CSP copiada de `server/src/index.js` y proxy a un server dev. Aceptable como evidencia de etapa A, pero la CSP real no se verificó contra el server de producción. Hay que cerrarlo en T17 o en T34.
-3. `client/src/tests/fontsConfig.test.js`: los tests de R1/R4 leen archivos (barrido de fuentes). Lo exige R1 del spec. Es aceptable.
-4. `client/src/components/**`: 38 migraciones a mano/script de `fontFamily` a `font-display`. Riesgo visual pequeño; la captura `hub_antes` vs `despues` (T33) es el control.
-5. `jest` flaky: 1 fallo en la primera corrida. Vigilar en T17/T34. Si reaparece, abrir entrada en `known_failures`, no ignorarlo.
+1. El Vite propio de :5180 (PID 5604, `node.exe`) sigue vivo y responde `200`. El implementador no pudo matarlo por política. Hay que pararlo antes de cerrar.
+2. Quedan `grim_icons`, `gen_icons` y emojis en `components/` (`overlay/ShopPanel.jsx:15`, `campaign/CombatInstancePanel.jsx:166`, `campaign/OperationsMap.jsx:52,94`) y `GRIM_SHEET` apuntando a `grim_icons.png` (`config/grimIconSheet.generated.js:10`). Son alcance de la etapa C (R48–R55), no de B.
 
 ## Cambios requeridos
 
-Ninguno para cerrar la etapa A.
+1. **T17 / CSP (pendiente A.2):** verificar la CSP contra el server real con `NODE_ENV=production` (consola y lista de requests, salida citada), o añadir a `tasks.md` T17 una constancia explícita de por qué no se pudo (p. ej. el server de producción rechaza `SKIP_AUTH` y no hay credencial Telegram disponible) y qué se verificó en su lugar, con archivo y línea.
+2. **R57:** guardar la consola de la corrida `--mode barra` en `specs/ui_kit_b/evidencia/consola_barra.txt` (0 pageerror, 0 console.error, 0 HTTP ≥ 400) y citarla en `tasks.md` T17.
+3. **Proceso:** parar el Vite de :5180 (PID 5604) o dejar constancia en la tarea de que sigue vivo y por qué.
 
-Antes de T14 (etapa B), obligatorio:
-- R13: registrar el veredicto de p-kh/owner (`im-fell` o `font-numeric`) en `specs/ui_kit_b/evidencia/digitos.md`. Central debe confirmar que la tarea `[KH][arte]` existe y está linkada como padre de `t_c345f95c`. El campo `parents` de la tarea solo muestra `t_64749793`, así que el link no consta.
-
-Para B/C:
-- Corregir el espacio sobrante de `TopResourceBar.jsx:99` al tocar el archivo.
-- Cerrar T8/R16 contra el server real o dejar constancia explícita.
-- Si jest vuelve a fallar, registrar el test en `known_failures` con evidencia.
+Tras los cambios: nueva ronda de revisión con la misma verificación (vitest, build, jest) y comprobación de los puntos 1 y 2.
 
 ## Nota de proceso
 
-La revisión es de etapa. No se marcó `done` en `feature_list.json` ni se añadió línea al `CHANGELOG.md`, porque la feature no está terminada. El cierre final de `ui_kit_b` (B y C) pasará por una revisión nueva.
+Este archivo sustituye la revisión de etapa A; el texto de A queda en el historial de git (commit `13be087`). No se marcó `done`, no se tocó `feature_list.json` ni `CHANGELOG.md`.
