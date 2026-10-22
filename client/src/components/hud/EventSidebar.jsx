@@ -13,7 +13,7 @@ import { KH } from '../ui/kitPieces';
 const SHORTCUTS = [
   { id: 'newplayer', sprite: 'reward_bag', label: 'Logros', color: KH.brass, metaTab: 'achievements', pulse: true },
   { id: 'tech',      sprite: 'blueprint',  label: 'Tech',   color: KH.ember, metaTab: 'tech' },
-  { id: 'siege',     sprite: 'castle',     label: 'Mundo',  color: KH.seal, metaTab: 'world' },
+  { id: 'siege',     sprite: 'world',      label: 'Mundo',  color: KH.seal, metaTab: 'world' },
 ];
 
 function formatCountdown(seconds) {

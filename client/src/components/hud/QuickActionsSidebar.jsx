@@ -55,6 +55,7 @@ export default function QuickActionsSidebar() {
             icon={a.sprite}
             label={a.label}
             accent={a.color}
+            iconSize={a.id === 'castle' ? 40 : 32}
             title={a.label}
             onClick={() => handleAction(a.id)}
           >

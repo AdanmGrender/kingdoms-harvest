@@ -59,7 +59,7 @@ const CATEGORIES = [
   {
     id: 'social',
     name: 'Social',
-    icon: 'market',
+    icon: 'alliance',
     buildings: ['tavern', 'market', 'embassy'],
   },
   {
