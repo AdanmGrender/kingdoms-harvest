@@ -1,0 +1,21 @@
+# Tasks — `hub_b_tramos_nivel`
+
+Orden: lógica pura y escena (sin webp nuevos) → arte con puerta de p-kh → integración de texturas → evidencia. Cada tarea cierra con `Evidencia:` inline. Todas parten de `feature/hub_b_tramos_nivel`.
+
+- [x] T1 — En `hubLayout.js`: `TIERS`, `BUILDING_MAX_LEVEL` (verificado contra `shared/gameConfig.js`), `buildingTier`, `variantKey`, `variantTextureCandidates`; `selectHubBuildings` agrega `tier` y `variant`. NO tocar aún `HUB_TEXTURES`. Cubre: R1, R2, R3, R4, R5, R6, R9, R26, R35. Evidencia: hubLayout.js exporta TIERS, BUILDING_MAX_LEVEL, buildingTier, variantKey, variantTextureCandidates; selectHubBuildings agrega tier y variant; HUB_TEXTURES intacto (verificado con los tests de T2)
+- [x] T2 — Tests de T1 en `hubLayout.test.js`: tabla de cortes de los 17 ids, bordes de nivel, espejo contra `shared/`, `tier`/`variant` en `selectHubBuildings`, candidatos de caída. Cubre: R1, R2, R3, R4, R5, R6, R9, R26, R35. Evidencia: `cd client && npx vitest run src/tests/hubLayout.test.js` -> 111 passed (17 ids x bordes, espejo contra shared/gameConfig.js, caída de texturas)
+- [x] T3 — `socketService.js`: `building_complete` llama `loadBuildings()` y conserva el aviso; test en `pickupSources.test.jsx` (o `buildingTiers.test.jsx`). Cubre: R37, R39. Evidencia: socketService.js llama loadBuildings() en building_complete; src/tests/buildingTiers.test.js -> 2 passed (recarga + sin eventos nuevos en EventBridge)
+- [x] T4 — `HubSceneB.js`: `variantTex`, `createBuildingSprite(id, variant)`, `applyVariant` (textura, `baseScale`, `pixelPerfect`, tweens) en `syncBuildings`; quitar `CONSTRUCTION_TINT` y tint/alpha de obra; trabajador y humo como hoy. Con `variantTex` el sprite cae a `hubb_bld_<id>` mientras no existan las texturas nuevas. Cubre: R27, R28, R29, R30, R31, R32, R33, R34, R35, R36. Evidencia: HubSceneB.js con variantTex/createBuildingSprite(id,variant)/applyVariant en syncBuildings; CONSTRUCTION_TINT y tint/alpha de obra eliminados; cubierto por los tests de T5
+- [x] T5 — Test de escena `buildingVariantScene.test.js` con doble de sprite: cambio de variante hace un `setTexture`; misma variante, ninguno; sin tint en obra. Cubre: R28, R32, R33. Evidencia: `cd client && npx vitest run src/tests/buildingVariantScene.test.js src/tests/buildingTiers.test.js` -> 2 files, 9 passed
+- [ ] T6 — Pipeline de arte: `art-b/tramos/manifest.json` (51 ítems con refs del bajo), `art-b/tramos/process.sh`, `/art-b/tramos/raw/` en `.gitignore`, `scripts/verify_tiers_b.js`. Cubre: R10, R13, R14, R15, R16, R17.
+- [ ] T7 — Documentar en `docs/art-direction/hub-tramos-nivel.md` la regla, la tabla de cortes, la obra, nombres y pipeline; filas en `guia-manual-arte.md`. Cubre: R7, R8, R24.
+- [ ] T8 — PRUEBA de arte: generar `medio`, `alto` y `obra` de `barn` (`--only`), procesar, hoja `evidencia/tramos_prueba.webp`. PARAR: pedir veredicto de p-kh y registrarlo en `aprobacion_arte.md` (sección "Prueba"). Sin veredicto no se sigue. Cubre: R18, R21.
+- [ ] T9 — Generar las 48 restantes, procesarlas, `verify_tiers_b.js` (51/51), hoja `evidencia/tramos_contacto.webp` (17×4) y `tramos_anclas.webp` (throne_room, tavern, smithy). Cubre: R11, R12, R13, R14, R15, R16, R17, R18, R19, R20.
+- [ ] T10 — PUERTA DE ARTE: pedir a p-kh veredicto sobre la hoja completa; regenerar solo rechazados (R23). PARAR hasta `APROBADO` en `aprobacion_arte.md`. Cubre: R19, R22, R23.
+- [ ] T11 — Con `APROBADO`: `HUB_TEXTURES` pasa a 80 entradas (4 por edificio) y se actualiza su test. Cubre: R22, R25.
+- [ ] T12 — Evidencia Playwright `scripts/hub_b_tramos_evidence.js` 412×860 @2x: capturas por tramo y en obra, ciclo de mejora (antes/durante/después, sin navegación), toque tras el cambio, bloqueo de webp, fps y consola. Cubre: R27, R28, R29, R30, R31, R33, R34, R35, R36, R38, R40, R41, R42, R44.
+- [ ] T13 — Cierre: `cd client && npx vitest run`, `git diff --stat -- server shared` vacío, `CHANGELOG.md` bajo `## [Unreleased]`, `feature_list.json`. Cubre: R39, R43.
+
+## Bloqueado
+
+(vacío)

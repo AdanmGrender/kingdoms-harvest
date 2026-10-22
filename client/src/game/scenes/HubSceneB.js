@@ -10,7 +10,7 @@ import { TAP_SLOP_CSS, textResolutionFor } from '../display';
 import {
   HUB_W, HUB_H, HUB_DEPTHS, HUB_SLOTS, HUB_TEXTURES, TOKEN_FONT_PX,
   computeHubViewport, selectHubBuildings, stormAmbience, ambienceSignature, isTap, shouldAcceptTap,
-  buildSelectionPayload, findFreeTile,
+  buildSelectionPayload, findFreeTile, variantTextureCandidates,
 } from '../hub/hubLayout';
 import {
   PICKUP_TEXTURES, PICKUP_H, PICKUP_BOB, PICKUP_FLY_MS, PICKUP_REFRESH_MS,
@@ -20,7 +20,6 @@ import {
 const SKY_COVER_BOOST = 1.04; // como el fondo del spike: cover × 1.04 con deriva a × 1.025
 const SKY_DRIFT = 1.025;
 const AMBIENCE_FADE_MS = 1200;
-const CONSTRUCTION_TINT = 0x8a8478;
 const FOG_BANKS = 5;
 
 const rnd = (a, b) => Phaser.Math.Between(a, b);
@@ -214,19 +213,18 @@ export default class HubSceneB extends Phaser.Scene {
       seen.add(item.buildingId);
       let entry = this.bldSprites.get(item.buildingId);
       if (!entry) {
-        entry = { sprite: this.createBuildingSprite(item.buildingId), worker: null, smoke: null, state: null };
+        entry = { sprite: this.createBuildingSprite(item.buildingId, item.variant), worker: null, smoke: null, state: null };
         this.bldSprites.set(item.buildingId, entry);
       }
       entry.record = item.record;
       entry.sprite.setData('record', item.record);
+      this.applyVariant(entry, item.slot, item.buildingId, item.variant);
       if (entry.state !== item.state) {
         entry.state = item.state;
         if (item.state === 'construction') {
-          entry.sprite.setTint(CONSTRUCTION_TINT).setAlpha(0.75);
           this.destroyWorker(entry);
           this.destroySmoke(entry);
         } else {
-          entry.sprite.clearTint().setAlpha(1);
           if (item.worker) this.createWorker(entry, item.slot, item.worker);
           if (item.slot.smoke) this.createSmoke(entry, item.slot);
         }
@@ -242,16 +240,37 @@ export default class HubSceneB extends Phaser.Scene {
     this.syncFire();
   }
 
-  createBuildingSprite(buildingId) {
+  // Textura de una variante (tramo u obra): la primera de la cadena de caída que exista; si ninguna, el placeholder (R35).
+  variantTex(buildingId, variant) {
+    for (const key of variantTextureCandidates(buildingId, variant)) {
+      if (this.hasTex(key)) return key;
+    }
+    return 'hubb_placeholder';
+  }
+
+  createBuildingSprite(buildingId, variant = 'bajo') {
     const slot = HUB_SLOTS[buildingId];
-    const sprite = this.add.image(slot.x, slot.y, this.tex(`hubb_bld_${buildingId}`, 'hubb_placeholder'))
+    const sprite = this.add.image(slot.x, slot.y, this.variantTex(buildingId, variant))
       .setOrigin(0.5, 1).setDepth(HUB_DEPTHS.buildings + slot.y);
     const sc = Math.min(slot.w / sprite.width, slot.h / sprite.height);
     sprite.setScale(sc);
     sprite.setData('baseScale', sc);
     sprite.setData('buildingId', buildingId);
+    sprite.setData('variant', variant);
     sprite.setInteractive({ pixelPerfect: true, alphaTolerance: 8 });
     return sprite;
+  }
+
+  // Cambia la textura del sprite existente al cambiar la variante (tramo u obra). Misma variante: no-op (R32).
+  applyVariant(entry, slot, buildingId, variant) {
+    const sp = entry.sprite;
+    if (sp.getData('variant') === variant) return;
+    this.tweens.killTweensOf(sp); // un pulso de toque en curso dejaría la escala vieja (R31)
+    sp.setTexture(this.variantTex(buildingId, variant));
+    const sc = Math.min(slot.w / sp.width, slot.h / sp.height);
+    sp.setScale(sc).setData('baseScale', sc).setData('variant', variant);
+    sp.removeInteractive();
+    sp.setInteractive({ pixelPerfect: true, alphaTolerance: 8 }); // la forma del hit sigue a la textura nueva (R30)
   }
 
   // Trabajador: alternancia de 2 poses normalizadas por alto + respiración (técnica del spike, design.md §5.2).

@@ -17,6 +17,11 @@ import {
   STORM_AMBIENCE,
   CALM_AMBIENCE,
   HUB_TEXTURES,
+  TIERS,
+  BUILDING_MAX_LEVEL,
+  buildingTier,
+  variantKey,
+  variantTextureCandidates,
   computeHubViewport,
   pickRepresentative,
   selectHubBuildings,
@@ -423,5 +428,106 @@ describe('hubLayout — findFreeTile (R26)', () => {
     }
     expect(findFreeTile(full, 'trap')).toBeNull();
     expect(findFreeTile([], 'trap', { max: 0 })).toBeNull();
+  });
+});
+
+describe('hubLayout — tramos de nivel (R1–R6, R9, R26, R35)', () => {
+  // Tabla de cortes de design.md §3: [id, max, [último bajo, último medio]].
+  const CORTES = {
+    embassy: [3, 1, 2],
+    mill: [5, 2, 3], sawmill: [5, 2, 3], smithy: [5, 2, 3], stable: [5, 2, 3],
+    house: [5, 2, 3], mine: [5, 2, 3], tavern: [5, 2, 3], market: [5, 2, 3],
+    trap: [8, 3, 5], library: [8, 3, 5],
+    farm_plot: [10, 3, 7], barn: [10, 3, 7], tower: [10, 3, 7], barracks: [10, 3, 7], throne_room: [10, 3, 7],
+    wall: [15, 5, 10],
+  };
+
+  it('TIERS en orden bajo → medio → alto', () => {
+    expect(TIERS).toEqual(['bajo', 'medio', 'alto']);
+  });
+
+  it('BUILDING_MAX_LEVEL espeja maxLevel de shared/gameConfig.js para los 17 ids (R6)', () => {
+    expect(Object.keys(BUILDING_MAX_LEVEL).sort()).toEqual([...BUILDING_IDS].sort());
+    for (const id of BUILDING_IDS) expect(BUILDING_MAX_LEVEL[id]).toBe(BUILDINGS[id].maxLevel);
+  });
+
+  it('la tabla de cortes cubre los 17 ids y coincide con max', () => {
+    expect(Object.keys(CORTES).sort()).toEqual([...BUILDING_IDS].sort());
+    for (const id of BUILDING_IDS) expect(CORTES[id][0]).toBe(BUILDING_MAX_LEVEL[id]);
+  });
+
+  it.each(Object.entries(CORTES))('%s: bordes de nivel de cada tramo (R2, R5)', (id, [max, lastBajo, lastMedio]) => {
+    for (let lv = 1; lv <= max; lv++) {
+      const expected = lv <= lastBajo ? 'bajo' : lv <= lastMedio ? 'medio' : 'alto';
+      expect(buildingTier(id, lv), `${id} nivel ${lv}`).toBe(expected);
+    }
+    expect(buildingTier(id, 1)).toBe('bajo');
+    expect(buildingTier(id, max)).toBe('alto');
+    expect(buildingTier(id, lastBajo + 1)).toBe('medio');
+  });
+
+  it('level > max da alto (R4)', () => {
+    expect(buildingTier('embassy', 4)).toBe('alto');
+    expect(buildingTier('wall', 99)).toBe('alto');
+  });
+
+  it('level nulo, no numérico o < 1 da bajo (R3)', () => {
+    for (const bad of [null, undefined, '', 'x', NaN, 0, -1, Infinity * -1, {}]) {
+      expect(buildingTier('barn', bad)).toBe('bajo');
+    }
+  });
+
+  it('acepta el nivel como string numérico', () => {
+    expect(buildingTier('barn', '8')).toBe('alto');
+  });
+
+  it('id sin max (desconocido, prototipo) da bajo', () => {
+    expect(buildingTier('inexistente', 5)).toBe('bajo');
+    expect(buildingTier('constructor', 5)).toBe('bajo');
+    expect(buildingTier(undefined, 5)).toBe('bajo');
+  });
+
+  it('variantKey: el bajo conserva la clave histórica (R25)', () => {
+    expect(variantKey('barn', 'bajo')).toBe('hubb_bld_barn');
+    expect(variantKey('barn', 'medio')).toBe('hubb_bld_barn_medio');
+    expect(variantKey('barn', 'alto')).toBe('hubb_bld_barn_alto');
+    expect(variantKey('barn', 'obra')).toBe('hubb_bld_barn_obra');
+  });
+
+  it('variantTextureCandidates: orden de caída (R35)', () => {
+    expect(variantTextureCandidates('barn', 'bajo')).toEqual(['hubb_bld_barn']);
+    expect(variantTextureCandidates('barn', 'medio')).toEqual(['hubb_bld_barn_medio', 'hubb_bld_barn']);
+    expect(variantTextureCandidates('barn', 'alto')).toEqual(['hubb_bld_barn_alto', 'hubb_bld_barn_medio', 'hubb_bld_barn']);
+    expect(variantTextureCandidates('barn', 'obra')).toEqual(['hubb_bld_barn_obra', 'hubb_bld_barn']);
+    expect(variantTextureCandidates('barn', 'raro')).toEqual(['hubb_bld_barn']);
+  });
+
+  it('selectHubBuildings agrega tier y variant (R26)', () => {
+    const list = selectHubBuildings([
+      { id: 1, building_id: 'barn', level: 1, is_building: 0 },
+      { id: 2, building_id: 'wall', level: 7, is_building: 0 },
+      { id: 3, building_id: 'embassy', level: 3, is_building: 0 },
+    ]);
+    const by = Object.fromEntries(list.map((b) => [b.buildingId, b]));
+    expect(by.barn).toMatchObject({ tier: 'bajo', variant: 'bajo', state: 'built' });
+    expect(by.wall).toMatchObject({ tier: 'medio', variant: 'medio' });
+    expect(by.embassy).toMatchObject({ tier: 'alto', variant: 'alto' });
+  });
+
+  it('en obra la variante es obra y el tier sigue el nivel del registro (R9, R27)', () => {
+    const [b] = selectHubBuildings([{ id: 9, building_id: 'barn', level: 8, is_building: 1 }]);
+    expect(b.state).toBe('construction');
+    expect(b.variant).toBe('obra');
+    expect(b.tier).toBe('alto');
+  });
+
+  it('el representativo (más alto entre los construidos) fija el tramo; los en obra no cuentan', () => {
+    const [b] = selectHubBuildings([
+      { id: 1, building_id: 'farm_plot', level: 2, is_building: 0 },
+      { id: 2, building_id: 'farm_plot', level: 5, is_building: 0 },
+      { id: 3, building_id: 'farm_plot', level: 9, is_building: 1 },
+    ]);
+    expect(b.record.id).toBe(2);
+    expect(b.variant).toBe('medio');
   });
 });

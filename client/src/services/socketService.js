@@ -18,6 +18,8 @@ export function connectSocket(initData) {
   });
 
   socket.on('building_complete', ({ buildingType }) => {
+    // Recarga para que HubSceneB pase de "obra" al tramo del nivel nuevo sin reabrir ningún panel.
+    useGameStore.getState().loadBuildings();
     EventBridge.emit('game:notification', {
       text: `¡Construcción lista! ${buildingType}`,
       type: 'success',

@@ -30,6 +30,33 @@ export const BUILDING_IDS = [
   'tower', 'barracks', 'trap', 'tavern', 'market', 'embassy', 'throne_room', 'library',
 ];
 
+// Tramos de nivel (hub_b_tramos_nivel): espejo de maxLevel de shared/gameConfig.js (lo verifica hubLayout.test.js).
+export const TIERS = ['bajo', 'medio', 'alto'];
+export const BUILDING_MAX_LEVEL = {
+  farm_plot: 10, barn: 10, mill: 5, sawmill: 5, smithy: 5, stable: 5, house: 5, mine: 5, wall: 15,
+  tower: 10, barracks: 10, trap: 8, tavern: 5, market: 5, embassy: 3, throne_room: 10, library: 8,
+};
+
+// Cortes en tercios del maxLevel: bajo ≤ round(max/3), medio ≤ round(2·max/3), alto el resto.
+export function buildingTier(buildingId, level) {
+  const max = Object.prototype.hasOwnProperty.call(BUILDING_MAX_LEVEL, buildingId) ? BUILDING_MAX_LEVEL[buildingId] : 0;
+  const lv = Number(level);
+  if (!max || !Number.isFinite(lv) || lv < 1) return 'bajo';
+  if (lv <= Math.round(max / 3)) return 'bajo';
+  if (lv <= Math.round((2 * max) / 3)) return 'medio';
+  return 'alto';
+}
+
+// v ∈ TIERS + 'obra'. El tramo bajo conserva la clave histórica hubb_bld_<id>.
+export const variantKey = (id, v) => (v === 'bajo' ? `hubb_bld_${id}` : `hubb_bld_${id}_${v}`);
+
+// Orden de caída si falta una textura: obra → bajo; alto → medio → bajo.
+export function variantTextureCandidates(id, v) {
+  if (v === 'obra') return [variantKey(id, 'obra'), variantKey(id, 'bajo')];
+  const i = TIERS.indexOf(v);
+  return TIERS.slice(0, (i < 0 ? 0 : i) + 1).reverse().map((t) => variantKey(id, t));
+}
+
 const DEFAULT_TILE = [2, 2];
 export const TILE_SIZES = {
   farm_plot: [2, 2], barn: [2, 2], mill: [2, 2], sawmill: [2, 2], smithy: [2, 2], stable: [2, 2],
@@ -171,7 +198,9 @@ export function selectHubBuildings(buildings) {
     const record = pickRepresentative(recs);
     const state = buildingVisualState(record);
     const worker = state === 'built' && WORKER_BY_BUILDING[id] ? WORKER_BY_BUILDING[id] : null;
-    out.push({ buildingId: id, record, slot: HUB_SLOTS[id], state, worker });
+    const tier = buildingTier(id, record.level);
+    const variant = state === 'construction' ? 'obra' : tier;
+    out.push({ buildingId: id, record, slot: HUB_SLOTS[id], state, worker, tier, variant });
   }
   return out;
 }
