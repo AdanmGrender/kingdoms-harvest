@@ -55,8 +55,8 @@
 ### C4 — Evidencia y cierre
 
 - [x] T32 — `noEmoji.test.js` en verde + corrida de control con un emoji de prueba que lo hace fallar (salida citada). Cubre: R49, R50. Evidencia: control: emoji añadido a hud/ConstructionTimer.jsx -> `× ningún archivo ... Tests 1 failed | 4 passed (5)` citando components/hud/ConstructionTimer.jsx (specs/ui_kit_b/evidencia/noEmoji_control.txt); revertido -> Tests 5 passed (5).
-- [ ] T33 — Capturas «después» (hub + 4 paneles) con `ui_kit_b_evidence.js --mode despues`, `consola.txt` sin errores; barra a 412 px legible. Cubre: R56, R57, R32.
-- [ ] T34 — Cierre: vitest, build y jest en verde, `grep` de `grim_icons|gen_icons|grimChrome|MedievalSharp` vacío, `CHANGELOG.md` (al pasar a `done`, lo hace el flujo de cierre). Cubre: R48, R58.
+- [x] T33 — Capturas «después» (hub + 4 paneles) con `ui_kit_b_evidence.js --mode despues`, `consola.txt` sin errores; barra a 412 px legible. Cubre: R56, R57, R32. Evidencia: node scripts/ui_kit_b_evidence.js --mode despues -> hub/construir/heroes/mercado/ajustes_despues.webp (824x1720 @2x), pageerrors 0, consoleErrors 0, http>=400 0 (evidencia/consola_despues.txt); --mode barra -> 8 recursos de 45 px, scrollWidth == clientWidth (372) sin desborde a 412 px (evidencia/barra_412.webp, consola_barra.txt). Nota: el implementer no tiene visión; la legibilidad visual queda para el ojo del reviewer sobre las webp.
+- [x] T34 — Cierre: vitest, build y jest en verde, `grep` de `grim_icons|gen_icons|grimChrome|MedievalSharp` vacío, `CHANGELOG.md` (al pasar a `done`, lo hace el flujo de cierre). Cubre: R48, R58. Evidencia: client: vitest Test Files 19 passed, Tests 289 passed; build `built in 7.18s`; server: jest --runInBand Test Suites 25 passed, Tests 388 passed; grep de grim_icons|gen_icons|grimChrome|MedievalSharp en client/src, server/src, shared, scripts, docs solo da los nombres GRIM_ICONS de la hoja B nueva y tests que afirman su ausencia (hudRails, fontsConfig); sin código viejo. CHANGELOG lo escribe el flujo de cierre al pasar a done.
 
 ## Bloqueado
 

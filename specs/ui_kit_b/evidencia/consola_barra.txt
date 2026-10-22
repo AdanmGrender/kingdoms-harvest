@@ -1,4 +1,4 @@
-# consola de la corrida barra (Playwright 412x860 @2x, 2026-10-22T01:23:32.198Z)
+# consola de la corrida barra (Playwright 412x860 @2x, 2026-10-22T11:00:22.394Z)
 pageerrors: 0
 console.error: 0
 console.warn: 10
