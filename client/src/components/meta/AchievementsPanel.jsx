@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import Bar from '../ui/Bar';
 
 /**
  * AchievementsPanel — list every catalog achievement enriched with the
@@ -58,12 +59,7 @@ export default function AchievementsPanel() {
 
               {!ach.unlocked && (
                 <div className="mt-1.5">
-                  <div className="h-1.5 bg-kingdom-blue/40 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-purple-500 transition-all"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
+                  <Bar value={pct} tone="ember" label={ach.name} />
                   <p className="text-[10px] text-gray-500 mt-0.5">
                     {ach.progress} / {ach.goal}
                   </p>

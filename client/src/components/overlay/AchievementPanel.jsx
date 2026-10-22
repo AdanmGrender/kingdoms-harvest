@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import useGameStore from '../../store/gameStore';
+import Bar from '../ui/Bar';
 
 const CATEGORY_LABELS = {
   farmer:   { icon: '🌾', label: 'Granjero'   },
@@ -38,12 +39,7 @@ function AchievementCard({ ach, onClaim, loading }) {
 
           {/* Progress bar */}
           <div className="mt-1.5">
-            <div className="h-1.5 rounded-full bg-gray-700">
-              <div
-                className={`h-full rounded-full transition-all ${ach.unlocked ? 'bg-green-500' : 'bg-blue-600'}`}
-                style={{ width: `${pct}%` }}
-              />
-            </div>
+            <Bar value={pct} tone={ach.unlocked ? 'macula' : 'ember'} label={ach.name} />
             <p className="text-[9px] text-gray-500 mt-0.5">{ach.progress} / {ach.target}</p>
           </div>
 

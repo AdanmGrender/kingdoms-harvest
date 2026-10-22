@@ -6,6 +6,7 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
+import Bar from '../ui/Bar';
 import NotificationPrefsPanel from '../ui/NotificationPrefsPanel';
 
 const FACTION_ICONS = {
@@ -131,14 +132,8 @@ export default function GameHUD() {
               {displayName}
             </p>
             {/* XP Bar */}
-            <div className="w-16 h-1.5 bg-gray-700/60 rounded-full overflow-hidden mt-0.5">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{
-                  width: `${xpPercent}%`,
-                  background: 'linear-gradient(90deg, #3b82f6, #06b6d4)',
-                }}
-              />
+            <div className="w-16 mt-0.5">
+              <Bar value={xpPercent} tone="ember" label="Experiencia" />
             </div>
           </div>
         </div>

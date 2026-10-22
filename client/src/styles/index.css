@@ -307,6 +307,7 @@ body {
 
 /* Botón de riel (IconButton) */
 .kh-iconbtn {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;

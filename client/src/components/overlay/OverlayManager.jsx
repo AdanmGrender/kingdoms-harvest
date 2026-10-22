@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon, { CharacterSprite } from '../ui/SpriteIcon';
+import Panel from '../ui/Panel';
 import DialogPanel from './DialogPanel';
 import CropSelectMenu from './CropSelectMenu';
 import VillagerPanel from './VillagerPanel';
@@ -221,16 +222,9 @@ function renderPanel(overlayState, onClose) {
 
 function GenericPanel({ title, onClose, children }) {
   return (
-    <div className="mx-2 mb-2 p-4 rounded-t-xl"
-      style={{ background: 'rgba(51, 47, 43, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold font-display">
-          {title}
-        </h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
-      </div>
+    <Panel title={title} onClose={onClose} className="mx-2 mb-2">
       {children}
-    </div>
+    </Panel>
   );
 }
 

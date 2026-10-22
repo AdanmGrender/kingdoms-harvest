@@ -4,6 +4,7 @@
  */
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import Bar from '../ui/Bar';
 
 function formatTime(seconds) {
   if (seconds <= 0) return '00:00';
@@ -57,15 +58,7 @@ export default function ConstructionTimer() {
             <p className="text-white text-[9px] tabular-nums">{formatTime(remaining)}</p>
           </div>
         </div>
-        <div className="w-full h-1 bg-black/50 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all"
-            style={{
-              width: `${pct}%`,
-              background: 'linear-gradient(90deg, #ff8c28, #ffd750)',
-            }}
-          />
-        </div>
+        <Bar value={pct} tone="ember" label="Construcción" />
       </div>
     </div>
   );

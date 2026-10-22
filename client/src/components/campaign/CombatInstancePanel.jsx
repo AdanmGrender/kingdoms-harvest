@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import Bar from '../ui/Bar';
 import EmberField from '../fx/EmberField';
 
 // T1 coordinación visual: diorama iso grimdark de fondo según el tipo de nodo.
@@ -171,9 +172,7 @@ export default function CombatInstancePanel({ onClose }) {
         {/* Enemigo — barra de vida */}
         <div className="mb-2">
           <div className="text-gray-300 text-xs mb-1">Enemigo</div>
-          <div className="h-4 rounded" style={{ background: '#333' }}>
-            <div className="h-4 rounded" style={{ width: `${enemyPct}%`, background: '#b32821', transition: 'width .3s' }} />
-          </div>
+          <Bar value={enemyPct} tone="seal" label="Vida del enemigo" />
         </div>
 
         <div className="flex-1" />
@@ -222,8 +221,8 @@ export default function CombatInstancePanel({ onClose }) {
                   </div>
                 </div>
                 {/* Energía */}
-                <div className="h-1 rounded mt-1 w-full" style={{ background: '#222' }}>
-                  <div className="h-1 rounded" style={{ width: `${Math.min(100, h.energy)}%`, background: ready ? '#ffd700' : '#4ade80', transition: 'width .3s' }} />
+                <div className="mt-1 w-full">
+                  <Bar value={h.energy} tone={ready ? 'ember' : 'macula'} label={`Energía de ${h.name}`} />
                 </div>
                 <span className="text-[9px] text-gray-300 truncate w-full text-center leading-tight">{h.name}</span>
               </button>
