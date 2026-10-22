@@ -9,7 +9,7 @@
 - Criterio: `docs/art-direction/ui-kit-b.md` §6.1 (reglas), §6.2 (KH único),
   §7.2 (que se reconozca a 32 px sin etiqueta) y §8.
 
-## Veredicto: `REGENERAR`
+## Veredicto: `REGENERAR` (1.ª revisión; superado por la 2.ª → `APROBADO 79/79`)
 
 Hay que regenerar 2 íconos. Los otros 77 quedan aprobados tal como están
 (celda y arte), así que la revisión que viene es solo de esas 2 celdas. Con eso
@@ -23,6 +23,21 @@ en verde, este archivo pasa a `APROBADO` y se puede abrir C2 (R43).
 Presupuesto: una sola llamada de `gen_art_b.js` (hoja 3×3, se usan 2 celdas)
 ≈ 0,14 USD. Se procesa con `process_icon_sheets.js`, se vuelve a ensamblar y se
 regenera la hoja de contacto. Las celdas de los demás íconos no se tocan.
+
+## 2.ª revisión — 2026-10-21 — `APROBADO 79/79`
+
+Revisé `specs/ui_kit_b/evidencia/iconos_regen.webp` (blueprint, scroll, quests y sun
+a 24/32/48 px) y las celdas procesadas a 192 px (`art-b/uikit/proc/`), commit `25e3040`.
+
+- `blueprint`: pliego **desplegado y plano**, papel hueso con torre almenada y cotas
+  en sepia, sin letras, bordes enrollados, contorno negro, sin cordel, compás ni
+  pluma. A 32 px se lee como hoja rectangular y se distingue de `scroll` y `quests`
+  (rollos en diagonal). La gotita roja del papel es una mancha, no un segundo objeto.
+- `sun`: disco de latón con corona de rayos triangulares cortos **unidos** al
+  disco (1 silueta conexa), sin nube, sin cara, sin halo. Contrasta con `moon`.
+
+Puerta T22 cerrada: los 79 íconos están aprobados. Se puede abrir C2 (R43), y la
+condición de uso de los edificios sigue vigente (≥ 40 CSS px, siempre con el nombre al lado).
 
 ## Lo que señaló Central, confirmado o descartado
 
