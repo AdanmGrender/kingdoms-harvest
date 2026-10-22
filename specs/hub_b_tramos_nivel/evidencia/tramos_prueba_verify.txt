@@ -1,0 +1,5 @@
+✓ barn_medio.webp 400×224 24 KB aspecto 104 % dcx 0.0 %
+✓ barn_alto.webp 328×224 22 KB aspecto 85 % dcx 0.2 %
+✓ barn_obra.webp 382×224 31 KB aspecto 99 % dcx 0.1 %
+
+3 webp de tramo verificados, 0 con fallos, 78 KB en total.

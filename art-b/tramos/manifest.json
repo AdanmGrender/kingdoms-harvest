@@ -1,512 +1,512 @@
 [
   {
     "id": "tier_throne_room_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:5",
     "refs": [
       "client/public/assets/b/buildings/throne_room.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a ruined-gothic throne hall keep with a tall brazier on its roof. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.83, exactly like the first reference. SUBJECT: a ruined-gothic throne hall keep with a tall brazier on its roof. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_throne_room_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:5",
     "refs": [
       "client/public/assets/b/buildings/throne_room.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a ruined-gothic throne hall keep with a tall brazier on its roof. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.83, exactly like the first reference. SUBJECT: a ruined-gothic throne hall keep with a tall brazier on its roof. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_throne_room_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:5",
     "refs": [
       "client/public/assets/b/buildings/throne_room.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a ruined-gothic throne hall keep with a tall brazier on its roof. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.83, exactly like the first reference. SUBJECT: a ruined-gothic throne hall keep with a tall brazier on its roof. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_mine_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/mine.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a timbered mine entrance cut into rock with ore carts. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.35, exactly like the first reference. SUBJECT: a timbered mine entrance cut into rock with ore carts. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_mine_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/mine.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a timbered mine entrance cut into rock with ore carts. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.35, exactly like the first reference. SUBJECT: a timbered mine entrance cut into rock with ore carts. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_mine_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/mine.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a timbered mine entrance cut into rock with ore carts. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.35, exactly like the first reference. SUBJECT: a timbered mine entrance cut into rock with ore carts. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_library_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:4",
     "refs": [
       "client/public/assets/b/buildings/library.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a crooked gothic library tower stuffed with scroll shelves. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.76, exactly like the first reference. SUBJECT: a crooked gothic library tower stuffed with scroll shelves. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_library_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:4",
     "refs": [
       "client/public/assets/b/buildings/library.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a crooked gothic library tower stuffed with scroll shelves. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.76, exactly like the first reference. SUBJECT: a crooked gothic library tower stuffed with scroll shelves. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_library_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:4",
     "refs": [
       "client/public/assets/b/buildings/library.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a crooked gothic library tower stuffed with scroll shelves. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.76, exactly like the first reference. SUBJECT: a crooked gothic library tower stuffed with scroll shelves. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_embassy_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:5",
     "refs": [
       "client/public/assets/b/buildings/embassy.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stern diplomatic embassy hall with banners and a heavy door. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.85, exactly like the first reference. SUBJECT: a stern diplomatic embassy hall with banners and a heavy door. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_embassy_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:5",
     "refs": [
       "client/public/assets/b/buildings/embassy.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stern diplomatic embassy hall with banners and a heavy door. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.85, exactly like the first reference. SUBJECT: a stern diplomatic embassy hall with banners and a heavy door. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_embassy_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:5",
     "refs": [
       "client/public/assets/b/buildings/embassy.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stern diplomatic embassy hall with banners and a heavy door. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.85, exactly like the first reference. SUBJECT: a stern diplomatic embassy hall with banners and a heavy door. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_tower_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "5:4",
     "refs": [
       "client/public/assets/b/buildings/tower.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stone watchtower with a crenellated top. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.18, exactly like the first reference. SUBJECT: a stone watchtower with a crenellated top. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_tower_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "5:4",
     "refs": [
       "client/public/assets/b/buildings/tower.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stone watchtower with a crenellated top. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.18, exactly like the first reference. SUBJECT: a stone watchtower with a crenellated top. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_tower_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "5:4",
     "refs": [
       "client/public/assets/b/buildings/tower.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stone watchtower with a crenellated top. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.18, exactly like the first reference. SUBJECT: a stone watchtower with a crenellated top. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_wall_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/wall.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stretch of fortified stone wall with a gatehouse. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.76, exactly like the first reference. SUBJECT: a stretch of fortified stone wall with a gatehouse. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_wall_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/wall.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stretch of fortified stone wall with a gatehouse. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.76, exactly like the first reference. SUBJECT: a stretch of fortified stone wall with a gatehouse. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_wall_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/wall.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a stretch of fortified stone wall with a gatehouse. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.76, exactly like the first reference. SUBJECT: a stretch of fortified stone wall with a gatehouse. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_barracks_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/barracks.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a long soldiers barracks with weapon racks. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 2.01, exactly like the first reference. SUBJECT: a long soldiers barracks with weapon racks. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_barracks_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/barracks.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a long soldiers barracks with weapon racks. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 2.01, exactly like the first reference. SUBJECT: a long soldiers barracks with weapon racks. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_barracks_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/barracks.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a long soldiers barracks with weapon racks. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 2.01, exactly like the first reference. SUBJECT: a long soldiers barracks with weapon racks. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_tavern_medio",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/tavern.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a leaning tavern with a smoking chimney and hanging sign-less lanterns. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.96, exactly like the first reference. SUBJECT: a leaning tavern with a smoking chimney and hanging sign-less lanterns. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_tavern_alto",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/tavern.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a leaning tavern with a smoking chimney and hanging sign-less lanterns. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.96, exactly like the first reference. SUBJECT: a leaning tavern with a smoking chimney and hanging sign-less lanterns. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_tavern_obra",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/tavern.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a leaning tavern with a smoking chimney and hanging sign-less lanterns. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.96, exactly like the first reference. SUBJECT: a leaning tavern with a smoking chimney and hanging sign-less lanterns. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_market_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/market.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a market stall pavilion with crates and patched awnings. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.37, exactly like the first reference. SUBJECT: a market stall pavilion with crates and patched awnings. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_market_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/market.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a market stall pavilion with crates and patched awnings. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.37, exactly like the first reference. SUBJECT: a market stall pavilion with crates and patched awnings. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_market_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/market.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a market stall pavilion with crates and patched awnings. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.37, exactly like the first reference. SUBJECT: a market stall pavilion with crates and patched awnings. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_smithy_medio",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/smithy.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a blacksmith forge with a smoking chimney and an anvil. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.96, exactly like the first reference. SUBJECT: a blacksmith forge with a smoking chimney and an anvil. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_smithy_alto",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/smithy.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a blacksmith forge with a smoking chimney and an anvil. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.96, exactly like the first reference. SUBJECT: a blacksmith forge with a smoking chimney and an anvil. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_smithy_obra",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/smithy.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a blacksmith forge with a smoking chimney and an anvil. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.96, exactly like the first reference. SUBJECT: a blacksmith forge with a smoking chimney and an anvil. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_mill_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:4",
     "refs": [
       "client/public/assets/b/buildings/mill.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a tall windmill with patched sails. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.71, exactly like the first reference. SUBJECT: a tall windmill with patched sails. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_mill_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:4",
     "refs": [
       "client/public/assets/b/buildings/mill.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a tall windmill with patched sails. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.71, exactly like the first reference. SUBJECT: a tall windmill with patched sails. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_mill_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:4",
     "refs": [
       "client/public/assets/b/buildings/mill.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a tall windmill with patched sails. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is tall: its overall width-to-height ratio must stay about 0.71, exactly like the first reference. SUBJECT: a tall windmill with patched sails. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_house_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:2",
     "refs": [
       "client/public/assets/b/buildings/house.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a peasant timber-framed house with a thatched roof. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.47, exactly like the first reference. SUBJECT: a peasant timber-framed house with a thatched roof. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_house_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:2",
     "refs": [
       "client/public/assets/b/buildings/house.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a peasant timber-framed house with a thatched roof. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.47, exactly like the first reference. SUBJECT: a peasant timber-framed house with a thatched roof. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_house_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "3:2",
     "refs": [
       "client/public/assets/b/buildings/house.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a peasant timber-framed house with a thatched roof. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.47, exactly like the first reference. SUBJECT: a peasant timber-framed house with a thatched roof. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_barn_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/barn.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a big wooden barn with a hayloft door. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.71, exactly like the first reference. SUBJECT: a big wooden barn with a hayloft door. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_barn_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/barn.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a big wooden barn with a hayloft door. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.71, exactly like the first reference. SUBJECT: a big wooden barn with a hayloft door. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_barn_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "16:9",
     "refs": [
       "client/public/assets/b/buildings/barn.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a big wooden barn with a hayloft door. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.71, exactly like the first reference. SUBJECT: a big wooden barn with a hayloft door. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_sawmill_medio",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/sawmill.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a lumber sawmill with a water wheel and log piles. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.01, exactly like the first reference. SUBJECT: a lumber sawmill with a water wheel and log piles. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_sawmill_alto",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/sawmill.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a lumber sawmill with a water wheel and log piles. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.01, exactly like the first reference. SUBJECT: a lumber sawmill with a water wheel and log piles. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_sawmill_obra",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/sawmill.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a lumber sawmill with a water wheel and log piles. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.01, exactly like the first reference. SUBJECT: a lumber sawmill with a water wheel and log piles. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_stable_medio",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/stable.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a horse stable with a long sloped roof. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.02, exactly like the first reference. SUBJECT: a horse stable with a long sloped roof. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_stable_alto",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/stable.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a horse stable with a long sloped roof. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.02, exactly like the first reference. SUBJECT: a horse stable with a long sloped roof. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_stable_obra",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/stable.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a horse stable with a long sloped roof. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.02, exactly like the first reference. SUBJECT: a horse stable with a long sloped roof. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_farm_plot_medio",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/farm_plot.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a tilled farm plot with crop rows and a scarecrow. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.35, exactly like the first reference. SUBJECT: a tilled farm plot with crop rows and a scarecrow. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_farm_plot_alto",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/farm_plot.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a tilled farm plot with crop rows and a scarecrow. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.35, exactly like the first reference. SUBJECT: a tilled farm plot with crop rows and a scarecrow. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_farm_plot_obra",
-    "kind": "ui",
-    "aspect": "1:1",
+    "kind": "prop",
+    "aspect": "4:3",
     "refs": [
       "client/public/assets/b/buildings/farm_plot.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a tilled farm plot with crop rows and a scarecrow. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.35, exactly like the first reference. SUBJECT: a tilled farm plot with crop rows and a scarecrow. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   },
   {
     "id": "tier_trap_medio",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/trap.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a spiked trap pit with a wooden cover. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.00, exactly like the first reference. SUBJECT: a spiked trap pit with a wooden cover. Version: MID-LEVEL upgrade. Same building but reinforced and richer: more cut stone and heavier timber, iron bands and rivets, extra annexes and roof tiles, more lived-in detail, still weathered."
   },
   {
     "id": "tier_trap_alto",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/trap.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a spiked trap pit with a wooden cover. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.00, exactly like the first reference. SUBJECT: a spiked trap pit with a wooden cover. Version: TOP-LEVEL upgrade. Same building at its grandest: ornate carved stonework, gilded tarnished-brass trim, tall heraldic banners without any real-world emblem, lit windows and braziers glowing candle orange, imposing and majestic, but clearly the same building."
   },
   {
     "id": "tier_trap_obra",
-    "kind": "ui",
+    "kind": "prop",
     "aspect": "1:1",
     "refs": [
       "client/public/assets/b/buildings/trap.webp",
       "art-b/hub/refs/hub_base.webp"
     ],
-    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. SUBJECT: a spiked trap pit with a wooden cover. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
+    "prompt": "STYLE MATCH: exactly the same look as the first reference image (the base version of this building) and the second reference (the game world) — hand-inked 16th-century woodcut and copperplate engraving, rough scratchy ink lines, dense cross-hatching, dark ink washes, earthy umber, sepia, ochre, rust and bone palette, heroic chunky proportions. Draw the SAME building as the first reference: same footprint, same overall silhouette and proportions, same camera angle and three-quarter view, centered, standing on its own base with its foot touching the very bottom edge of the image, no ground strip, no scenery, no people, no text, no letters, no frame, flat plain uniform light grey background. The building is wide: its overall width-to-height ratio must stay about 1.00, exactly like the first reference. SUBJECT: a spiked trap pit with a wooden cover. Version: UNDER CONSTRUCTION. Same building mid-build: wooden scaffolding around it, exposed beams and bare ribs, tarp canvas sheets, half-laid stones, rope pulleys, stacked blocks and planks; the silhouette of the building must stay recognizable."
   }
 ]
