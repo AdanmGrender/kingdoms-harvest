@@ -1,0 +1,18 @@
+✓ castle     ← throne_room.webp  bbox 498×600 (de 506×608) → 143×172
+✓ farmhouse  ← house.webp  bbox 297×203 (de 305×208) → 172×118
+✓ market     ← market.webp  bbox 347×250 (de 351×256) → 172×124
+✓ tower      ← tower.webp  bbox 331×282 (de 340×288) → 172×147
+✓ barracks   ← barracks.webp  bbox 474×235 (de 483×240) → 172×85
+✓ tavern     ← tavern.webp  bbox 303×314 (de 306×320) → 166×172
+✓ mill       ← mill.webp  bbox 256×364 (de 261×368) → 121×172
+✓ wall       ← wall.webp  bbox 362×202 (de 366×208) → 172×96
+✓ trap       ← trap.webp  bbox 158×157 (de 160×160) → 172×171
+✓ stable     ← stable.webp  bbox 269×268 (de 277×272) → 172×171
+✓ sawmill    ← sawmill.webp  bbox 301×299 (de 306×304) → 172×171
+✓ barn       ← barn.webp  bbox 377×219 (de 384×224) → 172×100
+✓ mine       ← mine.webp  bbox 340×252 (de 345×256) → 172×127
+✓ smithy     ← smithy.webp  bbox 283×297 (de 292×304) → 164×172
+✓ library    ← library.webp  bbox 335×442 (de 340×448) → 130×172
+✓ embassy    ← embassy.webp  bbox 349×411 (de 354×416) → 146×172
+✓ farm_plot  ← farm_plot.webp  bbox 321×234 (de 324×240) → 172×125
+17 recortes de edificio → art-b\uikit\proc
