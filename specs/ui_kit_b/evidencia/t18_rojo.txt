@@ -1,0 +1,30 @@
+ ❯ src/tests/iconSheet.test.js (15 tests | 11 failed) 74ms
+     × apunta a b/ui/icons.webp con celda 192 y 8 columnas 7ms
+     × los nombres nuevos van solo al final (índice de celda posterior al contrato) 1ms
+     × nav_token ya no es alias y ningún alias apunta a kh_token 1ms
+     × ningún otro nombre resuelve a la celda de kh_token 2ms
+     × enemy_carroneros resuelve desde la tira enemy_icons_legacy.png 1ms
+     × enemy_brutos resuelve desde la tira enemy_icons_legacy.png 1ms
+     × enemy_aullador resuelve desde la tira enemy_icons_legacy.png 0ms
+     × enemy_coloso resuelve desde la tira enemy_icons_legacy.png 0ms
+     × enemy_boss_devorador resuelve desde la tira enemy_icons_legacy.png 0ms
+     × enemy_boss_heraldo resuelve desde la tira enemy_icons_legacy.png 0ms
+     × la tira legacy existe 1ms
+ ❯ src/tests/SpriteIcon.test.jsx (3 tests | 2 failed) 38ms
+     × renderiza con image-rendering: auto (no pixelated) 29ms
+     × nombre inexistente → recuadro vacío con data-missing-icon, sin texto ni emoji 4ms
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/tests/iconSheet.test.js > iconSheet — constantes ↔ imagen (R38) > apunta a b/ui/icons.webp con celda 192 y 8 columnas
+ FAIL  src/tests/iconSheet.test.js > iconSheet — contrato de nombres (R39) > los nombres nuevos van solo al final (índice de celda posterior al contrato)
+ FAIL  src/tests/iconSheet.test.js > iconSheet — kh_token único (R45) > nav_token ya no es alias y ningún alias apunta a kh_token
+ FAIL  src/tests/iconSheet.test.js > iconSheet — kh_token único (R45) > ningún otro nombre resuelve a la celda de kh_token
+ FAIL  src/tests/iconSheet.test.js > iconSheet — enemigos legacy (R46) > enemy_carroneros resuelve desde la tira enemy_icons_legacy.png
+ FAIL  src/tests/iconSheet.test.js > iconSheet — enemigos legacy (R46) > enemy_brutos resuelve desde la tira enemy_icons_legacy.png
+ FAIL  src/tests/iconSheet.test.js > iconSheet — enemigos legacy (R46) > enemy_aullador resuelve desde la tira enemy_icons_legacy.png
+ FAIL  src/tests/iconSheet.test.js > iconSheet — enemigos legacy (R46) > enemy_coloso resuelve desde la tira enemy_icons_legacy.png
+ FAIL  src/tests/iconSheet.test.js > iconSheet — enemigos legacy (R46) > enemy_boss_devorador resuelve desde la tira enemy_icons_legacy.png
+ FAIL  src/tests/iconSheet.test.js > iconSheet — enemigos legacy (R46) > enemy_boss_heraldo resuelve desde la tira enemy_icons_legacy.png
+ FAIL  src/tests/iconSheet.test.js > iconSheet — enemigos legacy (R46) > la tira legacy existe
+ FAIL  src/tests/SpriteIcon.test.jsx > SpriteIcon (R47) > renderiza con image-rendering: auto (no pixelated)
+ FAIL  src/tests/SpriteIcon.test.jsx > SpriteIcon (R47) > nombre inexistente → recuadro vacío con data-missing-icon, sin texto ni emoji
+ Test Files  2 failed (2)

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const MILESTONES = [7, 14, 21, 30];
 
@@ -43,7 +44,7 @@ export default function StreakBanner() {
           : 'bg-kingdom-card/95 border-purple-600'
       }`}>
         <p className={`text-sm font-bold ${isMilestone ? 'text-yellow-300' : 'text-white'}`}>
-          {isMilestone ? '🎉' : '🔥'} Racha de {streak} días{isMilestone ? ' — ¡Hito!' : ''}
+          <SpriteIcon name={isMilestone ? 'medal' : 'flame'} size={28} /> Racha de {streak} días{isMilestone ? ' — ¡Hito!' : ''}
         </p>
         <p className="text-xs text-purple-300 mt-0.5">
           Multiplicador: <span className="text-yellow-400 font-bold">{multiplier}×</span> tokens

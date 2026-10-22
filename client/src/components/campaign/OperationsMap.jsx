@@ -2,13 +2,13 @@ import { useEffect, Fragment } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
-// Ícono grim del sheet IA por tipo de nodo (fallback emoji si falta el arte)
+// Ícono grim del sheet IA por tipo de nodo (nombre de sprite de la hoja B)
 const TYPE_ICON = {
-  manage:  { sprite: 'gear',  emoji: '🔧' },
-  collect: { sprite: 'wheat', emoji: '🌾' },
-  combat:  { sprite: 'sword', emoji: '⚔️' },
-  wave:    { sprite: 'tide',  emoji: '🌊' },
-  boss:    { sprite: 'skull', emoji: '💀' },
+  manage:  { sprite: 'gear',  emoji: 'gear' },
+  collect: { sprite: 'wheat', emoji: 'wheat' },
+  combat:  { sprite: 'sword', emoji: 'sword' },
+  wave:    { sprite: 'tide',  emoji: 'tide' },
+  boss:    { sprite: 'skull', emoji: 'skull' },
 };
 
 // F1: sólo los nodos combat/wave/boss se pueden re-farmear con "Asalto rápido".
@@ -34,7 +34,7 @@ export default function OperationsMap({ onClose }) {
       } else if (res.kind === 'blocked') {
         addNotification(res.hint, 'info');
       } else if (res.kind === 'cleared') {
-        addNotification(`✅ ${node.name} completado`, 'success');
+        addNotification(`${node.name} completado`, 'success');
       }
     } catch (e) {
       addNotification(e.response?.data?.error || 'No se pudo entrar', 'error');
@@ -48,8 +48,8 @@ export default function OperationsMap({ onClose }) {
   return (
     <div className="fixed inset-0 z-40 flex flex-col" style={{ background: 'rgba(10,10,20,0.96)' }}>
       <div className="flex justify-between items-center p-4">
-        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          <SpriteIcon name="map" size={26} fallback="🗺️" /> Operaciones
+        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2 font-display">
+          <SpriteIcon name="map" size={28} /> Operaciones
         </h2>
         <div className="flex items-center gap-3">
           <span className="text-yellow-300 text-xs font-semibold">Asaltos: {sweepsLeft}/5</span>
@@ -70,7 +70,7 @@ export default function OperationsMap({ onClose }) {
               {showActSep && (
                 <div className="w-full max-w-xs my-2 flex items-center gap-2 text-yellow-600/70">
                   <div className="flex-1 h-px" style={{ background: 'rgba(255,215,0,0.25)' }} />
-                  <span className="text-[10px] uppercase tracking-widest font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+                  <span className="text-[10px] uppercase tracking-widest font-bold font-display">
                     Acto {node.act}
                   </span>
                   <div className="flex-1 h-px" style={{ background: 'rgba(255,215,0,0.25)' }} />
@@ -91,7 +91,6 @@ export default function OperationsMap({ onClose }) {
                     <SpriteIcon
                       name={node.isBoss ? 'skull' : TYPE_ICON[node.type]?.sprite}
                       size={34}
-                      fallback={node.isBoss ? '💀' : TYPE_ICON[node.type]?.emoji}
                       style={locked ? { filter: 'grayscale(1) brightness(0.7)' } : undefined}
                     />
                     <div className="flex-1 text-left">
@@ -99,8 +98,8 @@ export default function OperationsMap({ onClose }) {
                       <p className="text-gray-400 text-[10px] uppercase">{node.type}</p>
                     </div>
                     {cleared
-                      ? <SpriteIcon name="check" size={22} fallback="✓" />
-                      : <span className="text-lg">{locked ? '🔒' : '▶'}</span>}
+                      ? <SpriteIcon name="check" size={28} />
+                      : <SpriteIcon name={locked ? 'shield' : 'sword'} size={28} />}
                   </button>
                   {sweepable && (
                     <button
@@ -114,7 +113,7 @@ export default function OperationsMap({ onClose }) {
                         opacity: sweepsLeft <= 0 ? 0.35 : 1,
                       }}
                     >
-                      <SpriteIcon name="flame" size={18} fallback="⚡" />
+                      <SpriteIcon name="flame" size={28} />
                       Asalto
                     </button>
                   )}

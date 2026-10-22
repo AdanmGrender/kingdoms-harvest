@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
 
 function QuickNavButtons() {
   const setOverlay = useGameStore((s) => s.setOverlay);
@@ -29,14 +30,14 @@ function QuickNavButtons() {
 
   return (
     <>
-      {btn('⚔️ Héroes',   'heroes',       { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(168,85,247,0.4)', borderBottom: 'none', color: '#d8b4fe' })}
-      {btn('🏆 Logros',   'achievements', { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(234,179,8,0.4)',  borderBottom: 'none', color: '#fde047' })}
-      {btn('🏷️ Mercado',  'marketplace',  { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(59,130,246,0.4)', borderBottom: 'none', color: '#93c5fd' })}
-      {btn('🛡️ Gremio',   'guild',        { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
-      {btn('🌸 Temporada','seasonal',     { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(74,222,128,0.4)', borderBottom: 'none', color: '#86efac' })}
-      {btn('⚔️ Guerra',   'combat',       { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
-      {btn('⭐ Prestige', 'prestige',     { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(250,204,21,0.4)', borderBottom: 'none', color: '#fbbf24' })}
-      {btn('💸 Retiro',   'withdrawal',   { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(253,224,71,0.4)', borderBottom: 'none', color: '#fde047' })}
+      {btn('Héroes',   'heroes',       { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(168,85,247,0.4)', borderBottom: 'none', color: '#d8b4fe' })}
+      {btn('Logros',   'achievements', { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(234,179,8,0.4)',  borderBottom: 'none', color: '#fde047' })}
+      {btn('Mercado',  'marketplace',  { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(59,130,246,0.4)', borderBottom: 'none', color: '#93c5fd' })}
+      {btn('Gremio',   'guild',        { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('Temporada','seasonal',     { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(74,222,128,0.4)', borderBottom: 'none', color: '#86efac' })}
+      {btn('Guerra',   'combat',       { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(239,68,68,0.4)',  borderBottom: 'none', color: '#fca5a5' })}
+      {btn('Prestige', 'prestige',     { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(250,204,21,0.4)', borderBottom: 'none', color: '#fbbf24' })}
+      {btn('Retiro',   'withdrawal',   { background: 'rgba(51,47,43,0.9)', border: '1px solid rgba(253,224,71,0.4)', borderBottom: 'none', color: '#fde047' })}
     </>
   );
 }
@@ -46,25 +47,25 @@ const CATEGORIES = [
   {
     id: 'agricultural',
     name: 'Granja',
-    icon: '🌾',
+    icon: 'wheat',
     buildings: ['farm_plot', 'barn', 'mill', 'sawmill', 'smithy', 'stable', 'house', 'mine'],
   },
   {
     id: 'defensive',
     name: 'Defensa',
-    icon: '🛡️',
+    icon: 'shield',
     buildings: ['wall', 'tower', 'barracks', 'trap'],
   },
   {
     id: 'social',
     name: 'Social',
-    icon: '🏪',
+    icon: 'alliance',
     buildings: ['tavern', 'market', 'embassy'],
   },
   {
     id: 'noble',
     name: 'Noble',
-    icon: '👑',
+    icon: 'crown',
     buildings: ['throne_room', 'library'],
   },
 ];
@@ -72,30 +73,30 @@ const CATEGORIES = [
 // Building config imported from shared (mirrored here for UI)
 // In production this would come from server/shared config
 const BUILDING_INFO = {
-  farm_plot: { name: 'Parcela', icon: '🌱', cost: { wood: 10, stone: 5 }, tileIndex: 14 },
-  barn: { name: 'Granero', icon: '🏚️', cost: { wood: 30, stone: 15 }, tileIndex: 0 },
-  mill: { name: 'Molino', icon: '🏭', cost: { wood: 50, stone: 30, iron: 10 }, tileIndex: 1 },
-  sawmill: { name: 'Aserradero', icon: '🪚', cost: { wood: 40, stone: 20, iron: 15 }, tileIndex: 11 },
-  smithy: { name: 'Herrería', icon: '⚒️', cost: { wood: 30, stone: 50, iron: 25 }, tileIndex: 10 },
-  stable: { name: 'Establo', icon: '🐴', cost: { wood: 60, stone: 20 }, tileIndex: 9 },
-  house: { name: 'Casa', icon: '🏠', cost: { wood: 20, stone: 10 }, tileIndex: 0 },
-  mine: { name: 'Mina', icon: '⛏️', cost: { wood: 30, stone: 40 }, tileIndex: 0 },
-  wall: { name: 'Muralla', icon: '🧱', cost: { stone: 50, wood: 20 }, tileIndex: 2 },
-  tower: { name: 'Torre', icon: '🗼', cost: { stone: 80, iron: 20 }, tileIndex: 3 },
-  barracks: { name: 'Cuartel', icon: '⚔️', cost: { wood: 60, stone: 40, iron: 20 }, tileIndex: 4 },
-  trap: { name: 'Trampas', icon: '🪤', cost: { wood: 20, iron: 30 }, tileIndex: 12 },
-  tavern: { name: 'Taberna', icon: '🍺', cost: { wood: 40, stone: 20 }, tileIndex: 5 },
-  market: { name: 'Mercado', icon: '🏪', cost: { wood: 50, stone: 30 }, tileIndex: 6 },
-  embassy: { name: 'Embajada', icon: '🏛️', cost: { stone: 100, iron: 30, gold: 200 }, tileIndex: 13 },
-  throne_room: { name: 'Trono', icon: '👑', cost: { stone: 100, iron: 50, gold: 100 }, tileIndex: 7 },
-  library: { name: 'Biblioteca', icon: '📚', cost: { wood: 40, stone: 60, gold: 50 }, tileIndex: 8 },
+  farm_plot: { name: 'Parcela', icon: 'farm_plot', cost: { wood: 10, stone: 5 }, tileIndex: 14 },
+  barn: { name: 'Granero', icon: 'barn', cost: { wood: 30, stone: 15 }, tileIndex: 0 },
+  mill: { name: 'Molino', icon: 'mill', cost: { wood: 50, stone: 30, iron: 10 }, tileIndex: 1 },
+  sawmill: { name: 'Aserradero', icon: 'sawmill', cost: { wood: 40, stone: 20, iron: 15 }, tileIndex: 11 },
+  smithy: { name: 'Herrería', icon: 'smithy', cost: { wood: 30, stone: 50, iron: 25 }, tileIndex: 10 },
+  stable: { name: 'Establo', icon: 'horse', cost: { wood: 60, stone: 20 }, tileIndex: 9 },
+  house: { name: 'Casa', icon: 'farmhouse', cost: { wood: 20, stone: 10 }, tileIndex: 0 },
+  mine: { name: 'Mina', icon: 'mine', cost: { wood: 30, stone: 40 }, tileIndex: 0 },
+  wall: { name: 'Muralla', icon: 'wall', cost: { stone: 50, wood: 20 }, tileIndex: 2 },
+  tower: { name: 'Torre', icon: 'tower', cost: { stone: 80, iron: 20 }, tileIndex: 3 },
+  barracks: { name: 'Cuartel', icon: 'sword', cost: { wood: 60, stone: 40, iron: 20 }, tileIndex: 4 },
+  trap: { name: 'Trampas', icon: 'trap', cost: { wood: 20, iron: 30 }, tileIndex: 12 },
+  tavern: { name: 'Taberna', icon: 'tavern', cost: { wood: 40, stone: 20 }, tileIndex: 5 },
+  market: { name: 'Mercado', icon: 'market', cost: { wood: 50, stone: 30 }, tileIndex: 6 },
+  embassy: { name: 'Embajada', icon: 'embassy', cost: { stone: 100, iron: 30, gold: 200 }, tileIndex: 13 },
+  throne_room: { name: 'Trono', icon: 'crown', cost: { stone: 100, iron: 50, gold: 100 }, tileIndex: 7 },
+  library: { name: 'Biblioteca', icon: 'library', cost: { wood: 40, stone: 60, gold: 50 }, tileIndex: 8 },
 };
 
 const RESOURCE_ICONS = {
-  wood: '🪵',
-  stone: '🪨',
-  iron: '⛏️',
-  gold: '🪙',
+  wood: 'wood',
+  stone: 'stone',
+  iron: 'iron',
+  gold: 'gold',
 };
 
 export default function BuildingToolbar() {
@@ -178,7 +179,7 @@ export default function BuildingToolbar() {
     <div className="absolute bottom-20 left-0 right-0 z-40 pointer-events-none">
       <div className="pointer-events-auto" style={{ background: 'rgba(51, 47, 43, 0.95)', borderTop: '1px solid rgba(255, 215, 0, 0.3)' }}>
         <div className="flex items-center justify-between px-3 py-1 border-b border-yellow-900/30">
-          <span className="text-yellow-300 text-[11px] font-bold">🔨 Construir</span>
+          <span className="text-yellow-300 text-[11px] font-bold"><SpriteIcon name="hammer" size={28} /> Construir</span>
           <button
             onClick={() => setIsExpanded(false)}
             className="text-gray-300 hover:text-white text-sm leading-none px-1"
@@ -198,7 +199,7 @@ export default function BuildingToolbar() {
                     : 'text-gray-400 hover:text-gray-200'
                 }`}
               >
-                {cat.icon} {cat.name}
+                <SpriteIcon name={cat.icon} size={28} /> {cat.name}
               </button>
             ))}
           </div>
@@ -222,7 +223,7 @@ export default function BuildingToolbar() {
                   }`}
                   style={{ border: '1px solid rgba(255, 215, 0, 0.15)' }}
                 >
-                  <div className="text-2xl mb-1">{info.icon}</div>
+                  <div className="text-2xl mb-1"><SpriteIcon name={info.icon} size={40} /></div>
                   <div className="text-[10px] text-gray-200 font-bold leading-tight"
                     style={{ wordBreak: 'break-word', hyphens: 'auto' }}>
                     {info.name}
@@ -230,7 +231,7 @@ export default function BuildingToolbar() {
                   <div className="text-[9px] text-gray-400 mt-0.5">
                     {Object.entries(info.cost).map(([res, amt]) => (
                       <span key={res} className="mr-1">
-                        {RESOURCE_ICONS[res] || res}{amt}
+                        <SpriteIcon name={RESOURCE_ICONS[res]} size={28} />{amt}
                       </span>
                     ))}
                   </div>

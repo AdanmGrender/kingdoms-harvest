@@ -1,0 +1,13 @@
+{
+  "sheets": {
+    "icon_b_01": ["iron", "water", "bread", "crystal", "relic", "blueprint", "gem", "star_currency", "carrot"],
+    "icon_b_02": ["potato", "tomato", "corn", "pumpkin", "grape", "egg", "milk", "wool", "chicken"],
+    "icon_b_03": ["sheep", "cow", "sword", "bow", "spear", "ram", "horse", "crown", "scroll"],
+    "icon_b_04": ["medal", "backpack", "reward_bag", "exclamation", "gear", "caravan", "flame", "wallet", "map"],
+    "icon_b_05": ["heart", "star", "check", "speedup", "tide", "skull", "shield", "hammer", "sun"],
+    "icon_b_06": ["moon", "alliance", "rankings", "quests", "tech", "world", "spare_iron", "spare_key", "spare_crystal"]
+  },
+  "reuse": {
+    "icon_test_b_bold": { "gold": 1, "wheat": 2, "wood": 3, "stone": 4, "kh_token": 6 }
+  }
+}

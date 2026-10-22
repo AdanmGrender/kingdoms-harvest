@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const RESOURCE_ICONS = {
-  wheat: '🌾', wood: '🌲', stone: '⛰️', iron: '⚙️', bread: '🍞', gold: '💰',
+  wheat: 'wheat', wood: '', stone: '', iron: 'gear', bread: 'bread', gold: 'gold',
 };
 
 const TRADEABLE = ['wheat', 'wood', 'stone', 'iron', 'bread'];
@@ -18,22 +19,22 @@ function ListingCard({ listing, myPlayerId, onBuy, onCancel, loading }) {
     >
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1.5">
-          <span className="text-lg">{RESOURCE_ICONS[listing.resourceId] || '📦'}</span>
+          <span className="text-lg"><SpriteIcon name={RESOURCE_ICONS[listing.resourceId] || 'reward_bag'} size={28} /></span>
           <div>
             <p className="text-white font-bold capitalize">{listing.resourceId}</p>
             <p className="text-gray-500">Vendedor {listing.sellerTag}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-yellow-300 font-bold">{listing.pricePerUnit} 💰/u</p>
+          <p className="text-yellow-300 font-bold">{listing.pricePerUnit} <SpriteIcon name="gold" size={28} />/u</p>
           <p className="text-gray-400">{listing.quantityRemaining} disponibles</p>
         </div>
       </div>
 
       <div className="flex items-center gap-1 mt-1.5">
-        <span className="text-gray-500">⏱ {listing.hoursLeft}h</span>
+        <span className="text-gray-500"><SpriteIcon name="speedup" size={28} /> {listing.hoursLeft}h</span>
         <span className="text-gray-600 mx-1">·</span>
-        <span className="text-gray-500">Total: {listing.quantityRemaining * listing.pricePerUnit} 💰</span>
+        <span className="text-gray-500">Total: {listing.quantityRemaining * listing.pricePerUnit} <SpriteIcon name="gold" size={28} /></span>
       </div>
 
       {!isMine ? (
@@ -46,7 +47,7 @@ function ListingCard({ listing, myPlayerId, onBuy, onCancel, loading }) {
             onChange={(e) => setBuyQty(Math.min(Number(e.target.value), listing.quantityRemaining))}
             className="w-14 text-[10px] text-center rounded bg-gray-800 border border-gray-600 text-white py-1"
           />
-          <span className="text-gray-400">= {buyQty * listing.pricePerUnit} 💰</span>
+          <span className="text-gray-400">= {buyQty * listing.pricePerUnit} <SpriteIcon name="gold" size={28} /></span>
           <button
             onClick={() => onBuy(listing.id, buyQty)}
             disabled={loading}
@@ -96,7 +97,7 @@ function BrowseTab({ myPlayerId, onBuy, onCancel, loading }) {
             onClick={() => setFilter(r)}
             className={`shrink-0 text-[9px] px-2 py-1 rounded ${filter === r ? 'bg-amber-700 text-white' : 'bg-gray-800 text-gray-400'}`}
           >
-            {RESOURCE_ICONS[r]} {r}
+            <SpriteIcon name={RESOURCE_ICONS[r]} size={28} /> {r}
           </button>
         ))}
       </div>
@@ -156,7 +157,7 @@ function SellTab({ resources, onCreateListing, loading }) {
               onClick={() => setResourceId(r)}
               className={`text-[10px] px-2 py-1 rounded border ${resourceId === r ? 'border-yellow-500 text-yellow-300 bg-yellow-900/20' : 'border-gray-600 text-gray-400'}`}
             >
-              {RESOURCE_ICONS[r]} {r}
+              <SpriteIcon name={RESOURCE_ICONS[r]} size={28} /> {r}
             </button>
           ))}
         </div>
@@ -178,7 +179,7 @@ function SellTab({ resources, onCreateListing, loading }) {
 
       {/* Price */}
       <div>
-        <label className="text-[10px] text-gray-400 block mb-1">Precio por unidad (💰 oro)</label>
+        <label className="text-[10px] text-gray-400 block mb-1">Precio por unidad (<SpriteIcon name="gold" size={28} /> oro)</label>
         <input
           type="number"
           min="1"
@@ -191,9 +192,9 @@ function SellTab({ resources, onCreateListing, loading }) {
 
       {/* Preview */}
       <div className="p-2 rounded bg-black/20 border border-gray-700/40 text-[10px] space-y-0.5">
-        <div className="flex justify-between"><span className="text-gray-400">Total bruto</span><span className="text-white">{totalPotential} 💰</span></div>
-        <div className="flex justify-between"><span className="text-gray-400">Comisión (5%)</span><span className="text-red-400">−{fee} 💰</span></div>
-        <div className="flex justify-between font-bold"><span className="text-gray-300">Recibís</span><span className="text-green-400">{receive} 💰</span></div>
+        <div className="flex justify-between"><span className="text-gray-400">Total bruto</span><span className="text-white">{totalPotential} <SpriteIcon name="gold" size={28} /></span></div>
+        <div className="flex justify-between"><span className="text-gray-400">Comisión (5%)</span><span className="text-red-400">−{fee} <SpriteIcon name="gold" size={28} /></span></div>
+        <div className="flex justify-between font-bold"><span className="text-gray-300">Recibís</span><span className="text-green-400">{receive} <SpriteIcon name="gold" size={28} /></span></div>
         <p className="text-gray-600 text-[9px] pt-1">Expira en 24 horas · máx 5 ventas activas</p>
       </div>
 
@@ -215,7 +216,7 @@ function MyListingsTab({ myPlayerId, onCancel, loading }) {
 
   useEffect(() => { loadMyMarketListings(); }, []);
 
-  const STATUS_LABELS = { active: '🟢 Activa', sold: '✅ Vendida', cancelled: '❌ Cancelada', expired: '⏰ Expirada' };
+  const STATUS_LABELS = { active: 'Activa', sold: 'Vendida', cancelled: 'Cancelada', expired: 'Expirada' };
 
   if (myMarketListings.length === 0) {
     return <p className="text-center text-gray-600 text-xs py-8">No tenés ventas recientes</p>;
@@ -232,9 +233,9 @@ function MyListingsTab({ myPlayerId, onCancel, loading }) {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-white font-bold capitalize">
-                {RESOURCE_ICONS[l.resourceId]} {l.resourceId}
+                <SpriteIcon name={RESOURCE_ICONS[l.resourceId]} size={28} /> {l.resourceId}
               </p>
-              <p className="text-gray-500">{l.quantityRemaining}/{l.quantity} restante · {l.pricePerUnit} 💰/u</p>
+              <p className="text-gray-500">{l.quantityRemaining}/{l.quantity} restante · {l.pricePerUnit} <SpriteIcon name="gold" size={28} />/u</p>
             </div>
             <span className="text-[9px]">{STATUS_LABELS[l.status] || l.status}</span>
           </div>
@@ -299,17 +300,17 @@ export default function MarketplacePanel({ onClose }) {
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <div>
-          <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-            🏷️ Mercado P2P
+          <h3 className="text-yellow-400 text-sm font-bold font-display">
+            Mercado P2P
           </h3>
-          <p className="text-gray-400 text-[10px]">Oro disponible: {goldAmount} 💰</p>
+          <p className="text-gray-400 text-[10px]">Oro disponible: {goldAmount} <SpriteIcon name="gold" size={28} /></p>
         </div>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-3">
-        {[['browse','🛒 Comprar'],['sell','➕ Vender'],['my','📋 Mis ventas']].map(([tab, label]) => (
+        {[['browse','Comprar'],['sell','Vender'],['my','Mis ventas']].map(([tab, label]) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}

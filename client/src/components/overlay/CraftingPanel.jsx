@@ -3,10 +3,11 @@
  */
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const INGREDIENT_ICONS = {
-  wheat: '🌾', wood: '🪵', iron: '⛏️', milk: '🥛',
-  gold: '💰', stone: '🪨', carrot: '🥕', potato: '🥔',
+  wheat: 'wheat', wood: 'wood', iron: 'iron', milk: 'milk',
+  gold: 'gold', stone: 'stone', carrot: 'carrot', potato: 'potato',
 };
 
 export default function CraftingPanel({ onClose }) {
@@ -45,8 +46,8 @@ export default function CraftingPanel({ onClose }) {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          ⚒️ Taller de Fabricación
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
+          <SpriteIcon name="hammer" size={28} /> Taller de Fabricación
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
       </div>
@@ -65,7 +66,7 @@ export default function CraftingPanel({ onClose }) {
               {/* Item name + icon */}
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">{item.icon}</span>
+                  <span className="text-xl"><SpriteIcon name="gear" size={28} /></span>
                   <span className="text-white text-sm font-semibold">{item.name}</span>
                 </div>
               </div>
@@ -79,7 +80,7 @@ export default function CraftingPanel({ onClose }) {
                   return (
                     <span key={ingredient}
                       className={`text-[10px] px-1.5 py-0.5 rounded ${ok ? 'text-green-300 bg-green-900/30' : 'text-red-400 bg-red-900/30'}`}>
-                      {INGREDIENT_ICONS[ingredient] || '📦'} {needed} {ingredient}
+                      <SpriteIcon name={INGREDIENT_ICONS[ingredient] || 'reward_bag'} size={28} /> {needed} {ingredient}
                       <span className="text-gray-400 ml-1">({have})</span>
                     </span>
                   );

@@ -12,8 +12,8 @@ export default function CodexPanel({ onClose }) {
   return (
     <div className="fixed inset-0 z-40 flex flex-col p-4 pb-28" style={{ background: 'rgba(10,10,20,0.96)' }}>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          <SpriteIcon name="scroll" size={26} fallback="📖" /> Códice de Colección
+        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2 font-display">
+          <SpriteIcon name="scroll" size={28} /> Códice de Colección
         </h2>
         <button onClick={onClose} className="text-gray-400 text-2xl px-2">✕</button>
       </div>

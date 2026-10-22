@@ -185,7 +185,7 @@ const useGameStore = create((set, get) => ({
       get().loadTokenInfo();
       const parts = Object.entries(data.rewards || {}).map(([rid, amt]) => `+${amt} ${rid}`);
       const gained = [...parts, '+1 KH'].join(', ');
-      get().addNotification(`⚡ Asalto: ${gained}`, 'success');
+      get().addNotification(`Asalto: ${gained}`, 'success');
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'No se pudo asaltar', 'error');
@@ -239,7 +239,7 @@ const useGameStore = create((set, get) => ({
       const parts = Object.entries(data.reward || {})
         .filter(([k]) => k !== 'day')
         .map(([k, v]) => `+${v} ${k}`).join(', ');
-      get().addNotification(`📅 Día ${data.day}: ${parts}`, 'success');
+      get().addNotification(`Día ${data.day}: ${parts}`, 'success');
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'No se pudo reclamar', 'error');
@@ -279,7 +279,7 @@ const useGameStore = create((set, get) => ({
       get().loadTokenInfo();
       get().loadGems();
       const parts = Object.entries(data.reward || {}).map(([k, v]) => `+${v} ${k}`).join(', ');
-      get().addNotification(`🎫 Tier ${data.tier} (${track}): ${parts}`, 'success');
+      get().addNotification(`Tier ${data.tier} (${track}): ${parts}`, 'success');
       return data;
     } catch (error) {
       get().addNotification(error.response?.data?.error || 'No se pudo reclamar', 'error');
@@ -624,7 +624,7 @@ const useGameStore = create((set, get) => ({
       }
       if (data.territoryClaimed) {
         get().loadTerritories();
-        get().addNotification(`🏳️ ¡Tu facción conquistó ${data.territoryClaimed.territoryName}!`, 'success');
+        get().addNotification(`¡Tu facción conquistó ${data.territoryClaimed.territoryName}!`, 'success');
       }
       get().refreshResources();
       return data;
@@ -970,7 +970,7 @@ const useGameStore = create((set, get) => ({
           if (status === 'paid') {
             // El bot ya acreditó (o está por hacerlo): refrescar saldo.
             setTimeout(() => get().loadGems(), 1200);
-            get().addNotification(`¡Compra exitosa! +${data.gems} 💎`, 'success');
+            get().addNotification(`¡Compra exitosa! +${data.gems} gemas`, 'success');
             resolve({ success: true });
           } else if (status === 'failed') {
             get().addNotification('El pago falló', 'error');
@@ -1418,10 +1418,10 @@ const useGameStore = create((set, get) => ({
       const won = data?.winner === 'attacker';
       const flipped = !!data?.territoryFlipped;
       const msg = flipped
-        ? `🏴 ¡Conquistaste el territorio! +${data.pointsAwarded || 0} puntos de facción`
+        ? `¡Conquistaste el territorio! +${data.pointsAwarded || 0} puntos de facción`
         : won
-          ? `🏆 Victoria, pero el territorio no cambió de dueño (¿sin facción?).`
-          : '💀 Derrota — el territorio resiste.';
+          ? `Victoria, pero el territorio no cambió de dueño (¿sin facción?).`
+          : 'Derrota — el territorio resiste.';
       get().addNotification(msg, won ? 'success' : 'error');
       if (won && data.tokensAwarded > 0) {
         EventBridge.emit('token:earned', { amount: data.tokensAwarded });

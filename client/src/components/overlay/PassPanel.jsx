@@ -9,18 +9,18 @@ import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
 const REWARD_META = {
-  gold:      { sprite: 'gold',      fallback: '🪙' },
-  wood:      { sprite: 'wood',      fallback: '🪵' },
-  crystal:   { sprite: 'crystal',   fallback: '💠' },
-  relic:     { sprite: 'relic',     fallback: '🏺' },
-  blueprint: { sprite: 'blueprint', fallback: '📜' },
-  kh:        { sprite: 'kh_token',  fallback: '💰' },
-  gems:      { sprite: 'gem',       fallback: '💎' },
+  gold:      { sprite: 'gold',      fallback: 'gold' },
+  wood:      { sprite: 'wood',      fallback: 'wood' },
+  crystal:   { sprite: 'crystal',   fallback: 'crystal' },
+  relic:     { sprite: 'relic',     fallback: 'relic' },
+  blueprint: { sprite: 'blueprint', fallback: 'scroll' },
+  kh:        { sprite: 'kh_token',  fallback: 'gold' },
+  gems:      { sprite: 'gem',       fallback: 'gem' },
 };
 
 function rewardEntry(reward) {
   const [key, amount] = Object.entries(reward || {})[0] || [];
-  return { key, amount, meta: REWARD_META[key] || { sprite: null, fallback: '🎁' } };
+  return { key, amount, meta: REWARD_META[key] || { sprite: null, fallback: 'reward_bag' } };
 }
 
 function TierCell({ tier, reward, track, reached, claimed, canClaim, onClaim }) {
@@ -36,10 +36,10 @@ function TierCell({ tier, reward, track, reached, claimed, canClaim, onClaim }) 
       }}
     >
       <span className="text-[9px] text-gray-400 uppercase">Tier {tier}</span>
-      <SpriteIcon name={meta.sprite} size={26} fallback={meta.fallback} />
+      <SpriteIcon name={meta.sprite || meta.fallback} size={28} />
       <span className="text-[10px] font-bold text-white">{amount}</span>
       {claimed ? (
-        <SpriteIcon name="check" size={14} fallback="✓" />
+        <SpriteIcon name="check" size={28} />
       ) : canClaim ? (
         <button
           onClick={onClaim}
@@ -49,7 +49,7 @@ function TierCell({ tier, reward, track, reached, claimed, canClaim, onClaim }) 
           Reclamar
         </button>
       ) : (
-        <span className="text-[14px]">{locked ? '🔒' : ''}</span>
+        locked && <SpriteIcon name="shield" size={28} />
       )}
     </div>
   );
@@ -83,8 +83,8 @@ export default function PassPanel({ onClose }) {
   return (
     <div className="fixed inset-0 z-40 flex flex-col pb-28" style={{ background: 'rgba(10,10,20,0.96)' }}>
       <div className="flex justify-between items-center p-4">
-        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          <SpriteIcon name="scroll" size={26} fallback="🎫" /> Pase de Temporada
+        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2 font-display">
+          <SpriteIcon name="scroll" size={28} /> Pase de Temporada
         </h2>
         <button onClick={onClose} className="text-gray-400 text-2xl px-2">✕</button>
       </div>
@@ -110,12 +110,12 @@ export default function PassPanel({ onClose }) {
             className={`w-full py-3 rounded-lg font-bold text-white ${gemsBalance < 1440 ? 'opacity-40 cursor-not-allowed' : ''}`}
             style={{ background: 'linear-gradient(135deg, #7c3aed, #ffd700)' }}
           >
-            🔓 Desbloquear Premium (1440 💎)
+            Desbloquear Premium (1440 <SpriteIcon name="gem" size={28} />)
           </button>
         </div>
       )}
       {premium && (
-        <p className="px-4 text-[11px] text-yellow-300 mb-2">✨ Pase Premium activo esta temporada</p>
+        <p className="px-4 text-[11px] text-yellow-300 mb-2">Pase Premium activo esta temporada</p>
       )}
 
       <div className="flex-1 overflow-x-auto px-4">

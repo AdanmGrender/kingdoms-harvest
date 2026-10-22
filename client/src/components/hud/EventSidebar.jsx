@@ -6,13 +6,14 @@
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import IconButton from '../ui/IconButton';
 import SpriteIcon from '../ui/SpriteIcon';
-import { grimBtn, grimIcon } from './grimChrome';
+import { KH } from '../ui/kitPieces';
 
 const SHORTCUTS = [
-  { id: 'newplayer', sprite: 'reward_bag', icon: '🎁', label: 'Logros', color: '#d9a441', metaTab: 'achievements', pulse: true },
-  { id: 'tech',      sprite: 'blueprint',  icon: '🔬', label: 'Tech',   color: '#e8933a', metaTab: 'tech' },
-  { id: 'siege',     sprite: 'castle',     icon: '🏰', label: 'Mundo',  color: '#b32821', metaTab: 'world' },
+  { id: 'newplayer', sprite: 'reward_bag', label: 'Logros', color: KH.brass, metaTab: 'achievements', pulse: true },
+  { id: 'tech',      sprite: 'blueprint',  label: 'Tech',   color: KH.ember, metaTab: 'tech' },
+  { id: 'siege',     sprite: 'world',      label: 'Mundo',  color: KH.seal, metaTab: 'world' },
 ];
 
 function formatCountdown(seconds) {
@@ -53,43 +54,38 @@ export default function EventSidebar() {
 
   const handleEvent = () => {
     if (activeEvent) {
-      addNotification(`${activeEvent.icon} ${activeEvent.name}: ${activeEvent.description}`, 'info');
+      addNotification(`${activeEvent.name}: ${activeEvent.description}`, 'info');
     } else {
       addNotification('No hay evento activo en este momento', 'info');
     }
   };
 
   return (
-    <div className="absolute right-2 top-20 z-20 pointer-events-none flex flex-col gap-2">
+    <div className="absolute right-2 top-32 z-20 pointer-events-none flex flex-col gap-2">
       {/* Live event button (always shown; placeholder if none active) */}
-      <button
+      <IconButton
         onClick={handleEvent}
-        className={`pointer-events-auto relative w-12 h-14 rounded-xl flex flex-col items-center justify-center transition-transform active:scale-90 hover:scale-105 ${activeEvent ? 'animate-pulse' : ''}`}
-        style={grimBtn(activeEvent?.color || '#8a8378')}
+        accent={activeEvent?.color || KH.iron}
+        className={activeEvent ? 'animate-pulse' : ''}
         title={activeEvent ? activeEvent.description : 'Sin evento activo'}
+        style={{ width: 52 }}
       >
-        <span className="text-xl leading-none">{activeEvent?.icon || '⏳'}</span>
-        <span
-          className="text-[8px] font-semibold leading-tight mt-0.5 tabular-nums"
-          style={{ color: activeEvent?.color || '#888' }}
-        >
+        <SpriteIcon name="flame" size={28} />
+        <span className="font-numeric text-[12px] leading-tight tabular-nums" style={{ color: KH['brass-light'] }}>
           {activeEvent ? formatCountdown(activeRemaining) : '—'}
         </span>
-      </button>
+      </IconButton>
 
       {SHORTCUTS.map((item) => (
-        <button
+        <IconButton
           key={item.id}
-          onClick={() => handleShortcut(item)}
-          className={`pointer-events-auto relative w-12 h-14 rounded-xl flex flex-col items-center justify-center transition-transform active:scale-90 hover:scale-105 ${item.pulse ? 'animate-pulse' : ''}`}
-          style={grimBtn(item.color)}
+          icon={item.sprite}
+          label={item.label}
+          accent={item.color}
+          className={item.pulse ? 'animate-pulse' : ''}
           title={item.label}
-        >
-          <SpriteIcon name={item.sprite} size={22} fallback={item.icon} style={grimIcon} />
-          <span className="text-[8px] font-semibold leading-tight mt-0.5" style={{ color: item.color }}>
-            {item.label}
-          </span>
-        </button>
+          onClick={() => handleShortcut(item)}
+        />
       ))}
     </div>
   );

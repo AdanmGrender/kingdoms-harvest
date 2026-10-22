@@ -8,6 +8,7 @@ import AlliancesPanel from './AlliancesPanel';
 import TechTreePanel from '../castle/TechTreePanel';
 import FactionPanel from '../world/FactionPanel';
 import TerritoryMapPanel from '../world/TerritoryMapPanel';
+import SpriteIcon from '../ui/SpriteIcon';
 
 /**
  * MetaPanel — full-screen-ish overlay surfacing every "meta" progression
@@ -16,15 +17,15 @@ import TerritoryMapPanel from '../world/TerritoryMapPanel';
  * data.tab field lets sidebar buttons deep-link into a specific section.
  */
 const TABS = [
-  { id: 'achievements', label: '🏆 Logros' },
-  { id: 'tournaments',  label: '🥇 Torneos' },
-  { id: 'wars',         label: '⚔️ Guerras' },
-  { id: 'rankings',     label: '📊 Rankings' },
-  { id: 'market',       label: '💱 Mercado' },
-  { id: 'alliances',    label: '🤝 Alianza' },
-  { id: 'tech',         label: '🔬 Tech' },
-  { id: 'factions',     label: '🛡️ Facción' },
-  { id: 'world',        label: '🗺️ Mundo' },
+  { id: 'achievements', label: 'Logros' },
+  { id: 'tournaments',  label: 'Torneos' },
+  { id: 'wars',         label: 'Guerras' },
+  { id: 'rankings',     label: 'Rankings' },
+  { id: 'market',       label: 'Mercado' },
+  { id: 'alliances',    label: 'Alianza' },
+  { id: 'tech',         label: 'Tech' },
+  { id: 'factions',     label: 'Facción' },
+  { id: 'world',        label: 'Mundo' },
 ];
 
 export default function MetaPanel({ data, onClose }) {
@@ -41,8 +42,8 @@ export default function MetaPanel({ data, onClose }) {
       }}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 shrink-0">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          💀 Bastión
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
+          <SpriteIcon name="skull" size={28} /> Bastión
         </h3>
         <button
           onClick={onClose}

@@ -1,4 +1,5 @@
-/**
+
+import SpriteIcon from '../ui/SpriteIcon';/**
  * StarMap — visor espacial compartido por las escalas Sistema y Galaxia (G3).
  * Coloca los nodos (planetas/sistemas) en una ruta zigzag por índice (la
  * progresión es secuencial), los conecta con líneas SVG (sólida hasta la
@@ -31,7 +32,7 @@ function layout(n) {
   return pts;
 }
 
-export default function StarMap({ nodes, selectedId, onSelect, ship, shipIcon = '🚀', theme = '#4fd8c8' }) {
+export default function StarMap({ nodes, selectedId, onSelect, ship, shipIcon = 'speedup', theme = '#4fd8c8' }) {
   const pts = layout(nodes.length);
 
   // Frontera: último nodo reclamado (para posar la nave si está idle)
@@ -106,7 +107,7 @@ export default function StarMap({ nodes, selectedId, onSelect, ship, shipIcon = 
                 opacity: nd.state === 'locked' ? 0.5 : 1,
               }}
             >
-              {nd.state === 'locked' ? '🔒' : nd.icon}
+              <SpriteIcon name={nd.state === 'locked' ? 'shield' : 'star'} size={28} />
             </span>
             <span
               className="mt-0.5 text-[8px] font-bold px-1 rounded whitespace-nowrap"
@@ -124,7 +125,7 @@ export default function StarMap({ nodes, selectedId, onSelect, ship, shipIcon = 
           className="absolute -translate-x-1/2 -translate-y-1/2 text-base animate-pulse pointer-events-none"
           style={{ left: `${shipPos.x}%`, top: `${shipPos.y}%`, filter: `drop-shadow(0 0 4px ${theme})` }}
         >
-          {shipIcon}
+          <SpriteIcon name={shipIcon} size={28} />
         </span>
       )}
     </div>

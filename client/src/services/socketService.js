@@ -19,14 +19,14 @@ export function connectSocket(initData) {
 
   socket.on('building_complete', ({ buildingType }) => {
     EventBridge.emit('game:notification', {
-      text: `🏗️ ¡Construcción lista! ${buildingType}`,
+      text: `¡Construcción lista! ${buildingType}`,
       type: 'success',
     });
   });
 
   socket.on('troops_trained', ({ troopId, quantity }) => {
     EventBridge.emit('game:notification', {
-      text: `⚔️ ${quantity}x ${troopId} entrenados y listos`,
+      text: `${quantity}x ${troopId} entrenados y listos`,
       type: 'success',
     });
   });
@@ -35,7 +35,7 @@ export function connectSocket(initData) {
     // Recarga para que HubSceneB muestre el objeto de recolección sin abrir el panel de granja.
     useGameStore.getState().loadAnimals();
     EventBridge.emit('game:notification', {
-      text: `🐄 Tu ${animalType} tiene productos listos para recolectar`,
+      text: `Tu ${animalType} tiene productos listos para recolectar`,
       type: 'info',
     });
   });
@@ -48,7 +48,7 @@ export function connectSocket(initData) {
   socket.on('crop_ready', ({ count }) => {
     useGameStore.getState().loadPlots();
     EventBridge.emit('game:notification', {
-      text: `🌾 ${count} cultivo${count > 1 ? 's' : ''} listo${count > 1 ? 's' : ''} para cosechar`,
+      text: `${count} cultivo${count > 1 ? 's' : ''} listo${count > 1 ? 's' : ''} para cosechar`,
       type: 'success',
     });
   });
@@ -76,7 +76,7 @@ export function connectSocket(initData) {
   socket.on('ship_arrived', ({ planetId }) => {
     useGameStore.getState().loadSystem();
     EventBridge.emit('game:notification', {
-      text: `🛰️ ¡La Nave llegó y reclamó un nuevo planeta! (${planetId})`,
+      text: `¡La Nave llegó y reclamó un nuevo planeta! (${planetId})`,
       type: 'success',
     });
   });
@@ -85,7 +85,7 @@ export function connectSocket(initData) {
   socket.on('warp_arrived', ({ systemId }) => {
     useGameStore.getState().loadGalaxy();
     EventBridge.emit('game:notification', {
-      text: `🌌 ¡El Crucero emergió y reclamó un nuevo sistema! (${systemId})`,
+      text: `¡El Crucero emergió y reclamó un nuevo sistema! (${systemId})`,
       type: 'success',
     });
   });

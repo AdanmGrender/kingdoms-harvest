@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import Bar from '../ui/Bar';
 import EmberField from '../fx/EmberField';
 
 // T1 coordinación visual: diorama iso grimdark de fondo según el tipo de nodo.
@@ -150,9 +151,9 @@ export default function CombatInstancePanel({ onClose }) {
       {/* Números de daño flotantes sobre el enemigo. */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 4 }}>
         {floaters.map((f) => (
-          <span key={f.id} className="fx-floatup absolute font-bold" style={{
+          <span key={f.id} className="fx-floatup absolute font-bold font-display" style={{
             left: `${f.left}%`, top: '26%', color: f.color, fontSize: '22px',
-            textShadow: '0 2px 4px rgba(0,0,0,0.9)', fontFamily: 'MedievalSharp, serif',
+            textShadow: '0 2px 4px rgba(0,0,0,0.9)',
           }}>{f.text}</span>
         ))}
       </div>
@@ -160,9 +161,8 @@ export default function CombatInstancePanel({ onClose }) {
       {/* ── Contenido (por encima de la escena) ── */}
       <div className="relative flex flex-col flex-1 min-h-0" style={{ zIndex: 10 }}>
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-red-400 font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
-            <SpriteIcon name={node.type === 'boss' ? 'skull' : 'sword'} size={24}
-              fallback={node.type === 'boss' ? '💀' : '⚔️'} />
+          <h2 className="text-red-400 font-bold flex items-center gap-2 font-display">
+            <SpriteIcon name={node.type === 'boss' ? 'skull' : 'sword'} size={28} />
             {node.name} · ronda {state.round}/{state.maxRounds}
           </h2>
           <button onClick={close} className="text-gray-400 text-xl px-2">✕</button>
@@ -171,9 +171,7 @@ export default function CombatInstancePanel({ onClose }) {
         {/* Enemigo — barra de vida */}
         <div className="mb-2">
           <div className="text-gray-300 text-xs mb-1">Enemigo</div>
-          <div className="h-4 rounded" style={{ background: '#333' }}>
-            <div className="h-4 rounded" style={{ width: `${enemyPct}%`, background: '#b32821', transition: 'width .3s' }} />
-          </div>
+          <Bar value={enemyPct} tone="seal" label="Vida del enemigo" />
         </div>
 
         <div className="flex-1" />
@@ -205,7 +203,7 @@ export default function CombatInstancePanel({ onClose }) {
                       backgroundSize: 'cover', backgroundPosition: 'center top',
                     }}>
                     {!portrait && (
-                      <span className="absolute inset-0 flex items-center justify-center text-xl">{h.skill.icon || '⚔️'}</span>
+                      <span className="absolute inset-0 flex items-center justify-center text-xl"><SpriteIcon name={h.skill.icon || 'sword'} size={28} /></span>
                     )}
                     {fx?.type === 'hit' && (
                       <span key={fx.key} className="fx-rowhit absolute inset-0" style={{ background: '#b32821' }} />
@@ -217,13 +215,13 @@ export default function CombatInstancePanel({ onClose }) {
                       }} />
                     )}
                     {!h.alive && (
-                      <span className="absolute inset-0 flex items-center justify-center text-lg">☠️</span>
+                      <span className="absolute inset-0 flex items-center justify-center text-lg"><SpriteIcon name="skull" size={28} /></span>
                     )}
                   </div>
                 </div>
                 {/* Energía */}
-                <div className="h-1 rounded mt-1 w-full" style={{ background: '#222' }}>
-                  <div className="h-1 rounded" style={{ width: `${Math.min(100, h.energy)}%`, background: ready ? '#ffd700' : '#4ade80', transition: 'width .3s' }} />
+                <div className="mt-1 w-full">
+                  <Bar value={h.energy} tone={ready ? 'ember' : 'macula'} label={`Energía de ${h.name}`} />
                 </div>
                 <span className="text-[9px] text-gray-300 truncate w-full text-center leading-tight">{h.name}</span>
               </button>
@@ -234,16 +232,15 @@ export default function CombatInstancePanel({ onClose }) {
         {/* Avanzar / resultado */}
         {result ? (
           <div className="text-center animate-grow">
-            <p className={`text-2xl font-bold ${result === 'victory' ? 'text-green-400' : 'text-red-400'}`}
-              style={{ fontFamily: 'MedievalSharp, serif' }}>
-              {result === 'victory' ? '🏆 ¡Victoria!' : '💀 Derrota'}
+            <p className={`text-2xl font-bold font-display ${result === 'victory' ? 'text-green-400' : 'text-red-400'}`}>
+              {result === 'victory' ? '¡Victoria!' : 'Derrota'}
             </p>
             <button onClick={close} className="btn-gold mt-2 px-6 py-2 rounded">Volver</button>
           </div>
         ) : (
           <button onClick={() => doStep({ type: 'advance' })} disabled={busy}
             className="btn-primary py-3 rounded font-bold disabled:opacity-50">
-            {busy ? '...' : '⚔️ Avanzar ronda'}
+            {busy ? '...' : 'Avanzar ronda'}
           </button>
         )}
       </div>

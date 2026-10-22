@@ -11,17 +11,18 @@ import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const NOTIF_TYPES = [
-  { key: 'crops',          icon: '🌾', label: 'Cultivos listos' },
-  { key: 'buildings',      icon: '🏗️', label: 'Construcciones' },
-  { key: 'troops',         icon: '🪖', label: 'Tropas entrenadas' },
-  { key: 'animals',        icon: '🐾', label: 'Bestias' },
-  { key: 'research',       icon: '🔬', label: 'Investigación' },
-  { key: 'sieges',         icon: '💥', label: 'Asedios' },
-  { key: 'events',         icon: '🌩️', label: 'Eventos y tormentas' },
-  { key: 'withdrawals',    icon: '💎', label: 'Retiros KH' },
-  { key: 'daily_reminder', icon: '⏰', label: 'Recordatorio diario' },
+  { key: 'crops',          icon: 'wheat', label: 'Cultivos listos' },
+  { key: 'buildings',      icon: 'hammer', label: 'Construcciones' },
+  { key: 'troops',         icon: 'sword', label: 'Tropas entrenadas' },
+  { key: 'animals',        icon: 'cow', label: 'Bestias' },
+  { key: 'research',       icon: 'tech', label: 'Investigación' },
+  { key: 'sieges',         icon: 'flame', label: 'Asedios' },
+  { key: 'events',         icon: 'flame', label: 'Eventos y tormentas' },
+  { key: 'withdrawals',    icon: 'gem', label: 'Retiros KH' },
+  { key: 'daily_reminder', icon: 'speedup', label: 'Recordatorio diario' },
 ];
 
 function loadLocal(key, fallback) {
@@ -116,8 +117,8 @@ export default function SettingsPanel({ onClose }) {
       }}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 shrink-0">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          ⚙️ Configuración
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
+          <SpriteIcon name="gear" size={28} /> Configuración
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
       </div>
@@ -125,16 +126,16 @@ export default function SettingsPanel({ onClose }) {
       <div className="px-4 py-3 space-y-4 overflow-y-auto flex-1">
         {/* ── Audio y gráficos ── */}
         <Section title="Juego">
-          <Row icon="🔇" title="Silenciar audio" subtitle={muted ? 'Silenciado' : 'Sonido activo'}
+          <Row icon="gear" title="Silenciar audio" subtitle={muted ? 'Silenciado' : 'Sonido activo'}
             control={<Toggle on={!muted} onChange={toggleMute} />} />
           <VolumeRow value={volume} disabled={muted} onChange={changeVolume} />
-          <Row icon="🌫️" title="Efectos de ambiente" subtitle="Viñeta, cielo, luces — apagar en teléfonos lentos"
+          <Row icon="gear" title="Efectos de ambiente" subtitle="Viñeta, cielo, luces — apagar en teléfonos lentos"
             control={<Toggle on={ambientFx} onChange={toggleAmbient} />} />
         </Section>
 
         {/* ── Notificaciones del bot ── */}
         <Section title="Notificaciones del bot">
-          <Row icon="🔔" title="Todas las notificaciones"
+          <Row icon="exclamation" title="Todas las notificaciones"
             subtitle={notifEnabled ? 'Recibís DMs del bot' : 'Silenciado'}
             control={<Toggle on={notifEnabled} disabled={busy} onChange={toggleMaster} />} />
 
@@ -146,8 +147,8 @@ export default function SettingsPanel({ onClose }) {
 
         {/* ── Cuenta ── */}
         <Section title="Cuenta">
-          <Row icon="🆔" title="Telegram ID" subtitle={String(player?.telegram_id || '—')} />
-          <Row icon="🏷️" title="Versión" subtitle={version} />
+          <Row icon="gear" title="Telegram ID" subtitle={String(player?.telegram_id || '—')} />
+          <Row icon="gear" title="Versión" subtitle={version} />
         </Section>
       </div>
     </div>
@@ -166,7 +167,7 @@ function Section({ title, children }) {
 function Row({ icon, title, subtitle, control, small }) {
   return (
     <div className="flex items-center gap-3">
-      <div className={`${small ? 'text-lg w-7' : 'text-2xl w-9'} text-center`}>{icon}</div>
+      <div className={`${small ? 'text-lg w-7' : 'text-2xl w-9'} text-center`}><SpriteIcon name={icon} size={28} /></div>
       <div className="flex-1 min-w-0">
         <p className={`${small ? 'text-xs' : 'text-sm'} text-white font-semibold truncate`}>{title}</p>
         {subtitle && <p className="text-[11px] text-gray-400 truncate">{subtitle}</p>}
@@ -181,7 +182,7 @@ function VolumeRow({ value, disabled, onChange }) {
   const pct = Math.round((value ?? 0) * 100);
   return (
     <div className={`flex items-center gap-3 ${disabled ? 'opacity-50' : ''}`}>
-      <div className="text-2xl w-9 text-center">🔊</div>
+      <div className="text-2xl w-9 text-center"><SpriteIcon name="exclamation" size={32} /></div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <p className="text-sm text-white font-semibold truncate">Volumen</p>

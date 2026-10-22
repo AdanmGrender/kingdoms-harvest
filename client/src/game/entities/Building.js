@@ -6,6 +6,7 @@
  * buildingSprites.js). The old `buildings.png` spritesheet is no longer used.
  */
 import Phaser from 'phaser';
+import { UI_FONT } from '../fonts';
 import { getBuildingSprite } from '../config/buildingSprites';
 
 const BUILDING_SIZE = 64;
@@ -30,7 +31,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
     // Level indicator text
     if (buildingData.level && buildingData.level > 1) {
       this.levelText = scene.add.text(x + 24, y + 24, `Lv${buildingData.level}`, {
-        fontFamily: 'MedievalSharp, serif',
+        fontFamily: UI_FONT,
         fontSize: '10px',
         color: '#ffd700',
         stroke: '#000000',

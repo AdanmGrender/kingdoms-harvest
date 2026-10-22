@@ -1,0 +1,2 @@
+✓ client\public\assets\b\ui\icons.webp — 1536×1920 (79 íconos, 8 col × 10 filas, 889 KB)
+✓ art-b\uikit\candidate\grimIconSheet.generated.js (65 contrato + 14 nuevos)

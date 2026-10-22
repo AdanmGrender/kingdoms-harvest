@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const ROLE_META = {
-  leader:  { badge: '👑', label: 'Líder',   color: 'text-yellow-400' },
-  officer: { badge: '⭐', label: 'Oficial', color: 'text-blue-300'   },
+  leader:  { badge: 'crown', label: 'Líder',   color: 'text-yellow-400' },
+  officer: { badge: 'star', label: 'Oficial', color: 'text-blue-300'   },
   member:  { badge: '•',  label: 'Miembro', color: 'text-gray-400'   },
 };
 
@@ -105,7 +106,7 @@ function CreateGuildForm({ onCreate }) {
         className="w-full py-3 rounded-lg text-sm font-bold text-white disabled:opacity-40 transition-opacity"
         style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
       >
-        {loading ? 'Fundando...' : 'Fundar Gremio (500 🪙 oro)'}
+        {loading ? 'Fundando...' : 'Fundar Gremio (500 oro)'}
       </button>
     </div>
   );
@@ -134,7 +135,7 @@ function MyGuildTab({ guild, onLeave, onDonate }) {
   if (!guild) {
     return (
       <div className="flex flex-col items-center justify-center gap-5 py-12">
-        <span className="text-5xl">🏰</span>
+        <span className="text-5xl"><SpriteIcon name="castle" size={56} /></span>
         <p className="text-gray-400 text-sm text-center">No perteneces a ningún gremio</p>
         {showCreate ? (
           <div className="w-full px-2">
@@ -172,7 +173,7 @@ function MyGuildTab({ guild, onLeave, onDonate }) {
       >
         <div className="flex items-start justify-between mb-2">
           <div>
-            <p className="text-yellow-400 text-lg font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <p className="text-yellow-400 text-lg font-bold font-display">
               [{guild.tag}] {guild.name}
             </p>
             <span
@@ -182,7 +183,7 @@ function MyGuildTab({ guild, onLeave, onDonate }) {
               Nivel {level}
             </span>
           </div>
-          <span className="text-3xl">⚔️</span>
+          <span className="text-3xl"><SpriteIcon name="sword" size={40} /></span>
         </div>
 
         {/* XP bar */}
@@ -204,7 +205,7 @@ function MyGuildTab({ guild, onLeave, onDonate }) {
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="text-lg">💰</span>
+            <span className="text-lg"><SpriteIcon name="gold" size={28} /></span>
             <div>
               <p className="text-[11px] text-gray-400">Tesoro del gremio</p>
               <p className="text-yellow-400 font-bold text-sm">{guild.treasury ?? 0} oro</p>
@@ -345,7 +346,7 @@ function InvitesTab() {
   if (guildInvites.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-3">
-        <span className="text-4xl">📭</span>
+        <span className="text-4xl"><SpriteIcon name="scroll" size={48} /></span>
         <p className="text-gray-500 text-sm">Sin invitaciones pendientes</p>
       </div>
     );
@@ -421,11 +422,9 @@ export default function GuildPanel({ onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-yellow-900/30 shrink-0">
         <div className="flex items-center gap-2">
-          <span className="text-xl">⚔️</span>
+          <span className="text-xl"><SpriteIcon name="sword" size={28} /></span>
           <h2
-            className="text-yellow-400 font-bold text-lg"
-            style={{ fontFamily: 'MedievalSharp, serif' }}
-          >
+            className="text-yellow-400 font-bold text-lg font-display" >
             Gremio
           </h2>
         </div>

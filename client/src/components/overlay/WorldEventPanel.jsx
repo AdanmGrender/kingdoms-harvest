@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const RARITY_CONFIG = {
   common:   { label: 'Común',   color: '#9ca3af', bg: 'rgba(156,163,175,0.15)' },
@@ -9,10 +10,10 @@ const RARITY_CONFIG = {
 };
 
 const RESOURCE_ICONS = {
-  wheat: '🌾', carrot: '🥕', potato: '🥔', tomato: '🍅', corn: '🌽',
-  pumpkin: '🎃', grape: '🍇', wood: '🪵', stone: '🪨', iron: '⛏️',
-  gold: '🪙', bread: '🍞', ingots: '⚙️', flour: '🌾', egg: '🥚',
-  milk: '🥛', wool: '🧶',
+  wheat: 'wheat', carrot: 'carrot', potato: 'potato', tomato: 'tomato', corn: 'corn',
+  pumpkin: 'pumpkin', grape: 'grape', wood: 'wood', stone: 'stone', iron: 'iron',
+  gold: 'gold', bread: 'bread', ingots: 'iron', flour: 'wheat', egg: 'egg',
+  milk: 'milk', wool: 'wool',
 };
 
 const RESOURCE_NAMES = {
@@ -88,8 +89,8 @@ function CoopSection({ data, onSessionStarted }) {
     <div className="rounded-lg p-3 space-y-2"
       style={{ background: 'rgba(74,69,80,0.4)', border: '1px solid rgba(59,130,246,0.25)' }}>
       <div className="flex items-center gap-2">
-        <span className="text-blue-400 text-sm">⚔️</span>
-        <p className="text-xs font-bold text-blue-300" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <span className="text-blue-400 text-sm"><SpriteIcon name="sword" size={28} /></span>
+        <p className="text-xs font-bold text-blue-300 font-display">
           Misión Cooperativa
         </p>
         {session && (
@@ -121,13 +122,13 @@ function CoopSection({ data, onSessionStarted }) {
               onClick={() => handleCopy(inviteLink)}
               className="flex-1 py-2 rounded text-[11px] font-bold transition-all"
               style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.4)', color: '#93c5fd' }}>
-              {copied ? '✓ Copiado' : '📋 Copiar'}
+              {copied ? '✓ Copiado' : 'Copiar'}
             </button>
             <button
               onClick={() => handleTelegramShare(inviteLink)}
               className="flex-1 py-2 rounded text-[11px] font-bold transition-all"
               style={{ background: 'rgba(59,130,246,0.25)', border: '1px solid rgba(59,130,246,0.5)', color: '#60a5fa' }}>
-              ✈️ Compartir
+              Compartir
             </button>
           </div>
 
@@ -150,7 +151,7 @@ function CoopSection({ data, onSessionStarted }) {
               color: '#60a5fa',
               opacity: loading ? 0.7 : 1,
             }}>
-            {loading ? '⏳ Creando...' : '⚔️ Crear sesión cooperativa'}
+            {loading ? 'Creando...' : 'Crear sesión cooperativa'}
           </button>
         </div>
       )}
@@ -205,10 +206,10 @@ export default function WorldEventPanel({ data, onClose }) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30"
         style={{ background: `linear-gradient(135deg, rgba(51,47,43,0.9), ${rarity.bg})` }}>
         <div className="flex items-center gap-3">
-          <span className="text-4xl">{data.icon}</span>
+          <span className="text-4xl"><SpriteIcon name="flame" size={56} /></span>
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <h3 className="text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif', color: rarity.color }}>
+              <h3 className="text-sm font-bold font-display" style={{ color: rarity.color }}>
                 {data.title}
               </h3>
               <span className="text-[9px] px-1.5 py-0.5 rounded font-bold"
@@ -250,7 +251,7 @@ export default function WorldEventPanel({ data, onClose }) {
                   background: claimResult ? 'rgba(74,222,128,0.12)' : rarity.bg,
                   border: `1px solid ${claimResult ? '#4ade8040' : rarity.color + '40'}`,
                 }}>
-                <span className="text-base">{RESOURCE_ICONS[r.resource_id] || '📦'}</span>
+                <span className="text-base"><SpriteIcon name={RESOURCE_ICONS[r.resource_id] || 'reward_bag'} size={28} /></span>
                 <div>
                   <p className="text-[10px] text-gray-400">{RESOURCE_NAMES[r.resource_id] || r.resource_id}</p>
                   <p className="text-sm font-bold" style={{ color: claimResult ? '#4ade80' : rarity.color }}>
@@ -290,7 +291,7 @@ export default function WorldEventPanel({ data, onClose }) {
               color: data.rarity === 'common' ? '#1a1a2e' : 'white',
               opacity: loading ? 0.7 : 1,
             }}>
-            {loading ? '⏳ Reclamando...' : `${data.icon} Reclamar recompensa`}
+            {loading ? 'Reclamando...' : 'Reclamar recompensa'}
           </button>
         )}
       </div>

@@ -4,20 +4,19 @@
  */
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
-import SpriteIcon from '../ui/SpriteIcon';
-import { grimBtn, grimIcon } from './grimChrome';
+import IconButton from '../ui/IconButton';
+import { KH } from '../ui/kitPieces';
 
 const ACTIONS = [
-  { id: 'castle', sprite: 'castle', icon: '🏠', label: 'Bastión', color: '#d9a441' },
-  { id: 'waves', sprite: 'tide', icon: '🌊', label: 'Marea de la Mácula', color: '#b32821' },
-  { id: 'missions', sprite: 'scroll', icon: '📜', label: 'Misiones', color: '#d9a441', badge: 3 },
-  { id: 'build', sprite: 'blueprint', icon: '🔨', label: 'Construir', color: '#e8933a' },
-  { id: 'explore', sprite: 'star', icon: '🗺️', label: 'Marca', color: '#4fd8c8' },
-  { id: 'settings', sprite: 'gear', icon: '⚙️', label: 'Ajustes', color: '#8a8378' },
+  { id: 'castle', sprite: 'castle', label: 'Bastión', color: KH.brass },
+  { id: 'waves', sprite: 'tide', label: 'Marea', color: KH.seal },
+  { id: 'missions', sprite: 'scroll', label: 'Misiones', color: KH.brass, badge: 3 },
+  { id: 'build', sprite: 'blueprint', label: 'Construir', color: KH.ember },
+  { id: 'explore', sprite: 'star', label: 'Marca', color: KH.macula },
+  { id: 'settings', sprite: 'gear', label: 'Ajustes', color: KH.iron },
 ];
 
 export default function QuickActionsSidebar() {
-  const addNotification = useGameStore((s) => s.addNotification);
   const setOverlay = useGameStore((s) => s.setOverlay);
   const missions = useGameStore((s) => s.missions);
 
@@ -47,31 +46,28 @@ export default function QuickActionsSidebar() {
   };
 
   return (
-    <div className="absolute left-2 top-20 z-20 pointer-events-none flex flex-col gap-2">
+    <div className="absolute left-2 top-32 z-20 pointer-events-none flex flex-col gap-2">
       {ACTIONS.map((a) => {
         const badge = a.id === 'missions' ? missionCount : a.badge;
         return (
-          <button
+          <IconButton
             key={a.id}
-            onClick={() => handleAction(a.id)}
-            className="pointer-events-auto relative w-11 h-11 rounded-xl flex items-center justify-center transition-transform active:scale-90 hover:scale-105"
-            style={grimBtn(a.color)}
+            icon={a.sprite}
+            label={a.label}
+            accent={a.color}
+            iconSize={a.id === 'castle' ? 40 : 32}
             title={a.label}
+            onClick={() => handleAction(a.id)}
           >
-            <SpriteIcon name={a.sprite} size={22} fallback={a.icon} style={grimIcon} />
             {badge > 0 && (
               <span
-                className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
-                style={{
-                  background: 'linear-gradient(135deg, #ff4444 0%, #cc0000 100%)',
-                  boxShadow: '0 0 6px rgba(255,68,68,0.7)',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                }}
+                className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-bold font-numeric"
+                style={{ backgroundColor: KH.seal, color: KH.bone, border: `1px solid ${KH.ink}` }}
               >
                 {badge > 99 ? '99+' : badge}
               </span>
             )}
-          </button>
+          </IconButton>
         );
       })}
     </div>

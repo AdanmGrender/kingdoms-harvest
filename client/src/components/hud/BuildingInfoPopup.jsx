@@ -5,27 +5,28 @@
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
+import SpriteIcon from '../ui/SpriteIcon';
 
 // Espejo de name/maxLevel de shared/gameConfig.js BUILDINGS (lore v2) — mantener en sync
 // (lo verifica BuildingInfoPopup.test.jsx).
 const BUILDING_META = {
-  throne_room: { name: 'Torre del Señor', icon: '🏰', maxLevel: 10 },
-  farm_plot: { name: 'Huerto Votivo', icon: '🌾', maxLevel: 10 },
-  barn: { name: 'Granero', icon: '🛖', maxLevel: 10 },
-  mill: { name: 'Molino', icon: '🌀', maxLevel: 5 },
-  sawmill: { name: 'Aserradero', icon: '🪵', maxLevel: 5 },
-  smithy: { name: 'Herrería', icon: '⚒️', maxLevel: 5 },
-  stable: { name: 'Establo', icon: '🐎', maxLevel: 5 },
-  house: { name: 'Casa de Vecinos', icon: '🏘️', maxLevel: 5 },
-  mine: { name: 'Mina de la Colina', icon: '⛏️', maxLevel: 5 },
-  barracks: { name: 'Cuartel', icon: '⚔️', maxLevel: 10 },
-  tower: { name: 'Torre de Cañones', icon: '🗼', maxLevel: 10 },
-  wall: { name: 'Muralla', icon: '🧱', maxLevel: 15 },
-  trap: { name: 'Foso de Estacas', icon: '🪤', maxLevel: 8 },
-  tavern: { name: 'Taberna', icon: '🍺', maxLevel: 5 },
-  market: { name: 'Mercado Negro', icon: '🏪', maxLevel: 5 },
-  library: { name: 'Scriptorium', icon: '📚', maxLevel: 8 },
-  embassy: { name: 'Casa del Emisario', icon: '🏛️', maxLevel: 3 },
+  throne_room: { name: 'Torre del Señor', icon: 'castle', maxLevel: 10 },
+  farm_plot: { name: 'Huerto Votivo', icon: 'farm_plot', maxLevel: 10 },
+  barn: { name: 'Granero', icon: 'barn', maxLevel: 10 },
+  mill: { name: 'Molino', icon: 'mill', maxLevel: 5 },
+  sawmill: { name: 'Aserradero', icon: 'sawmill', maxLevel: 5 },
+  smithy: { name: 'Herrería', icon: 'smithy', maxLevel: 5 },
+  stable: { name: 'Establo', icon: 'stable', maxLevel: 5 },
+  house: { name: 'Casa de Vecinos', icon: 'farmhouse', maxLevel: 5 },
+  mine: { name: 'Mina de la Colina', icon: 'mine', maxLevel: 5 },
+  barracks: { name: 'Cuartel', icon: 'barracks', maxLevel: 10 },
+  tower: { name: 'Torre de Cañones', icon: 'tower', maxLevel: 10 },
+  wall: { name: 'Muralla', icon: 'wall', maxLevel: 15 },
+  trap: { name: 'Foso de Estacas', icon: 'trap', maxLevel: 8 },
+  tavern: { name: 'Taberna', icon: 'tavern', maxLevel: 5 },
+  market: { name: 'Mercado Negro', icon: 'market', maxLevel: 5 },
+  library: { name: 'Scriptorium', icon: 'library', maxLevel: 8 },
+  embassy: { name: 'Casa del Emisario', icon: 'embassy', maxLevel: 3 },
 };
 
 export default function BuildingInfoPopup() {
@@ -51,7 +52,7 @@ export default function BuildingInfoPopup() {
   const buildingId = selected.buildingId ?? selected.building_id;
   const meta = BUILDING_META[buildingId] || {
     name: buildingId || 'Edificio',
-    icon: '🏠',
+    icon: 'farmhouse',
     maxLevel: 10,
   };
   const level = selected.level || 1;
@@ -106,14 +107,13 @@ export default function BuildingInfoPopup() {
               border: '1px solid rgba(255,215,80,0.3)',
             }}
           >
-            <span className="text-2xl">{meta.icon}</span>
+            <SpriteIcon name={meta.icon} size={40} />
           </div>
           <div>
             <p className="text-yellow-300 text-[10px] font-semibold uppercase tracking-wider">
               Nv. {level} / {meta.maxLevel}
             </p>
-            <p className="text-white text-sm font-bold leading-tight"
-              style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <p className="text-white text-sm font-bold leading-tight font-display">
               {meta.name}
             </p>
           </div>
@@ -129,7 +129,7 @@ export default function BuildingInfoPopup() {
               border: '1px solid rgba(100,180,255,0.4)',
             }}
           >
-            ℹ️ Info
+            Info
           </button>
           <button
             onClick={handleUpgrade}
@@ -143,7 +143,7 @@ export default function BuildingInfoPopup() {
               color: canUpgrade ? '#ffe070' : '#888',
             }}
           >
-            ⬆️ Mejorar
+            Mejorar
           </button>
         </div>
       </div>

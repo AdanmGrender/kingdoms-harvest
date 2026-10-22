@@ -3,15 +3,16 @@
  * Crop data mirrors shared/gameConfig.js CROPS — keep in sync.
  */
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const CROPS = [
-  { id: 'wheat', name: 'Trigo', icon: '🌾', seedCost: 5, growthTime: 30 * 60 * 1000 },
-  { id: 'carrot', name: 'Zanahoria', icon: '🥕', seedCost: 8, growthTime: 20 * 60 * 1000 },
-  { id: 'potato', name: 'Papa', icon: '🥔', seedCost: 10, growthTime: 45 * 60 * 1000 },
-  { id: 'tomato', name: 'Tomate', icon: '🍅', seedCost: 15, growthTime: 60 * 60 * 1000 },
-  { id: 'corn', name: 'Maíz', icon: '🌽', seedCost: 18, growthTime: 90 * 60 * 1000 },
-  { id: 'pumpkin', name: 'Calabaza', icon: '🎃', seedCost: 25, growthTime: 120 * 60 * 1000 },
-  { id: 'grape', name: 'Uva', icon: '🍇', seedCost: 30, growthTime: 180 * 60 * 1000 },
+  { id: 'wheat', name: 'Trigo', icon: 'wheat', seedCost: 5, growthTime: 30 * 60 * 1000 },
+  { id: 'carrot', name: 'Zanahoria', icon: 'carrot', seedCost: 8, growthTime: 20 * 60 * 1000 },
+  { id: 'potato', name: 'Papa', icon: 'potato', seedCost: 10, growthTime: 45 * 60 * 1000 },
+  { id: 'tomato', name: 'Tomate', icon: 'tomato', seedCost: 15, growthTime: 60 * 60 * 1000 },
+  { id: 'corn', name: 'Maíz', icon: 'corn', seedCost: 18, growthTime: 90 * 60 * 1000 },
+  { id: 'pumpkin', name: 'Calabaza', icon: 'pumpkin', seedCost: 25, growthTime: 120 * 60 * 1000 },
+  { id: 'grape', name: 'Uva', icon: 'grape', seedCost: 30, growthTime: 180 * 60 * 1000 },
 ];
 
 function formatTime(ms) {
@@ -44,13 +45,13 @@ export default function CropSelectMenu({ data, onClose }) {
       style={{ background: 'rgba(51, 47, 43, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
 
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          🌱 Selecciona un cultivo
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
+          <SpriteIcon name="wheat" size={28} /> Selecciona un cultivo
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
       </div>
 
-      <p className="text-gray-400 text-xs mb-3">Parcela #{(data.plotIndex ?? 0) + 1} • Oro: {gold} 🪙</p>
+      <p className="text-gray-400 text-xs mb-3">Parcela #{(data.plotIndex ?? 0) + 1} • Oro: {gold} <SpriteIcon name="gold" size={28} /></p>
 
       <div className="grid grid-cols-2 gap-2 max-h-[40vh] overflow-y-auto">
         {CROPS.map(crop => {
@@ -68,10 +69,10 @@ export default function CropSelectMenu({ data, onClose }) {
               style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,215,0,0.1)' }}
             >
               <div className="flex items-center gap-2">
-                <span className="text-xl">{crop.icon}</span>
+                <span className="text-xl"><SpriteIcon name={crop.icon} size={28} /></span>
                 <div>
                   <p className="text-white text-xs font-semibold">{crop.name}</p>
-                  <p className="text-gray-400 text-[10px]">{crop.seedCost} 🪙 • {formatTime(crop.growthTime)}</p>
+                  <p className="text-gray-400 text-[10px]">{crop.seedCost} <SpriteIcon name="gold" size={28} /> • {formatTime(crop.growthTime)}</p>
                 </div>
               </div>
             </button>

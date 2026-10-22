@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import EmberField from '../fx/EmberField';
+import SpriteIcon from '../ui/SpriteIcon';
 
 // Bestiario visible (ids = WAVE_ENEMIES de shared/gameConfig.js; el arte vive en
 // /assets/game/enemies/<id>.png). Nombres cortos para que entren a 8px.
@@ -80,8 +81,8 @@ export default function WaveDefensePanel({ onClose }) {
       <EmberField count={14} color="#8a8378" maxOpacity={0.45} />
       <div className="flex items-center justify-between px-4 py-3 border-b border-red-900/40 shrink-0 bg-black/30">
         <div>
-          <h3 className="text-red-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-            🌊 Marea de la Mácula
+          <h3 className="text-red-400 text-sm font-bold font-display">
+            <SpriteIcon name="tide" size={28} /> Marea de la Mácula
           </h3>
           <p className="text-[10px] text-gray-500">Los horrores prueban tus muros — preparate y resistí</p>
         </div>
@@ -90,7 +91,7 @@ export default function WaveDefensePanel({ onClose }) {
             onClick={() => useGameStore.getState().setOverlay('squad', {})}
             className="text-[10px] px-2 py-1 rounded bg-black/40 border border-yellow-700/40 text-yellow-300"
           >
-            🪖 Escuadra
+            <SpriteIcon name="sword" size={28} /> Escuadra
           </button>
           <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
         </div>
@@ -100,10 +101,10 @@ export default function WaveDefensePanel({ onClose }) {
         {/* Estado de la escalera */}
         {waveStatus && !run && (
           <div className="grid grid-cols-3 gap-2 text-center">
-            <Stat label="Oleada máxima" value={waveStatus.highestWave} icon="🏔️" />
-            <Stat label="Próxima" value={waveStatus.nextWave} icon={waveStatus.nextIsBoss ? '💀' : '🌊'}
+            <Stat label="Oleada máxima" value={waveStatus.highestWave} icon="medal" />
+            <Stat label="Próxima" value={waveStatus.nextWave} icon={waveStatus.nextIsBoss ? 'skull' : 'tide'}
               highlight={waveStatus.nextIsBoss} />
-            <Stat label="Desafíos" value={waveStatus.totalRuns} icon="⚔️" />
+            <Stat label="Desafíos" value={waveStatus.totalRuns} icon="sword" />
           </div>
         )}
 
@@ -142,12 +143,12 @@ export default function WaveDefensePanel({ onClose }) {
         )}
         {waveStatus?.nextIsBoss && !run && (
           <p className="text-center text-[11px] text-red-400 animate-pulse">
-            💀 La próxima oleada es un JEFE — reforzá murallas y torres
+            <SpriteIcon name="skull" size={28} /> La próxima oleada es un JEFE — reforzá murallas y torres
           </p>
         )}
         {waveStatus?.freeRunAvailable && !run && (
           <p className="text-center text-[11px] text-yellow-400">
-            🩸 La Marea Carmesí trae un desafío bonificado
+            La Marea Carmesí trae un desafío bonificado
           </p>
         )}
 
@@ -175,16 +176,16 @@ export default function WaveDefensePanel({ onClose }) {
           <div className={`rounded-lg p-3 text-center border animate-fade-in ${
             run.victory ? 'bg-green-900/20 border-green-600/40' : 'bg-red-900/20 border-red-600/40'
           }`}>
-            <p className="font-bold text-sm mb-1" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <p className="font-bold text-sm mb-1 font-display">
               {run.victory
-                ? `🏆 La Marea retrocede — oleada ${run.endWave} superada`
-                : `☠️ Los muros cayeron en la oleada ${run.endWave + (run.wavesCleared > 0 ? 1 : 0)}`}
+                ? `La Marea retrocede — oleada ${run.endWave} superada`
+                : `Los muros cayeron en la oleada ${run.endWave + (run.wavesCleared > 0 ? 1 : 0)}`}
             </p>
             <div className="flex justify-center gap-3 text-[11px] mt-1">
-              {run.rewards.gold > 0 && <span className="text-yellow-300">🪙 +{run.rewards.gold}</span>}
-              {run.rewards.kh > 0 && <span className="text-kingdom-gold">💎 +{run.rewards.kh} KH</span>}
-              {run.rewards.heroXp > 0 && <span className="text-cyan-300">🦸 +{run.rewards.heroXp} XP</span>}
-              {run.rewards.item && <span className="text-purple-300">🎁 ¡Reliquia del jefe!</span>}
+              {run.rewards.gold > 0 && <span className="text-yellow-300"><SpriteIcon name="gold" size={28} /> +{run.rewards.gold}</span>}
+              {run.rewards.kh > 0 && <span className="text-kingdom-gold"><SpriteIcon name="gem" size={28} /> +{run.rewards.kh} KH</span>}
+              {run.rewards.heroXp > 0 && <span className="text-cyan-300">+{run.rewards.heroXp} XP</span>}
+              {run.rewards.item && <span className="text-purple-300"><SpriteIcon name="reward_bag" size={28} /> ¡Reliquia del jefe!</span>}
             </div>
           </div>
         )}
@@ -194,7 +195,7 @@ export default function WaveDefensePanel({ onClose }) {
         {run && !replayDone && (
           <button onClick={skipReplay}
             className="flex-1 py-2 rounded-lg text-xs font-bold text-gray-300 bg-black/40 border border-gray-600/40">
-            ⏩ Saltar
+            Saltar
           </button>
         )}
         <button
@@ -205,10 +206,10 @@ export default function WaveDefensePanel({ onClose }) {
                      hover:from-red-600 hover:to-red-800 active:scale-95 transition-all
                      disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {running ? '⚔️ La Marea golpea…'
-            : run && replayDone ? '↩️ Continuar'
-            : run ? '👁️ Observando…'
-            : '⚔️ Desafiar la Marea'}
+          {running ? 'La Marea golpea…'
+            : run && replayDone ? 'Continuar'
+            : run ? 'Observando…'
+            : 'Desafiar la Marea'}
         </button>
       </div>
     </div>
@@ -220,7 +221,7 @@ function Stat({ label, value, icon, highlight }) {
     <div className={`rounded-lg py-2 border ${
       highlight ? 'bg-red-900/30 border-red-600/50' : 'bg-black/40 border-gray-700/40'
     }`}>
-      <p className="text-lg leading-none mb-0.5">{icon}</p>
+      <p className="text-lg leading-none mb-0.5"><SpriteIcon name={icon} size={28} /></p>
       <p className="text-base font-bold text-white leading-none">{value}</p>
       <p className="text-[9px] text-gray-500 mt-0.5">{label}</p>
     </div>

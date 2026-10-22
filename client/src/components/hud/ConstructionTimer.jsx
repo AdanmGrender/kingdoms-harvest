@@ -4,6 +4,8 @@
  */
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import Bar from '../ui/Bar';
+import SpriteIcon from '../ui/SpriteIcon';
 
 function formatTime(seconds) {
   if (seconds <= 0) return '00:00';
@@ -49,7 +51,7 @@ export default function ConstructionTimer() {
         }}
       >
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-lg">{construction.icon || '🔨'}</span>
+          <SpriteIcon name="hammer" size={28} />
           <div className="flex-1 min-w-0">
             <p className="text-orange-300 text-[10px] font-semibold truncate">
               {construction.name || 'Construcción'}
@@ -57,15 +59,7 @@ export default function ConstructionTimer() {
             <p className="text-white text-[9px] tabular-nums">{formatTime(remaining)}</p>
           </div>
         </div>
-        <div className="w-full h-1 bg-black/50 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all"
-            style={{
-              width: `${pct}%`,
-              background: 'linear-gradient(90deg, #ff8c28, #ffd750)',
-            }}
-          />
-        </div>
+        <Bar value={pct} tone="ember" label="Construcción" />
       </div>
     </div>
   );

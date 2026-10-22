@@ -12,8 +12,8 @@ import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
-// Los íconos salen del sheet grimdark (spriteMap → grim_icons.png). El emoji
-// queda solo como fallback si el arte no está generado.
+// Los íconos salen del sheet grimdark (spriteMap → assets/b/ui/icons.webp). El emoji
+// ya no se usa como fallback (ui_kit_b: sin emojis).
 const PACK_STYLE = {
   pouch: { grad: 'from-slate-700 to-slate-800', ring: 'rgba(148,163,184,0.4)', size: 30 },
   chest: { grad: 'from-indigo-800 to-indigo-950', ring: 'rgba(129,140,248,0.5)', size: 34 },
@@ -67,15 +67,15 @@ export default function ShopPanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-2">
-          <SpriteIcon name="gem" size={20} fallback="💎" />
-          <h2 className="text-yellow-400 font-bold text-sm" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <SpriteIcon name="gem" size={28} />
+          <h2 className="text-yellow-400 font-bold text-sm font-display">
             Arsenal del Bastión
           </h2>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 px-2 py-1 rounded-md"
             style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(192,132,252,0.4)' }}>
-            <SpriteIcon name="gem" size={14} fallback="💎" />
+            <SpriteIcon name="gem" size={28} />
             <span className="text-purple-200 text-xs font-bold tabular-nums">
               {gems?.balance ?? 0}
             </span>
@@ -100,7 +100,7 @@ export default function ShopPanel({ onClose }) {
               >
                 <div className="flex items-center gap-3">
                   {/* El pack grande muestra una gema más grande: jerarquía visual */}
-                  <SpriteIcon name="gem" size={st.size} fallback="💎" />
+                  <SpriteIcon name="gem" size={st.size} />
                   <div className="text-left">
                     <p className="text-white font-bold text-sm leading-tight">{pack.name}</p>
                     <p className="text-purple-200 text-xs font-semibold tabular-nums">
@@ -113,7 +113,7 @@ export default function ShopPanel({ onClose }) {
                 </div>
                 <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg"
                   style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                  <SpriteIcon name="star_currency" size={16} fallback="⭐" />
+                  <SpriteIcon name="star_currency" size={28} />
                   <span className="text-white text-xs font-bold tabular-nums">
                     {isBusy ? '…' : pack.stars}
                   </span>
@@ -128,7 +128,7 @@ export default function ShopPanel({ onClose }) {
           style={{ border: '1px solid rgba(74,222,128,0.5)' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <SpriteIcon name="flame" size={28} fallback="🔥" />
+              <SpriteIcon name="flame" size={28} />
               <div className="text-left">
                 <p className="text-white font-bold text-sm leading-tight">Boost de Producción ×2</p>
                 <p className="text-emerald-200 text-xs">
@@ -144,7 +144,7 @@ export default function ShopPanel({ onClose }) {
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-transform active:scale-[0.98] disabled:opacity-60"
               style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.15)' }}
             >
-              <SpriteIcon name="gem" size={14} fallback="💎" />
+              <SpriteIcon name="gem" size={28} />
               <span className="text-white text-xs font-bold tabular-nums">
                 {boostBusy ? '…' : boostState?.active ? '+80' : '80'}
               </span>
@@ -159,9 +159,9 @@ export default function ShopPanel({ onClose }) {
               que no funciona es la peor forma de romper la confianza. */}
           <p className="text-gray-300 text-xs font-semibold mb-1.5">Las Gemas sirven para:</p>
           <ul className="text-gray-400 text-[11px] flex flex-col gap-1">
-            <li>⚡ Acelerar construcciones al instante</li>
-            <li>🦸 Invocar héroes (precio fijo, cualquier rareza)</li>
-            <li>🔥 Boost ×2 producción por 4h (cosechas + venta de oro)</li>
+            <li><SpriteIcon name="speedup" size={28} /> Acelerar construcciones al instante</li>
+            <li>Invocar héroes (precio fijo, cualquier rareza)</li>
+            <li><SpriteIcon name="flame" size={28} /> Boost ×2 producción por 4h (cosechas + venta de oro)</li>
           </ul>
         </div>
 
@@ -169,7 +169,7 @@ export default function ShopPanel({ onClose }) {
             del HUD lo tapaba y este texto NO puede quedar oculto. */}
         <p className="text-gray-500 text-[10px] mt-3 mb-2 leading-relaxed text-center pb-24">
           Las Gemas son moneda del juego: <b>no se convierten en KH ni en TON</b> y
-          no son retirables. Los pagos los procesa Telegram con Stars ⭐.
+          no son retirables. Los pagos los procesa Telegram con Stars <SpriteIcon name="star" size={28} />.
         </p>
       </div>
     </div>

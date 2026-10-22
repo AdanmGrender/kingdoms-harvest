@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const FEE_RATE = 0.05;
 const TON_RATE = 0.0001;
@@ -143,7 +144,7 @@ function AmountStep({ tokenInfo, onOTPSent }) {
           opacity: canSubmit ? 1 : 0.6,
         }}
       >
-        {loading ? 'Enviando…' : '📱 Enviar código por Telegram'}
+        {loading ? 'Enviando…' : 'Enviar código por Telegram'}
       </button>
     </div>
   );
@@ -196,8 +197,7 @@ function OTPStep({ onClose }) {
         style={{ background: 'rgba(255,215,0,0.06)', border: '1px solid rgba(255,215,0,0.2)' }}
       >
         <p className="text-gray-400 text-xs mb-1">Retiro pendiente</p>
-        <p className="text-yellow-400 font-bold text-xl"
-          style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <p className="text-yellow-400 font-bold text-xl font-display">
           {withdrawalOTP.amount} KH
         </p>
       </div>
@@ -238,7 +238,7 @@ function OTPStep({ onClose }) {
           opacity: canConfirm ? 1 : 0.6,
         }}
       >
-        {loading ? 'Procesando…' : '✅ Confirmar retiro'}
+        {loading ? 'Procesando…' : 'Confirmar retiro'}
       </button>
 
       {/* Cancel link */}
@@ -259,7 +259,7 @@ function HistoryTab({ withdrawalHistory }) {
   if (!withdrawalHistory.length) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-gray-500 text-sm gap-2">
-        <span className="text-4xl">📭</span>
+        <span className="text-4xl"><SpriteIcon name="scroll" size={48} /></span>
         <p>Sin retiros aún</p>
       </div>
     );
@@ -337,10 +337,8 @@ export default function WithdrawalPanel({ onClose }) {
         style={{ background: 'rgba(51,47,43,0.98)' }}
       >
         <h2
-          className="text-yellow-400 font-bold text-base"
-          style={{ fontFamily: 'MedievalSharp, serif' }}
-        >
-          💰 Retiro KH Tokens
+          className="text-yellow-400 font-bold text-base font-display" >
+          <SpriteIcon name="gold" size={28} /> Retiro KH Tokens
         </h2>
         <button
           onClick={onClose}
@@ -354,8 +352,8 @@ export default function WithdrawalPanel({ onClose }) {
       {/* Tabs */}
       <div className="flex border-b border-yellow-900/30 flex-shrink-0"
         style={{ background: 'rgba(51,47,43,0.98)' }}>
-        {tabBtn('withdraw', '💸 Retirar')}
-        {tabBtn('history',  '📋 Historial')}
+        {tabBtn('withdraw', 'Retirar')}
+        {tabBtn('history',  'Historial')}
       </div>
 
       {/* Scrollable body */}

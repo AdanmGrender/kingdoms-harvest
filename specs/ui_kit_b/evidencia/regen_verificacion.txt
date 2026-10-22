@@ -1,0 +1,5 @@
+blueprint corner alpha 0 0 0 0
+blueprint max edge alpha 0
+sun corner alpha 0 0 0 0
+sun max edge alpha 0
+celdas con px cambiados (>12/255, ruido de recompresión webp): gold:2, blueprint:20038, carrot:1, farmhouse:1, market:1, tower:1, mill:1, horse:1, crown:1, scroll:1, medal:1, skull:1, sun:19513, moon:1, world:1, smithy:1 | total 79

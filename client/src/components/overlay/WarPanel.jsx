@@ -3,16 +3,17 @@
  */
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const SIEGE_ABILITIES = {
-  arrow_rain:    { name: 'Lluvia de Flechas', icon: '🏹', description: 'Reduce defensa enemiga un 20%' },
-  battering_ram: { name: 'Ariete',            icon: '🪵', description: 'Dano masivo a murallas' },
-  rally:         { name: 'Reagrupar',         icon: '📯', description: 'Aumenta ataque un 15%' },
-  shield_wall:   { name: 'Muro de Escudos',   icon: '🛡️', description: 'Aumenta defensa un 25%' },
+  arrow_rain:    { name: 'Lluvia de Flechas', icon: 'bow', description: 'Reduce defensa enemiga un 20%' },
+  battering_ram: { name: 'Ariete',            icon: 'ram', description: 'Dano masivo a murallas' },
+  rally:         { name: 'Reagrupar',         icon: 'exclamation', description: 'Aumenta ataque un 15%' },
+  shield_wall:   { name: 'Muro de Escudos',   icon: 'shield', description: 'Aumenta defensa un 25%' },
 };
 
 const TROOP_ICONS = {
-  militia: '🗡️', archer: '🏹', cavalry: '🐎', spearman: '🔱', siege_ram: '🪵',
+  militia: 'sword', archer: 'bow', cavalry: 'horse', spearman: 'spear', siege_ram: 'ram',
 };
 
 const TYPE_COLORS = {
@@ -67,13 +68,13 @@ function TerritoryTab({ playerFactionId }) {
       {/* Summary */}
       <div className="flex gap-2 mb-2 text-[10px]">
         <span className="px-2 py-0.5 rounded bg-green-900/50 text-green-400">
-          ✅ Tu facción: {ownedByMyFaction}
+          <SpriteIcon name="check" size={28} /> Tu facción: {ownedByMyFaction}
         </span>
         <span className="px-2 py-0.5 rounded bg-gray-700/50 text-gray-400">
-          🏳️ Neutral: {neutral}
+          <SpriteIcon name="alliance" size={28} /> Neutral: {neutral}
         </span>
         <span className="px-2 py-0.5 rounded bg-red-900/50 text-red-400">
-          ⚔️ Enemigos: {territories.length - ownedByMyFaction - neutral}
+          <SpriteIcon name="sword" size={28} /> Enemigos: {territories.length - ownedByMyFaction - neutral}
         </span>
       </div>
 
@@ -108,7 +109,7 @@ function TerritoryTab({ playerFactionId }) {
                 }`}
               >
                 <div className="flex items-center gap-1">
-                  <span>{t.typeIcon}</span>
+                  <SpriteIcon name="map" size={28} />
                   <span className="truncate font-semibold text-white">{t.name}</span>
                 </div>
                 <div className="flex items-center gap-1 mt-0.5">
@@ -131,10 +132,10 @@ function TerritoryTab({ playerFactionId }) {
             <div className="space-y-1.5">
               <div className="p-2 rounded bg-black/20 border border-gray-700/40">
                 <p className={`text-xs font-bold ${TYPE_COLORS[selected.type] || 'text-white'}`}>
-                  {selected.typeIcon} {selected.name}
+                  <SpriteIcon name="map" size={28} /> {selected.name}
                 </p>
                 <p className="text-gray-400 text-[9px]">{selected.typeLabel}</p>
-                <p className="text-yellow-400 text-[9px] mt-1">💰 {selected.bonusDesc}</p>
+                <p className="text-yellow-400 text-[9px] mt-1"><SpriteIcon name="gold" size={28} /> {selected.bonusDesc}</p>
                 <p className="text-gray-500 text-[9px]">Dueño: {selected.ownerFactionName}</p>
                 {selected.conqueredAt && (
                   <p className="text-gray-600 text-[9px]">
@@ -152,7 +153,7 @@ function TerritoryTab({ playerFactionId }) {
                     <div className="space-y-1">
                       {readyTroops.map((t) => (
                         <div key={t.troop_id} className="flex items-center gap-1">
-                          <span className="text-[10px] w-4">{TROOP_ICONS[t.troop_id]}</span>
+                          <span className="text-[10px] w-4"><SpriteIcon name={TROOP_ICONS[t.troop_id]} size={28} /></span>
                           <span className="text-gray-400 text-[9px] flex-1 truncate">{t.troop_id}</span>
                           <span className="text-gray-500 text-[9px]">/{t.quantity}</span>
                           <input
@@ -176,14 +177,14 @@ function TerritoryTab({ playerFactionId }) {
                     className="w-full py-1.5 rounded text-[10px] font-bold text-white disabled:opacity-40"
                     style={{ background: 'linear-gradient(135deg, #7f1d1d, #dc2626)' }}
                   >
-                    {loading ? 'Atacando...' : `⚔️ Atacar (${totalArmy} tropas)`}
+                    {loading ? 'Atacando...' : `Atacar (${totalArmy} tropas)`}
                   </button>
                 </>
               )}
 
               {selected.ownerFactionId === playerFactionId && (
                 <div className="p-2 rounded bg-green-900/20 border border-green-700/30">
-                  <p className="text-green-400 text-[10px] font-bold">✅ Territorio propio</p>
+                  <p className="text-green-400 text-[10px] font-bold"><SpriteIcon name="check" size={28} /> Territorio propio</p>
                   <p className="text-gray-400 text-[9px]">Recibís {selected.bonusDesc} mientras lo controles.</p>
                 </div>
               )}
@@ -200,10 +201,10 @@ function TerritoryTab({ playerFactionId }) {
 }
 
 const FACTION_ICONS = {
-  knights_of_dawn: '☀️',
-  shadow_merchants: '🌙',
-  iron_legion: '🛡️',
-  green_wardens: '🌿',
+  knights_of_dawn: 'sun',
+  shadow_merchants: 'moon',
+  iron_legion: 'shield',
+  green_wardens: 'wheat',
 };
 
 function PvPTab() {
@@ -259,7 +260,7 @@ function PvPTab() {
       <div className="space-y-3">
         <div className={`p-3 rounded-lg border ${won ? 'border-green-600 bg-green-900/20' : 'border-red-700 bg-red-900/20'}`}>
           <p className={`text-sm font-bold ${won ? 'text-green-400' : 'text-red-400'}`}>
-            {won ? '⚔️ ¡Victoria!' : '💀 Derrota'} vs {result.defenderName}
+            {won ? '¡Victoria!' : 'Derrota'} vs {result.defenderName}
           </p>
           {won && Object.keys(loot).length > 0 && (
             <p className="text-yellow-300 text-xs mt-1">
@@ -301,10 +302,10 @@ function PvPTab() {
                     : 'bg-gray-800/60 border border-gray-700/40 hover:border-red-700/50'
                 }`}
               >
-                <span className="text-base">{FACTION_ICONS[p.faction_id] || '⚔️'}</span>
+                <span className="text-base"><SpriteIcon name={FACTION_ICONS[p.faction_id] || 'sword'} size={28} /></span>
                 <span className="flex-1 font-semibold text-white truncate">{p.display_name || `Jugador #${p.id}`}</span>
                 {onCooldown ? (
-                  <span className="text-orange-400 text-[9px] font-mono">⏳ {formatCooldown(cdMs)}</span>
+                  <span className="text-orange-400 text-[9px] font-mono"><SpriteIcon name="speedup" size={28} /> {formatCooldown(cdMs)}</span>
                 ) : (
                   <span className="text-gray-400">Nv.{p.level}</span>
                 )}
@@ -331,7 +332,7 @@ function PvPTab() {
                       active ? 'bg-purple-700 text-white' : 'bg-gray-700 text-gray-400'
                     }`}
                   >
-                    {ab ? `${ab.icon} ${ab.name}` : '— Ninguna'}
+                    {ab ? ab.name : '— Ninguna'}
                   </button>
                 );
               })}
@@ -347,7 +348,7 @@ function PvPTab() {
               <div className="space-y-1">
                 {readyTroops.map((t) => (
                   <div key={t.troop_id} className="flex items-center gap-2">
-                    <span className="text-[10px] w-5">{TROOP_ICONS[t.troop_id]}</span>
+                    <span className="text-[10px] w-5"><SpriteIcon name={TROOP_ICONS[t.troop_id]} size={28} /></span>
                     <span className="text-gray-400 text-[9px] flex-1">{t.troop_id}</span>
                     <span className="text-gray-500 text-[9px]">/{t.quantity}</span>
                     <input
@@ -367,7 +368,7 @@ function PvPTab() {
 
           {selectedCooldownMs > 0 ? (
             <div className="w-full py-2 rounded text-xs font-bold text-center text-orange-400 bg-orange-900/20 border border-orange-700/40">
-              ⏳ Cooldown: {formatCooldown(selectedCooldownMs)}
+              <SpriteIcon name="speedup" size={28} /> Cooldown: {formatCooldown(selectedCooldownMs)}
             </div>
           ) : (
             <button
@@ -376,7 +377,7 @@ function PvPTab() {
               className="w-full py-2 rounded text-xs font-bold text-white disabled:opacity-40"
               style={{ background: loading ? 'rgba(55,65,81,0.8)' : 'linear-gradient(135deg, #7f1d1d, #dc2626)' }}
             >
-              {loading ? 'Atacando...' : `⚔️ Atacar a ${selected.display_name} (${totalArmy} tropas)`}
+              {loading ? 'Atacando...' : `Atacar a ${selected.display_name} (${totalArmy} tropas)`}
             </button>
           )}
         </>
@@ -442,7 +443,7 @@ export default function WarPanel({ data, onClose }) {
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
           Zona de Guerra
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
@@ -451,8 +452,8 @@ export default function WarPanel({ data, onClose }) {
       {/* Tabs */}
       <div className="flex gap-1 mb-3 flex-wrap">
         {[
-          { id: 'territories', label: '🗺️ Territorios' },
-          { id: 'pvp',         label: '⚔️ PvP' },
+          { id: 'territories', label: 'Territorios' },
+          { id: 'pvp',         label: 'PvP' },
           { id: 'active',      label: `Asedios (${activeSieges.length})` },
           { id: 'history',     label: 'Historial' },
         ].map(({ id, label }) => (
@@ -512,7 +513,7 @@ export default function WarPanel({ data, onClose }) {
                   <div className="flex gap-2 mb-1">
                     {Object.entries(army).map(([troopId, qty]) => (
                       <span key={troopId} className="text-white text-xs">
-                        {TROOP_ICONS[troopId] || troopId} x{qty}
+                        <SpriteIcon name={TROOP_ICONS[troopId]} size={28} /> x{qty}
                       </span>
                     ))}
                   </div>
@@ -527,7 +528,7 @@ export default function WarPanel({ data, onClose }) {
                           onClick={() => useSiegeAbility(siege.id, id)}
                           title={ab.description}
                         >
-                          {ab.icon} {ab.name}
+                          <SpriteIcon name="flame" size={28} /> {ab.name}
                         </button>
                       ))}
                     </div>
@@ -581,7 +582,7 @@ export default function WarPanel({ data, onClose }) {
                     <div className="text-red-400 text-[10px] mt-1">
                       Perdidas: {Object.entries(isMine ? result.attackerLosses : (result.defenderLosses || {}))
                         .filter(([, v]) => v > 0)
-                        .map(([id, v]) => `${TROOP_ICONS[id] || id} -${v}`)
+                        .map(([id, v]) => `${id} -${v}`)
                         .join(', ') || 'ninguna'}
                     </div>
                   )}

@@ -1,16 +1,14 @@
 /**
  * GENERADO por scripts/assemble_icon_sheet.js — NO editar a mano.
- * Sheet de íconos grimdark para SpriteIcon/spriteMap. Mientras el arte no se
- * haya generado, GRIM_SHEET es null y spriteMap cae a los sheets legacy.
+ * Hoja de íconos B (celda 192 px, 8 columnas) para SpriteIcon/spriteMap.
  *
- * Contrato: GRIM_SHEET = ruta del PNG (grid de CELL px). GRIM_ICONS mapea
- * nombre → { col, row }. spriteMap resuelve primero acá y si no existe el
- * nombre usa el sheet medieval viejo.
+ * Contrato: GRIM_SHEET = ruta del webp (grid de GRIM_CELL px). GRIM_ICONS mapea nombre → { col, row }.
+ * Los 65 nombres contrato conservan su celda; los nuevos van al final.
  */
-export const GRIM_SHEET = '/assets/sprites/grim_icons.png';
-export const GRIM_SHEET_W = 1024;
-export const GRIM_SHEET_H = 1152;
-export const GRIM_CELL = 128;
+export const GRIM_SHEET = '/assets/b/ui/icons.webp';
+export const GRIM_SHEET_W = 1536;
+export const GRIM_SHEET_H = 1920;
+export const GRIM_CELL = 192;
 export const GRIM_ICONS = {
   gold: { col: 0, row: 0 },
   wood: { col: 1, row: 0 },
@@ -77,4 +75,18 @@ export const GRIM_ICONS = {
   enemy_boss_heraldo: { col: 6, row: 7 },
   tide: { col: 7, row: 7 },
   skull: { col: 0, row: 8 },
+  shield: { col: 1, row: 8 },
+  hammer: { col: 2, row: 8 },
+  sun: { col: 3, row: 8 },
+  moon: { col: 4, row: 8 },
+  alliance: { col: 5, row: 8 },
+  rankings: { col: 6, row: 8 },
+  quests: { col: 7, row: 8 },
+  tech: { col: 0, row: 9 },
+  world: { col: 1, row: 9 },
+  mine: { col: 2, row: 9 },
+  smithy: { col: 3, row: 9 },
+  library: { col: 4, row: 9 },
+  embassy: { col: 5, row: 9 },
+  farm_plot: { col: 6, row: 9 },
 };

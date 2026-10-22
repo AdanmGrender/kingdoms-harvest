@@ -56,6 +56,7 @@ describe('TopResourceBar — data-resource (R31)', () => {
     });
     const { container } = render(<TopResourceBar />);
     const keys = [...container.querySelectorAll('[data-resource]')].map((el) => el.getAttribute('data-resource'));
-    expect(keys).toEqual(['wood', 'stone', 'wheat', 'iron']);
+    // ui_kit_b R33: la despensa pasó de 4 a 8 contadores (los 4 originales siguen primero).
+    expect(keys).toEqual(['wood', 'stone', 'wheat', 'iron', 'egg', 'milk', 'wool', 'carrot']);
   });
 });

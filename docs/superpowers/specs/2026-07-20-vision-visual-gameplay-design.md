@@ -262,8 +262,8 @@ visual, no cambia la lógica server-authoritative.
 - **Barrido de emoji → set grim.** Los 40 componentes: sustituir cada emoji por
   `SpriteIcon name=… fallback=<emoji>`. El fallback conserva el emoji SOLO hasta que
   exista el ícono grim, así el barrido no rompe nada.
-- **Completar el set grim de UI.** `scripts/gen_icons.sh` +
-  `assemble_icon_sheet.js` ya producen `grim_icons.png` + manifiesto. Generar los
+- **Completar el set grim de UI.** El script de íconos viejo (retirado en ui_kit_b) +
+  `assemble_icon_sheet.js` ya producían la hoja vieja + manifiesto. Generar los
   íconos que faltan para los overlays nuevos (pase, calendario, códice, boost, gema,
   sweep, nodo, victoria/derrota, tap-skill). Un solo sheet cohesivo.
 - **Chrome de panel grimdark.** Clases canónicas (`.game-card`, `.btn-gold`,
@@ -273,7 +273,7 @@ visual, no cambia la lógica server-authoritative.
   para nombres propios/títulos; sans para cuerpo) — quitar la pixel-font huérfana.
 
 **Archivos:** los 40 `client/src/components/**/*.jsx` (barrido), `SpriteIcon.jsx`,
-`client/src/index.css`, `scripts/gen_icons.sh`, `assemble_icon_sheet.js`,
+`client/src/index.css`, `assemble_icon_sheet.js`,
 `grimIconSheet.generated.js`. **Esfuerzo:** M (mecánico pero amplio).
 
 ### FASE 4 — Actores in-world: edificios + héroes ¾ con rim-light (L)
@@ -390,7 +390,7 @@ sistemas que YA existen.
 | Emoji (40 archivos) | `client/src/components/**/*.jsx` |
 | Resolución de íconos | `client/src/utils/spriteMap.js`, `client/src/config/grimIconSheet.generated.js` |
 | Paleta UI | `client/tailwind.config.js`, `client/src/index.css` |
-| Pipeline IA | `scripts/gen_ai_art.js` (STYLE + presets), `gen_zones.sh`, `gen_heroes.sh`, `gen_icons.sh`, `assemble_icon_sheet.js`, `downscale.js`, `process_art.js` |
+| Pipeline IA | `scripts/gen_ai_art.js` (STYLE + presets), `gen_zones.sh`, `gen_heroes.sh`, `assemble_icon_sheet.js`, `downscale.js`, `process_art.js` |
 | Tamaño de edificio | `client/src/game/entities/Building.js:11` (`BUILDING_SIZE=64`) |
 | Retratos de héroe (activos ricos) | `client/public/assets/game/heroes/*.png` (18) |
 | Flag iso | `client/src/game/config.js` (`ISO_MODE`), `IsoWorldScene.js`, `IsoScene.js` |

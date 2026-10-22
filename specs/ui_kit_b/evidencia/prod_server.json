@@ -1,0 +1,84 @@
+{
+  "cabeceraCSP": "default-src 'self';script-src 'self' https://telegram.org;style-src 'self' 'unsafe-inline';img-src 'self' data: blob: https:;connect-src 'self' wss: https:;frame-src 'none';worker-src 'self' blob:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+  "entrada": "boton",
+  "barra": [
+    {
+      "key": "wood",
+      "w": 45,
+      "row": {
+        "sw": 372,
+        "cw": 372
+      }
+    },
+    {
+      "key": "stone",
+      "w": 45,
+      "row": {
+        "sw": 372,
+        "cw": 372
+      }
+    },
+    {
+      "key": "wheat",
+      "w": 45,
+      "row": {
+        "sw": 372,
+        "cw": 372
+      }
+    },
+    {
+      "key": "iron",
+      "w": 45,
+      "row": {
+        "sw": 372,
+        "cw": 372
+      }
+    },
+    {
+      "key": "egg",
+      "w": 45,
+      "row": {
+        "sw": 372,
+        "cw": 372
+      }
+    },
+    {
+      "key": "milk",
+      "w": 45,
+      "row": {
+        "sw": 372,
+        "cw": 372
+      }
+    },
+    {
+      "key": "wool",
+      "w": 45,
+      "row": {
+        "sw": 372,
+        "cw": 372
+      }
+    },
+    {
+      "key": "carrot",
+      "w": 45,
+      "row": {
+        "sw": 372,
+        "cw": 372
+      }
+    }
+  ],
+  "fontsCheck": {
+    "numeric": true,
+    "body": true
+  },
+  "requestsAHostsExternos": [
+    "https://telegram.org/js/telegram-web-app.js"
+  ],
+  "fuentesExternas": [],
+  "cspViolacionesEvento": [],
+  "cspViolacionesConsola": [],
+  "captura": "prod_server_barra.webp 824x600 55KB",
+  "pageerrors": 0,
+  "consoleErrors": 0,
+  "http400": []
+}

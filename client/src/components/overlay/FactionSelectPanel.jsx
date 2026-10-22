@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const FACTIONS = [
   {
     id: 'knights_of_dawn',
     name: 'Caballeros del Alba',
-    icon: '☀️',
+    icon: 'sun',
     color: '#FFD700',
     bonus: '+10% defensa',
     desc: 'Orden noble que protege a los débiles. Ideal para jugadores defensivos.',
@@ -13,7 +14,7 @@ const FACTIONS = [
   {
     id: 'shadow_merchants',
     name: 'Mercaderes de la Sombra',
-    icon: '🌙',
+    icon: 'moon',
     color: '#9333ea',
     bonus: '+15% ganancias comerciales',
     desc: 'Red de comerciantes astutos. Ideal para jugadores que comercian.',
@@ -21,7 +22,7 @@ const FACTIONS = [
   {
     id: 'iron_legion',
     name: 'Legión de Hierro',
-    icon: '🛡️',
+    icon: 'shield',
     color: '#ef4444',
     bonus: '+10% ataque',
     desc: 'Guerreros implacables forjados en batalla. Ideal para jugadores agresivos.',
@@ -29,7 +30,7 @@ const FACTIONS = [
   {
     id: 'green_wardens',
     name: 'Guardianes Verdes',
-    icon: '🌳',
+    icon: 'wheat',
     color: '#22c55e',
     bonus: '+15% producción agrícola',
     desc: 'Protectores de la naturaleza. Ideal para jugadores que farmean.',
@@ -60,9 +61,7 @@ export default function FactionSelectPanel({ onClose }) {
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <h3
-          className="text-yellow-400 text-sm font-bold"
-          style={{ fontFamily: 'MedievalSharp, serif' }}
-        >
+          className="text-yellow-400 text-sm font-bold font-display" >
           {alreadyInFaction ? 'Tu Facción' : 'Elige una Facción'}
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">
@@ -76,7 +75,7 @@ export default function FactionSelectPanel({ onClose }) {
             Ya pertenecés a una facción.
           </p>
           <p className="text-yellow-400 text-xl">
-            {FACTIONS.find((f) => f.id === player.faction_id)?.icon}{' '}
+            <SpriteIcon name={FACTIONS.find((f) => f.id === player.faction_id)?.icon} size={28} />{' '}
             {FACTIONS.find((f) => f.id === player.faction_id)?.name}
           </p>
           <p className="text-gray-400 text-xs mt-1">
@@ -105,7 +104,7 @@ export default function FactionSelectPanel({ onClose }) {
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl">{f.icon}</span>
+                  <span className="text-xl"><SpriteIcon name={f.icon} size={28} /></span>
                   <span
                     className="font-bold text-sm"
                     style={{ color: selected === f.id ? f.color : 'white' }}
@@ -134,7 +133,7 @@ export default function FactionSelectPanel({ onClose }) {
             className="w-full py-2.5 rounded-lg text-sm font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
           >
-            {loading ? 'Uniéndose...' : selected ? `⚔️ Unirme a ${FACTIONS.find((f) => f.id === selected)?.name}` : 'Seleccioná una facción'}
+            {loading ? 'Uniéndose...' : selected ? `Unirme a ${FACTIONS.find((f) => f.id === selected)?.name}` : 'Seleccioná una facción'}
           </button>
         </>
       )}

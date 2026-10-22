@@ -9,17 +9,17 @@ import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
 const REWARD_META = {
-  gold:    { sprite: 'gold',     fallback: '🪙' },
-  wood:    { sprite: 'wood',     fallback: '🪵' },
-  crystal: { sprite: 'crystal',  fallback: '💠' },
-  relic:   { sprite: 'relic',    fallback: '🏺' },
-  kh:      { sprite: 'kh_token', fallback: '💎' },
-  gems:    { sprite: 'gem',      fallback: '💎' },
+  gold:    { sprite: 'gold',     fallback: 'gold' },
+  wood:    { sprite: 'wood',     fallback: 'wood' },
+  crystal: { sprite: 'crystal',  fallback: 'crystal' },
+  relic:   { sprite: 'relic',    fallback: 'relic' },
+  kh:      { sprite: 'kh_token', fallback: 'gem' },
+  gems:    { sprite: 'gem',      fallback: 'gem' },
 };
 
 function rewardLabel(reward) {
   const [key, amount] = Object.entries(reward).find(([k]) => k !== 'day') || [];
-  return { key, amount, meta: REWARD_META[key] || { sprite: null, fallback: '🎁' } };
+  return { key, amount, meta: REWARD_META[key] || { sprite: null, fallback: 'reward_bag' } };
 }
 
 export default function CalendarPanel({ onClose }) {
@@ -47,8 +47,8 @@ export default function CalendarPanel({ onClose }) {
   return (
     <div className="fixed inset-0 z-40 flex flex-col pb-28" style={{ background: 'rgba(10,10,20,0.96)' }}>
       <div className="flex justify-between items-center p-4">
-        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          <SpriteIcon name="scroll" size={26} fallback="📅" /> Calendario
+        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2 font-display">
+          <SpriteIcon name="scroll" size={28} /> Calendario
         </h2>
         <button onClick={onClose} className="text-gray-400 text-2xl px-2">✕</button>
       </div>
@@ -74,9 +74,9 @@ export default function CalendarPanel({ onClose }) {
                 }}
               >
                 <span className="text-[9px] text-gray-400 uppercase">Día {reward.day}</span>
-                <SpriteIcon name={meta.sprite} size={28} fallback={meta.fallback} />
+                <SpriteIcon name={meta.sprite || meta.fallback} size={28} />
                 <span className="text-[10px] font-bold text-white">{amount}</span>
-                {isPast && <SpriteIcon name="check" size={14} fallback="✓" />}
+                {isPast && <SpriteIcon name="check" size={28} />}
               </div>
             );
           })}
@@ -88,7 +88,7 @@ export default function CalendarPanel({ onClose }) {
           className={`w-full py-3 rounded-lg font-bold text-white ${claimedToday ? 'opacity-40 cursor-not-allowed' : ''}`}
           style={{ background: claimedToday ? '#444' : 'linear-gradient(135deg, #b45309, #ffd700)' }}
         >
-          {claimedToday ? 'Ya reclamaste hoy' : `🎁 Reclamar día ${cycleDay}`}
+          {claimedToday ? 'Ya reclamaste hoy' : `Reclamar día ${cycleDay}`}
         </button>
       </div>
     </div>

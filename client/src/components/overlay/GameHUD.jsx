@@ -6,13 +6,14 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
+import Bar from '../ui/Bar';
 import NotificationPrefsPanel from '../ui/NotificationPrefsPanel';
 
 const FACTION_ICONS = {
-  knights_of_dawn: '☀️',
-  shadow_merchants: '🌙',
-  iron_legion: '🛡️',
-  green_wardens: '🌳',
+  knights_of_dawn: 'sun',
+  shadow_merchants: 'moon',
+  iron_legion: 'shield',
+  green_wardens: 'wheat',
 };
 
 const RESOURCE_SPRITES = {
@@ -49,7 +50,7 @@ export default function GameHUD() {
   const tokenInfo = useGameStore((s) => s.tokenInfo);
   const buildings = useGameStore((s) => s.buildings);
 
-  const [timeInfo, setTimeInfo] = useState({ icon: '☀️', period: 'morning', dayCount: 1 });
+  const [timeInfo, setTimeInfo] = useState({ icon: 'sun', period: 'morning', dayCount: 1 });
   const [tokenPulse, setTokenPulse] = useState(false);
   const [showNotifPanel, setShowNotifPanel] = useState(false);
   const pulseTimer = useRef(null);
@@ -126,26 +127,20 @@ export default function GameHUD() {
             <span className="text-[10px] font-bold text-gray-900">{player.level || 1}</span>
           </div>
           <div className="min-w-0">
-            <p className="text-white text-[11px] font-semibold truncate leading-tight"
-              style={{ fontFamily: 'MedievalSharp, serif', maxWidth: '80px' }}>
+            <p className="text-white text-[11px] font-semibold truncate leading-tight font-display"
+              style={{ maxWidth: '80px' }}>
               {displayName}
             </p>
             {/* XP Bar */}
-            <div className="w-16 h-1.5 bg-gray-700/60 rounded-full overflow-hidden mt-0.5">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{
-                  width: `${xpPercent}%`,
-                  background: 'linear-gradient(90deg, #3b82f6, #06b6d4)',
-                }}
-              />
+            <div className="w-16 mt-0.5">
+              <Bar value={xpPercent} tone="ember" label="Experiencia" />
             </div>
           </div>
         </div>
 
         {/* Day/Night — center + notification bell */}
         <div className="flex items-center gap-1 pointer-events-auto px-2">
-          <span className="text-sm">{timeInfo.icon}</span>
+          <span className="text-sm"><SpriteIcon name={timeInfo.period === 'night' ? 'moon' : 'sun'} size={28} /></span>
           <span className="text-yellow-300 text-[10px] font-medium whitespace-nowrap">
             Día {timeInfo.dayCount}
           </span>
@@ -155,7 +150,7 @@ export default function GameHUD() {
               className="text-[13px] opacity-70 hover:opacity-100 transition-opacity ml-1"
               title="Notificaciones"
             >
-              🔔
+              <SpriteIcon name="exclamation" size={28} />
             </button>
           )}
         </div>
@@ -165,7 +160,7 @@ export default function GameHUD() {
           {mainResources.map(r => (
             <div key={r.key} className="flex items-center gap-0.5 px-1 py-0.5 rounded whitespace-nowrap"
               style={{ background: 'rgba(255,255,255,0.06)' }}>
-              <SpriteIcon name={r.sprite} size={14} fallback="?" />
+              <SpriteIcon name={r.sprite} size={28} />
               <span className="text-white text-[10px] font-medium tabular-nums">
                 {r.amount >= 1000 ? `${(r.amount / 1000).toFixed(1)}k` : r.amount}
               </span>
@@ -178,7 +173,7 @@ export default function GameHUD() {
               }`}
               style={{ background: 'rgba(255, 215, 0, 0.1)' }}
             >
-              <SpriteIcon name="kh_token" size={14} fallback="💎" />
+              <SpriteIcon name="kh_token" size={28} />
               <span>{tokenInfo.balance || 0}</span>
             </div>
           )}
@@ -194,7 +189,7 @@ export default function GameHUD() {
             <div key={b.id}
               className="flex items-center gap-1 text-[9px] text-amber-300 rounded px-1 py-0.5"
               style={{ background: 'rgba(20,20,40,0.8)', border: '1px solid rgba(251,191,36,0.3)' }}>
-              <span>🏗️</span>
+              <span><SpriteIcon name="hammer" size={28} /></span>
               <span>{b.building_id.replace(/_/g, ' ')}</span>
               <span className="text-white font-bold">{b.timeLeft}</span>
             </div>

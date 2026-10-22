@@ -9,20 +9,19 @@ import { getSprite } from '../../utils/spriteMap';
  * @param {number} [width] - Explicit width override (for non-square sprites)
  * @param {number} [height] - Explicit height override (for non-square sprites)
  * @param {string} className - Additional CSS classes
- * @param {string} fallback - Emoji fallback if sprite not found
  * @param {object} style - Additional inline styles
  */
-function SpriteIcon({ name, size = 32, width, height, className = '', fallback = '', style = {} }) {
+function SpriteIcon({ name, size = 32, width, height, className = '', style = {} }) {
   const sprite = getSprite(name);
 
   if (!sprite) {
+    // Nombre inexistente: recuadro vacío (sin texto ni emoji) para no romper el layout (R47).
     return (
       <span
-        className={`inline-flex items-center justify-center ${className}`}
-        style={{ width: width || size, height: height || size, fontSize: (height || size) * 0.7, lineHeight: 1, ...style }}
-      >
-        {fallback || '?'}
-      </span>
+        className={`inline-block ${className}`}
+        data-missing-icon=""
+        style={{ width: width || size, height: height || size, verticalAlign: 'middle', flexShrink: 0, ...style }}
+      />
     );
   }
 
@@ -50,7 +49,7 @@ function SpriteIcon({ name, size = 32, width, height, className = '', fallback =
         backgroundSize: `${bgWidth}px ${bgHeight}px`,
         backgroundPosition: `${bgPosX}px ${bgPosY}px`,
         backgroundRepeat: 'no-repeat',
-        imageRendering: 'pixelated',
+        imageRendering: 'auto',
         display: 'inline-block',
         verticalAlign: 'middle',
         flexShrink: 0,
@@ -68,7 +67,7 @@ function CharacterSprite({ name, height = 48, className = '', style = {} }) {
   const sprite = getSprite(name);
 
   if (!sprite) {
-    return <SpriteIcon name={name} size={height} className={className} style={style} fallback="?" />;
+    return <SpriteIcon name={name} size={height} className={className} style={style} />;
   }
 
   // Maintain aspect ratio: width = height * (cellW / cellH)

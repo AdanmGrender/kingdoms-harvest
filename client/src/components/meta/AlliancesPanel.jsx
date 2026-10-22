@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 /**
  * AlliancesPanel — list every alliance with member counts. If the player
@@ -65,8 +66,8 @@ export default function AlliancesPanel() {
             <p className="text-[11px] text-gray-300 italic mt-0.5">"{myAlliance.motto}"</p>
           )}
           <p className="text-[10px] text-gray-400 mt-1">
-            👥 {myAlliance.member_count}/{myAlliance.member_limit} ·
-            {isLeader ? ' 👑 Sos líder' : ' Miembro'}
+            <SpriteIcon name="alliance" size={28} /> {myAlliance.member_count}/{myAlliance.member_limit} ·
+            {isLeader ? ' Sos líder' : ' Miembro'}
           </p>
           <div className="mt-2 flex gap-2">
             {isLeader ? (
@@ -101,7 +102,7 @@ export default function AlliancesPanel() {
 
         <div className="game-card border-yellow-700/30 bg-yellow-900/5 py-2">
           <p className="text-[10px] text-yellow-300">
-            ⚔️ Bonus por miembro: +5% ATK · +5% DEF · +10% botín
+            <SpriteIcon name="sword" size={28} /> Bonus por miembro: +5% ATK · +5% DEF · +10% botín
           </p>
         </div>
 
@@ -118,7 +119,7 @@ export default function AlliancesPanel() {
             <div key={m.player_id} className="game-card py-2 text-xs flex items-center justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="font-bold truncate">
-                  {m.role === 'leader' && '👑 '}{m.role === 'officer' && '⭐ '}{m.display_name}
+                  {m.role === 'leader' && ''}{m.role === 'officer' && ''}{m.display_name}
                   {isMe && <span className="text-yellow-400 ml-1">(vos)</span>}
                 </p>
                 <p className="text-[10px] text-gray-400">
@@ -165,7 +166,7 @@ export default function AlliancesPanel() {
       {/* Invitations inbox */}
       {(pendingInvitations || []).length > 0 && (
         <div className="space-y-2">
-          <p className="text-[11px] text-purple-300">📨 Invitaciones pendientes:</p>
+          <p className="text-[11px] text-purple-300"><SpriteIcon name="scroll" size={28} /> Invitaciones pendientes:</p>
           {pendingInvitations.map((inv) => (
             <div key={inv.id} className="game-card py-2 border-purple-700/60">
               <p className="text-sm font-bold">{inv.alliance_name}</p>
@@ -232,7 +233,7 @@ export default function AlliancesPanel() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold truncate">{a.name}</p>
                 {a.motto && <p className="text-[11px] text-gray-400 italic truncate">"{a.motto}"</p>}
-                <p className="text-[10px] text-gray-500">👥 {a.member_count}/{a.member_limit}</p>
+                <p className="text-[10px] text-gray-500"><SpriteIcon name="alliance" size={28} /> {a.member_count}/{a.member_limit}</p>
               </div>
               <button
                 onClick={() => joinAlliance(a.id)}
@@ -293,7 +294,7 @@ function AllianceChat({ myId }) {
 
   return (
     <div className="game-card border-purple-800/40">
-      <p className="text-[10px] text-purple-300 mb-1">💬 Chat de alianza</p>
+      <p className="text-[10px] text-purple-300 mb-1">Chat de alianza</p>
       <div
         ref={scrollRef}
         className="bg-kingdom-blue/20 rounded p-2 mb-2 max-h-40 overflow-y-auto space-y-1"
@@ -334,7 +335,7 @@ function AllianceChat({ myId }) {
           onClick={() => setShowStickers(!showStickers)}
           className="text-lg px-2 py-1 rounded bg-kingdom-blue/50 hover:bg-kingdom-blue/70"
           title="Stickers"
-        >😊</button>
+        ></button>
         <input
           type="text"
           value={text}
@@ -380,7 +381,7 @@ function InviteSearchBox({ inviteId, setInviteId, onInviteId, onInviteFromSearch
 
   return (
     <div className="game-card border-purple-700/40 space-y-2">
-      <p className="text-[11px] text-gray-400">📨 Invitar jugador</p>
+      <p className="text-[11px] text-gray-400"><SpriteIcon name="scroll" size={28} /> Invitar jugador</p>
       <input
         type="text"
         value={query}

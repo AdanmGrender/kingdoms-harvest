@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const FACTION_ICONS = {
-  knights_of_dawn: '☀️',
-  shadow_merchants: '🌙',
-  iron_legion: '🛡️',
-  green_wardens: '🌳',
+  knights_of_dawn: 'sun',
+  shadow_merchants: 'moon',
+  iron_legion: 'shield',
+  green_wardens: 'wheat',
 };
 
 /**
@@ -27,9 +28,9 @@ export default function RankingsPanel() {
   }, [tab]);
 
   const tabs = [
-    { id: 'tokens',   label: '💎 KH Tokens' },
-    { id: 'level',    label: '⭐ Nivel' },
-    { id: 'factions', label: '🛡️ Facciones' },
+    { id: 'tokens',   label: 'KH Tokens' },
+    { id: 'level',    label: 'Nivel' },
+    { id: 'factions', label: 'Facciones' },
   ];
 
   return (
@@ -62,7 +63,7 @@ export default function RankingsPanel() {
 }
 
 function medal(idx) {
-  return idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+  return idx < 3 ? <SpriteIcon name="medal" size={28} /> : `#${idx + 1}`;
 }
 
 function TokenLeaderboard({ rows, myName }) {
@@ -76,7 +77,7 @@ function TokenLeaderboard({ rows, myName }) {
             <span className="text-sm font-bold w-8 text-center shrink-0">{medal(idx)}</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold truncate">
-                {FACTION_ICONS[entry.factionId] || '⚔️'} {entry.displayName}
+                <SpriteIcon name={FACTION_ICONS[entry.factionId] || 'sword'} size={28} /> {entry.displayName}
                 {isMe && <span className="text-purple-400 text-xs ml-1">(vos)</span>}
               </p>
               <p className="text-[10px] text-gray-400">Nivel {entry.level}</p>
@@ -103,7 +104,7 @@ function LevelLeaderboard({ rows, myName }) {
             <span className="text-sm font-bold w-8 text-center shrink-0">{medal(idx)}</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold truncate">
-                {FACTION_ICONS[entry.faction_id] || '⚔️'} {entry.display_name}
+                <SpriteIcon name={FACTION_ICONS[entry.faction_id] || 'sword'} size={28} /> {entry.display_name}
                 {isMe && <span className="text-yellow-400 text-xs ml-1">(vos)</span>}
               </p>
             </div>
@@ -133,9 +134,9 @@ function FactionLeaderboard({ rows, myFactionId }) {
             <div className="flex items-center gap-3">
               <span className="text-sm font-bold w-8 text-center">{medal(idx)}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold">{f.icon} {f.name}{isMine && <span className="text-yellow-400 text-xs ml-1">(la tuya)</span>}</p>
+                <p className="text-sm font-bold"><SpriteIcon name={FACTION_ICONS[f.id]} size={28} /> {f.name}{isMine && <span className="text-yellow-400 text-xs ml-1">(la tuya)</span>}</p>
                 <p className="text-[10px] text-gray-400">
-                  👥 {f.member_count} · 🏴 {f.territory_count}
+                  <SpriteIcon name="alliance" size={28} /> {f.member_count} · <SpriteIcon name="alliance" size={28} /> {f.territory_count}
                 </p>
               </div>
               <div className="text-right shrink-0">

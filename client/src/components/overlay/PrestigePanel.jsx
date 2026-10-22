@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 function LoadingSpinner() {
   return (
@@ -126,7 +127,7 @@ export default function PrestigePanel({ onClose }) {
 
   const handlePrestige = async () => {
     const confirmed = window.confirm(
-      '⭐ ¿Hacer Prestige?\n\nTu progreso de reino se reinicia, pero conservarás héroes, tokens y logros. ¡Esta acción no se puede deshacer!'
+      '¿Hacer Prestige?\n\nTu progreso de reino se reinicia, pero conservarás héroes, tokens y logros. ¡Esta acción no se puede deshacer!'
     );
     if (!confirmed) return;
     setPrestiging(true);
@@ -159,11 +160,9 @@ export default function PrestigePanel({ onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-yellow-900/30 shrink-0">
         <div className="flex items-center gap-2">
-          <span className="text-xl">⭐</span>
+          <span className="text-xl"><SpriteIcon name="star" size={28} /></span>
           <h2
-            className="text-yellow-400 font-bold text-lg"
-            style={{ fontFamily: 'MedievalSharp, serif' }}
-          >
+            className="text-yellow-400 font-bold text-lg font-display" >
             Prestige
           </h2>
         </div>
@@ -184,9 +183,8 @@ export default function PrestigePanel({ onClose }) {
         >
           {/* Star × N */}
           <p
-            className="text-3xl font-bold text-yellow-400 mb-1"
-            style={{ fontFamily: 'MedievalSharp, serif', letterSpacing: '0.05em' }}
-          >
+            className="text-3xl font-bold text-yellow-400 mb-1 font-display"
+            style={{ letterSpacing: '0.05em' }} >
             {prestigeCount > 0
               ? `${'★'.repeat(Math.min(prestigeCount, 5))} × ${prestigeCount}`
               : '☆ Sin prestige'}
@@ -235,7 +233,7 @@ export default function PrestigePanel({ onClose }) {
               className="w-full py-3 rounded-lg text-sm font-bold disabled:opacity-50 transition-opacity mb-2"
               style={{ background: 'linear-gradient(135deg, #b45309, #ffd700)', color: '#1a1a2e' }}
             >
-              {prestiging ? '⏳ Procesando...' : '⭐ HACER PRESTIGE'}
+              {prestiging ? 'Procesando...' : 'HACER PRESTIGE'}
             </button>
             <p className="text-[10px] text-yellow-700 text-center leading-relaxed">
               ¡Reinicia tu progreso pero conserva héroes, tokens y logros!

@@ -12,10 +12,10 @@ const RESOURCE_NAMES = {
 };
 
 const RESOURCE_ICONS = {
-  wheat: '🌾', carrot: '🥕', potato: '🥔', tomato: '🍅', corn: '🌽',
-  pumpkin: '🎃', grape: '🍇', wood: '🪵', stone: '🪨', iron: '⛏️',
-  gold: '🪙', bread: '🍞', planks: '🪵', ingots: '⚙️',
-  flour: '🌾', cheese: '🧀', egg: '🥚', milk: '🥛', wool: '🧶',
+  wheat: 'wheat', carrot: 'carrot', potato: 'potato', tomato: 'tomato', corn: 'corn',
+  pumpkin: 'pumpkin', grape: 'grape', wood: 'wood', stone: 'stone', iron: 'iron',
+  gold: 'gold', bread: 'bread', planks: 'wood', ingots: 'iron',
+  flour: 'wheat', cheese: 'milk', egg: 'egg', milk: 'milk', wool: 'wool',
 };
 
 // KH tokens awarded per sell action (mirrors server TOKEN_CONFIG.TOKENS_PER_SALE)
@@ -92,7 +92,7 @@ function CaravanSection({ resources }) {
   if (loading) {
     return (
       <div className="text-center py-6">
-        <span className="text-2xl animate-spin inline-block">🎠</span>
+        <span className="text-2xl animate-spin inline-block"><SpriteIcon name="speedup" size={32} /></span>
         <p className="text-gray-400 text-xs mt-2">Llamando a la caravana...</p>
       </div>
     );
@@ -108,8 +108,8 @@ function CaravanSection({ resources }) {
     <div>
       {/* Caravan header */}
       <div className="game-card mb-3 py-2 text-center">
-        <p className="text-kingdom-gold text-xs font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
-          🐪 {caravan.name}
+        <p className="text-kingdom-gold text-xs font-bold font-display">
+          {caravan.name}
         </p>
         <p className="text-[10px] text-gray-400 mt-0.5">
           {minsLeft > 0 ? `Se va en ${minsLeft} min` : '¡Partiendo pronto!'}
@@ -128,14 +128,14 @@ function CaravanSection({ resources }) {
             <div key={offer.resource_id}
               className="game-card flex items-center gap-2 py-1.5 px-2">
               <span className="text-base w-6 text-center">
-                {RESOURCE_ICONS[offer.resource_id] || '📦'}
+                <SpriteIcon name={RESOURCE_ICONS[offer.resource_id] || 'reward_bag'} size={28} />
               </span>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-white truncate">
                   {RESOURCE_NAMES[offer.resource_id] || offer.resource_id}
                 </p>
                 <p className="text-[10px] text-yellow-400">
-                  🪙 {offer.price}/u · stock: {offer.quantity}
+                  <SpriteIcon name="gold" size={28} /> {offer.price}/u · stock: {offer.quantity}
                 </p>
               </div>
               <QuantitySelector
@@ -152,7 +152,7 @@ function CaravanSection({ resources }) {
                     : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                 }`}
               >
-                🪙{total}
+                <SpriteIcon name="gold" size={28} />{total}
               </button>
             </div>
           );
@@ -171,14 +171,14 @@ function CaravanSection({ resources }) {
             <div key={offer.resource_id}
               className="game-card flex items-center gap-2 py-1.5 px-2">
               <span className="text-base w-6 text-center">
-                {RESOURCE_ICONS[offer.resource_id] || '📦'}
+                <SpriteIcon name={RESOURCE_ICONS[offer.resource_id] || 'reward_bag'} size={28} />
               </span>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-white truncate">
                   {RESOURCE_NAMES[offer.resource_id] || offer.resource_id}
                 </p>
                 <p className="text-[10px] text-gray-400">
-                  🪙 {offer.price}/u · tenés: {playerStock}
+                  <SpriteIcon name="gold" size={28} /> {offer.price}/u · tenés: {playerStock}
                 </p>
               </div>
               <QuantitySelector
@@ -196,7 +196,7 @@ function CaravanSection({ resources }) {
                       : 'bg-gray-700 text-gray-500 cursor-not-allowed'
                   }`}
                 >
-                  +🪙{totalGold}
+                  +<SpriteIcon name="gold" size={28} />{totalGold}
                 </button>
                 <p className="text-[9px] text-purple-400">+{TOKENS_PER_SELL * qty} KH</p>
               </div>
@@ -249,7 +249,7 @@ function QuickSellSection({ resources }) {
           const qty = sellQty[id] || 1;
           return (
             <div key={id} className="game-card flex items-center gap-2 py-1.5 px-2">
-              <span className="text-base w-6 text-center">{RESOURCE_ICONS[id] || '📦'}</span>
+              <span className="text-base w-6 text-center"><SpriteIcon name={RESOURCE_ICONS[id] || 'reward_bag'} size={28} /></span>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-white">
                   {RESOURCE_NAMES[id] || id}
@@ -281,14 +281,6 @@ function MissionsSection() {
 
   useEffect(() => { loadMissions(); }, []);
 
-  const getNpcSprite = (icon) => {
-    const map = {
-      '👨‍🌾': 'farmer', '👩‍🍳': 'baker', '🧙': 'wizard', '👸': 'princess',
-      '🤴': 'knight', '🧝': 'ranger', '👨‍🔬': 'mage', '🧙‍♂️': 'wizard',
-    };
-    return map[icon] || 'explorer';
-  };
-
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
@@ -316,7 +308,7 @@ function MissionsSection() {
             <div key={mission.id}
               className={`game-card ${mission.is_urgent ? 'border border-yellow-500/50' : ''}`}>
               <div className="flex items-start gap-2">
-                <CharacterSprite name={getNpcSprite(mission.npc_icon)} height={36} />
+                <CharacterSprite name="explorer" height={36} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1 flex-wrap">
                     <p className="font-bold text-xs text-white">{mission.title}</p>
@@ -330,13 +322,13 @@ function MissionsSection() {
                   <div className="flex flex-wrap gap-1 mb-1">
                     {reqs.map((req, i) => (
                       <span key={i} className="text-[10px] bg-kingdom-blue/50 px-1.5 py-0.5 rounded">
-                        {RESOURCE_ICONS[req.resource_id] || '📦'} {req.amount}×{RESOURCE_NAMES[req.resource_id] || req.resource_id}
+                        <SpriteIcon name={RESOURCE_ICONS[req.resource_id] || 'reward_bag'} size={28} /> {req.amount}×{RESOURCE_NAMES[req.resource_id] || req.resource_id}
                       </span>
                     ))}
                   </div>
                   <div className="flex gap-2 text-[10px]">
-                    <span className="text-yellow-400">🪙 {rewards.gold}</span>
-                    <span className="text-blue-300">⭐ {rewards.xp} XP</span>
+                    <span className="text-yellow-400"><SpriteIcon name="gold" size={28} /> {rewards.gold}</span>
+                    <span className="text-blue-300"><SpriteIcon name="star" size={28} /> {rewards.xp} XP</span>
                   </div>
                 </div>
               </div>
@@ -374,9 +366,9 @@ const DEFAULT_TAB = {
 };
 
 const TABS = [
-  { id: 'caravan',  label: 'Caravana',      icon: '🚚' },
-  { id: 'sell',     label: 'Venta rápida', icon: '💰' },
-  { id: 'missions', label: 'Misiones',     icon: '📜' },
+  { id: 'caravan',  label: 'Caravana',      icon: 'caravan' },
+  { id: 'sell',     label: 'Venta rápida', icon: 'gold' },
+  { id: 'missions', label: 'Misiones',     icon: 'scroll' },
 ];
 
 export default function CommerceView({ buildingId = 'market' }) {
@@ -389,7 +381,7 @@ export default function CommerceView({ buildingId = 'market' }) {
       {/* Gold display */}
       <div className="flex items-center gap-1 mb-3">
         <span className="text-xs text-gray-400">Oro disponible:</span>
-        <span className="text-yellow-400 text-xs font-bold">🪙 {playerGold.toLocaleString()}</span>
+        <span className="text-yellow-400 text-xs font-bold"><SpriteIcon name="gold" size={28} /> {playerGold.toLocaleString()}</span>
       </div>
 
       {/* Tabs */}
@@ -404,7 +396,7 @@ export default function CommerceView({ buildingId = 'market' }) {
                 : 'bg-kingdom-blue/40 text-gray-400 hover:text-gray-200'
             }`}
           >
-            {t.icon} {t.label}
+            <SpriteIcon name={t.icon} size={28} /> {t.label}
           </button>
         ))}
       </div>
