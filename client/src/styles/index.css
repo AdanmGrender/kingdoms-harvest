@@ -10,9 +10,10 @@
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #1a1712; /* grimdark: piedra-tierra oscura (era #1a1a2e navy) */
-  color: #ffffff;
+  font-family: 'IM Fell English', serif;
+  font-size: 15px;
+  background: #14110d; /* kh-ink */
+  color: #e6dcc3; /* kh-bone */
   min-height: 100vh;
   overflow-x: hidden;
 }

@@ -108,7 +108,7 @@ function CaravanSection({ resources }) {
     <div>
       {/* Caravan header */}
       <div className="game-card mb-3 py-2 text-center">
-        <p className="text-kingdom-gold text-xs font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <p className="text-kingdom-gold text-xs font-bold font-display">
           🐪 {caravan.name}
         </p>
         <p className="text-[10px] text-gray-400 mt-0.5">

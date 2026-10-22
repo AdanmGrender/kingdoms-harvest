@@ -78,7 +78,7 @@ export default function SystemMapPanel({ onClose }) {
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-900/40 shrink-0 bg-black/30">
         <div>
-          <h3 className="text-cyan-300 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <h3 className="text-cyan-300 text-sm font-bold font-display">
             🗺️ Mapa de la Marca
           </h3>
           <p className="text-[10px] text-gray-500">Extendé tu dominio plaza a plaza</p>

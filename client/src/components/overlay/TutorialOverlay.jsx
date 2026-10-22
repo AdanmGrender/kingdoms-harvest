@@ -87,9 +87,7 @@ export default function TutorialOverlay() {
         <div className="text-center mb-4">
           <div className="text-4xl mb-2">{current.icon}</div>
           <h3
-            className="text-yellow-400 text-base font-bold mb-2"
-            style={{ fontFamily: 'MedievalSharp, serif' }}
-          >
+            className="text-yellow-400 text-base font-bold mb-2 font-display" >
             {current.title}
           </h3>
           <p className="text-gray-300 text-sm">{current.text}</p>

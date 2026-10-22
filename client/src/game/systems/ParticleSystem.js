@@ -3,6 +3,7 @@
  * Uses Phaser's built-in particle emitter with the effects spritesheet.
  */
 import Phaser from 'phaser';
+import { UI_FONT } from '../fonts';
 
 export default class ParticleSystem {
   constructor(scene) {
@@ -58,7 +59,7 @@ export default class ParticleSystem {
   emitTokenGain(x, y, amount, { fontSize = 14, resolution = 1, depth = 25 } = {}) {
     const k = fontSize / 14;
     const text = this.scene.add.text(x, y - 20 * k, `+${amount} KH`, {
-      fontFamily: 'MedievalSharp, serif',
+      fontFamily: UI_FONT,
       fontSize: `${fontSize}px`,
       color: '#c084fc',      // purple-400, matches token UI
       stroke: '#000000',

@@ -150,9 +150,9 @@ export default function CombatInstancePanel({ onClose }) {
       {/* Números de daño flotantes sobre el enemigo. */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 4 }}>
         {floaters.map((f) => (
-          <span key={f.id} className="fx-floatup absolute font-bold" style={{
+          <span key={f.id} className="fx-floatup absolute font-bold font-display" style={{
             left: `${f.left}%`, top: '26%', color: f.color, fontSize: '22px',
-            textShadow: '0 2px 4px rgba(0,0,0,0.9)', fontFamily: 'MedievalSharp, serif',
+            textShadow: '0 2px 4px rgba(0,0,0,0.9)',
           }}>{f.text}</span>
         ))}
       </div>
@@ -160,7 +160,7 @@ export default function CombatInstancePanel({ onClose }) {
       {/* ── Contenido (por encima de la escena) ── */}
       <div className="relative flex flex-col flex-1 min-h-0" style={{ zIndex: 10 }}>
         <div className="flex justify-between items-center mb-2">
-          <h2 className="text-red-400 font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <h2 className="text-red-400 font-bold flex items-center gap-2 font-display">
             <SpriteIcon name={node.type === 'boss' ? 'skull' : 'sword'} size={24}
               fallback={node.type === 'boss' ? '💀' : '⚔️'} />
             {node.name} · ronda {state.round}/{state.maxRounds}
@@ -234,8 +234,7 @@ export default function CombatInstancePanel({ onClose }) {
         {/* Avanzar / resultado */}
         {result ? (
           <div className="text-center animate-grow">
-            <p className={`text-2xl font-bold ${result === 'victory' ? 'text-green-400' : 'text-red-400'}`}
-              style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <p className={`text-2xl font-bold font-display ${result === 'victory' ? 'text-green-400' : 'text-red-400'}`}>
               {result === 'victory' ? '🏆 ¡Victoria!' : '💀 Derrota'}
             </p>
             <button onClick={close} className="btn-gold mt-2 px-6 py-2 rounded">Volver</button>

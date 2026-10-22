@@ -11,6 +11,7 @@
  * Activation: set VITE_ISO_MODE=true in client/.env.local
  */
 import Phaser from 'phaser';
+import { UI_FONT } from '../fonts';
 import CameraSystem from '../systems/CameraSystem';
 import DirectionalAnimator from '../systems/DirectionalAnimator';
 import AmbientSystem from '../systems/AmbientSystem';
@@ -124,7 +125,7 @@ export default class IsoWorldScene extends Phaser.Scene {
     // Show a simple loading message (destroyed in create)
     const { width, height } = this.cameras.main;
     this._loadingText = this.add.text(width / 2, height / 2, 'Cargando modo isométrico...', {
-      fontFamily: 'serif', fontSize: '18px', color: '#ffd700',
+      fontFamily: UI_FONT, fontSize: '18px', color: '#ffd700',
     }).setOrigin(0.5).setScrollFactor(0);
 
     // BootScene ya no carga buildings.png (WorldScene usa los iso_struct de

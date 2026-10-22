@@ -3,6 +3,7 @@
  * en preview carga el arte legacy con barra de progreso y sigue a WorldScene / IsoScene / IsoWorldScene.
  */
 import Phaser from 'phaser';
+import { UI_FONT, loadUiFonts } from '../fonts';
 import { resolveStartScene } from '../display';
 
 export default class BootScene extends Phaser.Scene {
@@ -27,30 +28,39 @@ export default class BootScene extends Phaser.Scene {
 
     const bar = this.add.graphics();
 
-    const loadingText = this.add.text(width / 2, barY - 30, 'Cargando...', {
-      fontFamily: 'MedievalSharp, serif',
-      fontSize: '20px',
-      color: '#ffd700',
-    }).setOrigin(0.5);
-
-    const percentText = this.add.text(width / 2, barY + barH + 15, '0%', {
-      fontFamily: 'MedievalSharp, serif',
-      fontSize: '16px',
-      color: '#ffffff',
-    }).setOrigin(0.5);
+    // R11/R12: el primer texto se crea cuando las fuentes cargaron (o vencieron los 3 s); la barra gráfica no espera.
+    let loadingText = null;
+    let percentText = null;
+    let progress = 0;
+    let finished = false;
+    loadUiFonts().then(() => {
+      if (finished || !this.sys || !this.sys.isActive()) return;
+      loadingText = this.add.text(width / 2, barY - 30, 'Cargando...', {
+        fontFamily: UI_FONT,
+        fontSize: '20px',
+        color: '#ffd700',
+      }).setOrigin(0.5);
+      percentText = this.add.text(width / 2, barY + barH + 15, `${Math.round(progress * 100)}%`, {
+        fontFamily: UI_FONT,
+        fontSize: '16px',
+        color: '#ffffff',
+      }).setOrigin(0.5);
+    });
 
     this.load.on('progress', (value) => {
+      progress = value;
       bar.clear();
       bar.fillStyle(0xffd700, 1);
       bar.fillRect(barX, barY, barW * value, barH);
-      percentText.setText(`${Math.round(value * 100)}%`);
+      if (percentText) percentText.setText(`${Math.round(value * 100)}%`);
     });
 
     this.load.on('complete', () => {
+      finished = true;
       bg.destroy();
       bar.destroy();
-      loadingText.destroy();
-      percentText.destroy();
+      if (loadingText) loadingText.destroy();
+      if (percentText) percentText.destroy();
     });
 
     // Log any file load errors

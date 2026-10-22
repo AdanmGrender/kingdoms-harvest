@@ -41,7 +41,7 @@ export default function MetaPanel({ data, onClose }) {
       }}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 shrink-0">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
           💀 Bastión
         </h3>
         <button

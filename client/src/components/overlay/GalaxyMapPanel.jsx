@@ -71,7 +71,7 @@ export default function GalaxyMapPanel({ onClose }) {
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-purple-900/40 shrink-0 bg-black/40">
         <div>
-          <h3 className="text-purple-300 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <h3 className="text-purple-300 text-sm font-bold font-display">
             🌫️ Mapa de los Reinos Caídos
           </h3>
           <p className="text-[10px] text-gray-500">Cruzá el Velo por los Caminos Velados</p>

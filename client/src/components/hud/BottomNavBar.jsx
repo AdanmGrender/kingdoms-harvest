@@ -34,8 +34,8 @@ export default function BottomNavBar() {
           style={grimBtn('#b32821')}
         >
           <SpriteIcon name="sword" size={26} fallback="🦸" />
-          <span className="text-[9px] font-semibold mt-0.5"
-            style={{ fontFamily: 'MedievalSharp, serif', color: '#d9a441' }}>
+          <span className="text-[9px] font-semibold mt-0.5 font-display"
+            style={{ color: '#d9a441' }}>
             Héroes
           </span>
         </button>
@@ -56,8 +56,8 @@ export default function BottomNavBar() {
           style={grimBtn('#4fd8c8')}
         >
           <SpriteIcon name="map" size={26} fallback="🗺️" />
-          <span className="text-[9px] font-semibold mt-0.5"
-            style={{ fontFamily: 'MedievalSharp, serif', color: '#d9a441' }}>
+          <span className="text-[9px] font-semibold mt-0.5 font-display"
+            style={{ color: '#d9a441' }}>
             Mundo
           </span>
         </button>

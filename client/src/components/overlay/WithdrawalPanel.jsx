@@ -196,8 +196,7 @@ function OTPStep({ onClose }) {
         style={{ background: 'rgba(255,215,0,0.06)', border: '1px solid rgba(255,215,0,0.2)' }}
       >
         <p className="text-gray-400 text-xs mb-1">Retiro pendiente</p>
-        <p className="text-yellow-400 font-bold text-xl"
-          style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <p className="text-yellow-400 font-bold text-xl font-display">
           {withdrawalOTP.amount} KH
         </p>
       </div>
@@ -337,9 +336,7 @@ export default function WithdrawalPanel({ onClose }) {
         style={{ background: 'rgba(51,47,43,0.98)' }}
       >
         <h2
-          className="text-yellow-400 font-bold text-base"
-          style={{ fontFamily: 'MedievalSharp, serif' }}
-        >
+          className="text-yellow-400 font-bold text-base font-display" >
           💰 Retiro KH Tokens
         </h2>
         <button

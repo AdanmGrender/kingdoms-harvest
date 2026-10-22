@@ -41,7 +41,7 @@ export default function OfflineReportModal() {
         {/* Cabecera estilo informe militar */}
         <div className="px-4 py-3 border-b border-yellow-900/40 bg-black/40 text-center">
           <p className="text-[10px] tracking-[0.3em] text-gray-500 uppercase">Informe del Bastión</p>
-          <h3 className="text-kingdom-gold text-base font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <h3 className="text-kingdom-gold text-base font-bold font-display">
             💀 Mientras no estabas
           </h3>
           <p className="text-[11px] text-gray-400">Ausente {formatAway(report.awayMs)}</p>

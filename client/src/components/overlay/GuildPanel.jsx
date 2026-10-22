@@ -172,7 +172,7 @@ function MyGuildTab({ guild, onLeave, onDonate }) {
       >
         <div className="flex items-start justify-between mb-2">
           <div>
-            <p className="text-yellow-400 text-lg font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <p className="text-yellow-400 text-lg font-bold font-display">
               [{guild.tag}] {guild.name}
             </p>
             <span
@@ -423,9 +423,7 @@ export default function GuildPanel({ onClose }) {
         <div className="flex items-center gap-2">
           <span className="text-xl">⚔️</span>
           <h2
-            className="text-yellow-400 font-bold text-lg"
-            style={{ fontFamily: 'MedievalSharp, serif' }}
-          >
+            className="text-yellow-400 font-bold text-lg font-display" >
             Gremio
           </h2>
         </div>

@@ -46,13 +46,11 @@ export default function MainMenu() {
           En la oscuridad, solo la cosecha
         </p>
         <h1
-          className="text-5xl text-kingdom-gold mb-1"
-          style={{ fontFamily: 'MedievalSharp, serif', textShadow: '0 0 24px rgba(217,164,65,0.35), 0 4px 0 #17151a' }}
-        >
+          className="text-5xl text-kingdom-gold mb-1 font-display"
+          style={{ textShadow: '0 0 24px rgba(217,164,65,0.35), 0 4px 0 #17151a' }} >
           Kingdoms Harvest
         </h1>
-        <p className="text-sm text-red-400/90 tracking-widest uppercase mb-10"
-          style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <p className="text-sm text-red-400/90 tracking-widest uppercase mb-10 font-display">
           💀 Crónicas del Bastión 💀
         </p>
 

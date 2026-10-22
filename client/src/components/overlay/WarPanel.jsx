@@ -442,7 +442,7 @@ export default function WarPanel({ data, onClose }) {
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
           Zona de Guerra
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>

@@ -68,7 +68,7 @@ export default function ShopPanel({ onClose }) {
         style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-2">
           <SpriteIcon name="gem" size={20} fallback="💎" />
-          <h2 className="text-yellow-400 font-bold text-sm" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <h2 className="text-yellow-400 font-bold text-sm font-display">
             Arsenal del Bastión
           </h2>
         </div>

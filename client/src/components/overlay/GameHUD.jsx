@@ -126,8 +126,8 @@ export default function GameHUD() {
             <span className="text-[10px] font-bold text-gray-900">{player.level || 1}</span>
           </div>
           <div className="min-w-0">
-            <p className="text-white text-[11px] font-semibold truncate leading-tight"
-              style={{ fontFamily: 'MedievalSharp, serif', maxWidth: '80px' }}>
+            <p className="text-white text-[11px] font-semibold truncate leading-tight font-display"
+              style={{ maxWidth: '80px' }}>
               {displayName}
             </p>
             {/* XP Bar */}

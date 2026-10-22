@@ -112,8 +112,7 @@ export default function BuildingInfoPopup() {
             <p className="text-yellow-300 text-[10px] font-semibold uppercase tracking-wider">
               Nv. {level} / {meta.maxLevel}
             </p>
-            <p className="text-white text-sm font-bold leading-tight"
-              style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <p className="text-white text-sm font-bold leading-tight font-display">
               {meta.name}
             </p>
           </div>

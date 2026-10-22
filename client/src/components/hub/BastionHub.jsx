@@ -24,9 +24,8 @@ export default function BastionHub() {
         <div className="px-3 pb-28 pt-1 flex gap-2 pointer-events-auto">
           <button
             onClick={() => setOverlay('operations', {})}
-            className="flex-1 py-3 rounded font-bold flex items-center justify-center gap-2 transition-transform active:scale-95"
+            className="flex-1 py-3 rounded font-bold flex items-center justify-center gap-2 transition-transform active:scale-95 font-display"
             style={{
-              fontFamily: 'MedievalSharp, serif',
               // CTA principal atenuado a la paleta: base de piedra con tinte sangre
               // + borde/glow rojo de acento (antes era relleno rojo sólido "candy").
               background: 'linear-gradient(180deg, rgba(74,42,36,0.98) 0%, rgba(38,20,17,0.97) 100%)',

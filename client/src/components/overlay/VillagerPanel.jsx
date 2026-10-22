@@ -75,9 +75,7 @@ export default function VillagerPanel({ data, onClose }) {
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <h3
-          className="text-yellow-400 text-sm font-bold"
-          style={{ fontFamily: 'MedievalSharp, serif' }}
-        >
+          className="text-yellow-400 text-sm font-bold font-display" >
           {role.icon} {data.name || 'Aldeano'}
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">

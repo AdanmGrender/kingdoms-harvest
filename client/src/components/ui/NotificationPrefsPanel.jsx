@@ -39,7 +39,7 @@ export default function NotificationPrefsPanel({ onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-bold text-yellow-400" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <h2 className="text-lg font-bold text-yellow-400 font-display">
               🔔 Notificaciones
             </h2>
             <p className="text-xs text-gray-400">Configurá las alertas del bot de Telegram</p>

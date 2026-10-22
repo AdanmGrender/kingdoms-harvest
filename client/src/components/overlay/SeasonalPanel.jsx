@@ -178,9 +178,7 @@ export default function SeasonalPanel({ onClose }) {
         <div className="flex items-center gap-2">
           <span className="text-xl">{seasonIcon}</span>
           <h2
-            className="text-yellow-400 font-bold text-lg"
-            style={{ fontFamily: 'MedievalSharp, serif' }}
-          >
+            className="text-yellow-400 font-bold text-lg font-display" >
             Estación
           </h2>
         </div>
@@ -219,9 +217,8 @@ export default function SeasonalPanel({ onClose }) {
               <span className="text-4xl">{seasonIcon}</span>
               <div>
                 <p
-                  className="text-base font-bold"
-                  style={{ fontFamily: 'MedievalSharp, serif', color: accentColor }}
-                >
+                  className="text-base font-bold font-display"
+                  style={{ color: accentColor }} >
                   {seasonIcon} {seasonalData.season ?? 'Temporada'}
                 </p>
                 <p className="text-[11px] text-gray-400">

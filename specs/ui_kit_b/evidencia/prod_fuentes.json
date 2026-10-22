@@ -1,0 +1,20 @@
+{
+  "fontsCheck": {
+    "IM Fell English": true,
+    "IM Fell English SC": true,
+    "Alegreya Sans SC 700": true
+  },
+  "bodyFontFamily": "\"IM Fell English\", serif",
+  "requestsDeFuentes": [
+    "http://localhost:3104/fonts/fonts.css",
+    "http://localhost:3104/fonts/IMFellEnglishSC-400.woff2",
+    "http://localhost:3104/fonts/IMFellEnglish-400.woff2",
+    "http://localhost:3104/fonts/AlegreyaSansSC-700.woff2"
+  ],
+  "requestsAHostsExternos": [
+    "https://telegram.org/js/telegram-web-app.js"
+  ],
+  "fuentesExternas": [],
+  "cspViolaciones": [],
+  "captura": "prod_hub.webp 824x1720 27KB"
+}

@@ -141,7 +141,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
         <div className="flex items-center gap-3">
           <HeroPortrait hero={hero} height={64} />
           <div className="flex-1">
-            <p className={`text-sm font-bold ${rc.text}`} style={{ fontFamily: 'MedievalSharp, serif' }}>{hero.name}</p>
+            <p className={`text-sm font-bold ${rc.text} font-display`}>{hero.name}</p>
             {lore?.title && (
               <p className="text-gray-400 text-[10px] italic -mt-0.5">«{lore.title}»</p>
             )}
@@ -366,7 +366,7 @@ export default function HeroPanel({ onClose }) {
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
           ⚔️ Héroes del Reino
         </h3>
         <div className="flex items-center gap-2">
@@ -383,7 +383,7 @@ export default function HeroPanel({ onClose }) {
       {/* Summon panel */}
       {view === 'summon' && (
         <div className="mb-4 p-3 rounded-lg space-y-3" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(217,164,65,0.4)' }}>
-          <p className="text-yellow-200 text-xs font-bold text-center" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <p className="text-yellow-200 text-xs font-bold text-center font-display">
             ✨ Portal de Invocación
           </p>
           <p className="text-gray-400 text-[10px] text-center">

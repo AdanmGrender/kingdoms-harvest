@@ -80,7 +80,7 @@ export default function WaveDefensePanel({ onClose }) {
       <EmberField count={14} color="#8a8378" maxOpacity={0.45} />
       <div className="flex items-center justify-between px-4 py-3 border-b border-red-900/40 shrink-0 bg-black/30">
         <div>
-          <h3 className="text-red-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <h3 className="text-red-400 text-sm font-bold font-display">
             🌊 Marea de la Mácula
           </h3>
           <p className="text-[10px] text-gray-500">Los horrores prueban tus muros — preparate y resistí</p>
@@ -175,7 +175,7 @@ export default function WaveDefensePanel({ onClose }) {
           <div className={`rounded-lg p-3 text-center border animate-fade-in ${
             run.victory ? 'bg-green-900/20 border-green-600/40' : 'bg-red-900/20 border-red-600/40'
           }`}>
-            <p className="font-bold text-sm mb-1" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <p className="font-bold text-sm mb-1 font-display">
               {run.victory
                 ? `🏆 La Marea retrocede — oleada ${run.endWave} superada`
                 : `☠️ Los muros cayeron en la oleada ${run.endWave + (run.wavesCleared > 0 ? 1 : 0)}`}

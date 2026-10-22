@@ -299,7 +299,7 @@ export default function MarketplacePanel({ onClose }) {
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <div>
-          <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <h3 className="text-yellow-400 text-sm font-bold font-display">
             🏷️ Mercado P2P
           </h3>
           <p className="text-gray-400 text-[10px]">Oro disponible: {goldAmount} 💰</p>

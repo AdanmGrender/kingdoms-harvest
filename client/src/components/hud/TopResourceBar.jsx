@@ -95,9 +95,8 @@ export default function TopResourceBar() {
         {/* Name + Power + XP */}
         <div className="flex flex-col min-w-0 flex-shrink">
           <p
-            className="text-white text-[11px] font-semibold truncate leading-tight"
-            style={{ fontFamily: 'MedievalSharp, serif', maxWidth: '70px' }}
-          >
+            className="text-white text-[11px] font-semibold truncate leading-tight font-display"
+            style={{ maxWidth: '70px' }} >
             {displayName}
           </p>
           <div className="flex items-center gap-0.5 leading-none">

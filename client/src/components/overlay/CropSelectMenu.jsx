@@ -44,7 +44,7 @@ export default function CropSelectMenu({ data, onClose }) {
       style={{ background: 'rgba(51, 47, 43, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
 
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
           🌱 Selecciona un cultivo
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>

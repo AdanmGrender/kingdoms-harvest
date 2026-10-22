@@ -224,7 +224,7 @@ function GenericPanel({ title, onClose, children }) {
     <div className="mx-2 mb-2 p-4 rounded-t-xl"
       style={{ background: 'rgba(51, 47, 43, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
           {title}
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
@@ -311,7 +311,7 @@ function ConstructionView({ record, meta, onClose }) {
         <div className="flex items-center gap-3">
           <span className="text-3xl">🔨</span>
           <div>
-            <h3 className="text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif', color: accent }}>
+            <h3 className="text-sm font-bold font-display" style={{ color: accent }}>
               Construyendo: {meta.name}
             </h3>
             <p className="text-gray-400 text-[10px]">{meta.zone}</p>
@@ -324,10 +324,7 @@ function ConstructionView({ record, meta, onClose }) {
         {/* Countdown */}
         <div className="text-center">
           <p className="text-gray-500 text-[10px] mb-1 uppercase tracking-wide">Tiempo restante</p>
-          <p className="text-2xl font-bold" style={{
-            fontFamily: 'MedievalSharp, serif',
-            color: msLeft <= 0 ? '#4ade80' : accent,
-          }}>
+          <p className="text-2xl font-bold font-display" style={{ color: msLeft <= 0 ? '#4ade80' : accent }}>
             {timeStr}
           </p>
         </div>
@@ -397,7 +394,7 @@ function BuildingInfoPanel({ data, onClose }) {
         <div className="flex items-center gap-3">
           <SpriteIcon name={meta.sprite} size={32} />
           <div>
-            <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <h3 className="text-yellow-400 text-sm font-bold font-display">
               {meta.name}
             </h3>
             <p className="text-gray-400 text-[10px]">{meta.zone} · Nivel {level}</p>
@@ -492,7 +489,7 @@ function AnimalPanel({ data, onClose }) {
         <div className="flex items-center gap-3">
           <span className="text-3xl">{meta.icon}</span>
           <div>
-            <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <h3 className="text-yellow-400 text-sm font-bold font-display">
               {displayName}
             </h3>
             <p className="text-gray-400 text-[10px]">{meta.product}</p>
@@ -565,7 +562,7 @@ function HarvestPanel({ data, onClose }) {
         <div className="flex items-center gap-3">
           <span className="text-3xl">{crop.icon}</span>
           <div>
-            <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <h3 className="text-yellow-400 text-sm font-bold font-display">
               ¡Cosecha lista!
             </h3>
             <p className="text-gray-400 text-[10px]">Parcela #{(data.plotIndex ?? 0) + 1} · {crop.name}</p>

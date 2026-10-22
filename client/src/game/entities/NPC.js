@@ -4,6 +4,7 @@
  * State machine: idle → walking → entering → inside → exiting → returning → idle
  */
 import Phaser from 'phaser';
+import { UI_FONT } from '../fonts';
 import { addRimGlow } from '../systems/GlowLights';
 
 const SPEED = 40; // px/s
@@ -62,7 +63,7 @@ export default class NPC extends Phaser.GameObjects.Sprite {
     // pisan sus etiquetas a la misma altura (mismo fix que Villager).
     this._labelDy = -32 - (String(name).length % 2) * 8;
     this.nameText = scene.add.text(x, y + this._labelDy, name, {
-      fontFamily: 'MedievalSharp, serif',
+      fontFamily: UI_FONT,
       fontSize: '11px',
       color: '#ffd700',
       stroke: '#000000',
@@ -70,7 +71,7 @@ export default class NPC extends Phaser.GameObjects.Sprite {
     }).setOrigin(0.5).setDepth(20);
 
     this.questIcon = scene.add.text(x, y - 44, '!', {
-      fontFamily: 'MedievalSharp, serif',
+      fontFamily: UI_FONT,
       fontSize: '16px',
       color: '#ffd700',
       stroke: '#000000',

@@ -45,7 +45,7 @@ export default function CraftingPanel({ onClose }) {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <h3 className="text-yellow-400 text-sm font-bold font-display">
           ⚒️ Taller de Fabricación
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>

@@ -48,7 +48,7 @@ export default function OperationsMap({ onClose }) {
   return (
     <div className="fixed inset-0 z-40 flex flex-col" style={{ background: 'rgba(10,10,20,0.96)' }}>
       <div className="flex justify-between items-center p-4">
-        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2 font-display">
           <SpriteIcon name="map" size={26} fallback="🗺️" /> Operaciones
         </h2>
         <div className="flex items-center gap-3">
@@ -70,7 +70,7 @@ export default function OperationsMap({ onClose }) {
               {showActSep && (
                 <div className="w-full max-w-xs my-2 flex items-center gap-2 text-yellow-600/70">
                   <div className="flex-1 h-px" style={{ background: 'rgba(255,215,0,0.25)' }} />
-                  <span className="text-[10px] uppercase tracking-widest font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+                  <span className="text-[10px] uppercase tracking-widest font-bold font-display">
                     Acto {node.act}
                   </span>
                   <div className="flex-1 h-px" style={{ background: 'rgba(255,215,0,0.25)' }} />

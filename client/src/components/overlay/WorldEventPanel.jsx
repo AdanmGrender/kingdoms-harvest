@@ -89,7 +89,7 @@ function CoopSection({ data, onSessionStarted }) {
       style={{ background: 'rgba(74,69,80,0.4)', border: '1px solid rgba(59,130,246,0.25)' }}>
       <div className="flex items-center gap-2">
         <span className="text-blue-400 text-sm">⚔️</span>
-        <p className="text-xs font-bold text-blue-300" style={{ fontFamily: 'MedievalSharp, serif' }}>
+        <p className="text-xs font-bold text-blue-300 font-display">
           Misión Cooperativa
         </p>
         {session && (
@@ -208,7 +208,7 @@ export default function WorldEventPanel({ data, onClose }) {
           <span className="text-4xl">{data.icon}</span>
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <h3 className="text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif', color: rarity.color }}>
+              <h3 className="text-sm font-bold font-display" style={{ color: rarity.color }}>
                 {data.title}
               </h3>
               <span className="text-[9px] px-1.5 py-0.5 rounded font-bold"

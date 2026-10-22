@@ -161,9 +161,7 @@ export default function PrestigePanel({ onClose }) {
         <div className="flex items-center gap-2">
           <span className="text-xl">⭐</span>
           <h2
-            className="text-yellow-400 font-bold text-lg"
-            style={{ fontFamily: 'MedievalSharp, serif' }}
-          >
+            className="text-yellow-400 font-bold text-lg font-display" >
             Prestige
           </h2>
         </div>
@@ -184,9 +182,8 @@ export default function PrestigePanel({ onClose }) {
         >
           {/* Star × N */}
           <p
-            className="text-3xl font-bold text-yellow-400 mb-1"
-            style={{ fontFamily: 'MedievalSharp, serif', letterSpacing: '0.05em' }}
-          >
+            className="text-3xl font-bold text-yellow-400 mb-1 font-display"
+            style={{ letterSpacing: '0.05em' }} >
             {prestigeCount > 0
               ? `${'★'.repeat(Math.min(prestigeCount, 5))} × ${prestigeCount}`
               : '☆ Sin prestige'}

@@ -78,7 +78,7 @@ export default function DialogPanel({ data, onClose }) {
             <CharacterSprite name={`npc_${data.npcId}` || 'farmer'} height={44} fallback="👤" />
           </div>
           <div>
-            <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+            <h3 className="text-yellow-400 text-sm font-bold font-display">
               {data.name}
             </h3>
             <p className="text-gray-400 text-[10px] capitalize">{data.npcId || 'NPC'}</p>

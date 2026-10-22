@@ -44,7 +44,7 @@ export default function SquadPanel({ onClose }) {
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 shrink-0">
         <div>
-          <h3 className="text-yellow-400 text-sm font-bold" style={{ fontFamily: 'MedievalSharp, serif' }}>
+          <h3 className="text-yellow-400 text-sm font-bold font-display">
             🪖 Escuadra del Bastión
           </h3>
           <p className="text-[10px] text-gray-500">Defiende en la Marea y pelea en tus asaltos</p>
