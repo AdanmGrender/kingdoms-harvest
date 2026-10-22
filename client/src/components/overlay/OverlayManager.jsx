@@ -303,7 +303,7 @@ function ConstructionView({ record, meta, onClose }) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30"
         style={{ background: `linear-gradient(135deg, rgba(51,47,43,0.9), ${accent}22)` }}>
         <div className="flex items-center gap-3">
-          <span className="text-3xl">🔨</span>
+          <span className="text-3xl"><SpriteIcon name="hammer" size={40} /></span>
           <div>
             <h3 className="text-sm font-bold font-display" style={{ color: accent }}>
               Construyendo: {meta.name}
@@ -339,7 +339,7 @@ function ConstructionView({ record, meta, onClose }) {
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
           <span className="text-gray-400 text-xs">Constructores presentes</span>
           <span className="font-bold text-xs" style={{ color: workers > 0 ? '#4ade80' : '#6b7280' }}>
-            {workers > 0 ? `${workers} 👷` : '—'}
+            {workers > 0 ? `${workers}` : '—'}
           </span>
         </div>
 
@@ -411,7 +411,7 @@ function BuildingInfoPanel({ data, onClose }) {
                 className="w-full py-2 rounded-lg text-xs font-bold text-white"
                 style={{ background: 'linear-gradient(135deg, #1e40af, #3b82f6)' }}
               >
-                🔬 Árbol de Investigación
+                <SpriteIcon name="tech" size={28} /> Árbol de Investigación
               </button>
             )}
             {record && (
@@ -420,9 +420,9 @@ function BuildingInfoPanel({ data, onClose }) {
                 className="w-full py-2 rounded-lg text-xs font-bold text-white"
                 style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
               >
-                ⬆ Mejorar a Nivel {level + 1}
+                Mejorar a Nivel {level + 1}
                 <span className="ml-2 opacity-75 text-[10px]">
-                  🪵{upgradeCost.wood} 🪨{upgradeCost.stone}{upgradeCost.iron ? ` ⛏️${upgradeCost.iron}` : ''}
+                  <SpriteIcon name="wood" size={28} />{upgradeCost.wood} <SpriteIcon name="stone" size={28} />{upgradeCost.stone}{upgradeCost.iron ? ` ${upgradeCost.iron}` : ''}
                 </span>
               </button>
             )}
@@ -440,9 +440,9 @@ function BuildingInfoPanel({ data, onClose }) {
               className="w-full mt-2 py-2 rounded-lg text-xs font-bold text-white"
               style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
             >
-              ⬆ Mejorar a Nivel {level + 1}
+              Mejorar a Nivel {level + 1}
               <span className="ml-2 opacity-75 text-[10px]">
-                🪵{upgradeCost.wood} 🪨{upgradeCost.stone}{upgradeCost.iron ? ` ⛏️${upgradeCost.iron}` : ''}
+                <SpriteIcon name="wood" size={28} />{upgradeCost.wood} <SpriteIcon name="stone" size={28} />{upgradeCost.stone}{upgradeCost.iron ? ` ${upgradeCost.iron}` : ''}
               </span>
             </button>
           </details>
@@ -453,14 +453,14 @@ function BuildingInfoPanel({ data, onClose }) {
 }
 
 const ANIMAL_META = {
-  chicken: { icon: '🐔', name: 'Gallina',  product: '🥚 Huevo',  productName: 'Huevos' },
-  cow:     { icon: '🐄', name: 'Vaca',     product: '🥛 Leche',  productName: 'Leche'  },
-  sheep:   { icon: '🐑', name: 'Oveja',    product: '🧶 Lana',   productName: 'Lana'   },
+  chicken: { icon: 'chicken', name: 'Gallina',  product: 'Huevo',  productName: 'Huevos' },
+  cow:     { icon: 'cow', name: 'Vaca',     product: 'Leche',  productName: 'Leche'  },
+  sheep:   { icon: 'sheep', name: 'Oveja',    product: 'Lana',   productName: 'Lana'   },
 };
 
 function AnimalPanel({ data, onClose }) {
   const animalType = data.animalType || data.animalId || 'animal';
-  const meta = ANIMAL_META[animalType] || { icon: '🐾', name: animalType, product: '📦 Producto', productName: 'Producto' };
+  const meta = ANIMAL_META[animalType] || { icon: 'cow', name: animalType, product: 'Producto', productName: 'Producto' };
   const displayName = data.name || meta.name;
 
   const now = new Date();
@@ -481,7 +481,7 @@ function AnimalPanel({ data, onClose }) {
       style={{ background: 'rgba(51, 47, 43, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">{meta.icon}</span>
+          <span className="text-3xl"><SpriteIcon name={meta.icon} size={36} /></span>
           <div>
             <h3 className="text-yellow-400 text-sm font-bold font-display">
               {displayName}
@@ -512,7 +512,7 @@ function AnimalPanel({ data, onClose }) {
             <button onClick={handleFeed} disabled={isFed}
               className={`flex-1 py-2 rounded-lg text-xs font-bold text-white ${isFed ? 'opacity-50 cursor-not-allowed' : ''}`}
               style={{ background: 'linear-gradient(135deg, #a16207, #ca8a04)' }}>
-              🌽 {isFed ? 'Ya alimentada' : 'Alimentar'}
+              <SpriteIcon name="corn" size={28} /> {isFed ? 'Ya alimentada' : 'Alimentar'}
             </button>
           )}
         </div>
@@ -522,13 +522,13 @@ function AnimalPanel({ data, onClose }) {
 }
 
 const CROP_META = {
-  wheat:   { icon: '🌾', name: 'Trigo',    tokens: 2 },
-  carrot:  { icon: '🥕', name: 'Zanahoria', tokens: 2 },
-  potato:  { icon: '🥔', name: 'Papa',     tokens: 2 },
-  tomato:  { icon: '🍅', name: 'Tomate',   tokens: 3 },
-  corn:    { icon: '🌽', name: 'Maíz',     tokens: 3 },
-  pumpkin: { icon: '🎃', name: 'Calabaza', tokens: 4 },
-  grape:   { icon: '🍇', name: 'Uva',      tokens: 4 },
+  wheat:   { icon: 'wheat', name: 'Trigo',    tokens: 2 },
+  carrot:  { icon: 'carrot', name: 'Zanahoria', tokens: 2 },
+  potato:  { icon: 'potato', name: 'Papa',     tokens: 2 },
+  tomato:  { icon: 'tomato', name: 'Tomate',   tokens: 3 },
+  corn:    { icon: 'corn', name: 'Maíz',     tokens: 3 },
+  pumpkin: { icon: 'pumpkin', name: 'Calabaza', tokens: 4 },
+  grape:   { icon: 'grape', name: 'Uva',      tokens: 4 },
 };
 
 const QUALITY_COLORS = {
@@ -545,7 +545,7 @@ function HarvestPanel({ data, onClose }) {
     onClose();
   };
 
-  const crop = CROP_META[data.cropId] || { icon: '🌱', name: data.cropId || 'Cultivo', tokens: 2 };
+  const crop = CROP_META[data.cropId] || { icon: 'wheat', name: data.cropId || 'Cultivo', tokens: 2 };
   const quality = data.quality || 'normal';
   const qualityLabel = { normal: 'Normal', good: 'Buena', great: 'Excelente', perfect: '¡Perfecta!' };
 
@@ -554,7 +554,7 @@ function HarvestPanel({ data, onClose }) {
       style={{ background: 'rgba(51, 47, 43, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">{crop.icon}</span>
+          <span className="text-3xl"><SpriteIcon name={crop.icon} size={36} /></span>
           <div>
             <h3 className="text-yellow-400 text-sm font-bold font-display">
               ¡Cosecha lista!
@@ -573,14 +573,14 @@ function HarvestPanel({ data, onClose }) {
         </div>
         <div className="flex items-center justify-between">
           <span className="text-gray-400 text-xs">Tokens:</span>
-          <span className="text-purple-400 text-xs font-bold">+{crop.tokens} KH 💎</span>
+          <span className="text-purple-400 text-xs font-bold">+{crop.tokens} KH <SpriteIcon name="gem" size={28} /></span>
         </div>
         <button
           className="w-full py-2.5 rounded-lg text-sm font-bold text-white"
           style={{ background: 'linear-gradient(135deg, #15803d, #16a34a)' }}
           onClick={handleHarvest}
         >
-          {crop.icon} Cosechar {crop.name}
+          <SpriteIcon name={crop.icon} size={28} /> Cosechar {crop.name}
         </button>
       </div>
     </div>

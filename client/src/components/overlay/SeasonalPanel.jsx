@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const SEASON_ICONS = {
-  spring: '🌸',
-  summer: '☀️',
-  autumn: '🍂',
-  winter: '❄️',
-  primavera: '🌸',
-  verano:    '☀️',
-  otoño:     '🍂',
-  invierno:  '❄️',
+  spring: 'wheat',
+  summer: 'sun',
+  autumn: 'pumpkin',
+  winter: 'water',
+  primavera: 'wheat',
+  verano:    'sun',
+  otoño:     'pumpkin',
+  invierno:  'water',
 };
 
 function LoadingSpinner() {
@@ -28,12 +29,8 @@ function RewardPreview({ reward }) {
   const parts = [];
   if (reward.tokens > 0)   parts.push(`+${reward.tokens} KH`);
   if (reward.resources) {
-    const RES_ICONS = {
-      wheat: '🌾', wood: '🪵', stone: '🪨', iron: '⛏️',
-      gold: '🪙', bread: '🍞', carrot: '🥕', corn: '🌽',
-    };
     Object.entries(reward.resources).forEach(([res, amt]) => {
-      parts.push(`${RES_ICONS[res] || '📦'}${amt} ${res}`);
+      parts.push(`${amt} ${res}`);
     });
   }
   return <span className="text-[10px] text-gray-300">{parts.join(' ')}</span>;
@@ -161,7 +158,7 @@ export default function SeasonalPanel({ onClose }) {
   };
 
   const seasonNameLower = (seasonalData?.season ?? '').toLowerCase();
-  const seasonIcon      = SEASON_ICONS[seasonNameLower] ?? '🌿';
+  const seasonIcon      = SEASON_ICONS[seasonNameLower] ?? 'wheat';
   const accentColor     = seasonalData?.color ?? '#4ade80';
   const bonuses         = seasonalData?.bonuses ?? [];
   const challenges      = seasonalData?.challenges ?? [];
@@ -176,7 +173,7 @@ export default function SeasonalPanel({ onClose }) {
         className="flex items-center justify-between p-4 border-b border-yellow-900/30 shrink-0"
       >
         <div className="flex items-center gap-2">
-          <span className="text-xl">{seasonIcon}</span>
+          <SpriteIcon name={seasonIcon} size={28} />
           <h2
             className="text-yellow-400 font-bold text-lg font-display" >
             Estación
@@ -214,12 +211,12 @@ export default function SeasonalPanel({ onClose }) {
           >
             {/* Season name + icon */}
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-4xl">{seasonIcon}</span>
+              <SpriteIcon name={seasonIcon} size={48} />
               <div>
                 <p
                   className="text-base font-bold font-display"
                   style={{ color: accentColor }} >
-                  {seasonIcon} {seasonalData.season ?? 'Temporada'}
+                  <SpriteIcon name={seasonIcon} size={28} /> {seasonalData.season ?? 'Temporada'}
                 </p>
                 <p className="text-[11px] text-gray-400">
                   Día {seasonalData.currentDay ?? 1} de la estación

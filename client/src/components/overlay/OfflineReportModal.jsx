@@ -4,11 +4,12 @@
  * Estilo informe militar (como la cabecera de TerritoryMapPanel).
  */
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const RESOURCE_ICONS = {
-  wheat: '🌾', wood: '⚙️', stone: '🪨', iron: '⛏️', water: '💧', gold: '🪙',
-  bread: '🥫', planks: '🔳', ingots: '🔩', flour: '🌫️', cheese: '🧫',
-  egg: '🥚', milk: '🥛', wool: '🧶', crystal: '💎', relic: '⚱️', blueprint: '📜',
+  wheat: 'wheat', wood: 'wood', stone: 'stone', iron: 'iron', water: 'water', gold: 'gold',
+  bread: 'bread', planks: 'wood', ingots: 'iron', flour: 'wheat', cheese: 'milk',
+  egg: 'egg', milk: 'milk', wool: 'wool', crystal: 'gem', relic: 'relic', blueprint: 'scroll',
 };
 
 function formatAway(ms) {
@@ -42,7 +43,7 @@ export default function OfflineReportModal() {
         <div className="px-4 py-3 border-b border-yellow-900/40 bg-black/40 text-center">
           <p className="text-[10px] tracking-[0.3em] text-gray-500 uppercase">Informe del Bastión</p>
           <h3 className="text-kingdom-gold text-base font-bold font-display">
-            💀 Mientras no estabas
+            <SpriteIcon name="skull" size={28} /> Mientras no estabas
           </h3>
           <p className="text-[11px] text-gray-400">Ausente {formatAway(report.awayMs)}</p>
         </div>
@@ -56,7 +57,7 @@ export default function OfflineReportModal() {
               <div className="grid grid-cols-2 gap-1.5">
                 {resources.map(([id, amount]) => (
                   <div key={id} className="flex items-center gap-2 bg-black/40 rounded px-2 py-1.5 border border-gray-700/40">
-                    <span className="text-lg leading-none">{RESOURCE_ICONS[id] || '📦'}</span>
+                    <span className="text-lg leading-none"><SpriteIcon name={RESOURCE_ICONS[id] || 'reward_bag'} size={28} /></span>
                     <span className="text-sm text-green-400 font-bold">+{amount}</span>
                     <span className="text-[10px] text-gray-500 truncate">{id}</span>
                   </div>
@@ -67,7 +68,7 @@ export default function OfflineReportModal() {
 
           {report.khEarned > 0 && (
             <div className="flex items-center justify-center gap-2 bg-yellow-900/20 border border-yellow-700/40 rounded px-3 py-2">
-              <span className="text-lg">💎</span>
+              <span className="text-lg"><SpriteIcon name="gem" size={28} /></span>
               <span className="text-kingdom-gold font-bold text-sm">+{report.khEarned} KH</span>
             </div>
           )}
@@ -78,7 +79,7 @@ export default function OfflineReportModal() {
               <div className="space-y-1">
                 {report.events.map((e, i) => (
                   <p key={i} className="text-[11px] text-gray-300">
-                    {e.icon} {e.text}
+                    <SpriteIcon name="scroll" size={28} /> {e.text}
                   </p>
                 ))}
               </div>

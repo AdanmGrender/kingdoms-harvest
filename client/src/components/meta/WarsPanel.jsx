@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const FACTION_META = {
-  knights_of_dawn:  { name: 'Caballeros del Alba',     icon: '☀️', color: '#FFD700' },
-  shadow_merchants: { name: 'Mercaderes de la Sombra', icon: '🌙', color: '#4B0082' },
-  iron_legion:      { name: 'Legión de Hierro',         icon: '🛡️', color: '#8B0000' },
-  green_wardens:    { name: 'Guardianes Verdes',        icon: '🌳', color: '#228B22' },
+  knights_of_dawn:  { name: 'Caballeros del Alba',     icon: 'sun', color: '#FFD700' },
+  shadow_merchants: { name: 'Mercaderes de la Sombra', icon: 'moon', color: '#4B0082' },
+  iron_legion:      { name: 'Legión de Hierro',         icon: 'shield', color: '#8B0000' },
+  green_wardens:    { name: 'Guardianes Verdes',        icon: 'farm_plot', color: '#228B22' },
 };
 
 function formatRemaining(endsAt, now) {
@@ -54,7 +55,7 @@ export default function WarsPanel() {
     <div className="space-y-3">
       {/* Server-wide faction war */}
       <div className="game-card border-orange-700/40">
-        <p className="text-sm font-bold mb-1">⚔️ Guerra de Facciones</p>
+        <p className="text-sm font-bold mb-1"><SpriteIcon name="sword" size={28} /> Guerra de Facciones</p>
         {factionWar?.active ? (
           <>
             <p className="text-[11px] text-gray-400">
@@ -62,8 +63,8 @@ export default function WarsPanel() {
             </p>
             <div className="mt-2 space-y-1">
               {(factionWar.standings || []).map((s, i) => {
-                const meta = FACTION_META[s.faction_id] || { name: s.faction_id, icon: '🏴', color: '#888' };
-                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+                const meta = FACTION_META[s.faction_id] || { name: s.faction_id, icon: 'alliance', color: '#888' };
+                const medal = i < 3 ? <SpriteIcon name="medal" size={28} /> : `#${i + 1}`;
                 const isMine = s.faction_id === player?.faction_id;
                 return (
                   <div
@@ -71,7 +72,7 @@ export default function WarsPanel() {
                     className={`flex items-center justify-between text-[11px] py-0.5 ${isMine ? 'text-yellow-400 font-bold' : 'text-gray-300'}`}
                     style={{ borderLeft: `3px solid ${meta.color}`, paddingLeft: 6 }}
                   >
-                    <span>{medal} {meta.icon} {meta.name}</span>
+                    <span>{medal} <SpriteIcon name={meta.icon} size={28} /> {meta.name}</span>
                     <span className="text-purple-300">{s.total} pts</span>
                   </div>
                 );
@@ -89,7 +90,7 @@ export default function WarsPanel() {
       {/* Alliance vs alliance war */}
       {myAlliance ? (
         <div className="game-card border-red-700/40">
-          <p className="text-sm font-bold mb-1">🏴 Guerra de Alianzas</p>
+          <p className="text-sm font-bold mb-1"><SpriteIcon name="alliance" size={28} /> Guerra de Alianzas</p>
           {myAllianceWar ? (
             <>
               <p className="text-[11px] text-gray-300">
@@ -130,7 +131,7 @@ export default function WarsPanel() {
                 disabled={!target}
                 className="w-full py-2 rounded-lg text-xs font-bold bg-red-700 hover:bg-red-600 text-white disabled:opacity-40"
               >
-                ⚔️ Declarar guerra (24h)
+                <SpriteIcon name="sword" size={28} /> Declarar guerra (24h)
               </button>
             </div>
           ) : (

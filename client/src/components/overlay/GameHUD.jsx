@@ -10,10 +10,10 @@ import Bar from '../ui/Bar';
 import NotificationPrefsPanel from '../ui/NotificationPrefsPanel';
 
 const FACTION_ICONS = {
-  knights_of_dawn: '☀️',
-  shadow_merchants: '🌙',
-  iron_legion: '🛡️',
-  green_wardens: '🌳',
+  knights_of_dawn: 'sun',
+  shadow_merchants: 'moon',
+  iron_legion: 'shield',
+  green_wardens: 'farm_plot',
 };
 
 const RESOURCE_SPRITES = {
@@ -50,7 +50,7 @@ export default function GameHUD() {
   const tokenInfo = useGameStore((s) => s.tokenInfo);
   const buildings = useGameStore((s) => s.buildings);
 
-  const [timeInfo, setTimeInfo] = useState({ icon: '☀️', period: 'morning', dayCount: 1 });
+  const [timeInfo, setTimeInfo] = useState({ icon: 'sun', period: 'morning', dayCount: 1 });
   const [tokenPulse, setTokenPulse] = useState(false);
   const [showNotifPanel, setShowNotifPanel] = useState(false);
   const pulseTimer = useRef(null);
@@ -140,7 +140,7 @@ export default function GameHUD() {
 
         {/* Day/Night — center + notification bell */}
         <div className="flex items-center gap-1 pointer-events-auto px-2">
-          <span className="text-sm">{timeInfo.icon}</span>
+          <span className="text-sm"><SpriteIcon name={timeInfo.period === 'night' ? 'moon' : 'sun'} size={28} /></span>
           <span className="text-yellow-300 text-[10px] font-medium whitespace-nowrap">
             Día {timeInfo.dayCount}
           </span>
@@ -150,7 +150,7 @@ export default function GameHUD() {
               className="text-[13px] opacity-70 hover:opacity-100 transition-opacity ml-1"
               title="Notificaciones"
             >
-              🔔
+              <SpriteIcon name="exclamation" size={28} />
             </button>
           )}
         </div>
@@ -189,7 +189,7 @@ export default function GameHUD() {
             <div key={b.id}
               className="flex items-center gap-1 text-[9px] text-amber-300 rounded px-1 py-0.5"
               style={{ background: 'rgba(20,20,40,0.8)', border: '1px solid rgba(251,191,36,0.3)' }}>
-              <span>🏗️</span>
+              <span><SpriteIcon name="hammer" size={28} /></span>
               <span>{b.building_id.replace(/_/g, ' ')}</span>
               <span className="text-white font-bold">{b.timeLeft}</span>
             </div>

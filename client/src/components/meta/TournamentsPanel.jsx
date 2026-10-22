@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 /**
  * TournamentsPanel — list every active tournament with countdown, prizes,
@@ -55,13 +56,13 @@ export default function TournamentsPanel() {
         return (
           <div key={t.id} className="game-card">
             <div className="flex items-start gap-2">
-              <span className="text-2xl shrink-0">{t.icon || '🏆'}</span>
+              <span className="text-2xl shrink-0"><SpriteIcon name={t.icon || 'medal'} size={28} /></span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold">{t.name}</p>
                 <p className="text-[11px] text-gray-400 truncate">{t.description}</p>
                 <p className="text-[10px] text-yellow-400 mt-0.5">
-                  ⏱️ {formatRemaining(t.ends_at, now)} ·
-                  Premios: 🥇{t.prizes?.[1] || 0} 🥈{t.prizes?.[2] || 0} 🥉{t.prizes?.[3] || 0} KH
+                  <SpriteIcon name="speedup" size={28} /> {formatRemaining(t.ends_at, now)} ·
+                  Premios: <SpriteIcon name="medal" size={28} />{t.prizes?.[1] || 0} <SpriteIcon name="medal" size={28} />{t.prizes?.[2] || 0} <SpriteIcon name="medal" size={28} />{t.prizes?.[3] || 0} KH
                 </p>
                 {myRow && (
                   <p className="text-[10px] text-purple-300 mt-0.5">
@@ -84,7 +85,7 @@ export default function TournamentsPanel() {
                 )}
                 {rows.map((r) => {
                   const isMe = r.player_id === player?.telegram_id;
-                  const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `#${r.rank}`;
+                  const medal = r.rank <= 3 ? <SpriteIcon name="medal" size={28} /> : `#${r.rank}`;
                   return (
                     <div
                       key={r.player_id}

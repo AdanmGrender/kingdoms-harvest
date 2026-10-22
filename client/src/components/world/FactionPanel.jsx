@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
+import { FACTION_ICONS } from '../../config/factionIcons';
 
 /**
  * FactionPanel — list factions with member/territory counts and a "join"
@@ -50,12 +52,12 @@ export default function FactionPanel() {
             <div className="flex items-center justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm flex items-center gap-1">
-                  <span>{f.icon}</span> {f.name}
+                  <span><SpriteIcon name={FACTION_ICONS[f.id]} size={28} /></span> {f.name}
                   {isMine && <span className="text-yellow-400 text-[10px] ml-1">(la tuya)</span>}
                 </p>
                 <p className="text-[11px] text-gray-400 truncate">{f.description}</p>
                 <p className="text-[10px] text-gray-500 mt-0.5">
-                  👥 {f.member_count} miembros · 🏴 {f.territory_count} territorios · ⭐ {f.total_points} pts
+                  <SpriteIcon name="alliance" size={28} /> {f.member_count} miembros · <SpriteIcon name="alliance" size={28} /> {f.territory_count} territorios · <SpriteIcon name="star" size={28} /> {f.total_points} pts
                 </p>
               </div>
               <div className="shrink-0 flex flex-col gap-1">

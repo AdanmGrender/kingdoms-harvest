@@ -6,18 +6,19 @@
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import StarMap from './StarMap';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const RES_ICON = {
-  gold: '🪙', iron: '⛏️', stone: '🪨', water: '💧', wheat: '🌾', crystal: '💎', relic: '⚱️',
+  gold: 'gold', iron: 'iron', stone: 'stone', water: 'water', wheat: 'wheat', crystal: 'gem', relic: 'relic',
 };
 
 function costLabel(cost) {
   const e = Object.entries(cost || {});
-  return e.length ? e.map(([r, n]) => `${n}${RES_ICON[r] || r}`).join(' ') : '—';
+  return e.length ? e.map(([r, n]) => `${n} ${r}`).join(' ') : '—';
 }
 function tributeLabel(tribute) {
   const e = Object.entries(tribute || {});
-  return e.length ? e.map(([r, n]) => `+${n}${RES_ICON[r] || r}/h`).join(' ') : null;
+  return e.length ? e.map(([r, n]) => `+${n} ${r}/h`).join(' ') : null;
 }
 function etaLabel(arrivesAt) {
   const ms = new Date(arrivesAt) - Date.now();
@@ -72,7 +73,7 @@ export default function GalaxyMapPanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-purple-900/40 shrink-0 bg-black/40">
         <div>
           <h3 className="text-purple-300 text-sm font-bold font-display">
-            🌫️ Mapa de los Reinos Caídos
+            Mapa de los Reinos Caídos
           </h3>
           <p className="text-[10px] text-gray-500">Cruzá el Velo por los Caminos Velados</p>
         </div>
@@ -81,7 +82,7 @@ export default function GalaxyMapPanel({ onClose }) {
             onClick={() => setOverlay('system', {})}
             className="text-[10px] px-2 py-1 rounded bg-black/40 border border-cyan-700/40 text-cyan-300"
           >
-            🛰️ Sistema
+            Sistema
           </button>
           <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
         </div>
@@ -92,7 +93,7 @@ export default function GalaxyMapPanel({ onClose }) {
 
         {g && !g.unlocked && (
           <div className="rounded-lg bg-black/40 border border-purple-800/40 p-3 text-center">
-            <p className="text-2xl mb-1">🔒</p>
+            <p className="text-2xl mb-1"><SpriteIcon name="shield" size={32} /></p>
             <p className="text-xs text-gray-300">
               Los Reinos Caídos se abren al <b className="text-purple-300">dominar todas las plazas de tu Marca</b>
             </p>
@@ -108,7 +109,7 @@ export default function GalaxyMapPanel({ onClose }) {
         {/* Crucero en la Disformidad */}
         {g?.warp?.status === 'traveling' && (
           <div className="rounded-lg bg-purple-900/20 border border-purple-600/40 p-2.5 flex items-center gap-2 animate-fade-in">
-            <span className="text-xl animate-pulse">🌀</span>
+            <span className="text-xl animate-pulse"><SpriteIcon name="world" size={28} /></span>
             <div className="flex-1 min-w-0">
               <p className="text-[11px] text-purple-300 font-bold truncate">
                 Expedición rumbo a {g.systems.find((s) => s.id === g.warp.target)?.name}
@@ -126,7 +127,7 @@ export default function GalaxyMapPanel({ onClose }) {
             selectedId={selected}
             onSelect={setSelected}
             ship={g.warp}
-            shipIcon="🌀"
+            shipIcon="world"
             theme="#a855f7"
           />
         )}
@@ -135,7 +136,7 @@ export default function GalaxyMapPanel({ onClose }) {
         {sel && sel.state !== 'locked' && (
           <div className="game-card border-purple-700/40 space-y-2 animate-fade-in">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">{sel.icon}</span>
+              <span className="text-2xl"><SpriteIcon name="world" size={32} /></span>
               <div>
                 <p className="font-bold text-sm">{sel.name}</p>
                 <p className="text-[10px] text-gray-400">{sel.desc}</p>
@@ -148,7 +149,7 @@ export default function GalaxyMapPanel({ onClose }) {
               <>
                 <div className="flex justify-between text-[11px] text-gray-300">
                   <span>Costo: <b className="text-yellow-300">{costLabel(sel.cost)}</b></span>
-                  <span>🌀 {Math.round(sel.warpMin / 60)}h de travesía</span>
+                  <span><SpriteIcon name="world" size={28} /> {Math.round(sel.warpMin / 60)}h de travesía</span>
                 </div>
                 <button
                   onClick={() => doWarp(sel.id)}
@@ -158,7 +159,7 @@ export default function GalaxyMapPanel({ onClose }) {
                              hover:from-purple-600 hover:to-purple-800 active:scale-95 transition-all
                              disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  🌀 Cruzar el Velo
+                  <SpriteIcon name="world" size={28} /> Cruzar el Velo
                 </button>
               </>
             )}
@@ -166,7 +167,7 @@ export default function GalaxyMapPanel({ onClose }) {
               <p className="text-[11px] text-green-400 text-center">✓ Reino bajo tu dominio</p>
             )}
             {sel.state === 'traveling' && (
-              <p className="text-[11px] text-purple-300 text-center">🌀 Tu expedición está cruzando el Velo…</p>
+              <p className="text-[11px] text-purple-300 text-center"><SpriteIcon name="world" size={28} /> Tu expedición está cruzando el Velo…</p>
             )}
           </div>
         )}

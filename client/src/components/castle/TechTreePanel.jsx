@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
-const BRANCH_ICONS = { agriculture: '🌿', commerce: '💰', military: '⚔️' };
+const BRANCH_ICONS = { agriculture: 'wheat', commerce: 'gold', military: 'sword' };
 
 function formatTime(ms) {
   if (!ms) return '';
@@ -48,7 +49,7 @@ export default function TechTreePanel() {
                 : 'bg-kingdom-blue/50 text-gray-400 hover:text-white'
             }`}
           >
-            {BRANCH_ICONS[b.id]} {b.name}
+            <SpriteIcon name={BRANCH_ICONS[b.id]} size={28} /> {b.name}
           </button>
         ))}
       </div>
@@ -57,7 +58,7 @@ export default function TechTreePanel() {
       {inProgress && (
         <div className="game-card border-purple-600 bg-purple-900/20">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-purple-300">🔬 Investigando: <span className="font-bold text-white">{inProgress.tech_id}</span></p>
+            <p className="text-xs text-purple-300"><SpriteIcon name="tech" size={28} /> Investigando: <span className="font-bold text-white">{inProgress.tech_id}</span></p>
             <p className="text-xs text-yellow-400 font-mono">{formatTime(inProgress.research_complete_at)}</p>
           </div>
         </div>
@@ -87,7 +88,7 @@ export default function TechTreePanel() {
                 </div>
                 <div className="shrink-0">
                   {isCompleted ? (
-                    <span className="text-green-400 text-lg">✅</span>
+                    <span className="text-green-400 text-lg"><SpriteIcon name="check" size={28} /></span>
                   ) : isResearching ? (
                     <span className="text-xs text-yellow-400 font-mono">{formatTime(tech.completeAt)}</span>
                   ) : (

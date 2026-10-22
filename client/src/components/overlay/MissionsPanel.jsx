@@ -4,17 +4,18 @@
  */
 import { useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const RESOURCE_ICONS = {
-  gold: '🪙', wood: '🪵', stone: '🪨', iron: '⛏️',
-  wheat: '🌾', water: '💧', flour: '🌽', bread: '🍞',
+  gold: 'gold', wood: 'wood', stone: 'stone', iron: 'iron',
+  wheat: 'wheat', water: 'water', flour: 'corn', bread: 'bread',
 };
 
 function formatCost(reqs) {
   if (!reqs) return '';
   if (typeof reqs === 'string') return reqs;
   return Object.entries(reqs)
-    .map(([k, v]) => `${v} ${RESOURCE_ICONS[k] || k}`)
+    .map(([k, v]) => `${v} ${k}`)
     .join(' · ');
 }
 
@@ -38,7 +39,7 @@ export default function MissionsPanel({ onClose }) {
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 shrink-0">
         <h3 className="text-yellow-400 text-sm font-bold font-display">
-          📜 Misiones
+          <SpriteIcon name="scroll" size={28} /> Misiones
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
       </div>
@@ -80,7 +81,7 @@ export default function MissionsPanel({ onClose }) {
             color: 'white',
           }}
         >
-          🎲 Generar nuevas misiones
+          Generar nuevas misiones
         </button>
       </div>
     </div>

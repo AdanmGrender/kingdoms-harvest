@@ -2,13 +2,13 @@ import { useEffect, Fragment } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
-// Ícono grim del sheet IA por tipo de nodo (fallback emoji si falta el arte)
+// Ícono grim del sheet IA por tipo de nodo (nombre de sprite de la hoja B)
 const TYPE_ICON = {
-  manage:  { sprite: 'gear',  emoji: '🔧' },
-  collect: { sprite: 'wheat', emoji: '🌾' },
-  combat:  { sprite: 'sword', emoji: '⚔️' },
-  wave:    { sprite: 'tide',  emoji: '🌊' },
-  boss:    { sprite: 'skull', emoji: '💀' },
+  manage:  { sprite: 'gear',  emoji: 'gear' },
+  collect: { sprite: 'wheat', emoji: 'wheat' },
+  combat:  { sprite: 'sword', emoji: 'sword' },
+  wave:    { sprite: 'tide',  emoji: 'tide' },
+  boss:    { sprite: 'skull', emoji: 'skull' },
 };
 
 // F1: sólo los nodos combat/wave/boss se pueden re-farmear con "Asalto rápido".
@@ -34,7 +34,7 @@ export default function OperationsMap({ onClose }) {
       } else if (res.kind === 'blocked') {
         addNotification(res.hint, 'info');
       } else if (res.kind === 'cleared') {
-        addNotification(`✅ ${node.name} completado`, 'success');
+        addNotification(`${node.name} completado`, 'success');
       }
     } catch (e) {
       addNotification(e.response?.data?.error || 'No se pudo entrar', 'error');
@@ -99,7 +99,7 @@ export default function OperationsMap({ onClose }) {
                     </div>
                     {cleared
                       ? <SpriteIcon name="check" size={28} />
-                      : <span className="text-lg">{locked ? '🔒' : '▶'}</span>}
+                      : <SpriteIcon name={locked ? 'shield' : 'sword'} size={28} />}
                   </button>
                   {sweepable && (
                     <button

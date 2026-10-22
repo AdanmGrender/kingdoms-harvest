@@ -3,17 +3,18 @@
  */
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const TROOP_INFO = {
-  militia:   { name: 'Milicia',          icon: '🗡️', atk: 10, def: 8,  cost: { gold: 20, bread: 1 } },
-  archer:    { name: 'Arquero',          icon: '🏹', atk: 15, def: 5,  cost: { gold: 35, bread: 1, wood: 5 } },
-  cavalry:   { name: 'Caballeria',       icon: '🐎', atk: 20, def: 12, cost: { gold: 80, bread: 3, ingots: 2 } },
-  spearman:  { name: 'Lancero',          icon: '🔱', atk: 12, def: 15, cost: { gold: 30, bread: 1, ingots: 1 } },
-  siege_ram: { name: 'Ariete de Asedio', icon: '🪵', atk: 50, def: 5,  cost: { gold: 150, planks: 10, ingots: 5 } },
+  militia:   { name: 'Milicia',          icon: 'sword', atk: 10, def: 8,  cost: { gold: 20, bread: 1 } },
+  archer:    { name: 'Arquero',          icon: 'bow', atk: 15, def: 5,  cost: { gold: 35, bread: 1, wood: 5 } },
+  cavalry:   { name: 'Caballeria',       icon: 'horse', atk: 20, def: 12, cost: { gold: 80, bread: 3, ingots: 2 } },
+  spearman:  { name: 'Lancero',          icon: 'spear', atk: 12, def: 15, cost: { gold: 30, bread: 1, ingots: 1 } },
+  siege_ram: { name: 'Ariete de Asedio', icon: 'ram', atk: 50, def: 5,  cost: { gold: 150, planks: 10, ingots: 5 } },
 };
 
 const RESOURCE_ICONS = {
-  gold: '🪙', bread: '🍞', wood: '🪵', ingots: '🔩', planks: '🪵', stone: '🪨', iron: '⛏️',
+  gold: 'gold', bread: 'bread', wood: 'wood', ingots: 'iron', planks: 'wood', stone: 'stone', iron: 'iron',
 };
 
 const TABS = [
@@ -121,7 +122,7 @@ export default function TroopManagementPanel({ data, onClose }) {
                 className="flex items-center gap-2 p-2 rounded"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,215,0,0.15)' }}
               >
-                <span className="text-lg">{info.icon}</span>
+                <span className="text-lg"><SpriteIcon name={info.icon} size={28} /></span>
                 <div className="flex-1">
                   <div className="text-white text-xs font-bold">{info.name}</div>
                   <div className="text-gray-400 text-[10px]">ATK {info.atk} / DEF {info.def}</div>
@@ -158,7 +159,7 @@ export default function TroopManagementPanel({ data, onClose }) {
                 }`}
                 onClick={() => setTrainForm({ ...trainForm, troopId: id })}
               >
-                <div className="text-lg">{info.icon}</div>
+                <div className="text-lg"><SpriteIcon name={info.icon} size={28} /></div>
                 <div className="text-white text-[10px]">{info.name}</div>
               </button>
             ))}
@@ -186,7 +187,7 @@ export default function TroopManagementPanel({ data, onClose }) {
                   key={res}
                   className={`text-xs ${getResourceAmount(res) >= amount ? 'text-green-400' : 'text-red-400'}`}
                 >
-                  {RESOURCE_ICONS[res] || res} {amount}
+                  <SpriteIcon name={RESOURCE_ICONS[res]} size={28} /> {amount}
                 </span>
               ))}
             </div>
@@ -219,7 +220,7 @@ export default function TroopManagementPanel({ data, onClose }) {
                   className="flex items-center gap-2 p-2 rounded"
                   style={{ background: 'rgba(255,255,255,0.05)' }}
                 >
-                  <span>{info.icon}</span>
+                  <span><SpriteIcon name={info.icon} size={28} /></span>
                   <span className="text-white text-xs flex-1">{info.name}</span>
                   <span className="text-gray-400 text-[10px]">({available})</span>
                   <input

@@ -1,15 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import useGameStore from '../../store/gameStore';
 import Bar from '../ui/Bar';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const CATEGORY_LABELS = {
-  farmer:   { icon: '🌾', label: 'Granjero'   },
-  warrior:  { icon: '⚔️', label: 'Guerrero'   },
-  builder:  { icon: '🏗️', label: 'Constructor' },
-  merchant: { icon: '💰', label: 'Mercader'    },
-  explorer: { icon: '🗺️', label: 'Explorador'  },
-  hero:     { icon: '✨', label: 'Héroe'        },
-  market:   { icon: '🛒', label: 'Mercado P2P' },
+  farmer:   { icon: 'wheat', label: 'Granjero'   },
+  warrior:  { icon: 'sword', label: 'Guerrero'   },
+  builder:  { icon: 'hammer', label: 'Constructor' },
+  merchant: { icon: 'gold', label: 'Mercader'    },
+  explorer: { icon: 'map', label: 'Explorador'  },
+  hero:     { icon: '', label: 'Héroe'        },
+  market:   { icon: 'market', label: 'Mercado P2P' },
 };
 
 function AchievementCard({ ach, onClaim, loading }) {
@@ -26,7 +27,7 @@ function AchievementCard({ ach, onClaim, loading }) {
       }`}
     >
       <div className="flex items-start gap-2">
-        <span className="text-2xl shrink-0">{ach.icon}</span>
+        <span className="text-2xl shrink-0"><SpriteIcon name="medal" size={32} /></span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 flex-wrap">
             <p className={`text-xs font-bold ${ach.claimed ? 'text-gray-500' : canClaim ? 'text-yellow-300' : 'text-white'}`}>
@@ -45,7 +46,7 @@ function AchievementCard({ ach, onClaim, loading }) {
 
           {/* Reward preview */}
           <div className="flex items-center gap-2 mt-1.5 text-[9px] text-gray-400">
-            {ach.rewardTokens > 0 && <span>💎 +{ach.rewardTokens} tokens</span>}
+            {ach.rewardTokens > 0 && <span><SpriteIcon name="gem" size={28} /> +{ach.rewardTokens} tokens</span>}
             {ach.rewardResources && Object.entries(ach.rewardResources).map(([res, amt]) => (
               <span key={res}>+{amt} {res}</span>
             ))}
@@ -106,7 +107,7 @@ export default function AchievementPanel({ onClose }) {
       <div className="flex justify-between items-center mb-3">
         <div>
           <h3 className="text-yellow-400 text-sm font-bold font-display">
-            🏆 Logros
+            <SpriteIcon name="medal" size={28} /> Logros
           </h3>
           <p className="text-gray-400 text-[10px]">
             {unlockedCount}/{achievements.length} desbloqueados
@@ -130,7 +131,7 @@ export default function AchievementPanel({ onClose }) {
             onClick={() => setActiveCategory(cat)}
             className={`shrink-0 text-[9px] px-2 py-1 rounded whitespace-nowrap ${activeCategory === cat ? 'bg-yellow-700 text-white' : 'bg-gray-800 text-gray-400'}`}
           >
-            {icon} {label}
+            <SpriteIcon name={icon} size={28} /> {label}
           </button>
         ))}
       </div>

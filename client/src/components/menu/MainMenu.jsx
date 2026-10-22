@@ -3,6 +3,7 @@
  * sesión entre LoadingScreen y el juego; un tap y adentro.
  */
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 export default function MainMenu() {
   const enterGame = useGameStore((s) => s.enterGame);
@@ -51,7 +52,7 @@ export default function MainMenu() {
           Kingdoms Harvest
         </h1>
         <p className="text-sm text-red-400/90 tracking-widest uppercase mb-10 font-display">
-          💀 Crónicas del Bastión 💀
+          <SpriteIcon name="skull" size={28} /> Crónicas del Bastión <SpriteIcon name="skull" size={28} />
         </p>
 
         <button
@@ -61,7 +62,7 @@ export default function MainMenu() {
                      hover:from-red-600 hover:to-red-800 active:scale-95 transition-all"
           style={{ boxShadow: '0 0 24px rgba(179,40,33,0.35)' }}
         >
-          ⚔️ Entrar al Bastión
+          <SpriteIcon name="sword" size={28} /> Entrar al Bastión
         </button>
 
         <button
@@ -69,7 +70,7 @@ export default function MainMenu() {
           className="block w-64 mx-auto py-2.5 rounded-lg text-xs font-bold text-gray-300
                      bg-black/40 border border-gray-600/40 hover:bg-black/60 transition-all"
         >
-          ⚙️ Configuración
+          <SpriteIcon name="gear" size={28} /> Configuración
         </button>
 
         {player?.display_name && (

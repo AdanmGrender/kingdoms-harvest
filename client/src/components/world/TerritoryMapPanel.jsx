@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
+import { FACTION_ICONS } from '../../config/factionIcons';
 
 // Tipos de terreno del páramo (re-theme grimdark — ver docs/art-style.md)
 const TYPE_ICON = {
-  plains:   '🌾',
-  forest:   '🌲',
-  mountain: '⛰️',
-  swamp:    '☣️',
-  coast:    '🌊',
-  ruins:    '🏛️',
-  sand:     '🏜️',
-  snow:     '❄️',
+  plains:   'wheat',
+  forest:   'wood',
+  mountain: 'mine',
+  swamp:    'water',
+  coast:    'tide',
+  ruins:    'embassy',
+  sand:     'sun',
+  snow:     'moon',
 };
 
 const TYPE_LABEL = {
@@ -95,7 +97,7 @@ export default function TerritoryMapPanel() {
         <span><span className="inline-block w-2 h-2 rounded-sm bg-gray-600 mr-1" />Libre</span>
         <span><span className="inline-block w-2 h-2 rounded-sm bg-green-500 mr-1" />Tu facción</span>
         <span><span className="inline-block w-2 h-2 rounded-sm bg-red-600 mr-1" />Rival</span>
-        <span>🛡️ Defensa</span>
+        <span><SpriteIcon name="shield" size={28} /> Defensa</span>
       </div>
 
       {/* 2-col card grid — sparse coords make a dense N×N matrix unusable */}
@@ -118,15 +120,15 @@ export default function TerritoryMapPanel() {
                 {String(idx + 1).padStart(2, '0')}
               </span>
               <div className="flex items-start gap-2">
-                <span className="text-2xl leading-none">{TYPE_ICON[t.type] || '🗺️'}</span>
+                <span className="text-2xl leading-none"><SpriteIcon name={TYPE_ICON[t.type] || 'map'} size={28} /></span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] font-bold leading-tight truncate">{t.name}</p>
                   <p className="text-[10px] text-gray-400">
-                    {TYPE_LABEL[t.type] || t.type} · 🛡️{t.defense_strength}
+                    {TYPE_LABEL[t.type] || t.type} · <SpriteIcon name="shield" size={28} />{t.defense_strength}
                   </p>
                   {t.owner ? (
                     <p className="text-[10px] mt-0.5 truncate" style={{ color: ownerColor }}>
-                      {t.owner.icon} {ownedByMe ? '(tuya)' : t.owner.name}
+                      <SpriteIcon name={FACTION_ICONS[t.owner.id]} size={28} /> {ownedByMe ? '(tuya)' : t.owner.name}
                     </p>
                   ) : (
                     <p className="text-[10px] text-gray-500 mt-0.5">Libre</p>
@@ -142,7 +144,7 @@ export default function TerritoryMapPanel() {
       {selected && (
         <div className="game-card border-yellow-700/40 space-y-2">
           <div className="flex items-center justify-between">
-            <p className="font-bold text-sm">{TYPE_ICON[selected.type]} {selected.name}</p>
+            <p className="font-bold text-sm"><SpriteIcon name={TYPE_ICON[selected.type]} size={28} /> {selected.name}</p>
             <span className="text-[10px] text-gray-400">DEF {selected.defense_strength}</span>
           </div>
           {Object.keys(selected.resources_bonus || {}).length > 0 && (
@@ -152,7 +154,7 @@ export default function TerritoryMapPanel() {
           )}
           {selected.owner ? (
             <p className="text-[11px]" style={{ color: selected.owner.color }}>
-              {selected.owner.icon} Controla: <span className="font-bold">{selected.owner.name}</span>
+              <SpriteIcon name={FACTION_ICONS[selected.owner.id]} size={28} /> Controla: <span className="font-bold">{selected.owner.name}</span>
             </p>
           ) : (
             <p className="text-[11px] text-gray-400">Territorio libre — el primero en ganar lo conquista</p>
@@ -162,7 +164,7 @@ export default function TerritoryMapPanel() {
             disabled={selected.owner?.id === player?.faction_id}
             className="w-full py-2 rounded-lg bg-red-700 hover:bg-red-600 text-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            💥 Asaltar con todas las tropas
+            <SpriteIcon name="flame" size={28} /> Asaltar con todas las tropas
           </button>
           {!player?.faction_id && (
             <p className="text-[10px] text-gray-500 text-center">
@@ -178,14 +180,14 @@ export default function TerritoryMapPanel() {
           result.winner === 'attacker' ? 'border-green-500' : 'border-red-500'
         }`}>
           <p className="text-center font-bold mb-1 text-sm">
-            {result.winner === 'attacker' ? '🏆 Victoria' : '💀 Derrota'} en {result.territory.name}
+            {result.winner === 'attacker' ? 'Victoria' : 'Derrota'} en {result.territory.name}
           </p>
           <p className="text-xs text-gray-400 text-center mb-1">
             ATK {result.attackPower} vs DEF {result.defensePower}
           </p>
           {result.territoryFlipped && (
             <p className="text-xs text-yellow-400 text-center">
-              🏴 ¡Territorio conquistado! +{result.pointsAwarded} puntos de facción
+              <SpriteIcon name="alliance" size={28} /> ¡Territorio conquistado! +{result.pointsAwarded} puntos de facción
             </p>
           )}
           {result.tokensAwarded > 0 && (

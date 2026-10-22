@@ -4,14 +4,15 @@
 import { useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import api from '../../services/api';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const ROLE_LABELS = {
-  farmer: { icon: '🧑‍🌾', label: 'Granjero' },
-  woodcutter: { icon: '🪓', label: 'Leñador' },
-  miner: { icon: '⛏️', label: 'Minero' },
-  soldier: { icon: '⚔️', label: 'Soldado' },
-  merchant: { icon: '💰', label: 'Mercader' },
-  builder: { icon: '🔨', label: 'Constructor' },
+  farmer: { icon: 'wheat', label: 'Granjero' },
+  woodcutter: { icon: 'wood', label: 'Leñador' },
+  miner: { icon: 'iron', label: 'Minero' },
+  soldier: { icon: 'sword', label: 'Soldado' },
+  merchant: { icon: 'gold', label: 'Mercader' },
+  builder: { icon: 'hammer', label: 'Constructor' },
 };
 
 const BUILDING_NAMES = {
@@ -33,20 +34,20 @@ const BUILDING_NAMES = {
 };
 
 const STATE_LABELS = {
-  idle: { icon: '💤', label: 'Inactivo' },
-  walking_to_work: { icon: '🚶', label: 'Caminando' },
-  working: { icon: '⚙️', label: 'Trabajando' },
-  resting: { icon: '🏠', label: 'Descansando' },
-  sleeping: { icon: '😴', label: 'Durmiendo' },
-  hungry: { icon: '🍽️', label: 'Hambriento' },
+  idle: { icon: 'moon', label: 'Inactivo' },
+  walking_to_work: { icon: 'speedup', label: 'Caminando' },
+  working: { icon: 'gear', label: 'Trabajando' },
+  resting: { icon: 'farmhouse', label: 'Descansando' },
+  sleeping: { icon: 'moon', label: 'Durmiendo' },
+  hungry: { icon: 'bread', label: 'Hambriento' },
 };
 
 export default function VillagerPanel({ data, onClose }) {
   const buildings = useGameStore((s) => s.buildings) || [];
   const [assigning, setAssigning] = useState(false);
 
-  const role = ROLE_LABELS[data.role] || { icon: '👤', label: data.role };
-  const state = STATE_LABELS[data.state] || { icon: '❓', label: data.state || 'idle' };
+  const role = ROLE_LABELS[data.role] || { icon: 'crown', label: data.role };
+  const state = STATE_LABELS[data.state] || { icon: 'exclamation', label: data.state || 'idle' };
   const hunger = data.hunger ?? 100;
   const happiness = data.happiness ?? 100;
 
@@ -76,7 +77,7 @@ export default function VillagerPanel({ data, onClose }) {
       <div className="flex justify-between items-center mb-3">
         <h3
           className="text-yellow-400 text-sm font-bold font-display" >
-          {role.icon} {data.name || 'Aldeano'}
+          <SpriteIcon name={role.icon} size={28} /> {data.name || 'Aldeano'}
         </h3>
         <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">
           ✕
@@ -89,14 +90,14 @@ export default function VillagerPanel({ data, onClose }) {
           Rol: <span className="text-white">{role.label}</span>
         </div>
         <div className="text-gray-400">
-          Estado: <span className="text-white">{state.icon} {state.label}</span>
+          Estado: <span className="text-white"><SpriteIcon name={state.icon} size={28} /> {state.label}</span>
         </div>
       </div>
 
       {/* Stats bars */}
       <div className="space-y-1 mb-3">
-        <StatBar label="Hambre" value={hunger} color="bg-orange-500" icon="🍖" />
-        <StatBar label="Felicidad" value={happiness} color="bg-pink-500" icon="😊" />
+        <StatBar label="Hambre" value={hunger} color="bg-orange-500" icon="bread" />
+        <StatBar label="Felicidad" value={happiness} color="bg-pink-500" icon="bread" />
       </div>
 
       {/* Actions */}
@@ -150,7 +151,7 @@ export default function VillagerPanel({ data, onClose }) {
 function StatBar({ label, value, color, icon }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs">{icon}</span>
+      <span className="text-xs"><SpriteIcon name={icon} size={28} /></span>
       <span className="text-gray-400 text-[10px] w-16 shrink-0">{label}</span>
       <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
         <div

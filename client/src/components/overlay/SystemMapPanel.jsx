@@ -6,21 +6,22 @@
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import StarMap from './StarMap';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const RES_ICON = {
-  gold: '🪙', iron: '⛏️', stone: '🪨', water: '💧', wheat: '🌾', crystal: '💎',
+  gold: 'gold', iron: 'iron', stone: 'stone', water: 'water', wheat: 'wheat', crystal: 'gem',
 };
 
 function costLabel(cost) {
   const entries = Object.entries(cost || {});
   if (entries.length === 0) return '—';
-  return entries.map(([r, n]) => `${n}${RES_ICON[r] || r}`).join(' ');
+  return entries.map(([r, n]) => `${n} ${r}`).join(' ');
 }
 
 function tributeLabel(tribute) {
   const entries = Object.entries(tribute || {});
   if (entries.length === 0) return null;
-  return entries.map(([r, n]) => `+${n}${RES_ICON[r] || r}/h`).join(' ');
+  return entries.map(([r, n]) => `+${n} ${r}/h`).join(' ');
 }
 
 function etaLabel(arrivesAt) {
@@ -79,7 +80,7 @@ export default function SystemMapPanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-900/40 shrink-0 bg-black/30">
         <div>
           <h3 className="text-cyan-300 text-sm font-bold font-display">
-            🗺️ Mapa de la Marca
+            <SpriteIcon name="map" size={28} /> Mapa de la Marca
           </h3>
           <p className="text-[10px] text-gray-500">Extendé tu dominio plaza a plaza</p>
         </div>
@@ -89,7 +90,7 @@ export default function SystemMapPanel({ onClose }) {
               onClick={() => setOverlay('galaxy', {})}
               className="text-[10px] px-2 py-1 rounded bg-black/40 border border-purple-700/40 text-purple-300"
             >
-              🌫️ Reinos Caídos
+              Reinos Caídos
             </button>
           )}
           <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
@@ -101,7 +102,7 @@ export default function SystemMapPanel({ onClose }) {
         {allClaimed && (
           <div className="rounded-lg bg-purple-900/20 border border-purple-600/40 p-2 text-center">
             <p className="text-[11px] text-purple-300">
-              🌌 ¡Marca dominada! El <b>Velo</b> se puede cruzar —
+              <SpriteIcon name="world" size={28} /> ¡Marca dominada! El <b>Velo</b> se puede cruzar —
               <button onClick={() => setOverlay('galaxy', {})} className="underline ml-1">partí a los Reinos Caídos</button>
             </p>
           </div>
@@ -109,7 +110,7 @@ export default function SystemMapPanel({ onClose }) {
 
         {sys && !sys.unlocked && (
           <div className="rounded-lg bg-black/40 border border-cyan-800/40 p-3 text-center">
-            <p className="text-2xl mb-1">🔒</p>
+            <p className="text-2xl mb-1"><SpriteIcon name="shield" size={32} /></p>
             <p className="text-xs text-gray-300">
               La escala Sistema se abre con <b className="text-cyan-300">Torre del Señor nivel {sys.unlockLevel}</b>
             </p>
@@ -120,7 +121,7 @@ export default function SystemMapPanel({ onClose }) {
         {/* Nave en tránsito */}
         {sys?.ship?.status === 'traveling' && (
           <div className="rounded-lg bg-cyan-900/20 border border-cyan-600/40 p-2.5 flex items-center gap-2 animate-fade-in">
-            <span className="text-xl animate-pulse">🚀</span>
+            <span className="text-xl animate-pulse"><SpriteIcon name="speedup" size={28} /></span>
             <div className="flex-1 min-w-0">
               <p className="text-[11px] text-cyan-300 font-bold truncate">
                 Caravana en ruta a {sys.planets.find((p) => p.id === sys.ship.target)?.name}
@@ -137,7 +138,7 @@ export default function SystemMapPanel({ onClose }) {
             selectedId={selected}
             onSelect={setSelected}
             ship={sys.ship}
-            shipIcon="🚀"
+            shipIcon="speedup"
             theme="#4fd8c8"
           />
         )}
@@ -146,7 +147,7 @@ export default function SystemMapPanel({ onClose }) {
         {sel && sel.state !== 'locked' && (
           <div className="game-card border-cyan-700/40 space-y-2 animate-fade-in">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">{sel.icon}</span>
+              <span className="text-2xl"><SpriteIcon name="map" size={32} /></span>
               <div>
                 <p className="font-bold text-sm">{sel.name}</p>
                 <p className="text-[10px] text-gray-400">{sel.desc}</p>
@@ -159,7 +160,7 @@ export default function SystemMapPanel({ onClose }) {
               <>
                 <div className="flex justify-between text-[11px] text-gray-300">
                   <span>Costo de viaje: <b className="text-yellow-300">{costLabel(sel.cost)}</b></span>
-                  <span>⏱️ {sel.travelMin} min</span>
+                  <span><SpriteIcon name="speedup" size={28} /> {sel.travelMin} min</span>
                 </div>
                 <button
                   onClick={() => doLaunch(sel.id)}
@@ -169,7 +170,7 @@ export default function SystemMapPanel({ onClose }) {
                              hover:from-cyan-600 hover:to-cyan-800 active:scale-95 transition-all
                              disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  🚀 Enviar la Nave
+                  <SpriteIcon name="speedup" size={28} /> Enviar la Nave
                 </button>
               </>
             )}
@@ -177,7 +178,7 @@ export default function SystemMapPanel({ onClose }) {
               <p className="text-[11px] text-green-400 text-center">✓ Bajo tu control — rinde tributo cada hora</p>
             )}
             {sel.state === 'traveling' && (
-              <p className="text-[11px] text-cyan-300 text-center">🚀 La caravana está en camino…</p>
+              <p className="text-[11px] text-cyan-300 text-center"><SpriteIcon name="speedup" size={28} /> La caravana está en camino…</p>
             )}
           </div>
         )}

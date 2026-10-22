@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import { CharacterSprite } from '../ui/SpriteIcon';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const CLASS_ROLE = {
   warrior: { label: 'Daño',    color: '#b32821' },
@@ -45,7 +46,7 @@ export default function SquadPanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 shrink-0">
         <div>
           <h3 className="text-yellow-400 text-sm font-bold font-display">
-            🪖 Escuadra del Bastión
+            <SpriteIcon name="sword" size={28} /> Escuadra del Bastión
           </h3>
           <p className="text-[10px] text-gray-500">Defiende en la Marea y pelea en tus asaltos</p>
         </div>
@@ -72,7 +73,7 @@ export default function SquadPanel({ onClose }) {
                     <span className="text-[7px] px-1 rounded" style={{ color: CLASS_ROLE[h.class]?.color }}>
                       {CLASS_ROLE[h.class]?.label}
                     </span>
-                    {h.recovering && <span className="absolute top-0.5 right-0.5 text-[9px]">🏥</span>}
+                    {h.recovering && <span className="absolute top-0.5 right-0.5 text-[9px]"><SpriteIcon name="heart" size={28} /></span>}
                   </>
                 ) : (
                   <span className="text-xl text-gray-600">＋</span>

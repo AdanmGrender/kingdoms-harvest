@@ -203,7 +203,7 @@ export default function CombatInstancePanel({ onClose }) {
                       backgroundSize: 'cover', backgroundPosition: 'center top',
                     }}>
                     {!portrait && (
-                      <span className="absolute inset-0 flex items-center justify-center text-xl">{h.skill.icon || '⚔️'}</span>
+                      <span className="absolute inset-0 flex items-center justify-center text-xl"><SpriteIcon name={h.skill.icon || 'sword'} size={28} /></span>
                     )}
                     {fx?.type === 'hit' && (
                       <span key={fx.key} className="fx-rowhit absolute inset-0" style={{ background: '#b32821' }} />
@@ -215,7 +215,7 @@ export default function CombatInstancePanel({ onClose }) {
                       }} />
                     )}
                     {!h.alive && (
-                      <span className="absolute inset-0 flex items-center justify-center text-lg">☠️</span>
+                      <span className="absolute inset-0 flex items-center justify-center text-lg"><SpriteIcon name="skull" size={28} /></span>
                     )}
                   </div>
                 </div>
@@ -233,14 +233,14 @@ export default function CombatInstancePanel({ onClose }) {
         {result ? (
           <div className="text-center animate-grow">
             <p className={`text-2xl font-bold font-display ${result === 'victory' ? 'text-green-400' : 'text-red-400'}`}>
-              {result === 'victory' ? '🏆 ¡Victoria!' : '💀 Derrota'}
+              {result === 'victory' ? '¡Victoria!' : 'Derrota'}
             </p>
             <button onClick={close} className="btn-gold mt-2 px-6 py-2 rounded">Volver</button>
           </div>
         ) : (
           <button onClick={() => doStep({ type: 'advance' })} disabled={busy}
             className="btn-primary py-3 rounded font-bold disabled:opacity-50">
-            {busy ? '...' : '⚔️ Avanzar ronda'}
+            {busy ? '...' : 'Avanzar ronda'}
           </button>
         )}
       </div>

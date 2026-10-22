@@ -2,6 +2,7 @@
  * TutorialOverlay: First-time onboarding guide with step-by-step tips.
  */
 import { useState, useEffect } from 'react';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const TUTORIAL_KEY = 'kh_tutorial_done';
 
@@ -9,32 +10,32 @@ const STEPS = [
   {
     title: 'Bienvenido a Kingdoms Harvest',
     text: 'Construye tu reino, gestiona aldeanos y conquista territorios enemigos.',
-    icon: '🏰',
+    icon: 'castle',
   },
   {
     title: 'Camara',
     text: 'Arrastra para mover la camara. Usa la rueda del raton o pinza para hacer zoom.',
-    icon: '🖱️',
+    icon: 'exclamation',
   },
   {
     title: 'Construir',
     text: 'Toca el boton "Construir" abajo para colocar edificios. Cada edificio produce recursos.',
-    icon: '🔨',
+    icon: 'hammer',
   },
   {
     title: 'Aldeanos',
     text: 'Tus aldeanos trabajan automaticamente. Toca uno para asignarlo a un edificio.',
-    icon: '👤',
+    icon: 'crown',
   },
   {
     title: 'Recursos',
     text: 'Los edificios producen recursos con el tiempo: trigo, madera, piedra, hierro y oro.',
-    icon: '🪙',
+    icon: 'gold',
   },
   {
     title: 'Guerra',
     text: 'Entrena tropas en el cuartel y declara guerra a otros reinos desde la Zona de Guerra.',
-    icon: '⚔️',
+    icon: 'sword',
   },
 ];
 
@@ -85,7 +86,7 @@ export default function TutorialOverlay() {
 
         {/* Content */}
         <div className="text-center mb-4">
-          <div className="text-4xl mb-2">{current.icon}</div>
+          <div className="text-4xl mb-2"><SpriteIcon name={current.icon} size={48} /></div>
           <h3
             className="text-yellow-400 text-base font-bold mb-2 font-display" >
             {current.title}

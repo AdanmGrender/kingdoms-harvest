@@ -159,9 +159,9 @@ export default function ShopPanel({ onClose }) {
               que no funciona es la peor forma de romper la confianza. */}
           <p className="text-gray-300 text-xs font-semibold mb-1.5">Las Gemas sirven para:</p>
           <ul className="text-gray-400 text-[11px] flex flex-col gap-1">
-            <li>⚡ Acelerar construcciones al instante</li>
-            <li>🦸 Invocar héroes (precio fijo, cualquier rareza)</li>
-            <li>🔥 Boost ×2 producción por 4h (cosechas + venta de oro)</li>
+            <li><SpriteIcon name="speedup" size={28} /> Acelerar construcciones al instante</li>
+            <li>Invocar héroes (precio fijo, cualquier rareza)</li>
+            <li><SpriteIcon name="flame" size={28} /> Boost ×2 producción por 4h (cosechas + venta de oro)</li>
           </ul>
         </div>
 
@@ -169,7 +169,7 @@ export default function ShopPanel({ onClose }) {
             del HUD lo tapaba y este texto NO puede quedar oculto. */}
         <p className="text-gray-500 text-[10px] mt-3 mb-2 leading-relaxed text-center pb-24">
           Las Gemas son moneda del juego: <b>no se convierten en KH ni en TON</b> y
-          no son retirables. Los pagos los procesa Telegram con Stars ⭐.
+          no son retirables. Los pagos los procesa Telegram con Stars <SpriteIcon name="star" size={28} />.
         </p>
       </div>
     </div>

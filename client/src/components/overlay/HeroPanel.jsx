@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import { CharacterSprite } from '../ui/SpriteIcon';
 import { HERO_LORE } from '../../config/heroLore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const RARITY_COLORS = {
   common:    { text: 'text-gray-300',   border: 'border-gray-500',   bg: 'bg-gray-800/60',    badge: 'bg-gray-700'   },
@@ -14,25 +15,25 @@ const RARITY_COLORS = {
 };
 
 const RARITY_ICONS = {
-  common: '⚪', rare: '🔵', epic: '🟣', legendary: '⭐',
+  common: '', rare: '', epic: '', legendary: 'star',
 };
 
 const CLASS_ICONS = {
-  warrior: '⚔️', mage: '🔮', ranger: '🏹', paladin: '🛡️', rogue: '🗡️',
+  warrior: 'sword', mage: 'crystal', ranger: 'bow', paladin: 'shield', rogue: 'sword',
 };
 
 const CLASS_BONUS_LABELS = {
-  warrior: '⚔️ +15% ATK de tropas',
-  mage:    '🔮 −15% DEF enemiga',
-  ranger:  '🏹 +10% ATK + 5% botín doble',
-  paladin: '🛡️ −25% bajas propias al ganar',
-  rogue:   '🗡️ +10% recursos robados en PvP',
+  warrior: '+15% ATK de tropas',
+  mage:    '−15% DEF enemiga',
+  ranger:  '+10% ATK + 5% botín doble',
+  paladin: '−25% bajas propias al ganar',
+  rogue:   '+10% recursos robados en PvP',
 };
 
-const STAT_ICONS = { atk: '⚔️', def: '🛡️', hp: '❤️', spd: '💨', mgk: '✨' };
+const STAT_ICONS = { atk: 'sword', def: 'shield', hp: 'heart', spd: 'speedup', mgk: 'crystal' };
 const STAT_CAPS  = { atk: 50,  def: 50,  hp: 200, spd: 20, mgk: 50  };
 
-const SLOT_LABELS = { weapon: '⚔️ Arma', armor: '🛡️ Armadura', accessory: '💍 Accesorio' };
+const SLOT_LABELS = { weapon: 'Arma', armor: 'Armadura', accessory: 'Accesorio' };
 
 /**
  * Retrato de héroe: intenta primero el PNG generado por el agente de arte en
@@ -65,7 +66,7 @@ function StatBar({ stat, value }) {
   const color = { atk: '#b32821', def: '#7d8794', hp: '#6a9a4a', spd: '#d9a441', mgk: '#4fd8c8' }[stat];
   return (
     <div className="flex items-center gap-1.5 text-[10px]">
-      <span className="w-5 text-center">{STAT_ICONS[stat]}</span>
+      <span className="w-5 text-center"><SpriteIcon name={STAT_ICONS[stat]} size={28} /></span>
       <span className="w-6 text-gray-400 uppercase">{stat}</span>
       <div className="flex-1 h-1.5 rounded-full bg-gray-700">
         <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
@@ -113,7 +114,7 @@ function HeroCard({ hero, selected, onClick }) {
           )}
           {hero.inRecovery && (
             <span className="inline-block mt-0.5 text-[9px] px-1.5 py-0.5 rounded bg-red-900 text-red-300">
-              💤 <RecoveryTimer until={hero.recoveryUntil} />
+              <SpriteIcon name="moon" size={28} /> <RecoveryTimer until={hero.recoveryUntil} />
             </span>
           )}
         </div>
@@ -170,7 +171,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
       <div className="p-2 rounded-lg border border-gray-700/50 bg-black/20">
         {hero.inRecovery ? (
           <div className="text-center">
-            <p className="text-red-400 text-[10px] font-bold">💤 Recuperándose</p>
+            <p className="text-red-400 text-[10px] font-bold"><SpriteIcon name="moon" size={28} /> Recuperándose</p>
             <p className="text-gray-500 text-[9px]">
               Disponible en <RecoveryTimer until={hero.recoveryUntil} />
             </p>
@@ -178,7 +179,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
         ) : hero.deployed ? (
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-400 text-[10px] font-bold">⚔️ Desplegado en combate</p>
+              <p className="text-green-400 text-[10px] font-bold"><SpriteIcon name="sword" size={28} /> Desplegado en combate</p>
               <p className="text-gray-500 text-[9px]">{CLASS_BONUS_LABELS[hero.class]}</p>
             </div>
             <button
@@ -214,7 +215,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-1 rounded text-[10px] font-bold transition-colors ${activeTab === tab ? 'bg-yellow-700 text-white' : 'bg-gray-800 text-gray-400'}`}
           >
-            {tab === 'stats' ? '📊 Stats' : '🎒 Equipar'}
+            {tab === 'stats' ? 'Stats' : 'Equipar'}
           </button>
         ))}
       </div>
@@ -247,7 +248,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
                   )}
                 </div>
                 {equippedId ? (
-                  <p className="text-yellow-300 text-[10px]">✅ {equippedId.replace(/_/g, ' ')}</p>
+                  <p className="text-yellow-300 text-[10px]"><SpriteIcon name="check" size={28} /> {equippedId.replace(/_/g, ' ')}</p>
                 ) : (
                   <p className="text-gray-600 text-[10px]">— vacío —</p>
                 )}
@@ -260,7 +261,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
                         disabled={loading || item.id === equippedId}
                         className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${item.id === equippedId ? 'border-yellow-600 text-yellow-400 opacity-50' : 'border-gray-600 text-gray-300 hover:border-blue-400 hover:text-blue-300'} disabled:opacity-40`}
                       >
-                        {item.icon} {item.name} ×{item.quantity}
+                        <SpriteIcon name="backpack" size={28} /> {item.name} ×{item.quantity}
                       </button>
                     ))}
                   </div>
@@ -279,7 +280,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
           className="w-full py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50"
           style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
         >
-          ⬆ Nivel {hero.level + 1} · 💰 {goldCost} oro
+          Nivel {hero.level + 1} · <SpriteIcon name="gold" size={28} /> {goldCost} oro
         </button>
       )}
     </div>
@@ -367,14 +368,14 @@ export default function HeroPanel({ onClose }) {
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-yellow-400 text-sm font-bold font-display">
-          ⚔️ Héroes del Reino
+          <SpriteIcon name="sword" size={28} /> Héroes del Reino
         </h3>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setView(view === 'summon' ? 'roster' : 'summon')}
             className="text-[10px] px-2 py-1 rounded border border-yellow-600 text-yellow-300 hover:bg-yellow-900/30"
           >
-            ✨ Invocar
+            Invocar
           </button>
           <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
         </div>
@@ -384,16 +385,16 @@ export default function HeroPanel({ onClose }) {
       {view === 'summon' && (
         <div className="mb-4 p-3 rounded-lg space-y-3" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(217,164,65,0.4)' }}>
           <p className="text-yellow-200 text-xs font-bold text-center font-display">
-            ✨ Portal de Invocación
+            Portal de Invocación
           </p>
           <p className="text-gray-400 text-[10px] text-center">
             Invoca un héroe aleatorio. La rareza determina el costo en tokens.
           </p>
           <div className="grid grid-cols-2 gap-2 text-[10px] text-center text-gray-300">
-            <span>⚪ Común: 200 💎</span>
-            <span>🔵 Raro: 500 💎</span>
-            <span>🟣 Épico: 1000 💎</span>
-            <span>⭐ Legendario: 2000 💎</span>
+            <span>Común: 200 <SpriteIcon name="gem" size={28} /></span>
+            <span>Raro: 500 <SpriteIcon name="gem" size={28} /></span>
+            <span>Épico: 1000 <SpriteIcon name="gem" size={28} /></span>
+            <span><SpriteIcon name="star" size={28} /> Legendario: 2000 <SpriteIcon name="gem" size={28} /></span>
           </div>
           <div className="flex gap-2">
             <button
@@ -402,7 +403,7 @@ export default function HeroPanel({ onClose }) {
               className="flex-1 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
             >
-              💎 {tokenBalance} tokens disponibles
+              <SpriteIcon name="gem" size={28} /> {tokenBalance} tokens disponibles
               <br />
               <span className="text-[9px] opacity-75">Invocar (tokens)</span>
             </button>
@@ -412,7 +413,7 @@ export default function HeroPanel({ onClose }) {
               className="flex-1 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg, #92400e, #d97706)' }}
             >
-              💰 {goldAmount} oro
+              <SpriteIcon name="gold" size={28} /> {goldAmount} oro
               <br />
               <span className="text-[9px] opacity-75">Común (500 oro)</span>
             </button>

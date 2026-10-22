@@ -1,0 +1,5 @@
+     × ningún archivo de components/, store/ o services/ tiene emojis fuera de la lista blanca 18ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  src/tests/noEmoji.test.js > noEmoji (R49, R50) > ningún archivo de components/, store/ o services/ tiene emojis fuera de la lista blanca
++   "components/hud/ConstructionTimer.jsx: 1 (🔨)",
+      Tests  1 failed | 4 passed (5)

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from '../ui/SpriteIcon';
 
 const RESOURCE_ICONS = {
-  gold: '🪙', wood: '🪵', stone: '🪨', iron: '⛏️',
-  wheat: '🌾', water: '💧', flour: '🌽', bread: '🍞',
-  ingots: '🔩', planks: '🪵', crystal: '💎', relic: '🏺', blueprint: '📜',
+  gold: 'gold', wood: 'wood', stone: 'stone', iron: 'iron',
+  wheat: 'wheat', water: 'water', flour: 'corn', bread: 'bread',
+  ingots: 'iron', planks: 'wood', crystal: 'gem', relic: 'relic', blueprint: 'scroll',
 };
 
 const SELLABLE = ['wood', 'stone', 'iron', 'wheat', 'water', 'flour', 'bread', 'ingots', 'planks', 'crystal', 'relic', 'blueprint'];
@@ -30,8 +31,8 @@ export default function MarketplacePanel() {
     <div className="space-y-3">
       <div className="flex gap-1">
         {[
-          { id: 'buy',  label: '🛒 Comprar' },
-          { id: 'sell', label: '💰 Vender' },
+          { id: 'buy',  label: 'Comprar' },
+          { id: 'sell', label: 'Vender' },
         ].map((t) => (
           <button
             key={t.id}
@@ -97,7 +98,7 @@ function BuyTab({ listings, myId, onBuy }) {
         >
           {resourceOptions.map((r) => (
             <option key={r} value={r}>
-              {r === 'all' ? '🔍 Todos' : `${RESOURCE_ICONS[r] || '📦'} ${r}`}
+              {r === 'all' ? 'Todos' : `$<SpriteIcon name={RESOURCE_ICONS[r] || 'reward_bag'} size={28} /> ${r}`}
             </option>
           ))}
         </select>
@@ -106,10 +107,10 @@ function BuyTab({ listings, myId, onBuy }) {
           onChange={(e) => setSortKey(e.target.value)}
           className="flex-1 bg-kingdom-blue rounded px-2 py-1 text-xs text-white"
         >
-          <option value="cheapest">💰 Más barato</option>
-          <option value="priciest">💎 Más caro</option>
-          <option value="most_qty">📦 Más cantidad</option>
-          <option value="newest">🆕 Más nuevo</option>
+          <option value="cheapest"><SpriteIcon name="gold" size={28} /> Más barato</option>
+          <option value="priciest"><SpriteIcon name="gem" size={28} /> Más caro</option>
+          <option value="most_qty"><SpriteIcon name="reward_bag" size={28} /> Más cantidad</option>
+          <option value="newest">Más nuevo</option>
         </select>
       </div>
 
@@ -143,11 +144,11 @@ function ListingRow({ listing, onBuy }) {
   return (
     <div className="game-card py-2">
       <div className="flex items-center gap-2">
-        <span className="text-2xl shrink-0">{RESOURCE_ICONS[listing.resource_id] || '📦'}</span>
+        <span className="text-2xl shrink-0"><SpriteIcon name={RESOURCE_ICONS[listing.resource_id] || 'reward_bag'} size={28} /></span>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold">
             {listing.quantity_remaining}× {listing.resource_id}
-            <span className="text-yellow-400 ml-1">@ {listing.price_per_unit}🪙</span>
+            <span className="text-yellow-400 ml-1">@ {listing.price_per_unit}<SpriteIcon name="gold" size={28} /></span>
           </p>
           <p className="text-[10px] text-gray-400 truncate">de {listing.seller_name} (Lv {listing.seller_level})</p>
         </div>
@@ -163,7 +164,7 @@ function ListingRow({ listing, onBuy }) {
           onClick={() => onBuy(listing.id, qty)}
           className="btn-primary text-[10px] px-2 py-1 shrink-0"
         >
-          {total}🪙
+          {total}<SpriteIcon name="gold" size={28} />
         </button>
       </div>
       <button
@@ -220,9 +221,9 @@ function PriceSparkline({ history, currentPrice }) {
         ))}
       </svg>
       <p className="text-[9px] text-gray-500 flex justify-between">
-        <span>min {min}🪙</span>
-        <span>avg {avg}🪙</span>
-        <span>max {max}🪙</span>
+        <span>min {min}<SpriteIcon name="gold" size={28} /></span>
+        <span>avg {avg}<SpriteIcon name="gold" size={28} /></span>
+        <span>max {max}<SpriteIcon name="gold" size={28} /></span>
       </p>
     </div>
   );
@@ -259,7 +260,7 @@ function SellTab({ resources, myListings, onCreate, onCancel }) {
           >
             {SELLABLE.map((r) => (
               <option key={r} value={r}>
-                {RESOURCE_ICONS[r]} {r} ({resourceMap[r] || 0})
+                <SpriteIcon name={RESOURCE_ICONS[r]} size={28} /> {r} ({resourceMap[r] || 0})
               </option>
             ))}
           </select>
@@ -279,14 +280,14 @@ function SellTab({ resources, myListings, onCreate, onCancel }) {
           />
         </div>
         <p className="text-[10px] text-gray-500">
-          Disponible: {available}. Total esperado: {(qty * price).toLocaleString()}🪙 (5% fee)
+          Disponible: {available}. Total esperado: {(qty * price).toLocaleString()}<SpriteIcon name="gold" size={28} /> (5% fee)
         </p>
         <button
           onClick={handleCreate}
           disabled={qty > available || qty < 1}
           className="btn-primary text-xs w-full disabled:opacity-40"
         >
-          Listar {qty}× {resourceId} @ {price}🪙
+          Listar {qty}× {resourceId} @ {price}<SpriteIcon name="gold" size={28} />
         </button>
       </div>
 
@@ -296,10 +297,10 @@ function SellTab({ resources, myListings, onCreate, onCancel }) {
           <p className="text-xs text-gray-400">Mis listados activos:</p>
           {activeListings.map((l) => (
             <div key={l.id} className="game-card flex items-center gap-2 py-2 text-xs">
-              <span className="text-xl">{RESOURCE_ICONS[l.resource_id] || '📦'}</span>
+              <span className="text-xl"><SpriteIcon name={RESOURCE_ICONS[l.resource_id] || 'reward_bag'} size={28} /></span>
               <div className="flex-1 min-w-0">
                 <p className="font-bold">
-                  {l.quantity_remaining}/{l.quantity}× {l.resource_id} @ {l.price_per_unit}🪙
+                  {l.quantity_remaining}/{l.quantity}× {l.resource_id} @ {l.price_per_unit}<SpriteIcon name="gold" size={28} />
                 </p>
                 <p className="text-[10px] text-gray-500">
                   Expira: {new Date(l.expires_at).toLocaleString()}
