@@ -7,12 +7,13 @@ import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import IconButton from '../ui/IconButton';
+import SpriteIcon from '../ui/SpriteIcon';
 import { KH } from '../ui/kitPieces';
 
 const SHORTCUTS = [
-  { id: 'newplayer', sprite: 'reward_bag', icon: '🎁', label: 'Logros', color: KH.brass, metaTab: 'achievements', pulse: true },
-  { id: 'tech',      sprite: 'blueprint',  icon: '🔬', label: 'Tech',   color: KH.ember, metaTab: 'tech' },
-  { id: 'siege',     sprite: 'castle',     icon: '🏰', label: 'Mundo',  color: KH.seal, metaTab: 'world' },
+  { id: 'newplayer', sprite: 'reward_bag', label: 'Logros', color: KH.brass, metaTab: 'achievements', pulse: true },
+  { id: 'tech',      sprite: 'blueprint',  label: 'Tech',   color: KH.ember, metaTab: 'tech' },
+  { id: 'siege',     sprite: 'castle',     label: 'Mundo',  color: KH.seal, metaTab: 'world' },
 ];
 
 function formatCountdown(seconds) {
@@ -53,7 +54,7 @@ export default function EventSidebar() {
 
   const handleEvent = () => {
     if (activeEvent) {
-      addNotification(`${activeEvent.icon} ${activeEvent.name}: ${activeEvent.description}`, 'info');
+      addNotification(`${activeEvent.name}: ${activeEvent.description}`, 'info');
     } else {
       addNotification('No hay evento activo en este momento', 'info');
     }
@@ -69,7 +70,7 @@ export default function EventSidebar() {
         title={activeEvent ? activeEvent.description : 'Sin evento activo'}
         style={{ width: 52 }}
       >
-        <span className="text-xl leading-none">{activeEvent?.icon || '⏳'}</span>
+        <SpriteIcon name="flame" size={28} />
         <span className="font-numeric text-[12px] leading-tight tabular-nums" style={{ color: KH['brass-light'] }}>
           {activeEvent ? formatCountdown(activeRemaining) : '—'}
         </span>
@@ -79,7 +80,6 @@ export default function EventSidebar() {
         <IconButton
           key={item.id}
           icon={item.sprite}
-          fallback={item.icon}
           label={item.label}
           accent={item.color}
           className={item.pulse ? 'animate-pulse' : ''}

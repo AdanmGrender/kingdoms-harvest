@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import Bar from '../ui/Bar';
+import SpriteIcon from '../ui/SpriteIcon';
 
 function formatTime(seconds) {
   if (seconds <= 0) return '00:00';
@@ -50,7 +51,7 @@ export default function ConstructionTimer() {
         }}
       >
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-lg">{construction.icon || '🔨'}</span>
+          <SpriteIcon name="hammer" size={28} />
           <div className="flex-1 min-w-0">
             <p className="text-orange-300 text-[10px] font-semibold truncate">
               {construction.name || 'Construcción'}

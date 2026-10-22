@@ -13,14 +13,14 @@ import { KH } from '../ui/kitPieces';
 
 // Orden fijo de la despensa; `data-resource` es el selector de counterTarget() (HubSceneB).
 const PANTRY = [
-  { key: 'wood', fallback: '🪵' },
-  { key: 'stone', fallback: '🪨' },
-  { key: 'wheat', fallback: '🌾' },
-  { key: 'iron', fallback: '⛏️' },
-  { key: 'egg', fallback: '🥚' },
-  { key: 'milk', fallback: '🥛' },
-  { key: 'wool', fallback: '🧶' },
-  { key: 'carrot', fallback: '🥕' },
+  { key: 'wood' },
+  { key: 'stone' },
+  { key: 'wheat' },
+  { key: 'iron' },
+  { key: 'egg' },
+  { key: 'milk' },
+  { key: 'wool' },
+  { key: 'carrot' },
 ];
 
 function formatNumber(n) {
@@ -87,7 +87,7 @@ export default function TopResourceBar() {
               className="w-10 h-10 flex items-center justify-center"
               style={{ backgroundColor: KH.ink, border: `2px solid ${KH.brass}` }}
             >
-              <SpriteIcon name="crown" size={22} fallback="👑" />
+              <SpriteIcon name="crown" size={28} />
             </div>
             <div
               className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold font-numeric"
@@ -105,7 +105,7 @@ export default function TopResourceBar() {
               {displayName}
             </p>
             <div className="flex items-center gap-0.5 leading-none">
-              <SpriteIcon name="sword" size={12} fallback="⚔️" />
+              <span className="font-display text-[11px] text-kh-brass-light">Poder</span>
               <span className="font-numeric text-kh-ember text-[12px] font-bold tabular-nums">
                 {formatNumber(power)}
               </span>
@@ -118,12 +118,12 @@ export default function TopResourceBar() {
           {/* Oro / KH / gemas */}
           <div className="flex items-center gap-1.5 flex-1 min-w-0 justify-end">
             <div className="flex items-center gap-0.5 flex-shrink-0">
-              <SpriteIcon name="gold" size={28} fallback="🪙" />
+              <SpriteIcon name="gold" size={28} />
               <span className={`${NUM} text-kh-brass-light`}>{formatNumber(goldAmount)}</span>
             </div>
             {tokenInfo && (
               <div className="flex items-center gap-0.5 flex-shrink-0">
-                <SpriteIcon name="kh_token" size={28} fallback="💠" />
+                <SpriteIcon name="kh_token" size={28} />
                 <span className={`${NUM} text-kh-brass-light`}>{tokenInfo.balance || 0}</span>
               </div>
             )}
@@ -135,7 +135,7 @@ export default function TopResourceBar() {
               className="flex items-center gap-0.5 flex-shrink-0 active:scale-95 transition-transform"
               style={{ minHeight: 44, minWidth: 44, backgroundColor: KH.oak, border: `2px solid ${KH.seal}`, padding: '0 4px' }}
             >
-              <SpriteIcon name="gem" size={28} fallback="💎" />
+              <SpriteIcon name="gem" size={28} />
               <span className={`${NUM} text-kh-bone`}>{gems?.balance ?? 0}</span>
               <span className="font-numeric text-kh-brass-light text-[12px] font-bold leading-none">+</span>
             </button>
@@ -143,7 +143,7 @@ export default function TopResourceBar() {
 
           {/* Hora del día */}
           <div className="flex flex-col items-center flex-shrink-0">
-            <SpriteIcon name={isNight ? 'moon' : 'sun'} size={28} fallback={isNight ? '🌙' : '☀️'} />
+            <SpriteIcon name={isNight ? 'moon' : 'sun'} size={28} />
             <span className="font-numeric text-kh-brass-light text-[12px] leading-none whitespace-nowrap">
               D{timeInfo.dayCount}
             </span>
@@ -159,7 +159,7 @@ export default function TopResourceBar() {
               className="flex flex-col items-center gap-0.5 py-0.5 min-w-0"
               style={{ backgroundColor: KH.ink }}
             >
-              <SpriteIcon name={r.key} size={28} fallback={r.fallback} />
+              <SpriteIcon name={r.key} size={28} />
               <span data-resource-value className={`${NUM} text-kh-bone`}>
                 {formatNumber(getAmount(r.key))}
               </span>

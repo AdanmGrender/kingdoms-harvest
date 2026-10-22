@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
+import SpriteIcon from './SpriteIcon';
 
 const NOTIFICATION_TYPES = [
-  { key: 'crops',          icon: '🌾', label: 'Cultivos listos',      desc: 'Cuando tus cultivos están listos para cosechar' },
-  { key: 'buildings',      icon: '🏗️', label: 'Construcciones',        desc: 'Cuando un edificio termina de construirse o mejorarse' },
-  { key: 'troops',         icon: '⚔️', label: 'Tropas listas',          desc: 'Cuando el entrenamiento de tropas finaliza' },
-  { key: 'animals',        icon: '🐄', label: 'Animales listos',        desc: 'Cuando tus animales tienen productos para recolectar' },
-  { key: 'withdrawals',    icon: '💰', label: 'Retiros TON',            desc: 'Estado de tus retiros de tokens a TON' },
-  { key: 'sieges',         icon: '🛡️', label: 'Ataques y asedios',     desc: 'Cuando recibes un ataque o se resuelve un asedio' },
-  { key: 'events',         icon: '🌍', label: 'Eventos del mundo',      desc: 'Cuando aparecen nuevos eventos en el mapa' },
-  { key: 'daily_reminder', icon: '📅', label: 'Recordatorio diario',   desc: 'Te avisamos si llevas más de 24 hs sin jugar' },
+  { key: 'crops',          icon: 'wheat', label: 'Cultivos listos',      desc: 'Cuando tus cultivos están listos para cosechar' },
+  { key: 'buildings',      icon: 'hammer', label: 'Construcciones',        desc: 'Cuando un edificio termina de construirse o mejorarse' },
+  { key: 'troops',         icon: 'sword', label: 'Tropas listas',          desc: 'Cuando el entrenamiento de tropas finaliza' },
+  { key: 'animals',        icon: 'cow', label: 'Animales listos',        desc: 'Cuando tus animales tienen productos para recolectar' },
+  { key: 'withdrawals',    icon: 'gold', label: 'Retiros TON',            desc: 'Estado de tus retiros de tokens a TON' },
+  { key: 'sieges',         icon: 'shield', label: 'Ataques y asedios',     desc: 'Cuando recibes un ataque o se resuelve un asedio' },
+  { key: 'events',         icon: 'world', label: 'Eventos del mundo',      desc: 'Cuando aparecen nuevos eventos en el mapa' },
+  { key: 'daily_reminder', icon: 'scroll', label: 'Recordatorio diario',   desc: 'Te avisamos si llevas más de 24 hs sin jugar' },
 ];
 
 export default function NotificationPrefsPanel({ onClose }) {
@@ -40,7 +41,7 @@ export default function NotificationPrefsPanel({ onClose }) {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-bold text-yellow-400 font-display">
-              🔔 Notificaciones
+              Notificaciones
             </h2>
             <p className="text-xs text-gray-400">Configurá las alertas del bot de Telegram</p>
           </div>
@@ -65,7 +66,7 @@ export default function NotificationPrefsPanel({ onClose }) {
                   style={{ background: enabled ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.04)', border: `1px solid ${enabled ? 'rgba(74,222,128,0.3)' : 'rgba(255,255,255,0.1)'}` }}
                 >
                   <div className="flex items-start gap-3 flex-1 min-w-0">
-                    <span className="text-xl shrink-0">{icon}</span>
+                    <SpriteIcon name={icon} size={28} className="shrink-0" />
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-white">{label}</p>
                       <p className="text-[11px] text-gray-400 leading-tight">{desc}</p>

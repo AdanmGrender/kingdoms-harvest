@@ -162,8 +162,7 @@ export default function CombatInstancePanel({ onClose }) {
       <div className="relative flex flex-col flex-1 min-h-0" style={{ zIndex: 10 }}>
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-red-400 font-bold flex items-center gap-2 font-display">
-            <SpriteIcon name={node.type === 'boss' ? 'skull' : 'sword'} size={24}
-              fallback={node.type === 'boss' ? '💀' : '⚔️'} />
+            <SpriteIcon name={node.type === 'boss' ? 'skull' : 'sword'} size={28} />
             {node.name} · ronda {state.round}/{state.maxRounds}
           </h2>
           <button onClick={close} className="text-gray-400 text-xl px-2">✕</button>

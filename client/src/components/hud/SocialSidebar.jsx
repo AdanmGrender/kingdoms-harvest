@@ -7,10 +7,10 @@ import IconButton from '../ui/IconButton';
 import { KH } from '../ui/kitPieces';
 
 const SOCIAL = [
-  { id: 'achievements', sprite: 'star',   icon: '⭐', label: 'Logros',   color: KH.brass, metaTab: 'achievements' },
-  { id: 'alliance',     sprite: 'medal',  icon: '🤝', label: 'Alianza',  color: KH.macula, metaTab: 'alliances' },
-  { id: 'rankings',     sprite: 'scroll', icon: '📊', label: 'Rankings', color: KH.iron, metaTab: 'rankings' },
-  { id: 'market',       sprite: 'wallet', icon: '💱', label: 'Mercado',  color: KH.ember, metaTab: 'market' },
+  { id: 'achievements', sprite: 'star',   label: 'Logros',   color: KH.brass, metaTab: 'achievements' },
+  { id: 'alliance',     sprite: 'medal',  label: 'Alianza',  color: KH.macula, metaTab: 'alliances' },
+  { id: 'rankings',     sprite: 'scroll', label: 'Rankings', color: KH.iron, metaTab: 'rankings' },
+  { id: 'market',       sprite: 'wallet', label: 'Mercado',  color: KH.ember, metaTab: 'market' },
 ];
 
 export default function SocialSidebar() {
@@ -32,7 +32,6 @@ export default function SocialSidebar() {
         <IconButton
           key={s.id}
           icon={s.sprite}
-          fallback={s.icon}
           label={s.label}
           accent={s.color}
           title={s.label}

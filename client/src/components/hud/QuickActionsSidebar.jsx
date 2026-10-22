@@ -8,12 +8,12 @@ import IconButton from '../ui/IconButton';
 import { KH } from '../ui/kitPieces';
 
 const ACTIONS = [
-  { id: 'castle', sprite: 'castle', icon: '🏠', label: 'Bastión', color: KH.brass },
-  { id: 'waves', sprite: 'tide', icon: '🌊', label: 'Marea', color: KH.seal },
-  { id: 'missions', sprite: 'scroll', icon: '📜', label: 'Misiones', color: KH.brass, badge: 3 },
-  { id: 'build', sprite: 'blueprint', icon: '🔨', label: 'Construir', color: KH.ember },
-  { id: 'explore', sprite: 'star', icon: '🗺️', label: 'Marca', color: KH.macula },
-  { id: 'settings', sprite: 'gear', icon: '⚙️', label: 'Ajustes', color: KH.iron },
+  { id: 'castle', sprite: 'castle', label: 'Bastión', color: KH.brass },
+  { id: 'waves', sprite: 'tide', label: 'Marea', color: KH.seal },
+  { id: 'missions', sprite: 'scroll', label: 'Misiones', color: KH.brass, badge: 3 },
+  { id: 'build', sprite: 'blueprint', label: 'Construir', color: KH.ember },
+  { id: 'explore', sprite: 'star', label: 'Marca', color: KH.macula },
+  { id: 'settings', sprite: 'gear', label: 'Ajustes', color: KH.iron },
 ];
 
 export default function QuickActionsSidebar() {
@@ -53,7 +53,6 @@ export default function QuickActionsSidebar() {
           <IconButton
             key={a.id}
             icon={a.sprite}
-            fallback={a.icon}
             label={a.label}
             accent={a.color}
             title={a.label}

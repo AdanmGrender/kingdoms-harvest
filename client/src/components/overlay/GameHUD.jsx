@@ -160,7 +160,7 @@ export default function GameHUD() {
           {mainResources.map(r => (
             <div key={r.key} className="flex items-center gap-0.5 px-1 py-0.5 rounded whitespace-nowrap"
               style={{ background: 'rgba(255,255,255,0.06)' }}>
-              <SpriteIcon name={r.sprite} size={14} fallback="?" />
+              <SpriteIcon name={r.sprite} size={28} />
               <span className="text-white text-[10px] font-medium tabular-nums">
                 {r.amount >= 1000 ? `${(r.amount / 1000).toFixed(1)}k` : r.amount}
               </span>
@@ -173,7 +173,7 @@ export default function GameHUD() {
               }`}
               style={{ background: 'rgba(255, 215, 0, 0.1)' }}
             >
-              <SpriteIcon name="kh_token" size={14} fallback="💎" />
+              <SpriteIcon name="kh_token" size={28} />
               <span>{tokenInfo.balance || 0}</span>
             </div>
           )}

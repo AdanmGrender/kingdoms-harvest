@@ -36,10 +36,10 @@ function TierCell({ tier, reward, track, reached, claimed, canClaim, onClaim }) 
       }}
     >
       <span className="text-[9px] text-gray-400 uppercase">Tier {tier}</span>
-      <SpriteIcon name={meta.sprite} size={26} fallback={meta.fallback} />
+      <SpriteIcon name={meta.sprite} size={28} />
       <span className="text-[10px] font-bold text-white">{amount}</span>
       {claimed ? (
-        <SpriteIcon name="check" size={14} fallback="✓" />
+        <SpriteIcon name="check" size={28} />
       ) : canClaim ? (
         <button
           onClick={onClaim}
@@ -84,7 +84,7 @@ export default function PassPanel({ onClose }) {
     <div className="fixed inset-0 z-40 flex flex-col pb-28" style={{ background: 'rgba(10,10,20,0.96)' }}>
       <div className="flex justify-between items-center p-4">
         <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2 font-display">
-          <SpriteIcon name="scroll" size={26} fallback="🎫" /> Pase de Temporada
+          <SpriteIcon name="scroll" size={28} /> Pase de Temporada
         </h2>
         <button onClick={onClose} className="text-gray-400 text-2xl px-2">✕</button>
       </div>

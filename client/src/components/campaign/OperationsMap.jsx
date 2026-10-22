@@ -49,7 +49,7 @@ export default function OperationsMap({ onClose }) {
     <div className="fixed inset-0 z-40 flex flex-col" style={{ background: 'rgba(10,10,20,0.96)' }}>
       <div className="flex justify-between items-center p-4">
         <h2 className="text-yellow-400 text-lg font-bold flex items-center gap-2 font-display">
-          <SpriteIcon name="map" size={26} fallback="🗺️" /> Operaciones
+          <SpriteIcon name="map" size={28} /> Operaciones
         </h2>
         <div className="flex items-center gap-3">
           <span className="text-yellow-300 text-xs font-semibold">Asaltos: {sweepsLeft}/5</span>
@@ -91,7 +91,6 @@ export default function OperationsMap({ onClose }) {
                     <SpriteIcon
                       name={node.isBoss ? 'skull' : TYPE_ICON[node.type]?.sprite}
                       size={34}
-                      fallback={node.isBoss ? '💀' : TYPE_ICON[node.type]?.emoji}
                       style={locked ? { filter: 'grayscale(1) brightness(0.7)' } : undefined}
                     />
                     <div className="flex-1 text-left">
@@ -99,7 +98,7 @@ export default function OperationsMap({ onClose }) {
                       <p className="text-gray-400 text-[10px] uppercase">{node.type}</p>
                     </div>
                     {cleared
-                      ? <SpriteIcon name="check" size={22} fallback="✓" />
+                      ? <SpriteIcon name="check" size={28} />
                       : <span className="text-lg">{locked ? '🔒' : '▶'}</span>}
                   </button>
                   {sweepable && (
@@ -114,7 +113,7 @@ export default function OperationsMap({ onClose }) {
                         opacity: sweepsLeft <= 0 ? 0.35 : 1,
                       }}
                     >
-                      <SpriteIcon name="flame" size={18} fallback="⚡" />
+                      <SpriteIcon name="flame" size={28} />
                       Asalto
                     </button>
                   )}

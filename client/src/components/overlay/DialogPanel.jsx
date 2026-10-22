@@ -75,7 +75,7 @@ export default function DialogPanel({ data, onClose }) {
         <div className="flex items-center gap-3">
           <div className="rounded-lg overflow-hidden"
             style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,215,0,0.2)', padding: '2px' }}>
-            <CharacterSprite name={`npc_${data.npcId}` || 'farmer'} height={44} fallback="👤" />
+            <CharacterSprite name={`npc_${data.npcId}` || 'farmer'} height={44} />
           </div>
           <div>
             <h3 className="text-yellow-400 text-sm font-bold font-display">

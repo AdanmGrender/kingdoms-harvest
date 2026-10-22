@@ -67,7 +67,7 @@ export default function ShopPanel({ onClose }) {
       <div className="flex items-center justify-between px-4 py-3"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-2">
-          <SpriteIcon name="gem" size={20} fallback="💎" />
+          <SpriteIcon name="gem" size={28} />
           <h2 className="text-yellow-400 font-bold text-sm font-display">
             Arsenal del Bastión
           </h2>
@@ -75,7 +75,7 @@ export default function ShopPanel({ onClose }) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 px-2 py-1 rounded-md"
             style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(192,132,252,0.4)' }}>
-            <SpriteIcon name="gem" size={14} fallback="💎" />
+            <SpriteIcon name="gem" size={28} />
             <span className="text-purple-200 text-xs font-bold tabular-nums">
               {gems?.balance ?? 0}
             </span>
@@ -100,7 +100,7 @@ export default function ShopPanel({ onClose }) {
               >
                 <div className="flex items-center gap-3">
                   {/* El pack grande muestra una gema más grande: jerarquía visual */}
-                  <SpriteIcon name="gem" size={st.size} fallback="💎" />
+                  <SpriteIcon name="gem" size={st.size} />
                   <div className="text-left">
                     <p className="text-white font-bold text-sm leading-tight">{pack.name}</p>
                     <p className="text-purple-200 text-xs font-semibold tabular-nums">
@@ -113,7 +113,7 @@ export default function ShopPanel({ onClose }) {
                 </div>
                 <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg"
                   style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                  <SpriteIcon name="star_currency" size={16} fallback="⭐" />
+                  <SpriteIcon name="star_currency" size={28} />
                   <span className="text-white text-xs font-bold tabular-nums">
                     {isBusy ? '…' : pack.stars}
                   </span>
@@ -128,7 +128,7 @@ export default function ShopPanel({ onClose }) {
           style={{ border: '1px solid rgba(74,222,128,0.5)' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <SpriteIcon name="flame" size={28} fallback="🔥" />
+              <SpriteIcon name="flame" size={28} />
               <div className="text-left">
                 <p className="text-white font-bold text-sm leading-tight">Boost de Producción ×2</p>
                 <p className="text-emerald-200 text-xs">
@@ -144,7 +144,7 @@ export default function ShopPanel({ onClose }) {
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-transform active:scale-[0.98] disabled:opacity-60"
               style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.15)' }}
             >
-              <SpriteIcon name="gem" size={14} fallback="💎" />
+              <SpriteIcon name="gem" size={28} />
               <span className="text-white text-xs font-bold tabular-nums">
                 {boostBusy ? '…' : boostState?.active ? '+80' : '80'}
               </span>

@@ -34,7 +34,7 @@ export default function BastionHub() {
               color: '#f0d9a8',
             }}
           >
-            <SpriteIcon name="map" size={24} fallback="🗺️" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.7))' }} /> Operaciones
+            <SpriteIcon name="map" size={28} style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.7))' }} /> Operaciones
           </button>
           <button
             onClick={() => setOverlay('calendar', {})}
@@ -42,7 +42,7 @@ export default function BastionHub() {
             style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
             title="Calendario de login"
           >
-            <SpriteIcon name="scroll" size={24} fallback="📅" />
+            <SpriteIcon name="scroll" size={28} />
           </button>
           <button
             onClick={() => setOverlay('pass', {})}
@@ -50,7 +50,7 @@ export default function BastionHub() {
             style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
             title="Pase de temporada"
           >
-            <SpriteIcon name="scroll" size={24} fallback="🎫" />
+            <SpriteIcon name="scroll" size={28} />
           </button>
           <button
             onClick={() => setOverlay('codex', {})}
@@ -58,7 +58,7 @@ export default function BastionHub() {
             style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
             title="Códice de colección"
           >
-            <SpriteIcon name="medal" size={24} fallback="📖" />
+            <SpriteIcon name="medal" size={28} />
           </button>
         </div>
       </div>
