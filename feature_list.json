@@ -88,8 +88,8 @@
         "Mejorar un edificio actualiza su sprite sin recargar"
       ],
       "sdd": true,
-      "status": "pending",
-      "assignee": null
+      "status": "in_progress",
+      "assignee": "implementer"
     },
     {
       "id": 6,
