@@ -204,7 +204,7 @@ const FACTION_ICONS = {
   knights_of_dawn: 'sun',
   shadow_merchants: 'moon',
   iron_legion: 'shield',
-  green_wardens: 'farm_plot',
+  green_wardens: 'wheat',
 };
 
 function PvPTab() {

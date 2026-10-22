@@ -6,7 +6,7 @@ const FACTION_META = {
   knights_of_dawn:  { name: 'Caballeros del Alba',     icon: 'sun', color: '#FFD700' },
   shadow_merchants: { name: 'Mercaderes de la Sombra', icon: 'moon', color: '#4B0082' },
   iron_legion:      { name: 'Legión de Hierro',         icon: 'shield', color: '#8B0000' },
-  green_wardens:    { name: 'Guardianes Verdes',        icon: 'farm_plot', color: '#228B22' },
+  green_wardens:    { name: 'Guardianes Verdes',        icon: 'wheat', color: '#228B22' },
 };
 
 function formatRemaining(endsAt, now) {

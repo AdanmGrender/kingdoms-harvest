@@ -7,10 +7,10 @@ import { FACTION_ICONS } from '../../config/factionIcons';
 const TYPE_ICON = {
   plains:   'wheat',
   forest:   'wood',
-  mountain: 'mine',
+  mountain: 'iron',
   swamp:    'water',
   coast:    'tide',
-  ruins:    'embassy',
+  ruins:    'relic',
   sand:     'sun',
   snow:     'moon',
 };

@@ -14,6 +14,7 @@ export default function IconButton({
   active = false,
   accent,
   disabled = false,
+  iconSize = 32,
   className = '',
   style,
   children,
@@ -37,7 +38,7 @@ export default function IconButton({
       }}
       {...rest}
     >
-      <SpriteIcon name={icon} size={32} />
+      <SpriteIcon name={icon} size={iconSize} />
       {label && (
         <span className="font-display kh-iconbtn__label" style={{ fontSize: 12, lineHeight: 1.1, color: KH['brass-light'] }}>
           {label}

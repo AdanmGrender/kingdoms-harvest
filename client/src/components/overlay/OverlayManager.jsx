@@ -386,7 +386,7 @@ function BuildingInfoPanel({ data, onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
         <div className="flex items-center gap-3">
-          <SpriteIcon name={meta.sprite} size={32} />
+          <SpriteIcon name={meta.sprite} size={40} />
           <div>
             <h3 className="text-yellow-400 text-sm font-bold font-display">
               {meta.name}
@@ -481,7 +481,7 @@ function AnimalPanel({ data, onClose }) {
       style={{ background: 'rgba(51, 47, 43, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30">
         <div className="flex items-center gap-3">
-          <span className="text-3xl"><SpriteIcon name={meta.icon} size={36} /></span>
+          <span className="text-3xl"><SpriteIcon name={meta.icon} size={40} /></span>
           <div>
             <h3 className="text-yellow-400 text-sm font-bold font-display">
               {displayName}

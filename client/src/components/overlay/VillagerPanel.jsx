@@ -37,7 +37,7 @@ const STATE_LABELS = {
   idle: { icon: 'moon', label: 'Inactivo' },
   walking_to_work: { icon: 'speedup', label: 'Caminando' },
   working: { icon: 'gear', label: 'Trabajando' },
-  resting: { icon: 'farmhouse', label: 'Descansando' },
+  resting: { icon: 'moon', label: 'Descansando' },
   sleeping: { icon: 'moon', label: 'Durmiendo' },
   hungry: { icon: 'bread', label: 'Hambriento' },
 };

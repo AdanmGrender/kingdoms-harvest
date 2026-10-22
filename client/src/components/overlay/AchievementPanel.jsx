@@ -10,7 +10,7 @@ const CATEGORY_LABELS = {
   merchant: { icon: 'gold', label: 'Mercader'    },
   explorer: { icon: 'map', label: 'Explorador'  },
   hero:     { icon: '', label: 'Héroe'        },
-  market:   { icon: 'market', label: 'Mercado P2P' },
+  market:   { icon: 'gold', label: 'Mercado P2P' },
 };
 
 function AchievementCard({ ach, onClaim, loading }) {

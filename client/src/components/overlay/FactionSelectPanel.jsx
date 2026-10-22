@@ -30,7 +30,7 @@ const FACTIONS = [
   {
     id: 'green_wardens',
     name: 'Guardianes Verdes',
-    icon: 'farm_plot',
+    icon: 'wheat',
     color: '#22c55e',
     bonus: '+15% producción agrícola',
     desc: 'Protectores de la naturaleza. Ideal para jugadores que farmean.',

@@ -95,7 +95,7 @@ const BUILDING_INFO = {
 const RESOURCE_ICONS = {
   wood: 'wood',
   stone: 'stone',
-  iron: 'mine',
+  iron: 'iron',
   gold: 'gold',
 };
 
@@ -223,7 +223,7 @@ export default function BuildingToolbar() {
                   }`}
                   style={{ border: '1px solid rgba(255, 215, 0, 0.15)' }}
                 >
-                  <div className="text-2xl mb-1"><SpriteIcon name={info.icon} size={36} /></div>
+                  <div className="text-2xl mb-1"><SpriteIcon name={info.icon} size={40} /></div>
                   <div className="text-[10px] text-gray-200 font-bold leading-tight"
                     style={{ wordBreak: 'break-word', hyphens: 'auto' }}>
                     {info.name}
