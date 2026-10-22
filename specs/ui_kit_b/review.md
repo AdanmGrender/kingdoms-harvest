@@ -1,4 +1,57 @@
-# Review — `ui_kit_b` · Etapa C (T18–T34) y cierre
+# Review — `ui_kit_b` · Etapa C (T18–T34) y cierre — ronda 2
+
+Revisado: rama `feature/ui_kit_b`, cabeza `1f516aa`. Tarea `t_3cf4f686`, revisor `reviewer`, ronda 2 de la etapa C (lente ejecución). Los cambios de la ronda 1 (ver sección siguiente, «ronda 1») se verificaron de nuevo.
+
+## Veredicto
+
+**APPROVED.** Los dos cambios de la ronda 1 quedaron cerrados en `1f516aa`:
+1. Íconos de edificio: ningún sprite de edificio queda por debajo de 40 px. La pestaña Social usa `alliance`, el Bastión de `QuickActionsSidebar` usa `iconSize` 40 y el «Mundo» de `EventSidebar` usa `world`.
+2. T34: la nota del grep es exacta. `docs/project-spec.md:556` sigue citando MedievalSharp y queda registrado como decisión pendiente del owner.
+
+Cierre: `feature_list.json` id 8 → `done`; entrada en `CHANGELOG.md` bajo `[Unreleased]`.
+
+## Verificación ejecutada (ronda 2, reproducida por el revisor)
+
+- `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run`: Test Files 19 passed (19), Tests 289 passed (289).
+- `cd client && npm run build`: `✓ built in 7.33s` (solo aviso de chunk > 500 kB, preexistente).
+- `cd server && npx jest --runInBand --forceExit`: Test Suites 25 passed, Tests 388 passed.
+- Tamaños de íconos de edificio (`grep -rnE "['\"](farm_plot|barn|...|castle|...)['\"]" client/src/components`):
+  - `hud/QuickActionsSidebar.jsx:58` `iconSize={a.id === 'castle' ? 40 : 32}` (el Bastión es `castle`, `:11`, y pasa a 40).
+  - `hud/BottomNavBar.jsx:31` castle a 40; `hud/BuildingInfoPopup.jsx:110` a 40; `overlay/BuildingToolbar.jsx:226` a 40; `overlay/OverlayManager.jsx:389` `meta.sprite` a 40.
+  - `overlay/TutorialOverlay.jsx:89` castle a 48; `overlay/GuildPanel.jsx:138` castle a 56.
+  - Los 28 px restantes en `hud/` y `overlay/BuildingToolbar.jsx:182,202` son sprites de no-edificio (hammer, crown, gold, kh_token, gem, sun, moon, recursos, alliance, wheat, shield, crown).
+- Sin servidores de dev del implementador: 5180 libre. Corrí `netstat`: solo 3099 (ver observaciones).
+- `grep -rnI "grim_icons\|gen_icons\|grimChrome\|MedievalSharp" client/src server/src shared scripts docs`: solo tests que afirman la ausencia (`fontsConfig.test.js:107-108`, `hudRails.test.jsx:2,34-38`) y `docs/project-spec.md:556`. Coincide con `tasks.md` T34.
+- `git status --short`: vacío antes de este review.
+
+## Trazabilidad (etapa C, ronda 2)
+
+| R | Evidencia verificada | Estado |
+|---|---|---|
+| R38–R40, R45–R47, R54 | `iconSheet.test.js` y `SpriteIcon.test.jsx` verdes (suite completa 289/289). | OK |
+| R41–R44 | Recortes, manifest y `icons.webp`/`generated.js` candidatos según `tasks.md` T19–T22. | OK |
+| R43 | `aprobacion_arte.md` `APROBADO 79/79` anterior a la integración. | OK |
+| R48 | `grep` de arriba: sin código vivo. | OK |
+| R49–R53, R55 | `noEmoji.test.js` verde; control en rojo en `evidencia/noEmoji_control.txt`. | OK |
+| R50 | Lista blanca solo `CHAT_STICKERS`. | OK |
+| R56–R58 | Capturas `*_antes/_despues.webp`, consolas, vitest/build/jest. | OK |
+| R32 | `barra_412.webp`; `scrollWidth 372 <= clientWidth 372` citado. | OK (reserva visual) |
+
+Tasks: T18–T34 `[x]` con `Evidencia:` inline (`tasks.md:34-59`). `## Bloqueado` vacío.
+
+## Observaciones (no bloqueantes)
+
+1. **Proceso, puerto 3099.** Sigue LISTENING el PID 9544 (node, server de producción del revisor en la ronda B). `taskkill /PID 9544` sin `/F` no lo cerró y `/F` está bloqueado por política de este entorno. **Pendiente manual del owner:** `taskkill /PID 9544 /F`. No es un proceso del implementador ni afecta al repo.
+2. **Entorno.** `iconSheet.test.js` necesita `NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules` (sharp no está en `client/node_modules` del worktree). Queda como trampa en `PAQUETE.md`.
+3. **Legibilidad visual sin verificar.** No puedo ver las `.webp` en este entorno. La legibilidad de `iconos_contacto.webp`, `hub_despues.webp` y `barra_412.webp` queda para la revisión humana de p-kh si el owner la quiere antes del cierre; la medición numérica sí se reproduce.
+4. **Mensaje de commit.** Los commits de C son `ef3dc37`, `938ab71`, `9c04087`, `108248c`, `1f516aa`; la tarea pedía `feat(ui_kit_b): etapa C2 - emojis -> íconos B`. No bloquea.
+5. **`project-spec.md:556`** (MedievalSharp) queda sin editar por decisión del owner, como indica T34.
+
+## Conocimiento
+
+Se añadió 1 decisión y 1 trampa a `D:\Proyectos\_conocimiento\kingdoms-harvest\PAQUETE.md` (ver commit `chore(ui_kit_b)`).
+
+## Ronda 1 (histórico)
 
 Revisado: rama `feature/ui_kit_b`, cabeza `108248c`. Tarea `t_3cf4f686`, revisor `reviewer`, ronda 1 de la etapa C (lente artefacto + ejecución). Las etapas A y B quedaron aprobadas antes (`13be087`, `4de5fd6`; historial en git).
 
