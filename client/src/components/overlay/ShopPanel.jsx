@@ -12,8 +12,8 @@ import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 
-// Los íconos salen del sheet grimdark (spriteMap → grim_icons.png). El emoji
-// queda solo como fallback si el arte no está generado.
+// Los íconos salen del sheet grimdark (spriteMap → assets/b/ui/icons.webp). El emoji
+// ya no se usa como fallback (ui_kit_b: sin emojis).
 const PACK_STYLE = {
   pouch: { grad: 'from-slate-700 to-slate-800', ring: 'rgba(148,163,184,0.4)', size: 30 },
   chest: { grad: 'from-indigo-800 to-indigo-950', ring: 'rgba(129,140,248,0.5)', size: 34 },

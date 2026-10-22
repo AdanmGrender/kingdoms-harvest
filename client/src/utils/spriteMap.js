@@ -221,12 +221,8 @@ const GRIM_ALIASES = {
   product_wool: 'wool',
 
   // ── Buildings ──
-  farm_plot:     'farmhouse',
   barn_building: 'barn',
   throne_room:   'castle',
-  smithy:        'sword',   // forja de armas
-  embassy:       'scroll',  // diplomacia
-  library:       'scroll',
 
   // ── Troops ──
   militia:   'sword',
@@ -238,7 +234,6 @@ const GRIM_ALIASES = {
   // ── Navigation ──
   nav_farm:     'farmhouse',
   nav_castle:   'castle',
-  nav_token:    'kh_token',
   nav_commerce: 'market',
   nav_combat:   'tower',
 
@@ -254,9 +249,29 @@ const GRIM_ALIASES = {
   trophy:        'medal',
 };
 
+/**
+ * Enemigos: placeholder del set viejo, diferido a `combate_b` (design §7.4, R46).
+ * Tira horizontal de celdas de 128 px recortada de la hoja vieja (ver historial git); combate_b la retira.
+ */
+const ENEMY_LEGACY_SHEET = `${SPRITE_BASE}/enemy_icons_legacy.png`;
+const ENEMY_LEGACY_CELL = 128;
+const ENEMY_LEGACY_IDS = [
+  'enemy_carroneros', 'enemy_brutos', 'enemy_aullador', 'enemy_coloso', 'enemy_boss_devorador', 'enemy_boss_heraldo',
+];
+const ENEMY_LEGACY = Object.fromEntries(ENEMY_LEGACY_IDS.map((id, i) => [id, {
+  sheet: ENEMY_LEGACY_SHEET,
+  x: i * ENEMY_LEGACY_CELL,
+  y: 0,
+  w: ENEMY_LEGACY_CELL,
+  h: ENEMY_LEGACY_CELL,
+  sheetW: ENEMY_LEGACY_CELL * ENEMY_LEGACY_IDS.length,
+  sheetH: ENEMY_LEGACY_CELL,
+}]));
+
 /** Resuelve un nombre contra el sheet grim. Devuelve null si no hay arte. */
 function getGrimSprite(id) {
-  if (!GRIM_SHEET) return null; // arte aún no generado → legacy
+  if (ENEMY_LEGACY[id]) return ENEMY_LEGACY[id];
+  if (!GRIM_SHEET) return null;
   const grimName = GRIM_ICONS[id] ? id : GRIM_ALIASES[id];
   const cell = grimName && GRIM_ICONS[grimName];
   if (!cell) return null;

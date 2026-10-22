@@ -585,9 +585,9 @@ ANCLAS DE TERRENO POR ZONA (/public/assets/game/zones/, WorldScene top-down):
   a cámara (+1 zona de margen) y la destruye al salir (~4 checks/s). Las
   entidades de gameplay (edificios/NPCs/cultivos/animales) no se streamean.
 
-ÍCONOS UI GRIMDARK (/public/assets/sprites/grim_icons.png):
-  Sheet 8 col × celdas 128px con ~54 íconos originales; generado por
-  gen_icons.sh + assemble_icon_sheet.js, que también escribe el manifiesto
+ÍCONOS UI B (/public/assets/b/ui/icons.webp):
+  Hoja 8 col × celdas 192px con 79 íconos (ui_kit_b); la ensambla
+  scripts/assemble_icon_sheet.js, que también escribe el manifiesto
   client/src/config/grimIconSheet.generated.js (GRIM_ICONS nombre→col/row).
   spriteMap.getSprite resuelve PRIMERO contra el set grim (tabla GRIM_ALIASES
   re-mapea alias legacy: militia→sword, nav_farm→farmhouse, streak→flame...)

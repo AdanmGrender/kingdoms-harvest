@@ -39,8 +39,8 @@
 
 ### C2 — Integración
 
-- [ ] T23 — Copiar `icons.webp` y el `generated.js` aprobado a `client/`; `spriteMap`: borrar `nav_token`, `farm_plot`, `smithy`, `embassy`, `library` de `GRIM_ALIASES`, añadir `ENEMY_LEGACY` con `enemy_icons_legacy.png` (recorte del set viejo); `SpriteIcon`: `image-rendering: auto`, sin `fallback`, `data-missing-icon`. Cubre: R38, R39, R40, R45, R46, R47, R54.
-- [ ] T24 — Borrar `grim_icons.png` y `scripts/gen_icons.sh`; limpiar referencias en `docs/`. Cubre: R48.
+- [x] T23 — Copiar `icons.webp` y el `generated.js` aprobado a `client/`; `spriteMap`: borrar `nav_token`, `farm_plot`, `smithy`, `embassy`, `library` de `GRIM_ALIASES`, añadir `ENEMY_LEGACY` con `enemy_icons_legacy.png` (recorte del set viejo); `SpriteIcon`: `image-rendering: auto`, sin `fallback`, `data-missing-icon`. Cubre: R38, R39, R40, R45, R46, R47, R54. Evidencia: icons.webp ya estaba en client/public/assets/b/ui; `grimIconSheet.generated.js` aprobado copiado desde art-b/uikit/candidate (celda 192, 1536×1920, 14 nombres nuevos al final); spriteMap: borrados `nav_token`, `farm_plot`, `smithy`, `embassy`, `library` de GRIM_ALIASES, `ENEMY_LEGACY` → `enemy_icons_legacy.png` (768×128, 6 celdas de 128 px, `scripts/crop_enemy_legacy.js`); SpriteIcon con `image-rendering: auto`, sin `fallback`, recuadro `data-missing-icon`. `npx vitest run src/tests/iconSheet.test.js src/tests/SpriteIcon.test.jsx` → 2 files, 18 passed (antes 13 rojos); suite completa 18 files / 284 passed.
+- [x] T24 — Borrar `grim_icons.png` y `scripts/gen_icons.sh`; limpiar referencias en `docs/`. Cubre: R48. Evidencia: `git rm` de grim_icons.png y scripts/gen_icons.sh; `grep -rnI "grim_icons\|gen_icons" client scripts docs package.json` (sin node_modules/dist) → 0 resultados (docs: guia-manual-arte, ui-kit-b, project-spec, superpowers/specs, comentarios de ShopPanel y spriteMap).
 
 ### C3 — Reemplazo de emojis por grupos (un commit y revisión por grupo)
 

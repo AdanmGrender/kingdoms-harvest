@@ -43,7 +43,7 @@ git worktree remove ../kingdoms-harvest-wt/prueba-arte && git branch -D prueba/a
 | Trabajadores del hub | `client/public/assets/b/workers/<tipo>_<pose>.webp` | `hubLayout.js:115` |
 | Héroes y enemigos B (combate de perfil) | `client/public/assets/b/{heroes,enemies}/*.webp`, fondos en `assets/b/bg/` | escena de combate B |
 | Piezas de interfaz (marco, botones, anillo de retrato) | `client/public/assets/b/ui/*.webp` | componentes de `ui_kit_b` (etapa B) |
-| **Íconos de la interfaz** (recursos, menús, etc.) | una sola hoja: `client/public/assets/sprites/grim_icons.png` + su mapa `client/src/config/grimIconSheet.generated.js` | `client/src/utils/spriteMap.js:258` (`SpriteIcon`) |
+| **Íconos de la interfaz** (recursos, menús, etc.) | una sola hoja: `client/public/assets/b/ui/icons.webp` (celda 192 px) + su mapa `client/src/config/grimIconSheet.generated.js` | `client/src/utils/spriteMap.js:258` (`SpriteIcon`) |
 | Retratos y enemigos de los paneles React (arte viejo) | `client/public/assets/game/{heroes,enemies}/<id>.png` | `HeroPanel.jsx:51`, `CombatInstancePanel.jsx:138`, `WaveDefensePanel.jsx:129` |
 | Fuentes crudas de la IA (no se sirven) | `art-b/**/raw/*.png` (ignoradas por git) | — |
 
@@ -148,12 +148,8 @@ Los íconos de la interfaz no son archivos sueltos. Son **una hoja en grilla** m
    - los nombres son los de la lista de `scripts/assemble_icon_sheet.js`: `gold`, `wood`, `stone`, `iron`, `wheat`, etc.
 
    Si falta alguno, el script avisa y ese ícono sigue saliendo del set viejo.
-2. Para generarlos con IA:
-   - `bash scripts/gen_icons.sh` genera los 54;
-   - `bash scripts/gen_icons.sh gold flame` genera solo esos dos.
-
-   Usa el estilo viejo "grimdark". Para el estilo B, conviene `gen_art_b.js --kind prop` con la salida en `art-inbox/icon_<nombre>.png`.
-3. Arma la hoja: `node scripts/assemble_icon_sheet.js`. Escribe `grim_icons.png` y regenera `grimIconSheet.generated.js`. **Ese archivo no se edita a mano.**
+2. Para generarlos con IA: `gen_art_b.js --kind prop` con la salida en `art-inbox/icon_<nombre>.png` (estilo B; ver `docs/art-direction/ui-kit-b.md` §6.1).
+3. Arma la hoja: `node scripts/assemble_icon_sheet.js`. Escribe `client/public/assets/b/ui/icons.webp` y regenera `grimIconSheet.generated.js`. **Ese archivo no se edita a mano.**
 4. Recarga con Ctrl+F5. Todo lo que use `SpriteIcon` pasa al set nuevo.
 
 **Para alternar entre sets:** copia `art-inbox/icon_*.png` de cada set a `D:\Proyectos\_arte-pruebas\iconos\<set>\`. Para cambiar de set, cópialo de vuelta a `art-inbox/` y vuelve a correr el paso 3.

@@ -10,7 +10,7 @@
 
 El hub ya es una ilustración grabada a resolución de dispositivo
 (`hub_b_escena`), pero el chrome React encima sigue en el lenguaje viejo:
-cuadritos de piedra con íconos del set `grim_icons.png` (isométricos, brillos
+cuadritos de piedra con íconos del set viejo (isométricos, brillos
 **verde-azulados de ciencia ficción**, engranajes) y **211 emojis distintos en
 854 usos** (`client/src` + `shared/`). Es lo que más desentona hoy.
 
