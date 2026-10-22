@@ -1,3 +1,72 @@
+# Review — `ui_kit_b` · Etapa C (T18–T34) y cierre
+
+Revisado: rama `feature/ui_kit_b`, cabeza `108248c`. Tarea `t_3cf4f686`, revisor `reviewer`, ronda 1 de la etapa C (lente artefacto + ejecución). Las etapas A y B quedaron aprobadas antes (`13be087`, `4de5fd6`; historial en git).
+
+## Veredicto
+
+**CHANGES_REQUESTED.** Tests y build en verde y trazabilidad T18–T34 coherente. Pero hay íconos de edificio a menos de 40 px, que la condición de p-kh prohíbe de forma explícita (cambios 1), y la evidencia de T34 contiene una afirmación de grep inexacta (cambio 2).
+
+`feature_list.json` y `CHANGELOG.md` NO se tocan: `ui_kit_b` sigue `in_progress`.
+
+## Verificación ejecutada (reproducida por el revisor)
+
+- `cd client && npx vitest run`: 19 files, 289 passed, 0 failed. Requiere `NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules`: `client/node_modules` del worktree no tiene `sharp` y `iconSheet.test.js` falla con `Cannot find module 'sharp'` sin ese NODE_PATH (entorno, no código).
+- `cd client && npm run build`: `built in 7.36s` (solo aviso de chunk > 500 kB, preexistente).
+- `cd server && npx jest --runInBand --forceExit`: 25 suites, 388 passed.
+- `git status --short`: vacío.
+- Estructura:
+  - `client/src/config/grimIconSheet.generated.js:10-14`: `GRIM_SHEET`, `GRIM_CELL = 192`, 1536×1920. `gear` en `:59`, sin cambios.
+  - `kh_token` en `:20`; ningún alias de `GRIM_ALIASES` (`client/src/utils/spriteMap.js`) apunta a `kh_token`; `nav_token` eliminado (R45).
+  - `ENEMY_LEGACY` en `spriteMap.js` (6 celdas de 128 px sobre `enemy_icons_legacy.png`, presente) (R46).
+  - `client/src/components/ui/SpriteIcon.jsx:14-27`: sin `fallback`, `data-missing-icon`; `imageRendering: 'auto'` en `:47` (R47, R54).
+  - `grim_icons.png` y `scripts/gen_icons.sh` ausentes (R48). `grep -rnP '\bfallback=' client/src/components`: vacío.
+  - `noEmoji.test.js` verde; lista blanca solo `CHAT_STICKERS` (R50). Control en rojo en `evidencia/noEmoji_control.txt`.
+  - Evidencia de arte presente: `aprobacion_arte.md`, `iconos_contacto.webp`, `iconos_regen.webp`, `barra_412.webp`, `prod_server.json`, `consola_*.txt`.
+- No hay servidor de dev del implementador escuchando (5180 libre).
+- Legibilidad visual de las `.webp`: no verificada por el revisor (sin visión de imágenes en este entorno).
+
+## Trazabilidad (etapa C)
+
+| R | Evidencia verificada | Estado |
+|---|---|---|
+| R38–R40 | `iconSheet.test.js` verde; constantes y 65 nombres contrato en `grimIconSheet.generated.js`. | OK |
+| R41 | `evidencia/crop_edificios.txt` (17 recortes). | OK |
+| R42 | `evidencia/iconos_contacto.webp`, `contacto.txt`. | OK (visual sin verificar) |
+| R43 | `aprobacion_arte.md` `APROBADO 79/79` (`5eb6722`) anterior a la integración `ad37567`. | OK |
+| R44, R45 | Manifest y `kh_token` único, sin alias. | OK |
+| R46, R47 | `ENEMY_LEGACY`; `SpriteIcon.jsx:14-27`. | OK |
+| R48 | Archivos ausentes; grep en `docs/` sin `grim_icons\|gen_icons`. | OK |
+| R49–R55 | `noEmoji.test.js` verde; `noEmoji_control.txt`; `factionIcons.js`. | OK (ver cambio 1 para tamaños de edificio) |
+| R56, R57 | 10 capturas `*_antes/_despues.webp`; `consola_despues.txt`, `consola_barra.txt`, `consola_prod_server.txt`. | OK |
+| R58 | vitest 289/289, build OK, jest 388/388. `known_failures` vacío. | OK |
+| R32 | `barra_412.webp`; `scrollWidth 372 <= clientWidth 372` citado. | OK (reserva visual) |
+
+Tasks: T18–T34 `[x]` con `Evidencia:` inline (`tasks.md:34-59`). `## Bloqueado` vacío.
+
+## Cambios requeridos
+
+1. **Íconos de edificio a menos de 40 px.** La condición de p-kh (card y `aprobacion_arte.md`) es: sprites de edificio solo a 40 px o más y con nombre visible. Tres casos la incumplen:
+   - `client/src/components/overlay/BuildingToolbar.jsx:62-64` y `:202`: la pestaña «Social» usa `icon: 'market'` (sprite de edificio) a `SpriteIcon size={28}`. Cambiar el icono de categoría a un sprite que no sea de edificio (p. ej. `wallet`, `alliance`) o subirlo a 40 px con nombre.
+   - `client/src/components/hud/QuickActionsSidebar.jsx:11` (`castle`, «Bastión») y `:50-56`: `IconButton` sin `iconSize`, que por defecto es 32 (`client/src/components/ui/IconButton.jsx:17`). Pasar `iconSize={40}` o usar un sprite que no sea de edificio. `BottomNavBar.jsx:31` ya usa 40 px para el mismo Bastión.
+   - `client/src/components/hud/EventSidebar.jsx:16` (`castle`, «Mundo») y `:82`: mismo caso (32 px por defecto); además el sprite de edificio representa «Mundo», no un edificio. Cambiar a un sprite que no sea de edificio (p. ej. `map`, `world`).
+   Verificar con `grep -rn "iconSize\|size=" client/src/components/hud client/src/components/overlay/BuildingToolbar.jsx` y citar el resultado en la evidencia.
+
+2. **Afirmación de T34 inexacta.** `tasks.md:59` dice que el grep de `grim_icons|gen_icons|grimChrome|MedievalSharp` en `docs` «solo da los nombres GRIM_ICONS … y tests». No es así: `docs/project-spec.md:556` sigue citando `MedievalSharp`, y `docs/superpowers/` también. Corregir la evidencia con el resultado real, o actualizar `docs/project-spec.md:556` si el contrato ya no aplica (decisión del owner; como mínimo la nota debe ser exacta).
+
+## Observaciones (no bloqueantes)
+
+1. **Proceso, puerto 3099.** Sigue LISTENING el `node.exe` PID 9544 del server de producción que levantó el revisor en la ronda B. `taskkill /F` está bloqueado por política en esta sesión. **Pendiente manual del owner:** `taskkill /PID 9544 /F`.
+2. **Vite :5180 (PID 5604, ronda B).** Ya no aparece en `netstat`; confirmar al cerrar.
+3. **Entorno.** Instalar `sharp` en `client/node_modules` del worktree o documentar el `NODE_PATH` en el cierre.
+4. **Mensaje de commit.** La tarea pedía `feat(ui_kit_b): etapa C2 - emojis -> íconos B`; los commits de C son `ef3dc37`, `938ab71`, `9c04087`, `108248c`. No bloquea.
+5. **Legibilidad visual sin verificar** (`iconos_contacto.webp`, `hub_despues.webp`, `barra_412.webp`): revisión humana de p-kh antes del cierre.
+
+## Nota de proceso
+
+Tras los cambios 1 y 2, nueva revisión (ronda 2, lente de ejecución): repetir vitest, build y jest, y el grep de tamaños. Si se aprueba, el reviewer pone `feature_list.json` id 8 → `done` y añade la entrada en `CHANGELOG.md`.
+
+---
+
 # Review — `ui_kit_b` · Etapa B (T9–T17)
 
 Revisado: rama `feature/ui_kit_b`, commit `4de5fd6` (cabeza), sobre `9fa5ff4`, `cfe81f6`, `94a362f`. Tarea `t_23489989`, revisor `reviewer`, ronda 2 (lente de ejecución). La ronda 1 cerró en CHANGES_REQUESTED (commit `9820d00`).
