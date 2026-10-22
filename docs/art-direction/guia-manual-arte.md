@@ -40,6 +40,7 @@ git worktree remove ../kingdoms-harvest-wt/prueba-arte && git branch -D prueba/a
 | Objetos de recolección (saco, huevos, leche, lana) | `client/public/assets/b/pickups/<id>.webp` | `client/src/game/hub/hubPickups.js:18` |
 | Hub: cielo, base y primer plano | `client/public/assets/b/hub/{sky_calm,sky_storm,base,fg}.webp` | `client/src/game/hub/hubLayout.js:109-112` |
 | Edificios del hub | `client/public/assets/b/buildings/<id>.webp` | `hubLayout.js:113` |
+| Edificios del hub: tramo medio / alto y obra | `client/public/assets/b/buildings/<id>_medio.webp`, `<id>_alto.webp`, `<id>_obra.webp` (claves `hubb_bld_<id>_medio`, `_alto`, `_obra`) | `hubLayout.js` (`HUB_TEXTURES`, `variantKey`); regla en `docs/art-direction/hub-tramos-nivel.md` |
 | Trabajadores del hub | `client/public/assets/b/workers/<tipo>_<pose>.webp` | `hubLayout.js:115` |
 | Héroes y enemigos B (combate de perfil) | `client/public/assets/b/{heroes,enemies}/*.webp`, fondos en `assets/b/bg/` | escena de combate B |
 | Piezas de interfaz (marco, botones, anillo de retrato) | `client/public/assets/b/ui/*.webp` | componentes de `ui_kit_b` (etapa B) |
