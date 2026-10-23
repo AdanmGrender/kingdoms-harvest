@@ -11,7 +11,7 @@ IDS=("$@"); [ ${#IDS[@]} -eq 0 ] && IDS=("${!H[@]}")
 for id in "${IDS[@]}"; do
   for v in medio alto obra; do
     if [ -f "$R/tier_${id}_${v}.png" ]; then
-      p "$R/tier_${id}_${v}.png" "$B/${id}_${v}.webp" --min-hole 0.00001 --pad 0.01 --height "${H[$id]}"
+      p "$R/tier_${id}_${v}.png" "$B/${id}_${v}.webp" --min-hole 0.00001 --clean 110 --margin 2 --height "${H[$id]}"
     fi
   done
 done

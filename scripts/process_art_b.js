@@ -22,7 +22,7 @@ const fs = require('fs');
 const path = require('path');
 
 function parseArgs(argv) {
-  const a = { tol: 38, height: 0, width: 0, flip: false, scene: false, keepRatio: 0.12, minHole: 0.0004, crop: null, erase: [], fadeRight: 0, pad: 0.02 };
+  const a = { tol: 38, height: 0, width: 0, flip: false, scene: false, keepRatio: 0.12, minHole: 0.0004, crop: null, erase: [], fadeRight: 0, pad: 0.02, clean: 0, margin: 0 };
   const pos = [];
   for (let i = 2; i < argv.length; i++) {
     const t = argv[i];
@@ -36,6 +36,8 @@ function parseArgs(argv) {
     else if (t === '--erase') a.erase.push(argv[++i].split(',').map(Number)); // x,y,w,h (coords del original) → pintado con color de fondo
     else if (t === '--fade-right') a.fadeRight = Number(argv[++i]); // fracción del ancho final que se desvanece (humo cortado por el borde)
     else if (t === '--pad') a.pad = Number(argv[++i]);
+    else if (t === '--clean') a.clean = Number(argv[++i]); // alfa mínimo (0-255) que sobrevive tras el recorte: limpia el halo semitransparente del fondo
+    else if (t === '--margin') a.margin = Number(argv[++i]); // px transparentes (lados y arriba; 1 px abajo) añadidos tras escalar, dentro de --height
     else if (t === '--min-hole') a.minHole = Number(argv[++i]); // fracción del área: huecos de fondo cerrados más chicos sobreviven
     else pos.push(t);
   }
@@ -181,7 +183,10 @@ async function main() {
   let info = {};
   if (!a.scene) {
     info = cutout(img, a.tol, a.keepRatio, a.minHole);
-    img = cropImg(img, ...bbox(img, a.pad));
+    if (a.clean) {
+      for (let i = 3; i < img.data.length; i += 4) if (img.data[i] < a.clean) img.data[i] = 0;
+      img = cropImg(img, ...bbox(img, 0)); // recorte justo al contenido (alfa > 8): el margen transparente se añade al final
+    } else img = cropImg(img, ...bbox(img, a.pad));
   }
   if (a.flip) img = flipImg(img);
   if (a.fadeRight > 0) {
@@ -191,9 +196,15 @@ async function main() {
     }
   }
   let nw = img.width, nh = img.height;
-  if (a.height) { nh = a.height; nw = Math.round(img.width * (a.height / img.height)); }
+  const m = a.margin;
+  if (a.height) { nh = a.height - (m ? m + 1 : 0); nw = Math.round(img.width * (nh / img.height)); }
   else if (a.width) { nw = a.width; nh = Math.round(img.height * (a.width / img.width)); }
   if (nw !== img.width || nh !== img.height) img = resize(img, nw, nh);
+  if (m) { // marco transparente: m px a los lados y arriba, 1 px abajo (el pie queda en la última fila útil)
+    const out = mk(img.width + 2 * m, img.height + m + 1);
+    for (let y = 0; y < img.height; y++) img.data.copy(out.data, ((y + m) * out.width + m) * 4, y * img.width * 4, (y + 1) * img.width * 4);
+    img = out; nw = img.width; nh = img.height;
+  }
   fs.mkdirSync(path.dirname(a.out), { recursive: true });
   const s = sharp(img.data, { raw: { width: img.width, height: img.height, channels: 4 } });
   await (a.out.endsWith('.webp') ? s.webp({ quality: 88, alphaQuality: 95 }) : a.out.endsWith('.jpg') ? s.flatten().jpeg({ quality: 88, mozjpeg: true }) : s.png({ compressionLevel: 9 })).toFile(a.out);
