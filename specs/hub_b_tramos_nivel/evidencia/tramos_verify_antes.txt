@@ -1,0 +1,61 @@
+✓ barn_medio.webp 405×224 25 KB aspecto 105 % dcx 0.1 %
+✓ barn_alto.webp 402×224 29 KB aspecto 105 % dcx 0.1 %
+✓ barn_obra.webp 386×224 32 KB aspecto 101 % dcx 0.1 %
+✓ barracks_medio.webp 488×240 35 KB aspecto 101 % dcx 0.2 %
+✓ barracks_alto.webp 458×240 34 KB aspecto 95 % dcx 0.2 %
+✓ barracks_obra.webp 479×240 41 KB aspecto 99 % dcx 0.2 %
+✓ embassy_medio.webp 346×416 44 KB aspecto 98 % dcx 0.1 %
+✗ embassy_alto.webp 337×416 47 KB aspecto 95 % dcx 0.1 %
+    R13 esquina superior del contenido opaca (2,2) alpha 255: fondo sin recortar
+    R13 primera fila de contenido opaca en 100 % de su ancho (> 60 %): fondo sin recortar
+✓ embassy_obra.webp 346×416 52 KB aspecto 98 % dcx 0.1 %
+✓ farm_plot_medio.webp 318×240 25 KB aspecto 98 % dcx 0.2 %
+✗ farm_plot_alto.webp 321×240 20 KB aspecto 99 % dcx 0.2 %
+    R13 esquina superior del contenido opaca (2,2) alpha 255: fondo sin recortar
+    R13 primera fila de contenido opaca en 100 % de su ancho (> 60 %): fondo sin recortar
+✓ farm_plot_obra.webp 324×240 27 KB aspecto 100 % dcx 0.2 %
+✓ house_medio.webp 307×208 20 KB aspecto 101 % dcx 0.7 %
+✓ house_alto.webp 329×208 22 KB aspecto 108 % dcx 0.7 %
+✓ house_obra.webp 324×208 25 KB aspecto 106 % dcx 0.7 %
+✓ library_medio.webp 363×448 47 KB aspecto 107 % dcx 0.1 %
+✓ library_alto.webp 344×448 41 KB aspecto 101 % dcx 0.1 %
+✓ library_obra.webp 336×448 50 KB aspecto 99 % dcx 0.1 %
+✓ market_medio.webp 383×256 37 KB aspecto 109 % dcx 0.3 %
+✓ market_alto.webp 398×256 38 KB aspecto 113 % dcx 0.3 %
+✓ market_obra.webp 397×256 43 KB aspecto 113 % dcx 0.3 %
+✓ mill_medio.webp 265×368 28 KB aspecto 102 % dcx 0.2 %
+✓ mill_alto.webp 237×368 27 KB aspecto 91 % dcx 0.2 %
+✓ mill_obra.webp 285×368 34 KB aspecto 109 % dcx 0.2 %
+✓ mine_medio.webp 343×256 26 KB aspecto 99 % dcx 0.1 %
+✓ mine_alto.webp 391×256 32 KB aspecto 113 % dcx 0.2 %
+✓ mine_obra.webp 329×256 31 KB aspecto 95 % dcx 0.1 %
+✓ sawmill_medio.webp 327×304 32 KB aspecto 107 % dcx 0.2 %
+✗ sawmill_alto.webp 305×304 30 KB aspecto 100 % dcx 0.2 %
+    R13 esquina superior del contenido opaca (2,2) alpha 255: fondo sin recortar
+    R13 primera fila de contenido opaca en 100 % de su ancho (> 60 %): fondo sin recortar
+✓ sawmill_obra.webp 312×304 33 KB aspecto 102 % dcx 0.2 %
+✓ smithy_medio.webp 293×304 28 KB aspecto 100 % dcx 0.5 %
+✓ smithy_alto.webp 286×304 27 KB aspecto 98 % dcx 0.5 %
+✓ smithy_obra.webp 309×304 34 KB aspecto 106 % dcx 0.5 %
+✓ stable_medio.webp 266×272 24 KB aspecto 96 % dcx 0.4 %
+✗ stable_alto.webp 329×272 25 KB aspecto 119 % dcx 0.3 %
+    R15 aspecto 118.8 % del bajo (±15 %)
+✓ stable_obra.webp 278×272 31 KB aspecto 100 % dcx 0.4 %
+✓ tavern_medio.webp 314×320 31 KB aspecto 103 % dcx 0.5 %
+✓ tavern_alto.webp 283×320 27 KB aspecto 92 % dcx 0.5 %
+✓ tavern_obra.webp 332×320 38 KB aspecto 108 % dcx 0.5 %
+✓ throne_room_medio.webp 466×608 74 KB aspecto 92 % dcx 0.1 %
+✓ throne_room_alto.webp 478×608 80 KB aspecto 94 % dcx 0.1 %
+✓ throne_room_obra.webp 519×608 96 KB aspecto 103 % dcx 0.1 %
+✓ tower_medio.webp 335×288 26 KB aspecto 99 % dcx 0.4 %
+✓ tower_alto.webp 333×288 29 KB aspecto 98 % dcx 0.4 %
+✓ tower_obra.webp 354×288 33 KB aspecto 104 % dcx 0.4 %
+✓ trap_medio.webp 163×160 11 KB aspecto 102 % dcx 0.0 %
+✗ trap_alto.webp 217×160 15 KB aspecto 136 % dcx 0.1 %
+    R15 aspecto 135.6 % del bajo (±15 %)
+✓ trap_obra.webp 177×160 13 KB aspecto 111 % dcx 0.0 %
+✓ wall_medio.webp 372×208 23 KB aspecto 102 % dcx 0.0 %
+✓ wall_alto.webp 382×208 24 KB aspecto 104 % dcx 0.0 %
+✓ wall_obra.webp 364×208 24 KB aspecto 99 % dcx 0.0 %
+
+51 webp de tramo verificados, 5 con fallos, 1745 KB en total.

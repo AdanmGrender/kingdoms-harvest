@@ -18,7 +18,12 @@ Orden: lógica pura y escena (sin webp nuevos) → arte con puerta de p-kh → i
 
 ## Bloqueado
 
-T10 (puerta de arte) pendiente de p-kh. Estado tras la corrida del 2026-10-22 (noche):
+T10 (puerta de arte) pendiente de p-kh. Corrección del 2026-10-22 (fondo gris sin recortar en embassy_alto, farm_plot_alto y sawmill_alto, aviso de Central):
+- Causa: `scripts/process_art_b.js:63-69`: el color de fondo era la mediana de las 4 esquinas (índice 1 de 4 ordenados); en esos 3 dibujos crudos el edificio toca el borde inferior, las 2 esquinas inferiores son contenido oscuro (p. ej. embassy_alto 54,45,40 / 67,62,58) y el "fondo" salía oscuro, así que el gris claro (≈197) no se recortaba. Arreglo: con `--clean` (solo el pipeline de tramos, `process_art_b.js:189`) el fondo es la mediana de la fila superior; sin `--clean` el comportamiento no cambia. Reprocesados los 51 desde raw (`bash art-b/tramos/process.sh`), sin Gemini.
+- `scripts/verify_tiers_b.js:53-63`: R13 ahora mide DENTRO del margen: las 2 esquinas superiores del bbox del contenido (alpha > 8) deben tener alpha ≤ 8 y la primera fila de contenido no puede ser opaca en más del 60 % de su ancho (las esquinas inferiores no se miden: library_alto tiene base recta legítima, 280 px opacos en su última fila). No se relajó nada: se añadieron comprobaciones.
+- Evidencia ANTES (verify nuevo sobre los webp viejos): `evidencia/tramos_verify_antes.txt` -> 5 con fallos: embassy_alto, farm_plot_alto y sawmill_alto fallan R13 (esquina superior (2,2) alpha 255 y primera fila 100 % opaca), más stable_alto y trap_alto por R15. DESPUÉS: `evidencia/tramos_verify.txt` -> 51 verificados, 2 con fallos (solo R15: stable_alto 119 %, trap_alto 136 %), 1742 KB; embassy_alto 350×416, farm_plot_alto 328×240, sawmill_alto 334×304, todos ✓; fila 6 de alpha (px con contenido): embassy_alto 333/337 -> 21/350 y sawmill_alto 301/305 -> 4/334 (medido antes/después); farm_plot_alto después 18/328.
+- Hojas regeneradas con `scripts/contact_sheet_b.js --cols 4 --tile 200` (`tramos_contacto.webp`, 1676×4077, 17×4) y `--tile 420` (`tramos_anclas.webp`, 1733×1391).
+Estado tras la corrida del 2026-10-22 (noche):
 - T9 hecha: 51/51 webp; 2 con R15 (stable_alto 119 %, trap_alto 136 %) listados como dudosos; mill_alto pasa R15 pero queda en 91 % del aspecto del bajo (< 92 %). Si p-kh rechaza alguno, los rehace Central por la web de Gemini (la API sigue en 402).
 - Nota técnica: en Windows `sharp` retiene el handle de los webp abiertos para medirlos; el orquestador de scratch usa `sharp.cache(false)`.
 - Por retomar tras `APROBADO`: T11–T13.

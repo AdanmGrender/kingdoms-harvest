@@ -5,7 +5,9 @@
  *   node scripts/verify_tiers_b.js [id1 id2 ...]      (sin args = los 17 edificios)
  *
  * Por cada <id>_{medio,alto,obra}.webp existente comprueba contra <id>.webp:
- *   R13 4 esquinas alpha 0 y borde exterior de 1 px 100 % transparente
+ *   R13 4 esquinas alpha 0 y borde exterior de 1 px 100 % transparente; y DENTRO del margen: las 2 esquinas superiores del bbox
+ *       del contenido (alpha > 8) en alpha ≤ 8 (las inferiores pueden ser base recta) y la primera fila de contenido opaca en ≤ 60 % de su ancho
+ *       (detecta el fondo sin recortar, que el margen transparente de process_art_b.js --margin disimula)
  *   R14 pie en el último 2 % de alto (alguna fila con alpha > 8)
  *   R15 relación de aspecto a ±15 % del bajo
  *   R16 centro horizontal del contenido (alpha > 8) a ≤ 6 % del ancho respecto del bajo
@@ -48,6 +50,16 @@ function checkImage(img) {
   for (let x = 0; x < w; x++) { border = Math.max(border, a(x, 0), a(x, h - 1)); }
   for (let y = 0; y < h; y++) { border = Math.max(border, a(0, y), a(w - 1, y)); }
   if (border !== 0) errs.push(`R13 borde exterior no transparente (alpha máx ${border})`);
+  // R13 dentro del margen: bbox del contenido (alpha > ALPHA)
+  let x0 = w, x1 = -1, y0 = h, y1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (a(x, y) > ALPHA) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  if (x1 >= 0) {
+    for (const [x, y] of [[x0, y0], [x1, y0]]) if (a(x, y) > ALPHA) { errs.push(`R13 esquina superior del contenido opaca (${x},${y}) alpha ${a(x, y)}: fondo sin recortar`); break; }
+    let opaque = 0;
+    for (let x = x0; x <= x1; x++) if (a(x, y0) > 200) opaque++;
+    const frac = opaque / (x1 - x0 + 1);
+    if (frac > 0.6) errs.push(`R13 primera fila de contenido opaca en ${(frac * 100).toFixed(0)} % de su ancho (> 60 %): fondo sin recortar`);
+  }
   const from = Math.floor(h * 0.98);
   let foot = false;
   for (let y = from; y < h && !foot; y++) for (let x = 0; x < w; x++) if (a(x, y) > ALPHA) { foot = true; break; }

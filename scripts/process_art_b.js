@@ -58,11 +58,15 @@ function flipImg(img) {
   return out;
 }
 
-function cutout(img, tol, keepRatio, minHoleFrac = 0.0004) {
+function cutout(img, tol, keepRatio, minHoleFrac = 0.0004, topBg = false) {
   const { width: W, height: H, data } = img;
   const px = (i) => [data[i * 4], data[i * 4 + 1], data[i * 4 + 2]];
   const corners = [0, W - 1, (H - 1) * W, H * W - 1].map(px);
-  const med = [0, 1, 2].map((c) => corners.map((p) => p[c]).sort((a, b) => a - b)[1]);
+  let med = [0, 1, 2].map((c) => corners.map((p) => p[c]).sort((a, b) => a - b)[1]);
+  // topBg: color de fondo = mediana de la fila superior. Con el edificio apoyado en el borde inferior (dibujo crudo que toca
+  // abajo) las 2 esquinas inferiores son contenido oscuro y la mediana de las 4 esquinas daba un "fondo" oscuro: el gris claro real
+  // no se recortaba (embassy/farm_plot/sawmill_alto).
+  if (topBg) med = [0, 1, 2].map((c) => { const v = []; for (let x = 0; x < W; x++) v.push(data[x * 4 + c]); return v.sort((a, b) => a - b)[v.length >> 1]; });
   const dist = (i) => {
     const o = i * 4;
     return Math.hypot(data[o] - med[0], data[o + 1] - med[1], data[o + 2] - med[2]);
@@ -182,7 +186,7 @@ async function main() {
   if (a.crop) img = cropImg(img, ...a.crop);
   let info = {};
   if (!a.scene) {
-    info = cutout(img, a.tol, a.keepRatio, a.minHole);
+    info = cutout(img, a.tol, a.keepRatio, a.minHole, a.clean > 0);
     if (a.clean) {
       for (let i = 3; i < img.data.length; i += 4) if (img.data[i] < a.clean) img.data[i] = 0;
       img = cropImg(img, ...bbox(img, 0)); // recorte justo al contenido (alfa > 8): el margen transparente se añade al final
