@@ -49,6 +49,13 @@ function measure() {
       iconCenterDx: ib ? +(cx(ib) - cx(box)).toFixed(1) : null,
       iconBox: ib,
       clipped,
+      iconSize: ib ? ib.w : null,
+      vOverflow: b.scrollHeight - b.clientHeight,
+      iconInside: ib ? (ib.x >= box.x && ib.right <= box.right && ib.y >= box.y && ib.bottom <= box.bottom) : null,
+      contentInside: [...b.children].filter((c) => !c.className.toString().includes('absolute')).every((c) => {
+        const cb = c.getBoundingClientRect();
+        return cb.top >= box.y - 0.5 && cb.bottom <= box.bottom + 0.5 && cb.left >= box.x - 0.5 && cb.right <= box.right + 0.5;
+      }),
       hit: !!top && top.closest('button') === b,
       hitBy: top ? (top.closest('button') ? label(top.closest('button')) : top.tagName) : null,
     };
@@ -145,6 +152,12 @@ function checks(m, vp) {
   add('quest_texto_completo', !!(q && q.texto && q.texto.scrollHeight <= q.texto.clientHeight + 1),
     q && q.texto ? `scrollHeight=${q.texto.scrollHeight} clientHeight=${q.texto.clientHeight}` : 'sin texto');
   const small = all.filter((b) => b.w < 44 || b.h < 44);
+  const castle = (m.groups.izq || []).find((b) => /Bastión/.test(b.label));
+  add('castle_icono_40', !!castle && castle.iconSize >= 40, castle ? `ícono ${castle.iconSize}px (>= 40)` : 'Bastión no encontrado en riel izq');
+  const rails = [...(m.groups.izq || []), ...(m.groups.der || [])];
+  const over = rails.filter((b) => b.vOverflow > 0 || b.iconInside === false || !b.contentInside);
+  add('riel_contenido_dentro_del_marco', over.length === 0,
+    over.map((b) => `${b.group}:${b.label} vOverflow=${b.vOverflow} iconInside=${b.iconInside} contentInside=${b.contentInside}`).join(' | ') || `ok (scrollHeight<=clientHeight, ícono y etiqueta dentro del marco en ${rails.length} botones)`);
   add('tactiles_44', small.length === 0, small.map((b) => `${b.group}:${b.label} ${b.w}x${b.h}`).join(' | ') || 'ok');
   const nohit = all.filter((b) => !b.hit);
   add('clickeables_elementFromPoint', nohit.length === 0, nohit.map((b) => `${b.group}:${b.label} tapado por ${b.hitBy}`).join(' | ') || 'ok');

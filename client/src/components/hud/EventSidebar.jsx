@@ -71,7 +71,7 @@ export default function EventSidebar() {
         className={activeEvent ? 'animate-pulse' : ''}
         title={activeEvent ? activeEvent.description : 'Sin evento activo'}
       >
-        <span className="font-numeric text-[12px] leading-tight tabular-nums" style={{ color: KH['brass-light'] }}>
+        <span className="font-numeric text-[12px] leading-[1.1] tabular-nums" style={{ color: KH['brass-light'] }}>
           {activeEvent ? formatCountdown(activeRemaining) : '—'}
         </span>
       </IconButton>
