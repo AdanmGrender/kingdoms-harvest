@@ -40,3 +40,6 @@ client/public/assets/kenney-medieval/
 /art-b/uikit/raw/
 /art-b/uikit/proc/
 /art-b/pickups/raw/
+
+# Perfil de Edge con la sesión de Google de gen_art_web.js (vive fuera del repo; por si acaso)
+gemini-web-profile/
