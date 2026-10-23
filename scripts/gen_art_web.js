@@ -36,7 +36,7 @@ const SEL = {
   // Menú "Cargas y herramientas" → opciones
   toolsBtn: /cargas y herramientas|uploads? and tools|upload|subir|herramientas|tools/i,
   createImage: /crear (una )?imagen|create image/i,
-  uploadFiles: /^(subir )?archivos?$|upload files?|subir archivos?/i,
+  uploadFiles: /^\s*(subir )?archivos?\s*$|upload files?|subir archivos?/i,
   aspectBtn: /relaci[oó]n de aspecto|aspect ratio/i,
   sendBtn: 'button[aria-label*="Enviar" i], button[aria-label*="Send" i]',
   // Resultado
@@ -129,10 +129,24 @@ async function debugShot(page, tag) {
 }
 
 // true si hay avatar (sesión); false si aparece "Iniciar sesión" o pasa el timeout.
+// Central: el avatar solo daba falsos positivos (login "✓" sin cookies de sesión en el perfil).
+// La sesión real se confirma por la cookie de sesión de Google (SID / __Secure-1PSID) + avatar visible.
+async function hasGoogleSessionCookie(page) {
+  const cookies = await page.context().cookies('https://gemini.google.com').catch(() => []);
+  return cookies.some((c) => c.name === 'SID' || c.name === '__Secure-1PSID');
+}
+
+// El selector del avatar casa con varios nodos y el primero puede estar oculto (menú móvil): basta uno visible.
+async function anyVisible(loc) {
+  const n = await loc.count().catch(() => 0);
+  for (let i = 0; i < n; i++) if (await loc.nth(i).isVisible().catch(() => false)) return true;
+  return false;
+}
+
 async function hasSession(page, timeoutMs) {
   const t0 = Date.now();
   while (Date.now() - t0 < timeoutMs) {
-    if (await page.locator(SEL.avatar).first().isVisible().catch(() => false)) return true;
+    if (await hasGoogleSessionCookie(page) && await anyVisible(page.locator(SEL.avatar))) return true;
     await sleep(1000);
   }
   return false;
@@ -149,8 +163,15 @@ async function login() {
     }
     const t0 = Date.now();
     while (Date.now() - t0 < LOGIN_TIMEOUT_MS) {
-      // tras el login Google redirige a gemini.google.com; sondear el avatar solo ahí
-      if (/gemini\.google\.com/.test(page.url()) && await hasSession(page, 1500)) {
+      // Si ya hay cookie de sesión pero la pestaña quedó fuera de gemini (p. ej. accounts/myaccount.google.com),
+      // volver a gemini.google.com y recién ahí sondear el avatar.
+      if (!/^https:\/\/gemini\.google\.com\//.test(page.url()) && await hasGoogleSessionCookie(page)) {
+        await sleep(3000); // margen por si el flujo de Google aún está redirigiendo
+        if (!/^https:\/\/gemini\.google\.com\//.test(page.url()) && await hasGoogleSessionCookie(page)) {
+          await page.goto(SEL.url, { waitUntil: 'domcontentloaded' }).catch(() => {});
+        }
+      }
+      if (/^https:\/\/gemini\.google\.com\//.test(page.url()) && await hasSession(page, 1500)) {
         await sleep(3000); // dejar que se persistan las cookies en el perfil
         console.log('✓ sesión iniciada; perfil guardado en el perfil de Edge (fuera del repo)');
         return EXIT.OK;
@@ -169,7 +190,9 @@ async function assertNoLimit(page) {
 }
 
 async function clickMenuItem(page, name) {
-  const item = page.getByRole('menuitem', { name }).first();
+  // La UI usa menuitem / menuitemcheckbox ("Crear imagen") / menuitemradio (aspectos) según el ítem.
+  const item = page.locator('[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]')
+    .filter({ hasText: name }).first();
   await item.waitFor({ state: 'visible', timeout: 10000 });
   await item.click();
 }
