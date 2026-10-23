@@ -195,7 +195,7 @@
         "vitest completo verde y build OK"
       ],
       "sdd": false,
-      "status": "in_progress",
+      "status": "done",
       "assignee": "implementer"
     }
   ]

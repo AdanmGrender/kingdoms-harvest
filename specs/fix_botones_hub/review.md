@@ -1,48 +1,42 @@
 # Review — fix_botones_hub (#13)
 
-Tarea: t_c5b7c877 · Rama: feature/fix_botones_hub · Commit revisado: 9cb135f · Base: feat/art-direction-b (2f048a1)
-Revisor: reviewer · Ronda: 1 (artefacto + ejecución) · Sin spec SDD (sdd:false); criterios = acceptance de feature_list.json y del body de la tarea.
+Tarea: t_c5b7c877 · Rama: feature/fix_botones_hub · Commit revisado: 9aa3845 (ronda 2, sobre 9cb135f) · Base: feat/art-direction-b (2f048a1)
+Revisor: reviewer · Ronda: 2 (ejecución) · Sin spec SDD (sdd:false); criterios = acceptance de feature_list.json y del body de la tarea, más el ajuste obligatorio de p-kh (QuestRail 360 px).
 
 ## Veredicto
 
-CHANGES_REQUESTED.
+APPROVED.
 
-Motivo: regresión de una decisión aprobada en ui_kit_b. El commit quita `iconSize={a.id === 'castle' ? 40 : 32}` de QuickActionsSidebar y el Bastión vuelve a 32 px.
+Las cuatro observaciones de la ronda 1 quedaron resueltas y reproducidas: Bastión a 40 px, sin desborde vertical, QuestRail sin recorte y vitest + build en verde. Hay tres notas no bloqueantes (abajo).
 
-## Hallazgos bloqueantes
+## Trazabilidad (acceptance de feature_list.json + body)
 
-1. `client/src/components/hud/QuickActionsSidebar.jsx` (riel izquierdo, `ACTIONS.map`, antes línea 58, eliminada en 9cb135f): el Bastión (`castle`, línea 11) pasó a 32 px. Esto incumple la regla de ui_kit_b: sprites de edificio a 40 px o más con nombre visible (`specs/ui_kit_b/review.md:8`, `:19`, `:103`; `specs/ui_kit_b/tasks.md` T33). BottomNavBar.jsx:31 ya usa 40 px para el mismo Bastión.
-   Reproducido: `git diff feat/art-direction-b...feature/fix_botones_hub -- client/src/components/hud/QuickActionsSidebar.jsx` muestra la línea `-  iconSize={a.id === 'castle' ? 40 : 32}` sin reemplazo.
-   Qué hace falta: restaurar el tamaño 40 para `castle` (por ejemplo con `iconSize` de la constante de ACTIONS, o con la misma expresión), sin tocar los demás.
+- Columnas laterales: mismo ancho, alto y x (±1 px), gap constante. Reproducido en 412x860 y 360x740: izq 64x64 y der 64x52, `dispersión=0`, `gaps=[6,6,6,6,6]` (izq) y `[6,...]` (der). Ver `App.jsx:235` (`.kh-rail--right`) y `index.css:327-343`.
+- Ningún solape, todo dentro del viewport: `sin_solapes: ok`, `dentro_del_viewport: ok` en ambos viewports.
+- Ícono centrado (±2 px) y etiquetas sin recorte: `icono_centrado: ok`, `etiquetas_sin_recorte: ok`.
+- Fila de Operaciones: 4 botones visibles y clickeables (`elementFromPoint` devuelve el propio botón): `ops=4`, `clickeables_elementFromPoint: ok` (tras cerrar el popup de racha, ver nota 1).
+- Táctiles >= 44x44: `tactiles_44: ok` (riel 64x64/64x52, Operaciones 56x52/144x52/196x52).
+- Regla ui_kit_b (edificio >= 40 px): `castle_icono_40: ícono 40px` en el riel izquierdo. Restaurado en `QuickActionsSidebar.jsx:11` (`iconSize: 40`) y `:58` (`iconSize={a.iconSize}`).
+- Desborde del botón Bastión: `riel_contenido_dentro_del_marco: ok` (scrollHeight <= clientHeight, ícono y etiqueta dentro del marco en 14 botones).
+- QuestRail (ajuste de p-kh): `QuestRail.jsx:13-27` sin `overflow-x-auto`, botón `min-w-0 flex-1 text-left`, `line-clamp-2`, `title={label}`, «Objetivo:» con `hidden min-[400px]:inline`. Medido: `quest_sin_recorte: ok` y `quest_texto_completo: ok` en 360 y 412 ("Despertar del Bastión", 1 línea, sin recorte).
+- Sin cambios de colores/estados ni de qué botones existen. Duplicados Logros×2, Mundo×2, Bastión×2 sin tocar.
+- Build: `vite build` OK (salida a carpeta temporal).
+- Feature 13: `in_progress` en feature_list.json (se marca `done` en el commit de aprobación).
 
-2. Consecuencia de layout a resolver junto con (1): el botón es `.kh-rail > .kh-iconbtn` de 64×52 con `border 2px` y `padding 2px` (index.css:337-343). Dentro quedan 44 px de alto útiles. Un ícono de 40 px más una etiqueta de 12 px con `gap: 2px` (index.css:315) suman ~55 px, así que el contenido desborda el marco. El implementador tiene que medirlo, no asumirlo: `scrollHeight <= clientHeight` y `getBoundingClientRect` del ícono dentro de su marco en 412x860 y 360x740. Si desborda, opciones: subir la altura del riel izquierdo (solo si el riel derecho y la fila de Operaciones siguen sin solapes), o bajar el padding/gap solo para el botón castle. No cambiar colores ni arte.
+## Ejecución (reviewer, ronda 2)
 
-## Trazabilidad (criterios del body / acceptance)
-
-- Columnas laterales mismo ancho/alto/x (±1 px), gap constante: OK en la evidencia (`specs/fix_botones_hub/evidencia/medidas_despues.json`, 412 y 360: `izq_mismo_*`, `der_mismo_*` ok; `gaps=[6,6,6,6,6]`). Pero el riel izquierdo sigue midiendo ícono 32 px; la medida no cubre el requisito de 40 px. Pendiente de (1).
-- Sin solapes, todo dentro del viewport: OK en la evidencia (`fallan: []` en ambos viewports). Revalidar tras (1)/(2).
-- Ícono centrado (±2 px) y etiquetas sin recorte: OK en la evidencia para 412 y 360, incluido `quest_sin_recorte` / `quest_texto_completo` (ajuste pedido por p-kh en QuestRail: `overflow-hidden`, `line-clamp-2`, `title`, "Objetivo:" oculto <400 px). Revisado en el diff: QuestRail.jsx cumple lo pedido.
-- Fila de Operaciones: 4 botones visibles y clickeables: OK (`ops=4`). Diff de BastionHub.jsx: `h-[52px]`, `w-14 shrink-0` para los chicos.
-- Táctiles >= 44x44: 64x52 en riel, 56x52 en Operaciones: OK por el tamaño declarado. Verificar en medidas con el ajuste (2).
-- Sin cambios de colores/estados ni de qué botones existen: el diff no toca estilos de color. Eliminado `style={{ width: 52 }}` en EventSidebar y el `SpriteIcon` pasa a `icon="flame"` (tamaño 32 por default, antes 28). Aceptable, es un tamaño de ícono no de edificio.
-- Duplicados Logros×2, Mundo×2, Bastión×2: no tocados. Correcto.
-- Feature_list.json: entrada 13 en `in_progress` (no `done`, correcto hasta aprobar).
-
-## Ejecución (reviewer)
-
-- `npx vitest run` en client/ (worktree): 18 de 19 archivos OK, 274/274 tests. 1 archivo falla al cargar: `src/tests/iconSheet.test.js` → `Cannot find module 'sharp'`. `sharp` está en el package.json RAÍZ (`../package.json:20`), no en client/, y no existe en `client/node_modules`. Es un problema del entorno de la worktree (falta `npm ci` en la raíz o el test no debería importar sharp en client); no es un defecto del commit, pero el implementador debe dejar la evidencia de `vitest 289/289` reproducible o aclarar cómo corrió (NODE_PATH no alcanza para un import ESM). Probé `NODE_PATH` hacia el repo principal: mismo resultado, sin sharp allí.
-- `npx vite build`: no lo pude correr en primer plano (el comando se detecta como servidor). Queda pendiente la verificación de build; el implementador reporta OK, hay que repetirlo en background o con `vite build` directo tras el cambio.
-- No se corrió Playwright (medidas) en esta ronda; las medidas de la evidencia son del commit 9cb135f y deben regenerarse tras el cambio.
-
-## Cambios requeridos
-
-1. QuickActionsSidebar.jsx: restaurar `iconSize` 40 para `castle` (Bastión). Única excepción de tamaño de edificio en el riel izquierdo.
-2. index.css / QuickActionsSidebar.jsx: resolver el desborde vertical del botón castle con ícono 40 (medir `scrollHeight` y la caja del ícono). Sin solapes con la fila de Operaciones (y ≥ 604 px) ni con el riel derecho.
-3. Regenerar `specs/fix_botones_hub/evidencia/medidas_despues.json` y `hub_despues_412.webp` / `hub_despues_360.webp` con las aserciones en verde, agregando una aserción de tamaño de ícono castle >= 40.
-4. Dejar reproducible `vitest` completo (iconSheet.test.js: aclarar en el summary cómo se instala sharp, o gatear el test) y correr `vite build` con salida.
-5. No commitear `client/vite.evid.config.js` (untracked, solo evidencia local).
+- `NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run` en client/: 19/19 archivos, 289/289 tests.
+- `vite build` en client/ (outDir temporal): built OK, sin errores (solo avisos de tamaño de chunk preexistentes).
+- Medición Playwright independiente (copia del script `specs/fix_botones_hub/evidencia/medir_hud.mjs`, salida fuera del repo, sin tocar la evidencia del implementador): 27 aserciones en 412x860 y 360x740, todas OK, consola 0 errores. Las medidas coinciden con `medidas_despues.json` del implementador (mismas coordenadas en ambos viewports).
+- Servidor de medición propio: Vite en :5192 con proxy a server ya levantado en :3001, config en scratch (no en el repo).
 
 ## Notas no bloqueantes
 
-- Calendario y Pase comparten el ícono `scroll` y no se distinguen sin etiqueta. Fuera de alcance, ya anotado por p-kh; feature de arte aparte.
-- Duplicados de botones (Logros×2, Mundo×2, Bastión×2): decisión de diseño, no tocar en esta feature.
+1. Popup de racha diaria: en un server nuevo aparece «Racha de 3 días … Toca para cerrar» (cuadro en y≈673-764) y tapa la fila de Operaciones; con él, `clickeables_elementFromPoint` falla en 4 botones. El script de evidencia no lo cierra. Sugerido, no requerido: agregar a `medir_hud.mjs` un paso que toque «Toca para cerrar» antes de medir, para que la evidencia sea reproducible en cualquier estado del server. Registrado en PAQUETE.md (Trampas).
+2. Bastión del riel izquierdo: el implementador subió la altura de todo el riel izquierdo a 64 px (no a 52 px como sugería la ronda 1). Es coherente (mismo alto en la columna, táctil OK, sin solapes) y queda documentado en `index.css:335-336`. Aceptado.
+3. vitest: el test `iconSheet.test.js` necesita `sharp`, que solo está en la raíz del repo principal. El comando con `NODE_PATH` está documentado en el summary y en PAQUETE.md, pero depende de un `node_modules` externo a la worktree. Aceptado como caveat de entorno (ya conocido en ui_kit_b).
+4. Fuera de alcance (p-kh): Calendario y Pase comparten el ícono `scroll`; falta un ícono de calendario/libro en la hoja. Feature de arte aparte.
+
+## Cambios requeridos
+
+Ninguno.
