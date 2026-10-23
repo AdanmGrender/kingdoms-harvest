@@ -181,6 +181,7 @@ function webCommand(a, failedIds) {
   if (a.manifest) {
     parts.push('--manifest', q(a.manifest));
     if (failedIds.length) parts.push('--only', q(failedIds.join(',')));
+    if (a.out) parts.push('--out', q(a.out)); // gen_art_web aplica --out solo si queda un único ítem, igual que acá
   } else {
     parts.push('--prompt', q(a.prompt), '--out', q(a.out || ''), '--aspect', q(a.aspect), '--kind', q(a.kind));
     for (const r of a.refs) parts.push('--ref', q(r));
