@@ -62,3 +62,19 @@ Salen de esta prueba y valen para las 48 restantes (y para la nueva `alto` del b
 6. **Obra** (el barn la resolvió bien): la silueta del bajo, con andamios y escaleras alrededor, lonas, cabios a la vista en
    parte del tejado, polea, bloques de piedra y tablones apilados al pie. En edificios de piedra (torre, muralla, sala del
    trono, mina…) pedir además "a stretch of wall half laid, stones missing in a stepped edge", que en el barn quedó flojo.
+
+## Hoja completa (T10)
+
+- **Fecha:** 2026-10-25
+- **Autor:** el owner del proyecto, por el chat con Central ("Aprobar la hoja de tramos"). El spec pide a p-kh (requirements.md:16, :108, :112, :123), pero el owner resolvió la puerta con su propia autoridad, que está por encima de la de p-kh. No se consultó a p-kh porque el cupo semanal de Anthropic estaba al 96 %.
+- **Hoja:** `evidencia/tramos_contacto.webp` (17×4) y `evidencia/tramos_anclas.webp`, commit `3152265`. `tramos_verify.txt` da 51/51. Los fondos grises de embassy, farm_plot y sawmill `alto` ya están recortados; Central lo verificó midiendo el alpha.
+
+### Veredicto: `APROBADO`
+
+- **Rechazados:** ninguno. Por R23 no hay nada que regenerar.
+- **Dudosos aceptados tal cual:**
+  - `tier_trap_alto`: aspecto al 133 % (R15).
+  - `tier_stable_alto`: 118 %.
+  - `tier_mill_alto`: en el límite. Se rehízo por la web y el anterior quedó en `raw/_reemplazados/`.
+  - Los 7 sprites generados por la web de Gemini: posible variación de estilo, incluido el altarcito de la parcela alta.
+- **Si al verlos en el juego el owner pide cambios:** se rehacen con `scripts/gen_art_web.js` en una tarea aparte, sin frenar T11–T13.
