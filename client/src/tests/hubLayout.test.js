@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import {
   HUB_W,
   HUB_H,
@@ -373,14 +376,34 @@ describe('hubLayout — texto flotante y texturas (R29)', () => {
     expect(TOKEN_FONT_PX).toBe(14 * (HUB_W / 412));
   });
 
-  it('HUB_TEXTURES: capas, 17 edificios y 8 poses, claves hubb_* únicas bajo /assets/b/', () => {
-    expect(HUB_TEXTURES).toHaveLength(4 + 17 + 8);
+  it('HUB_TEXTURES: capas, 17 edificios * 4 y 8 poses, claves hubb_* únicas bajo /assets/b/', () => {
+    expect(HUB_TEXTURES).toHaveLength(4 + 17 * 4 + 8);
     expect(new Set(HUB_TEXTURES.map((t) => t.key)).size).toBe(HUB_TEXTURES.length);
     for (const t of HUB_TEXTURES) {
       expect(t.key.startsWith('hubb_')).toBe(true);
       expect(t.url).toMatch(/^\/assets\/b\/(hub|buildings|workers)\/[a-z_]+\.webp$/);
     }
-    for (const id of BUILDING_IDS) expect(HUB_TEXTURES.map((t) => t.key)).toContain(`hubb_bld_${id}`);
+    for (const id of BUILDING_IDS) {
+      expect(HUB_TEXTURES.map((t) => t.key)).toContain(variantKey(id, 'bajo'));
+      expect(HUB_TEXTURES.map((t) => t.key)).toContain(variantKey(id, 'medio'));
+      expect(HUB_TEXTURES.map((t) => t.key)).toContain(variantKey(id, 'alto'));
+      expect(HUB_TEXTURES.map((t) => t.key)).toContain(variantKey(id, 'obra'));
+    }
+  });
+
+  it('R132 — cada fila de HUB_TEXTURES de edificios tiene su <id>[_variante].webp listado en la tabla del documento', () => {
+    const mdPath = path.resolve(process.cwd(), '../docs/art-direction/hub-tramos-nivel.md');
+    const mdContent = fs.readFileSync(mdPath, 'utf8');
+
+    // Verificar que los patrones de claves y nombres existen en el markdown
+    expect(mdContent).toContain('<id>.webp');
+    expect(mdContent).toContain('<id>_medio.webp');
+    expect(mdContent).toContain('<id>_alto.webp');
+    expect(mdContent).toContain('<id>_obra.webp');
+    expect(mdContent).toContain('hubb_bld_<id>');
+    expect(mdContent).toContain('hubb_bld_<id>_medio');
+    expect(mdContent).toContain('hubb_bld_<id>_alto');
+    expect(mdContent).toContain('hubb_bld_<id>_obra');
   });
 });
 

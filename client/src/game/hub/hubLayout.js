@@ -137,7 +137,10 @@ export const HUB_TEXTURES = [
   { key: 'hubb_sky_storm', url: '/assets/b/hub/sky_storm.webp' },
   { key: 'hubb_base', url: '/assets/b/hub/base.webp' },
   { key: 'hubb_fg', url: '/assets/b/hub/fg.webp' },
-  ...BUILDING_IDS.map((id) => ({ key: `hubb_bld_${id}`, url: `/assets/b/buildings/${id}.webp` })),
+  ...BUILDING_IDS.flatMap((id) => [...TIERS, 'obra'].map((v) => ({
+    key: variantKey(id, v),
+    url: `/assets/b/buildings/${id}${v === 'bajo' ? '' : '_' + v}.webp`,
+  }))),
   ...WORKER_KINDS.flatMap((kind) => ['a', 'b'].map((pose) => ({
     key: `hubb_wk_${kind}_${pose}`, url: `/assets/b/workers/${kind}_${pose}.webp`,
   }))),
