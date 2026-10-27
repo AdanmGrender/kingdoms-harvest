@@ -1,6 +1,8 @@
 const db = require('../config/database');
-const { CAMPAIGN, HERO_SKILLS, SWEEP } = require('../../../shared/gameConfig');
+const crypto = require('crypto');
+const { CAMPAIGN, HERO_SKILLS, SWEEP, COMBAT } = require('../../../shared/gameConfig');
 const { simulateRound } = require('./campaignSim');
+const { simulateRoundV2 } = require('./combat/engine');
 
 // Lazy requires (evitan ciclos con token/hero/daily/pass services)
 let _token, _hero, _daily, _player, _pass, _codex;
@@ -111,10 +113,38 @@ const campaignService = {
         atk: Math.round(60 * codexMult), hp: 200, maxHp: 200, energy: 0, energyMax: 100,
         skill: HERO_SKILLS.warrior, alive: true }];
     }
-    return {
+    const state = {
       round: 0, maxRounds: node.maxRounds, isBoss: !!node.isBoss, shield: 0,
       heroes, enemy: { hp: node.enemy.hp, maxHp: node.enemy.hp, dps: node.enemy.dps }, log: [],
     };
+    // Motor v1 (por defecto): el estado queda tal cual. Se lee COMBAT en cada llamada.
+    if (COMBAT.engineVersion !== 2) return state;
+
+    // Motor v2: def/spd del héroe (la guarnición, heroId null, lleva 0), enemies[] con
+    // `enemy` como alias del principal, y semilla guardada en el estado (run reproducible).
+    const statsBySlot = new Map((Array.isArray(squad) ? squad : []).map((h) => [h.slot, h.stats || {}]));
+    for (const h of state.heroes) {
+      const st = h.heroId == null ? {} : (statsBySlot.get(h.slot) || {});
+      h.def = st.def ?? 0;
+      h.spd = st.spd ?? 0;
+    }
+    const seed = crypto.randomBytes(4).readUInt32BE(0);
+    const src = Array.isArray(node.enemies) && node.enemies.length > 0 ? node.enemies : [node.enemy];
+    const enemies = src.map((e, i) => ({
+      id: `e${i}`, hp: e.hp, maxHp: e.hp, dps: e.dps, def: e.def ?? 0, spd: e.spd ?? 0,
+    }));
+    return {
+      ...state, engine: 2, seed, rng: seed, events: [], eventsVersion: 1, enemies,
+      enemy: { hp: enemies[0].hp, maxHp: enemies[0].maxHp, dps: enemies[0].dps },
+    };
+  },
+
+  // Motor por run: manda state.engine (no COMBAT.engineVersion), así un run a mitad
+  // de camino no cambia de reglas si el interruptor se mueve.
+  _engineFor(state) {
+    if (state.engine === undefined || state.engine === 1) return simulateRound;
+    if (state.engine === 2) return simulateRoundV2;
+    throw new Error('Motor de combate desconocido');
   },
 
   async enterNode(playerId, nodeId) {
@@ -160,7 +190,7 @@ const campaignService = {
 
     const state = JSON.parse(run.state);
     const node = nodeById(run.node_id);
-    const out = simulateRound(state, action); // puede lanzar (energía insuficiente)
+    const out = this._engineFor(state)(state, action); // puede lanzar (energía insuficiente / motor desconocido)
 
     await db('campaign_runs').where('id', runId).update({ state: JSON.stringify(out.state) });
 

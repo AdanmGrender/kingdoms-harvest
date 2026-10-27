@@ -1149,6 +1149,14 @@ const SEASON_PASS = {
 // snapshot de combate (campaignService._buildCombatState).
 const CODEX = { heroesPerStep: 3, atkPerStep: 0.01, maxSteps: 6 };
 
+// Motor de combate de campaña. engineVersion 1 = campaignSim.js (v1); 2 = combat/engine.js.
+// Pasar a 2 es decisión del owner, en commit propio. Volver a 1 revierte para runs nuevos.
+const COMBAT = {
+  engineVersion: 1,
+  defK: 100,                                   // daño = raw × K/(K+DEF)
+  threat: { warrior: 1.5, paladin: 1.3, rogue: 1.0, ranger: 0.7, mage: 0.5 },
+};
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -1191,4 +1199,5 @@ module.exports = {
   SYSTEM_UNLOCK_LEVEL,
   GALAXY_SYSTEMS,
   WARP_TURBULENCE_MULT,
+  COMBAT,
 };
