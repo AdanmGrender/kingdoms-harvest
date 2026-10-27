@@ -1,0 +1,1249 @@
+{
+  "label": "antes",
+  "tolerancias": {
+    "size": 1,
+    "x": 1,
+    "gap": 2,
+    "icon": 2
+  },
+  "resumen": [
+    {
+      "viewport": "412x860",
+      "fallan": [
+        "izq_mismo_alto",
+        "der_mismo_ancho",
+        "der_mismo_alto",
+        "der_mismo_x",
+        "sin_solapes",
+        "clickeables_elementFromPoint"
+      ],
+      "consolaErrores": 0
+    },
+    {
+      "viewport": "360x740",
+      "fallan": [
+        "izq_mismo_alto",
+        "der_mismo_ancho",
+        "der_mismo_alto",
+        "der_mismo_x",
+        "sin_solapes",
+        "clickeables_elementFromPoint"
+      ],
+      "consolaErrores": 0
+    }
+  ],
+  "results": [
+    {
+      "viewport": "412x860",
+      "captura": "hub_antes.webp 824x1720",
+      "aserciones": [
+        {
+          "id": "grupos_presentes",
+          "ok": true,
+          "detalle": "grupos=izq,der_arriba,der_abajo,nav ops=4"
+        },
+        {
+          "id": "izq_mismo_ancho",
+          "ok": true,
+          "detalle": "dispersión w=0 (tol 1)"
+        },
+        {
+          "id": "izq_mismo_alto",
+          "ok": false,
+          "detalle": "dispersión h=8 (tol 1)"
+        },
+        {
+          "id": "izq_mismo_x",
+          "ok": true,
+          "detalle": "dispersión x=0 (tol 1)"
+        },
+        {
+          "id": "der_mismo_ancho",
+          "ok": false,
+          "detalle": "dispersión w=11.6 (tol 1)"
+        },
+        {
+          "id": "der_mismo_alto",
+          "ok": false,
+          "detalle": "dispersión h=31.8 (tol 1)"
+        },
+        {
+          "id": "der_mismo_x",
+          "ok": false,
+          "detalle": "dispersión x=10.1 (tol 1)"
+        },
+        {
+          "id": "izq_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[8,8,8,8,8] (tol 2)"
+        },
+        {
+          "id": "der_arriba_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[8,8,8] (tol 2)"
+        },
+        {
+          "id": "der_abajo_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[8,8,8] (tol 2)"
+        },
+        {
+          "id": "nav_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[94,94] (tol 2)"
+        },
+        {
+          "id": "nav_laterales_mismo_tamano",
+          "ok": true,
+          "detalle": "Héroes:64x64 Bastión:72x72 Mundo:64x64"
+        },
+        {
+          "id": "nav_alineada_al_fondo",
+          "ok": true,
+          "detalle": "dispersión bottom=0 (tol 1)"
+        },
+        {
+          "id": "dentro_del_viewport",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "sin_solapes",
+          "ok": false,
+          "detalle": "der_abajo:Rankings × ops:Códice de colección (60×3) | der_abajo:Mercado × ops:Códice de colección (60×43) | TopResourceBar × QuestRail (412×45)"
+        },
+        {
+          "id": "icono_centrado",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "etiquetas_sin_recorte",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "tactiles_44",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "clickeables_elementFromPoint",
+          "ok": false,
+          "detalle": "ops:Códice de colección tapado por Mercado"
+        }
+      ],
+      "consolaErrores": [],
+      "medidas": {
+        "groups": {
+          "izq": [
+            {
+              "group": "izq",
+              "label": "Bastión",
+              "x": 8,
+              "y": 128,
+              "w": 70,
+              "h": 67.2,
+              "right": 78,
+              "bottom": 195.2,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 23,
+                "y": 134,
+                "w": 40,
+                "h": 40,
+                "right": 63,
+                "bottom": 174
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Bastión"
+            },
+            {
+              "group": "izq",
+              "label": "Marea",
+              "x": 8,
+              "y": 203.2,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 262.4,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 209.2,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 241.2
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Marea"
+            },
+            {
+              "group": "izq",
+              "label": "Misiones",
+              "x": 8,
+              "y": 270.4,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 329.6,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 276.4,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 308.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Misiones"
+            },
+            {
+              "group": "izq",
+              "label": "Construir",
+              "x": 8,
+              "y": 337.6,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 396.8,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 343.6,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 375.6
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Construir"
+            },
+            {
+              "group": "izq",
+              "label": "Marca",
+              "x": 8,
+              "y": 404.8,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 463.9,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 410.8,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 442.8
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Marca"
+            },
+            {
+              "group": "izq",
+              "label": "Ajustes",
+              "x": 8,
+              "y": 471.9,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 531.1,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 477.9,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 509.9
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Ajustes"
+            }
+          ],
+          "der_arriba": [
+            {
+              "group": "der_arriba",
+              "label": "2h 37m",
+              "x": 350.5,
+              "y": 128,
+              "w": 52,
+              "h": 91,
+              "right": 402.5,
+              "bottom": 219,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 360.5,
+                "y": 134,
+                "w": 32,
+                "h": 32,
+                "right": 392.5,
+                "bottom": 166
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "2h 37m"
+            },
+            {
+              "group": "der_arriba",
+              "label": "Logros",
+              "x": 350.5,
+              "y": 227,
+              "w": 53.5,
+              "h": 59.2,
+              "right": 404,
+              "bottom": 286.2,
+              "iconCenterDx": 0.1,
+              "iconBox": {
+                "x": 361.3,
+                "y": 233,
+                "w": 32,
+                "h": 32,
+                "right": 393.3,
+                "bottom": 265
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Logros"
+            },
+            {
+              "group": "der_arriba",
+              "label": "Tech",
+              "x": 350.5,
+              "y": 294.2,
+              "w": 53.5,
+              "h": 59.2,
+              "right": 404,
+              "bottom": 353.4,
+              "iconCenterDx": 0.1,
+              "iconBox": {
+                "x": 361.3,
+                "y": 300.2,
+                "w": 32,
+                "h": 32,
+                "right": 393.3,
+                "bottom": 332.2
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Tech"
+            },
+            {
+              "group": "der_arriba",
+              "label": "Mundo",
+              "x": 350.5,
+              "y": 361.4,
+              "w": 53.5,
+              "h": 59.2,
+              "right": 404,
+              "bottom": 420.6,
+              "iconCenterDx": 0.1,
+              "iconBox": {
+                "x": 361.3,
+                "y": 367.4,
+                "w": 32,
+                "h": 32,
+                "right": 393.3,
+                "bottom": 399.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Mundo"
+            }
+          ],
+          "der_abajo": [
+            {
+              "group": "der_abajo",
+              "label": "Logros",
+              "x": 340.4,
+              "y": 503.3,
+              "w": 63.6,
+              "h": 59.2,
+              "right": 404,
+              "bottom": 562.4,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356.2,
+                "y": 509.3,
+                "w": 32,
+                "h": 32,
+                "right": 388.2,
+                "bottom": 541.3
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Logros"
+            },
+            {
+              "group": "der_abajo",
+              "label": "Alianza",
+              "x": 340.4,
+              "y": 570.4,
+              "w": 63.6,
+              "h": 59.2,
+              "right": 404,
+              "bottom": 629.6,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356.2,
+                "y": 576.4,
+                "w": 32,
+                "h": 32,
+                "right": 388.2,
+                "bottom": 608.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Alianza"
+            },
+            {
+              "group": "der_abajo",
+              "label": "Rankings",
+              "x": 340.4,
+              "y": 637.6,
+              "w": 63.6,
+              "h": 59.2,
+              "right": 404,
+              "bottom": 696.8,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356.2,
+                "y": 643.6,
+                "w": 32,
+                "h": 32,
+                "right": 388.2,
+                "bottom": 675.6
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Rankings"
+            },
+            {
+              "group": "der_abajo",
+              "label": "Mercado",
+              "x": 340.4,
+              "y": 704.8,
+              "w": 63.6,
+              "h": 59.2,
+              "right": 404,
+              "bottom": 764,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356.2,
+                "y": 710.8,
+                "w": 32,
+                "h": 32,
+                "right": 388.2,
+                "bottom": 742.8
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Mercado"
+            }
+          ],
+          "nav": [
+            {
+              "group": "nav",
+              "label": "Héroes",
+              "x": 12,
+              "y": 788,
+              "w": 64,
+              "h": 64,
+              "right": 76,
+              "bottom": 852,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 28,
+                "y": 796.4,
+                "w": 32,
+                "h": 32,
+                "right": 60,
+                "bottom": 828.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Héroes"
+            },
+            {
+              "group": "nav",
+              "label": "Bastión",
+              "x": 170,
+              "y": 780,
+              "w": 72,
+              "h": 72,
+              "right": 242,
+              "bottom": 852,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 186,
+                "y": 788.4,
+                "w": 40,
+                "h": 40,
+                "right": 226,
+                "bottom": 828.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Bastión"
+            },
+            {
+              "group": "nav",
+              "label": "Mundo",
+              "x": 336,
+              "y": 788,
+              "w": 64,
+              "h": 64,
+              "right": 400,
+              "bottom": 852,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 352,
+                "y": 796.4,
+                "w": 32,
+                "h": 32,
+                "right": 384,
+                "bottom": 828.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Mundo"
+            }
+          ]
+        },
+        "ops": [
+          {
+            "group": "ops",
+            "label": "Operaciones",
+            "x": 12,
+            "y": 694,
+            "w": 178,
+            "h": 54,
+            "right": 190,
+            "bottom": 748,
+            "iconCenterDx": -43.9,
+            "iconBox": {
+              "x": 43.1,
+              "y": 707,
+              "w": 28,
+              "h": 28,
+              "right": 71.1,
+              "bottom": 735
+            },
+            "clipped": [],
+            "hit": true,
+            "hitBy": "Operaciones"
+          },
+          {
+            "group": "ops",
+            "label": "Calendario de login",
+            "x": 198,
+            "y": 694,
+            "w": 62,
+            "h": 54,
+            "right": 260,
+            "bottom": 748,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 215,
+              "y": 707,
+              "w": 28,
+              "h": 28,
+              "right": 243,
+              "bottom": 735
+            },
+            "clipped": [],
+            "hit": true,
+            "hitBy": "Calendario de login"
+          },
+          {
+            "group": "ops",
+            "label": "Pase de temporada",
+            "x": 268,
+            "y": 694,
+            "w": 62,
+            "h": 54,
+            "right": 330,
+            "bottom": 748,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 285,
+              "y": 707,
+              "w": 28,
+              "h": 28,
+              "right": 313,
+              "bottom": 735
+            },
+            "clipped": [],
+            "hit": true,
+            "hitBy": "Pase de temporada"
+          },
+          {
+            "group": "ops",
+            "label": "Códice de colección",
+            "x": 338,
+            "y": 694,
+            "w": 62,
+            "h": 54,
+            "right": 400,
+            "bottom": 748,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 355,
+              "y": 707,
+              "w": 28,
+              "h": 28,
+              "right": 383,
+              "bottom": 735
+            },
+            "clipped": [],
+            "hit": false,
+            "hitBy": "Mercado"
+          }
+        ],
+        "panels": [
+          {
+            "name": "TopResourceBar",
+            "x": 0,
+            "y": 0,
+            "w": 412,
+            "h": 126,
+            "right": 412,
+            "bottom": 126
+          },
+          {
+            "name": "QuestRail",
+            "x": 0,
+            "y": 80,
+            "w": 412,
+            "h": 45,
+            "right": 412,
+            "bottom": 125
+          }
+        ],
+        "viewport": [
+          412,
+          860
+        ],
+        "docScroll": [
+          412,
+          860
+        ]
+      }
+    },
+    {
+      "viewport": "360x740",
+      "captura": "hub_antes_360.webp 720x1480",
+      "aserciones": [
+        {
+          "id": "grupos_presentes",
+          "ok": true,
+          "detalle": "grupos=izq,der_arriba,der_abajo,nav ops=4"
+        },
+        {
+          "id": "izq_mismo_ancho",
+          "ok": true,
+          "detalle": "dispersión w=0 (tol 1)"
+        },
+        {
+          "id": "izq_mismo_alto",
+          "ok": false,
+          "detalle": "dispersión h=8 (tol 1)"
+        },
+        {
+          "id": "izq_mismo_x",
+          "ok": true,
+          "detalle": "dispersión x=0 (tol 1)"
+        },
+        {
+          "id": "der_mismo_ancho",
+          "ok": false,
+          "detalle": "dispersión w=11.6 (tol 1)"
+        },
+        {
+          "id": "der_mismo_alto",
+          "ok": false,
+          "detalle": "dispersión h=31.8 (tol 1)"
+        },
+        {
+          "id": "der_mismo_x",
+          "ok": false,
+          "detalle": "dispersión x=10.1 (tol 1)"
+        },
+        {
+          "id": "izq_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[8,8,8,8,8] (tol 2)"
+        },
+        {
+          "id": "der_arriba_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[8,8,8] (tol 2)"
+        },
+        {
+          "id": "der_abajo_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[8,8,8] (tol 2)"
+        },
+        {
+          "id": "nav_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[68,68] (tol 2)"
+        },
+        {
+          "id": "nav_laterales_mismo_tamano",
+          "ok": true,
+          "detalle": "Héroes:64x64 Bastión:72x72 Mundo:64x64"
+        },
+        {
+          "id": "nav_alineada_al_fondo",
+          "ok": true,
+          "detalle": "dispersión bottom=0 (tol 1)"
+        },
+        {
+          "id": "dentro_del_viewport",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "sin_solapes",
+          "ok": false,
+          "detalle": "der_arriba:Mundo × der_abajo:Logros (54×37) | der_abajo:Rankings × ops:Códice de colección (60×3) | der_abajo:Mercado × ops:Códice de colección (60×43) | TopResourceBar × QuestRail (360×45)"
+        },
+        {
+          "id": "icono_centrado",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "etiquetas_sin_recorte",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "tactiles_44",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "clickeables_elementFromPoint",
+          "ok": false,
+          "detalle": "der_arriba:Mundo tapado por Logros | ops:Códice de colección tapado por Mercado"
+        }
+      ],
+      "consolaErrores": [],
+      "medidas": {
+        "groups": {
+          "izq": [
+            {
+              "group": "izq",
+              "label": "Bastión",
+              "x": 8,
+              "y": 128,
+              "w": 70,
+              "h": 67.2,
+              "right": 78,
+              "bottom": 195.2,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 23,
+                "y": 134,
+                "w": 40,
+                "h": 40,
+                "right": 63,
+                "bottom": 174
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Bastión"
+            },
+            {
+              "group": "izq",
+              "label": "Marea",
+              "x": 8,
+              "y": 203.2,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 262.4,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 209.2,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 241.2
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Marea"
+            },
+            {
+              "group": "izq",
+              "label": "Misiones",
+              "x": 8,
+              "y": 270.4,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 329.6,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 276.4,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 308.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Misiones"
+            },
+            {
+              "group": "izq",
+              "label": "Construir",
+              "x": 8,
+              "y": 337.6,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 396.8,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 343.6,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 375.6
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Construir"
+            },
+            {
+              "group": "izq",
+              "label": "Marca",
+              "x": 8,
+              "y": 404.8,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 463.9,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 410.8,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 442.8
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Marca"
+            },
+            {
+              "group": "izq",
+              "label": "Ajustes",
+              "x": 8,
+              "y": 471.9,
+              "w": 70,
+              "h": 59.2,
+              "right": 78,
+              "bottom": 531.1,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 27,
+                "y": 477.9,
+                "w": 32,
+                "h": 32,
+                "right": 59,
+                "bottom": 509.9
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Ajustes"
+            }
+          ],
+          "der_arriba": [
+            {
+              "group": "der_arriba",
+              "label": "2h 37m",
+              "x": 298.5,
+              "y": 128,
+              "w": 52,
+              "h": 91,
+              "right": 350.5,
+              "bottom": 219,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 308.5,
+                "y": 134,
+                "w": 32,
+                "h": 32,
+                "right": 340.5,
+                "bottom": 166
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "2h 37m"
+            },
+            {
+              "group": "der_arriba",
+              "label": "Logros",
+              "x": 298.5,
+              "y": 227,
+              "w": 53.5,
+              "h": 59.2,
+              "right": 352,
+              "bottom": 286.2,
+              "iconCenterDx": 0.1,
+              "iconBox": {
+                "x": 309.3,
+                "y": 233,
+                "w": 32,
+                "h": 32,
+                "right": 341.3,
+                "bottom": 265
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Logros"
+            },
+            {
+              "group": "der_arriba",
+              "label": "Tech",
+              "x": 298.5,
+              "y": 294.2,
+              "w": 53.5,
+              "h": 59.2,
+              "right": 352,
+              "bottom": 353.4,
+              "iconCenterDx": 0.1,
+              "iconBox": {
+                "x": 309.3,
+                "y": 300.2,
+                "w": 32,
+                "h": 32,
+                "right": 341.3,
+                "bottom": 332.2
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Tech"
+            },
+            {
+              "group": "der_arriba",
+              "label": "Mundo",
+              "x": 298.5,
+              "y": 361.4,
+              "w": 53.5,
+              "h": 59.2,
+              "right": 352,
+              "bottom": 420.6,
+              "iconCenterDx": 0.1,
+              "iconBox": {
+                "x": 309.3,
+                "y": 367.4,
+                "w": 32,
+                "h": 32,
+                "right": 341.3,
+                "bottom": 399.4
+              },
+              "clipped": [],
+              "hit": false,
+              "hitBy": "Logros"
+            }
+          ],
+          "der_abajo": [
+            {
+              "group": "der_abajo",
+              "label": "Logros",
+              "x": 288.4,
+              "y": 383.3,
+              "w": 63.6,
+              "h": 59.2,
+              "right": 352,
+              "bottom": 442.4,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304.2,
+                "y": 389.3,
+                "w": 32,
+                "h": 32,
+                "right": 336.2,
+                "bottom": 421.3
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Logros"
+            },
+            {
+              "group": "der_abajo",
+              "label": "Alianza",
+              "x": 288.4,
+              "y": 450.4,
+              "w": 63.6,
+              "h": 59.2,
+              "right": 352,
+              "bottom": 509.6,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304.2,
+                "y": 456.4,
+                "w": 32,
+                "h": 32,
+                "right": 336.2,
+                "bottom": 488.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Alianza"
+            },
+            {
+              "group": "der_abajo",
+              "label": "Rankings",
+              "x": 288.4,
+              "y": 517.6,
+              "w": 63.6,
+              "h": 59.2,
+              "right": 352,
+              "bottom": 576.8,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304.2,
+                "y": 523.6,
+                "w": 32,
+                "h": 32,
+                "right": 336.2,
+                "bottom": 555.6
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Rankings"
+            },
+            {
+              "group": "der_abajo",
+              "label": "Mercado",
+              "x": 288.4,
+              "y": 584.8,
+              "w": 63.6,
+              "h": 59.2,
+              "right": 352,
+              "bottom": 644,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304.2,
+                "y": 590.8,
+                "w": 32,
+                "h": 32,
+                "right": 336.2,
+                "bottom": 622.8
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Mercado"
+            }
+          ],
+          "nav": [
+            {
+              "group": "nav",
+              "label": "Héroes",
+              "x": 12,
+              "y": 668,
+              "w": 64,
+              "h": 64,
+              "right": 76,
+              "bottom": 732,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 28,
+                "y": 676.4,
+                "w": 32,
+                "h": 32,
+                "right": 60,
+                "bottom": 708.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Héroes"
+            },
+            {
+              "group": "nav",
+              "label": "Bastión",
+              "x": 144,
+              "y": 660,
+              "w": 72,
+              "h": 72,
+              "right": 216,
+              "bottom": 732,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 160,
+                "y": 668.4,
+                "w": 40,
+                "h": 40,
+                "right": 200,
+                "bottom": 708.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Bastión"
+            },
+            {
+              "group": "nav",
+              "label": "Mundo",
+              "x": 284,
+              "y": 668,
+              "w": 64,
+              "h": 64,
+              "right": 348,
+              "bottom": 732,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 300,
+                "y": 676.4,
+                "w": 32,
+                "h": 32,
+                "right": 332,
+                "bottom": 708.4
+              },
+              "clipped": [],
+              "hit": true,
+              "hitBy": "Mundo"
+            }
+          ]
+        },
+        "ops": [
+          {
+            "group": "ops",
+            "label": "Operaciones",
+            "x": 12,
+            "y": 574,
+            "w": 126,
+            "h": 54,
+            "right": 138,
+            "bottom": 628,
+            "iconCenterDx": -43.9,
+            "iconBox": {
+              "x": 17.1,
+              "y": 587,
+              "w": 28,
+              "h": 28,
+              "right": 45.1,
+              "bottom": 615
+            },
+            "clipped": [],
+            "hit": true,
+            "hitBy": "Operaciones"
+          },
+          {
+            "group": "ops",
+            "label": "Calendario de login",
+            "x": 146,
+            "y": 574,
+            "w": 62,
+            "h": 54,
+            "right": 208,
+            "bottom": 628,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 163,
+              "y": 587,
+              "w": 28,
+              "h": 28,
+              "right": 191,
+              "bottom": 615
+            },
+            "clipped": [],
+            "hit": true,
+            "hitBy": "Calendario de login"
+          },
+          {
+            "group": "ops",
+            "label": "Pase de temporada",
+            "x": 216,
+            "y": 574,
+            "w": 62,
+            "h": 54,
+            "right": 278,
+            "bottom": 628,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 233,
+              "y": 587,
+              "w": 28,
+              "h": 28,
+              "right": 261,
+              "bottom": 615
+            },
+            "clipped": [],
+            "hit": true,
+            "hitBy": "Pase de temporada"
+          },
+          {
+            "group": "ops",
+            "label": "Códice de colección",
+            "x": 286,
+            "y": 574,
+            "w": 62,
+            "h": 54,
+            "right": 348,
+            "bottom": 628,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 303,
+              "y": 587,
+              "w": 28,
+              "h": 28,
+              "right": 331,
+              "bottom": 615
+            },
+            "clipped": [],
+            "hit": false,
+            "hitBy": "Mercado"
+          }
+        ],
+        "panels": [
+          {
+            "name": "TopResourceBar",
+            "x": 0,
+            "y": 0,
+            "w": 360,
+            "h": 126,
+            "right": 360,
+            "bottom": 126
+          },
+          {
+            "name": "QuestRail",
+            "x": 0,
+            "y": 80,
+            "w": 360,
+            "h": 45,
+            "right": 360,
+            "bottom": 125
+          }
+        ],
+        "viewport": [
+          360,
+          740
+        ],
+        "docScroll": [
+          360,
+          740
+        ]
+      }
+    }
+  ]
+}

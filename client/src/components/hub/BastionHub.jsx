@@ -12,19 +12,20 @@ export default function BastionHub() {
       <div className="absolute inset-0">
         <PhaserGame entry="hub" />
       </div>
-      {/* TopResourceBar (absolute top-0 z-30) y BottomNavBar (absolute bottom-0
-          z-30, con el botón-castillo desbordando hacia arriba) flotan SOBRE este
-          layout: el riel y el botón necesitan despejarlas o quedan tapados. El
-          flex-1 vacío deja pasar los taps al canvas. */}
+      {/* TopResourceBar (absolute top-0 z-30, 126 px de alto) y BottomNavBar (absolute bottom-0
+          z-30, con el botón-castillo desbordando hacia arriba) flotan SOBRE este layout. El riel
+          arranca en y=128 (bajo la barra) y queda entre las columnas laterales (8+64 px por lado →
+          mx-20); la fila de Operaciones queda por debajo de ambas columnas (ver .kh-rail en
+          index.css). El flex-1 vacío deja pasar los taps al canvas. */}
       <div className="absolute inset-0 flex flex-col pointer-events-none">
-        <div className="pt-20 pointer-events-auto">
+        <div className="pt-32 mx-20 pointer-events-auto">
           <QuestRail />
         </div>
         <div className="flex-1" />
-        <div className="px-3 pb-28 pt-1 flex gap-2 pointer-events-auto">
+        <div className="px-3 pb-[84px] pt-1 flex gap-2 pointer-events-auto">
           <button
             onClick={() => setOverlay('operations', {})}
-            className="flex-1 py-3 rounded font-bold flex items-center justify-center gap-2 transition-transform active:scale-95 font-display"
+            className="flex-1 h-[52px] rounded font-bold flex items-center justify-center gap-2 transition-transform active:scale-95 font-display"
             style={{
               // CTA principal atenuado a la paleta: base de piedra con tinte sangre
               // + borde/glow rojo de acento (antes era relleno rojo sólido "candy").
@@ -38,7 +39,7 @@ export default function BastionHub() {
           </button>
           <button
             onClick={() => setOverlay('calendar', {})}
-            className="px-4 py-3 rounded font-bold flex items-center justify-center"
+            className="w-14 h-[52px] shrink-0 rounded font-bold flex items-center justify-center"
             style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
             title="Calendario de login"
           >
@@ -46,7 +47,7 @@ export default function BastionHub() {
           </button>
           <button
             onClick={() => setOverlay('pass', {})}
-            className="px-4 py-3 rounded font-bold flex items-center justify-center"
+            className="w-14 h-[52px] shrink-0 rounded font-bold flex items-center justify-center"
             style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
             title="Pase de temporada"
           >
@@ -54,7 +55,7 @@ export default function BastionHub() {
           </button>
           <button
             onClick={() => setOverlay('codex', {})}
-            className="px-4 py-3 rounded font-bold flex items-center justify-center"
+            className="w-14 h-[52px] shrink-0 rounded font-bold flex items-center justify-center"
             style={{ background: 'rgba(46,42,34,0.92)', border: '1px solid rgba(217,164,65,0.45)' }}
             title="Códice de colección"
           >

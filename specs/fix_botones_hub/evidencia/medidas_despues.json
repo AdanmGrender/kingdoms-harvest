@@ -1,0 +1,1469 @@
+{
+  "label": "despues",
+  "tolerancias": {
+    "size": 1,
+    "x": 1,
+    "gap": 2,
+    "icon": 2
+  },
+  "resumen": [
+    {
+      "viewport": "412x860",
+      "fallan": [],
+      "consolaErrores": 0
+    },
+    {
+      "viewport": "360x740",
+      "fallan": [],
+      "consolaErrores": 0
+    }
+  ],
+  "results": [
+    {
+      "viewport": "412x860",
+      "captura": "hub_despues_412.webp 824x1720",
+      "aserciones": [
+        {
+          "id": "grupos_presentes",
+          "ok": true,
+          "detalle": "grupos=izq,der,nav ops=4"
+        },
+        {
+          "id": "izq_mismo_ancho",
+          "ok": true,
+          "detalle": "dispersión w=0 (tol 1)"
+        },
+        {
+          "id": "izq_mismo_alto",
+          "ok": true,
+          "detalle": "dispersión h=0 (tol 1)"
+        },
+        {
+          "id": "izq_mismo_x",
+          "ok": true,
+          "detalle": "dispersión x=0 (tol 1)"
+        },
+        {
+          "id": "der_mismo_ancho",
+          "ok": true,
+          "detalle": "dispersión w=0 (tol 1)"
+        },
+        {
+          "id": "der_mismo_alto",
+          "ok": true,
+          "detalle": "dispersión h=0 (tol 1)"
+        },
+        {
+          "id": "der_mismo_x",
+          "ok": true,
+          "detalle": "dispersión x=0 (tol 1)"
+        },
+        {
+          "id": "izq_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[6,6,6,6,6] (tol 2)"
+        },
+        {
+          "id": "der_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[6,6,6,6,6,6,6] (tol 2)"
+        },
+        {
+          "id": "nav_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[94,94] (tol 2)"
+        },
+        {
+          "id": "nav_laterales_mismo_tamano",
+          "ok": true,
+          "detalle": "Héroes:64x64 Bastión:72x72 Mundo:64x64"
+        },
+        {
+          "id": "nav_alineada_al_fondo",
+          "ok": true,
+          "detalle": "dispersión bottom=0 (tol 1)"
+        },
+        {
+          "id": "dentro_del_viewport",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "sin_solapes",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "icono_centrado",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "etiquetas_sin_recorte",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "quest_sin_recorte",
+          "ok": true,
+          "detalle": "ok (\"Despertar del Bastión\" en 1 línea(s), title=\"Despertar del Bastión\")"
+        },
+        {
+          "id": "quest_texto_completo",
+          "ok": true,
+          "detalle": "scrollHeight=15 clientHeight=15"
+        },
+        {
+          "id": "castle_icono_40",
+          "ok": true,
+          "detalle": "ícono 40px (>= 40)"
+        },
+        {
+          "id": "riel_contenido_dentro_del_marco",
+          "ok": true,
+          "detalle": "ok (scrollHeight<=clientHeight, ícono y etiqueta dentro del marco en 14 botones)"
+        },
+        {
+          "id": "tactiles_44",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "clickeables_elementFromPoint",
+          "ok": true,
+          "detalle": "ok"
+        }
+      ],
+      "consolaErrores": [],
+      "medidas": {
+        "groups": {
+          "izq": [
+            {
+              "group": "izq",
+              "label": "Bastión",
+              "x": 8,
+              "y": 128,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 192,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 20,
+                "y": 132.4,
+                "w": 40,
+                "h": 40,
+                "right": 60,
+                "bottom": 172.4
+              },
+              "clipped": [],
+              "iconSize": 40,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Bastión"
+            },
+            {
+              "group": "izq",
+              "label": "Marea",
+              "x": 8,
+              "y": 198,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 262,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 206.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 238.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Marea"
+            },
+            {
+              "group": "izq",
+              "label": "Misiones",
+              "x": 8,
+              "y": 268,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 332,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 276.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 308.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Misiones"
+            },
+            {
+              "group": "izq",
+              "label": "Construir",
+              "x": 8,
+              "y": 338,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 402,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 346.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 378.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Construir"
+            },
+            {
+              "group": "izq",
+              "label": "Marca",
+              "x": 8,
+              "y": 408,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 472,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 416.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 448.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Marca"
+            },
+            {
+              "group": "izq",
+              "label": "Ajustes",
+              "x": 8,
+              "y": 478,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 542,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 486.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 518.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Ajustes"
+            }
+          ],
+          "der": [
+            {
+              "group": "der",
+              "label": "2h 37m",
+              "x": 340,
+              "y": 128,
+              "w": 64,
+              "h": 52,
+              "right": 404,
+              "bottom": 180,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356,
+                "y": 130.4,
+                "w": 32,
+                "h": 32,
+                "right": 388,
+                "bottom": 162.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "2h 37m"
+            },
+            {
+              "group": "der",
+              "label": "Logros",
+              "x": 340,
+              "y": 186,
+              "w": 64,
+              "h": 52,
+              "right": 404,
+              "bottom": 238,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356,
+                "y": 188.4,
+                "w": 32,
+                "h": 32,
+                "right": 388,
+                "bottom": 220.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Logros"
+            },
+            {
+              "group": "der",
+              "label": "Tech",
+              "x": 340,
+              "y": 244,
+              "w": 64,
+              "h": 52,
+              "right": 404,
+              "bottom": 296,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356,
+                "y": 246.4,
+                "w": 32,
+                "h": 32,
+                "right": 388,
+                "bottom": 278.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Tech"
+            },
+            {
+              "group": "der",
+              "label": "Mundo",
+              "x": 340,
+              "y": 302,
+              "w": 64,
+              "h": 52,
+              "right": 404,
+              "bottom": 354,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356,
+                "y": 304.4,
+                "w": 32,
+                "h": 32,
+                "right": 388,
+                "bottom": 336.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Mundo"
+            },
+            {
+              "group": "der",
+              "label": "Logros",
+              "x": 340,
+              "y": 360,
+              "w": 64,
+              "h": 52,
+              "right": 404,
+              "bottom": 412,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356,
+                "y": 362.4,
+                "w": 32,
+                "h": 32,
+                "right": 388,
+                "bottom": 394.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Logros"
+            },
+            {
+              "group": "der",
+              "label": "Alianza",
+              "x": 340,
+              "y": 418,
+              "w": 64,
+              "h": 52,
+              "right": 404,
+              "bottom": 470,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356,
+                "y": 420.4,
+                "w": 32,
+                "h": 32,
+                "right": 388,
+                "bottom": 452.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Alianza"
+            },
+            {
+              "group": "der",
+              "label": "Rankings",
+              "x": 340,
+              "y": 476,
+              "w": 64,
+              "h": 52,
+              "right": 404,
+              "bottom": 528,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356,
+                "y": 478.4,
+                "w": 32,
+                "h": 32,
+                "right": 388,
+                "bottom": 510.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Rankings"
+            },
+            {
+              "group": "der",
+              "label": "Mercado",
+              "x": 340,
+              "y": 534,
+              "w": 64,
+              "h": 52,
+              "right": 404,
+              "bottom": 586,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 356,
+                "y": 536.4,
+                "w": 32,
+                "h": 32,
+                "right": 388,
+                "bottom": 568.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Mercado"
+            }
+          ],
+          "nav": [
+            {
+              "group": "nav",
+              "label": "Héroes",
+              "x": 12,
+              "y": 788,
+              "w": 64,
+              "h": 64,
+              "right": 76,
+              "bottom": 852,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 28,
+                "y": 796.4,
+                "w": 32,
+                "h": 32,
+                "right": 60,
+                "bottom": 828.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Héroes"
+            },
+            {
+              "group": "nav",
+              "label": "Bastión",
+              "x": 170,
+              "y": 780,
+              "w": 72,
+              "h": 72,
+              "right": 242,
+              "bottom": 852,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 186,
+                "y": 788.4,
+                "w": 40,
+                "h": 40,
+                "right": 226,
+                "bottom": 828.4
+              },
+              "clipped": [],
+              "iconSize": 40,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Bastión"
+            },
+            {
+              "group": "nav",
+              "label": "Mundo",
+              "x": 336,
+              "y": 788,
+              "w": 64,
+              "h": 64,
+              "right": 400,
+              "bottom": 852,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 352,
+                "y": 796.4,
+                "w": 32,
+                "h": 32,
+                "right": 384,
+                "bottom": 828.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Mundo"
+            }
+          ]
+        },
+        "ops": [
+          {
+            "group": "ops",
+            "label": "Operaciones",
+            "x": 12,
+            "y": 724,
+            "w": 196,
+            "h": 52,
+            "right": 208,
+            "bottom": 776,
+            "iconCenterDx": -43.9,
+            "iconBox": {
+              "x": 52.1,
+              "y": 736,
+              "w": 28,
+              "h": 28,
+              "right": 80.1,
+              "bottom": 764
+            },
+            "clipped": [],
+            "iconSize": 28,
+            "vOverflow": 0,
+            "iconInside": true,
+            "contentInside": true,
+            "hit": true,
+            "hitBy": "Operaciones"
+          },
+          {
+            "group": "ops",
+            "label": "Calendario de login",
+            "x": 216,
+            "y": 724,
+            "w": 56,
+            "h": 52,
+            "right": 272,
+            "bottom": 776,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 230,
+              "y": 736,
+              "w": 28,
+              "h": 28,
+              "right": 258,
+              "bottom": 764
+            },
+            "clipped": [],
+            "iconSize": 28,
+            "vOverflow": 0,
+            "iconInside": true,
+            "contentInside": true,
+            "hit": true,
+            "hitBy": "Calendario de login"
+          },
+          {
+            "group": "ops",
+            "label": "Pase de temporada",
+            "x": 280,
+            "y": 724,
+            "w": 56,
+            "h": 52,
+            "right": 336,
+            "bottom": 776,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 294,
+              "y": 736,
+              "w": 28,
+              "h": 28,
+              "right": 322,
+              "bottom": 764
+            },
+            "clipped": [],
+            "iconSize": 28,
+            "vOverflow": 0,
+            "iconInside": true,
+            "contentInside": true,
+            "hit": true,
+            "hitBy": "Pase de temporada"
+          },
+          {
+            "group": "ops",
+            "label": "Códice de colección",
+            "x": 344,
+            "y": 724,
+            "w": 56,
+            "h": 52,
+            "right": 400,
+            "bottom": 776,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 358,
+              "y": 736,
+              "w": 28,
+              "h": 28,
+              "right": 386,
+              "bottom": 764
+            },
+            "clipped": [],
+            "iconSize": 28,
+            "vOverflow": 0,
+            "iconInside": true,
+            "contentInside": true,
+            "hit": true,
+            "hitBy": "Códice de colección"
+          }
+        ],
+        "panels": [
+          {
+            "name": "TopResourceBar",
+            "x": 0,
+            "y": 0,
+            "w": 412,
+            "h": 126,
+            "right": 412,
+            "bottom": 126
+          },
+          {
+            "name": "QuestRail",
+            "x": 80,
+            "y": 128,
+            "w": 252,
+            "h": 44,
+            "right": 332,
+            "bottom": 172
+          }
+        ],
+        "viewport": [
+          412,
+          860
+        ],
+        "docScroll": [
+          412,
+          860
+        ],
+        "quest": {
+          "rail": {
+            "scrollWidth": 252,
+            "clientWidth": 252,
+            "overflowX": "hidden"
+          },
+          "button": {
+            "scrollWidth": 139,
+            "clientWidth": 139,
+            "title": "Despertar del Bastión",
+            "text": "Despertar del Bastión"
+          },
+          "texto": {
+            "scrollWidth": 107,
+            "clientWidth": 107,
+            "lineas": 1,
+            "scrollHeight": 15,
+            "clientHeight": 15
+          }
+        }
+      }
+    },
+    {
+      "viewport": "360x740",
+      "captura": "hub_despues_360.webp 720x1480",
+      "aserciones": [
+        {
+          "id": "grupos_presentes",
+          "ok": true,
+          "detalle": "grupos=izq,der,nav ops=4"
+        },
+        {
+          "id": "izq_mismo_ancho",
+          "ok": true,
+          "detalle": "dispersión w=0 (tol 1)"
+        },
+        {
+          "id": "izq_mismo_alto",
+          "ok": true,
+          "detalle": "dispersión h=0 (tol 1)"
+        },
+        {
+          "id": "izq_mismo_x",
+          "ok": true,
+          "detalle": "dispersión x=0 (tol 1)"
+        },
+        {
+          "id": "der_mismo_ancho",
+          "ok": true,
+          "detalle": "dispersión w=0 (tol 1)"
+        },
+        {
+          "id": "der_mismo_alto",
+          "ok": true,
+          "detalle": "dispersión h=0 (tol 1)"
+        },
+        {
+          "id": "der_mismo_x",
+          "ok": true,
+          "detalle": "dispersión x=0 (tol 1)"
+        },
+        {
+          "id": "izq_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[6,6,6,6,6] (tol 2)"
+        },
+        {
+          "id": "der_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[6,6,6,6,6,6,6] (tol 2)"
+        },
+        {
+          "id": "nav_gap_constante",
+          "ok": true,
+          "detalle": "gaps=[68,68] (tol 2)"
+        },
+        {
+          "id": "nav_laterales_mismo_tamano",
+          "ok": true,
+          "detalle": "Héroes:64x64 Bastión:72x72 Mundo:64x64"
+        },
+        {
+          "id": "nav_alineada_al_fondo",
+          "ok": true,
+          "detalle": "dispersión bottom=0 (tol 1)"
+        },
+        {
+          "id": "dentro_del_viewport",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "sin_solapes",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "icono_centrado",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "etiquetas_sin_recorte",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "quest_sin_recorte",
+          "ok": true,
+          "detalle": "ok (\"Despertar del Bastión\" en 1 línea(s), title=\"Despertar del Bastión\")"
+        },
+        {
+          "id": "quest_texto_completo",
+          "ok": true,
+          "detalle": "scrollHeight=15 clientHeight=15"
+        },
+        {
+          "id": "castle_icono_40",
+          "ok": true,
+          "detalle": "ícono 40px (>= 40)"
+        },
+        {
+          "id": "riel_contenido_dentro_del_marco",
+          "ok": true,
+          "detalle": "ok (scrollHeight<=clientHeight, ícono y etiqueta dentro del marco en 14 botones)"
+        },
+        {
+          "id": "tactiles_44",
+          "ok": true,
+          "detalle": "ok"
+        },
+        {
+          "id": "clickeables_elementFromPoint",
+          "ok": true,
+          "detalle": "ok"
+        }
+      ],
+      "consolaErrores": [],
+      "medidas": {
+        "groups": {
+          "izq": [
+            {
+              "group": "izq",
+              "label": "Bastión",
+              "x": 8,
+              "y": 128,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 192,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 20,
+                "y": 132.4,
+                "w": 40,
+                "h": 40,
+                "right": 60,
+                "bottom": 172.4
+              },
+              "clipped": [],
+              "iconSize": 40,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Bastión"
+            },
+            {
+              "group": "izq",
+              "label": "Marea",
+              "x": 8,
+              "y": 198,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 262,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 206.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 238.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Marea"
+            },
+            {
+              "group": "izq",
+              "label": "Misiones",
+              "x": 8,
+              "y": 268,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 332,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 276.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 308.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Misiones"
+            },
+            {
+              "group": "izq",
+              "label": "Construir",
+              "x": 8,
+              "y": 338,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 402,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 346.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 378.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Construir"
+            },
+            {
+              "group": "izq",
+              "label": "Marca",
+              "x": 8,
+              "y": 408,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 472,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 416.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 448.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Marca"
+            },
+            {
+              "group": "izq",
+              "label": "Ajustes",
+              "x": 8,
+              "y": 478,
+              "w": 64,
+              "h": 64,
+              "right": 72,
+              "bottom": 542,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 24,
+                "y": 486.4,
+                "w": 32,
+                "h": 32,
+                "right": 56,
+                "bottom": 518.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Ajustes"
+            }
+          ],
+          "der": [
+            {
+              "group": "der",
+              "label": "2h 37m",
+              "x": 288,
+              "y": 128,
+              "w": 64,
+              "h": 52,
+              "right": 352,
+              "bottom": 180,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304,
+                "y": 130.4,
+                "w": 32,
+                "h": 32,
+                "right": 336,
+                "bottom": 162.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "2h 37m"
+            },
+            {
+              "group": "der",
+              "label": "Logros",
+              "x": 288,
+              "y": 186,
+              "w": 64,
+              "h": 52,
+              "right": 352,
+              "bottom": 238,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304,
+                "y": 188.4,
+                "w": 32,
+                "h": 32,
+                "right": 336,
+                "bottom": 220.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Logros"
+            },
+            {
+              "group": "der",
+              "label": "Tech",
+              "x": 288,
+              "y": 244,
+              "w": 64,
+              "h": 52,
+              "right": 352,
+              "bottom": 296,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304,
+                "y": 246.4,
+                "w": 32,
+                "h": 32,
+                "right": 336,
+                "bottom": 278.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Tech"
+            },
+            {
+              "group": "der",
+              "label": "Mundo",
+              "x": 288,
+              "y": 302,
+              "w": 64,
+              "h": 52,
+              "right": 352,
+              "bottom": 354,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304,
+                "y": 304.4,
+                "w": 32,
+                "h": 32,
+                "right": 336,
+                "bottom": 336.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Mundo"
+            },
+            {
+              "group": "der",
+              "label": "Logros",
+              "x": 288,
+              "y": 360,
+              "w": 64,
+              "h": 52,
+              "right": 352,
+              "bottom": 412,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304,
+                "y": 362.4,
+                "w": 32,
+                "h": 32,
+                "right": 336,
+                "bottom": 394.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Logros"
+            },
+            {
+              "group": "der",
+              "label": "Alianza",
+              "x": 288,
+              "y": 418,
+              "w": 64,
+              "h": 52,
+              "right": 352,
+              "bottom": 470,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304,
+                "y": 420.4,
+                "w": 32,
+                "h": 32,
+                "right": 336,
+                "bottom": 452.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Alianza"
+            },
+            {
+              "group": "der",
+              "label": "Rankings",
+              "x": 288,
+              "y": 476,
+              "w": 64,
+              "h": 52,
+              "right": 352,
+              "bottom": 528,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304,
+                "y": 478.4,
+                "w": 32,
+                "h": 32,
+                "right": 336,
+                "bottom": 510.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Rankings"
+            },
+            {
+              "group": "der",
+              "label": "Mercado",
+              "x": 288,
+              "y": 534,
+              "w": 64,
+              "h": 52,
+              "right": 352,
+              "bottom": 586,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 304,
+                "y": 536.4,
+                "w": 32,
+                "h": 32,
+                "right": 336,
+                "bottom": 568.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Mercado"
+            }
+          ],
+          "nav": [
+            {
+              "group": "nav",
+              "label": "Héroes",
+              "x": 12,
+              "y": 668,
+              "w": 64,
+              "h": 64,
+              "right": 76,
+              "bottom": 732,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 28,
+                "y": 676.4,
+                "w": 32,
+                "h": 32,
+                "right": 60,
+                "bottom": 708.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Héroes"
+            },
+            {
+              "group": "nav",
+              "label": "Bastión",
+              "x": 144,
+              "y": 660,
+              "w": 72,
+              "h": 72,
+              "right": 216,
+              "bottom": 732,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 160,
+                "y": 668.4,
+                "w": 40,
+                "h": 40,
+                "right": 200,
+                "bottom": 708.4
+              },
+              "clipped": [],
+              "iconSize": 40,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Bastión"
+            },
+            {
+              "group": "nav",
+              "label": "Mundo",
+              "x": 284,
+              "y": 668,
+              "w": 64,
+              "h": 64,
+              "right": 348,
+              "bottom": 732,
+              "iconCenterDx": 0,
+              "iconBox": {
+                "x": 300,
+                "y": 676.4,
+                "w": 32,
+                "h": 32,
+                "right": 332,
+                "bottom": 708.4
+              },
+              "clipped": [],
+              "iconSize": 32,
+              "vOverflow": 0,
+              "iconInside": true,
+              "contentInside": true,
+              "hit": true,
+              "hitBy": "Mundo"
+            }
+          ]
+        },
+        "ops": [
+          {
+            "group": "ops",
+            "label": "Operaciones",
+            "x": 12,
+            "y": 604,
+            "w": 144,
+            "h": 52,
+            "right": 156,
+            "bottom": 656,
+            "iconCenterDx": -43.9,
+            "iconBox": {
+              "x": 26.1,
+              "y": 616,
+              "w": 28,
+              "h": 28,
+              "right": 54.1,
+              "bottom": 644
+            },
+            "clipped": [],
+            "iconSize": 28,
+            "vOverflow": 0,
+            "iconInside": true,
+            "contentInside": true,
+            "hit": true,
+            "hitBy": "Operaciones"
+          },
+          {
+            "group": "ops",
+            "label": "Calendario de login",
+            "x": 164,
+            "y": 604,
+            "w": 56,
+            "h": 52,
+            "right": 220,
+            "bottom": 656,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 178,
+              "y": 616,
+              "w": 28,
+              "h": 28,
+              "right": 206,
+              "bottom": 644
+            },
+            "clipped": [],
+            "iconSize": 28,
+            "vOverflow": 0,
+            "iconInside": true,
+            "contentInside": true,
+            "hit": true,
+            "hitBy": "Calendario de login"
+          },
+          {
+            "group": "ops",
+            "label": "Pase de temporada",
+            "x": 228,
+            "y": 604,
+            "w": 56,
+            "h": 52,
+            "right": 284,
+            "bottom": 656,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 242,
+              "y": 616,
+              "w": 28,
+              "h": 28,
+              "right": 270,
+              "bottom": 644
+            },
+            "clipped": [],
+            "iconSize": 28,
+            "vOverflow": 0,
+            "iconInside": true,
+            "contentInside": true,
+            "hit": true,
+            "hitBy": "Pase de temporada"
+          },
+          {
+            "group": "ops",
+            "label": "Códice de colección",
+            "x": 292,
+            "y": 604,
+            "w": 56,
+            "h": 52,
+            "right": 348,
+            "bottom": 656,
+            "iconCenterDx": 0,
+            "iconBox": {
+              "x": 306,
+              "y": 616,
+              "w": 28,
+              "h": 28,
+              "right": 334,
+              "bottom": 644
+            },
+            "clipped": [],
+            "iconSize": 28,
+            "vOverflow": 0,
+            "iconInside": true,
+            "contentInside": true,
+            "hit": true,
+            "hitBy": "Códice de colección"
+          }
+        ],
+        "panels": [
+          {
+            "name": "TopResourceBar",
+            "x": 0,
+            "y": 0,
+            "w": 360,
+            "h": 126,
+            "right": 360,
+            "bottom": 126
+          },
+          {
+            "name": "QuestRail",
+            "x": 80,
+            "y": 128,
+            "w": 200,
+            "h": 44,
+            "right": 280,
+            "bottom": 172
+          }
+        ],
+        "viewport": [
+          360,
+          740
+        ],
+        "docScroll": [
+          360,
+          740
+        ],
+        "quest": {
+          "rail": {
+            "scrollWidth": 200,
+            "clientWidth": 200,
+            "overflowX": "hidden"
+          },
+          "button": {
+            "scrollWidth": 138,
+            "clientWidth": 138,
+            "title": "Despertar del Bastión",
+            "text": "Despertar del Bastión"
+          },
+          "texto": {
+            "scrollWidth": 107,
+            "clientWidth": 107,
+            "lineas": 1,
+            "scrollHeight": 15,
+            "clientHeight": 15
+          }
+        }
+      }
+    }
+  ]
+}

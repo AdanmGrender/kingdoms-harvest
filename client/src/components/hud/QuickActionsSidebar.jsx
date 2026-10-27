@@ -8,7 +8,7 @@ import IconButton from '../ui/IconButton';
 import { KH } from '../ui/kitPieces';
 
 const ACTIONS = [
-  { id: 'castle', sprite: 'castle', label: 'Bastión', color: KH.brass },
+  { id: 'castle', sprite: 'castle', label: 'Bastión', color: KH.brass, iconSize: 40 }, // edificio: >= 40 px (ui_kit_b)
   { id: 'waves', sprite: 'tide', label: 'Marea', color: KH.seal },
   { id: 'missions', sprite: 'scroll', label: 'Misiones', color: KH.brass, badge: 3 },
   { id: 'build', sprite: 'blueprint', label: 'Construir', color: KH.ember },
@@ -46,7 +46,7 @@ export default function QuickActionsSidebar() {
   };
 
   return (
-    <div className="absolute left-2 top-32 z-20 pointer-events-none flex flex-col gap-2">
+    <div className="kh-rail kh-rail--left z-20">
       {ACTIONS.map((a) => {
         const badge = a.id === 'missions' ? missionCount : a.badge;
         return (
@@ -55,7 +55,7 @@ export default function QuickActionsSidebar() {
             icon={a.sprite}
             label={a.label}
             accent={a.color}
-            iconSize={a.id === 'castle' ? 40 : 32}
+            iconSize={a.iconSize}
             title={a.label}
             onClick={() => handleAction(a.id)}
           >

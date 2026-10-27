@@ -320,6 +320,30 @@ body {
 }
 .kh-iconbtn:hover { background-color: #3d3024 !important; }
 
+/* Columna de rieles laterales (fix_botones_hub): todos los botones de una columna comparten ancho, alto y x,
+   con gap constante. Derecha 64×52 y gap 6: los 8 botones caben en 360×740 (128 → 586 px), por
+   encima de la fila de Operaciones (y ≥ 604); «Construir», la etiqueta de 12 px más larga, mide
+   ~54 px y entra en 64 − 2×2 − 2×2. Tamaños por tokens --kh-rail-w / --kh-rail-h. */
+.kh-rail {
+  position: absolute;
+  top: 128px; /* justo bajo TopResourceBar (126 px a 360 y 412 px de ancho) */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+/* Riel izquierdo: el Bastión lleva ícono de edificio de 40 px (ui_kit_b) + etiqueta de 12 px = ~55 px,
+   que no caben en los 44 px útiles de 52; los 6 botones suben a 64 de alto (128 → 542 px, sin pisar Operaciones). */
+.kh-rail--left { left: 8px; --kh-rail-h: 64px; }
+.kh-rail--right { right: 8px; }
+.kh-rail > .kh-iconbtn {
+  box-sizing: border-box;
+  width: var(--kh-rail-w, 64px);
+  height: var(--kh-rail-h, 52px);
+  padding: 2px;
+  flex: none;
+}
+
 /* Progress bar: marco bar_frame.webp, relleno plano */
 .progress-bar,
 .kh-bar {
