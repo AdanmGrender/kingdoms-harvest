@@ -14,6 +14,7 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 - Hub idle vivo — escena base ilustrada (`hub_b_escena`): HubSceneB grimdark renacentista por capas, 17 ranuras de edificios, trabajadores y humo animados, ambiente por tormenta, render a resolución de dispositivo; se retira el hub viejo de WorldScene
 - Hub idle — recolección como objetos en la escena (B1.2) (`hub_b_recoleccion`)
 - Kit de UI e íconos B en todo el chrome React (B3): IM Fell English, tokens `kh-*`, Panel/Button/IconButton/Bar/PortraitRing y hoja de íconos B reemplazando emojis y `grim_icons` (`ui_kit_b`)
+- Reporte offline como libro de cuentas del Escribano (B1.4) (`reporte_escribano`)
 
 ### Changed
 - Lore v2 grimdark renacentista en todos los textos visibles; glosario v1→v2 (`lore_v2`)
