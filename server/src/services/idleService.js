@@ -99,6 +99,22 @@ const idleService = {
     };
   },
 
+  /**
+   * Capacidad de almacén por recurso, para mostrar el tope en el reporte.
+   * Solo entran capacidades numéricas; el resto se omite (nunca se inventa).
+   */
+  async _capacitiesFor(playerId) {
+    const rows = await db('player_resources').where('player_id', playerId);
+    const caps = {};
+    for (const r of rows) {
+      const cap = Number(r.capacity);
+      if (r.capacity !== null && r.capacity !== undefined && Number.isFinite(cap)) {
+        caps[r.resource_id] = cap;
+      }
+    }
+    return caps;
+  },
+
   async _writeSnapshot(snapshot) {
     const affected = await db('login_snapshots')
       .where('player_id', snapshot.player_id)
@@ -167,6 +183,16 @@ const idleService = {
     }
     const khEarned = Math.max(0, (after.kh_balance || 0) - (prev.kh_balance || 0));
 
+    // Tope de granero: recursos con delta y recursos llenos, con su capacidad real
+    const caps = await this._capacitiesFor(playerId);
+    const storage = {};
+    for (const [id, amount] of Object.entries(afterRes)) {
+      if (!(id in caps)) continue;
+      if (id in resources || amount >= caps[id]) {
+        storage[id] = { amount, capacity: caps[id] };
+      }
+    }
+
     // 3) Eventos resueltos durante la ausencia (queries baratas por timestamp)
     const events = [];
     const readyPlots = await db('farm_plots')
@@ -208,6 +234,7 @@ const idleService = {
       catchUp,
       downtimeMs: downMs,
       events,
+      storage,
     };
   },
 };

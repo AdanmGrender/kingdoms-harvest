@@ -1,0 +1,4 @@
+# reporte_escribano evidencia (Playwright 412x860 @2x, 2026-10-27T19:37:37.651Z)
+reporte_corto.webp 824x1720 102KB | scrollWidth<=clientWidth: panel=true cuerpo=true documento=true | titulo visible=true boton visible=true (alto 48px) | scroll interno=false scroll de pagina=false | errores de consola=0 | OK
+reporte_largo.webp 824x1720 86KB | scrollWidth<=clientWidth: panel=true cuerpo=true documento=true | titulo visible=true boton visible=true (alto 48px) | scroll interno=true scroll de pagina=false | errores de consola=0 | OK
+reporte_lleno.webp 824x1720 91KB | scrollWidth<=clientWidth: panel=true cuerpo=true documento=true | titulo visible=true boton visible=true (alto 48px) | scroll interno=false scroll de pagina=false | errores de consola=0 | OK
