@@ -182,6 +182,143 @@
       "sdd": false,
       "status": "done",
       "assignee": "p-kh"
+    },
+    {
+      "id": 13,
+      "name": "combate_motor_v2",
+      "title": "Motor de combate v2: DEF, SPD, amenaza, multi-enemigo, log de eventos",
+      "description": "Motor v2 puro en server/src/services/combat/ junto a campaignSim v1 (intacto): daño con DEF, orden por SPD, objetivo por amenaza de clase, varios enemigos por oleada, RNG con semilla y state.events[] (contrato para combate_b). Interruptor COMBAT.engineVersion. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Con def=0, 1 enemigo y spd iguales, v2 reproduce los 11 escenarios de campaignSim.test.js",
+        "Runs viejos sin state.engine siguen con v1",
+        "Embudo de balance (guarnición vs a1n3/a1n4) verde también con v2",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 14,
+      "name": "combate_pasivas_estados",
+      "title": "Pasivas ejecutables y estados con duración",
+      "description": "Las 18 pasivas de HERO_CATALOG pasan a datos (passiveFx) y funcionan en v2; estados aturdido/quemadura/veneno/DEF↓/ATK↓/escudo/inmune. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Un test por pasiva verifica su texto actual",
+        "El texto passive no cambia",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 15,
+      "name": "combate_sinergias",
+      "title": "Triángulo de clases, bonus por composición y pronóstico",
+      "description": "Guerrero>explorador>mago>guerrero (±20%), bonus por 2-5 de misma clase/facción y equipo balanceado, apoyo del paladín que potencia, endpoint GET /api/campaign/forecast/:nodeId. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Pronóstico coincide con los multiplicadores aplicados",
+        "Endpoints existentes sin cambios",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 16,
+      "name": "combate_profundidad",
+      "title": "Cargas, combos, habilidad superior y afijos",
+      "description": "Cargas que escalan con la composición, puntos de combo del pícaro, habilidad superior por estrellas (heroes.skill_tier default 0), afijos opcionales en HERO_ITEMS. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Migraciones solo aditivas con down",
+        "Ítems existentes sin afijos se comportan igual",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 17,
+      "name": "combate_tacticas",
+      "title": "Táctica (carta) por batalla — opcional",
+      "description": "Una táctica elegida antes del combate, jugable una vez (action.type=tactic). Requiere arte con puerta p-kh. Se decide tras jugar 13-15. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Acciones skill/advance sin cambios",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 18,
+      "name": "aldeanos_oficio",
+      "title": "Aldeanos con oficio que bonifican su edificio",
+      "description": "Aldeano asignado a un edificio de su oficio da +X% de producción; rasgo y estrellas (columnas aditivas en villagers). Sin aldeano el multiplicador es 1.0. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Producción sin aldeanos idéntica a hoy (gameTick/idleService)",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 19,
+      "name": "zonas_niebla_relato",
+      "title": "Zonas del hub con niebla y registro de lore",
+      "description": "El hub B se abre por zonas según nivel del bastión; cada zona muestra un registro corto que queda en el Códice. Zonas con edificios del jugador arrancan abiertas. Después de pantallas_b. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Ningún edificio existente queda cubierto",
+        "Arte aprobado por p-kh",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 20,
+      "name": "almacenes_proteccion",
+      "title": "Almacenes que protegen del saqueo",
+      "description": "protectedPerLevel en edificios de almacén; el saqueo usa lootRate × max(0, recurso − protegido). Tope offline visible en el reporte del Escribano. Después de reporte_escribano. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Sin almacén el saqueo es idéntico a hoy",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 21,
+      "name": "desbloqueos_tabla",
+      "title": "Tabla única de desbloqueos por edificio y nivel",
+      "description": "FUNCTION_UNLOCKS + isUnlocked(player, fn) + texto genérico \"Se abre con {edificio} Nv.{n}\". Registra los umbrales actuales con los mismos valores. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Test: la tabla coincide con las constantes viejas",
+        "Ningún umbral cambia",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
+    },
+    {
+      "id": 22,
+      "name": "enfermeria_flujo",
+      "title": "Enfermería: minijuego de recuperación de héroes",
+      "description": "Los héroes heridos (recovery_until) pasan por estaciones; atenderlas o un aldeano sanador acorta la recuperación. Sin interacción el tiempo es igual que hoy. Arte con puerta p-kh. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "acceptance": [
+        "Sin interacción, recovery_until idéntico a hoy",
+        "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
     }
   ]
 }
