@@ -113,7 +113,11 @@ async function generate(item, { model, size }) {
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`API ${res.status}: ${(await res.text()).slice(0, 400)}`);
+  if (!res.ok) {
+    const err = new Error(`API ${res.status}: ${(await res.text()).slice(0, 400)}`);
+    err.status = res.status;
+    throw err;
+  }
   const data = await res.json();
   const rp = data?.candidates?.[0]?.content?.parts || [];
   const img = rp.find((p) => p.inlineData?.data);
@@ -147,29 +151,70 @@ function parseArgs(argv) {
   return a;
 }
 
-(async () => {
-  const a = parseArgs(process.argv);
-  const opts = { model: a.model, size: a.size };
-  let items;
+// Ítems del manifest (o modo suelto) → [{ id, kind, aspect, prompt, refs, out }]. Lo reutiliza gen_art_web.js.
+function loadItems(a) {
   if (a.manifest) {
-    const mpath = path.join(ROOT, a.manifest);
+    const mpath = path.isAbsolute(a.manifest) ? a.manifest : path.join(ROOT, a.manifest);
     const base = path.dirname(mpath);
-    items = JSON.parse(fs.readFileSync(mpath, 'utf8')).map((it) => ({
+    const items = JSON.parse(fs.readFileSync(mpath, 'utf8')).map((it) => ({
       ...it, out: it.out || path.join(base, 'raw', `${it.id}.png`),
     }));
-    if (a.only) items = items.filter((it) => a.only.includes(it.id));
-  } else if (a.prompt) {
-    items = [{ id: 'libre', kind: a.kind, aspect: a.aspect, prompt: a.prompt, refs: a.refs, out: a.out || `art-b/raw/libre-${Date.now()}.png` }];
+    const sel = a.only ? items.filter((it) => a.only.includes(it.id)) : items;
+    if (a.out && sel.length === 1) sel[0].out = a.out; // --out solo aplica si queda un único ítem
+    return sel;
+  }
+  if (a.prompt) {
+    return [{ id: 'libre', kind: a.kind, aspect: a.aspect, prompt: a.prompt, refs: a.refs, out: a.out || `art-b/raw/libre-${Date.now()}.png` }];
+  }
+  return null;
+}
+
+// 402 (sin crédito) o 429 por cuota: el error de generate() lleva `status`.
+function isQuotaError(e) {
+  return !!e && (e.status === 402 || (e.status === 429 && /quota|exhausted|billing|credit/i.test(e.message)));
+}
+
+// Comando equivalente de gen_art_web.js (mismos args). NO se ejecuta solo: lo decide quien corre el pipeline.
+function webCommand(a, failedIds) {
+  const q = (v) => (/^[\w@%+=:,./\\-]+$/.test(v) ? v : JSON.stringify(v));
+  const parts = ['node scripts/gen_art_web.js'];
+  if (a.manifest) {
+    parts.push('--manifest', q(a.manifest));
+    if (failedIds.length) parts.push('--only', q(failedIds.join(',')));
+    if (a.out) parts.push('--out', q(a.out)); // gen_art_web aplica --out solo si queda un único ítem, igual que acá
   } else {
+    parts.push('--prompt', q(a.prompt), '--out', q(a.out || ''), '--aspect', q(a.aspect), '--kind', q(a.kind));
+    for (const r of a.refs) parts.push('--ref', q(r));
+  }
+  if (a.force) parts.push('--force');
+  return parts.join(' ');
+}
+
+async function main() {
+  const a = parseArgs(process.argv);
+  const opts = { model: a.model, size: a.size };
+  const items = loadItems(a);
+  if (!items) {
     console.error('Uso: node scripts/gen_art_b.js --manifest art-b/manifest.json [--only a,b] [--force]');
     process.exitCode = 1; return;
   }
   // Orden: los que no dependen de otros primero (refs que aún no existen se generan antes).
   let fails = 0;
+  const quotaIds = [];
   for (const it of items) {
     const out = path.isAbsolute(it.out) ? it.out : path.join(ROOT, it.out);
     if (!a.force && fs.existsSync(out)) { console.log(`· ${it.id} ya existe (usa --force)`); continue; }
-    try { await generate(it, opts); } catch (e) { fails++; console.error(`✗ ${it.id}: ${e.message}`); }
+    try { await generate(it, opts); } catch (e) {
+      fails++; console.error(`✗ ${it.id}: ${e.message}`);
+      if (isQuotaError(e)) quotaIds.push(it.id);
+    }
+  }
+  if (quotaIds.length) {
+    console.error('\n⚠ La API devolvió 402/429 (sin crédito o cuota). Alternativa por la web gratuita de Gemini (no se ejecuta sola; otro modelo, el estilo puede variar):');
+    console.error(`  ${webCommand(a, quotaIds)}`);
   }
   if (fails) process.exitCode = 1;
-})();
+}
+
+module.exports = { ROOT, STYLES, KIND_SUFFIX, buildPrompt, parseArgs, loadItems };
+if (require.main === module) main();

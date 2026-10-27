@@ -132,3 +132,53 @@ de B4.
   trabajadores animan sin input del jugador.
 - Una tormenta activa cambia el cielo/ambiente del hub.
 - Lore v2 en todos los textos visibles (`docs/lore.md`, `docs/lore-glosario.md`).
+
+## 8. Generar por la web (sin crédito API)
+
+Cuando `gen_art_b.js` termina con **HTTP 402/429** (sin crédito o cuota), imprime el
+comando equivalente de `scripts/gen_art_web.js`. **No hay fallback automático**:
+lo decide quien corre el pipeline. El script usa la web gratuita
+gemini.google.com con la sesión de Google del owner, en una ventana de Edge visible.
+
+**Requisitos.** Edge instalado, `playwright` y `sharp`. En un worktree sin
+`node_modules`, el script usa solo el del repo principal; si no lo encuentra:
+`NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules`.
+
+**Login (una vez).**
+
+```bash
+node scripts/gen_art_web.js --login
+```
+
+Abre gemini.google.com; el owner inicia sesión en esa ventana (hasta 10 min). El
+script detecta el avatar de la cuenta y cierra. La sesión queda en el perfil de
+Edge `D:/Proyectos/_ops/gemini-web-profile` (env `GEMINI_WEB_PROFILE`), **fuera del
+repo** (`gemini-web-profile/` está en `.gitignore` por si acaso). El script no
+imprime cookies ni guarda credenciales. Sin sesión, sale con código 3 y
+«sesión no iniciada: correr --login».
+
+**Uso.** Mismo CLI que `gen_art_b.js` y mismo texto de prompt:
+
+```bash
+node scripts/gen_art_web.js --manifest art-b/<lote>/manifest.json [--only a,b] [--force]
+node scripts/gen_art_web.js --prompt "..." --out art-b/raw/x.png --aspect 9:16 [--kind prop] [--ref a.png]
+```
+
+Por cada ítem: chat nuevo → «Cargas y herramientas» → «Crear imagen» → relación de
+aspecto → sube **solo la primera ref** (con «Edit the attached image.» delante) →
+espera la imagen (hasta 120 s) → descarga a tamaño completo y la normaliza a PNG en
+`out` → agrega una línea `{"item", "via":"web", ...}` a `run_log.jsonl` (junto a los
+crudos). Cierra la ventana al terminar. Salta lo que ya existe (salvo `--force`).
+
+**Límites.**
+- Solo 1:1, 3:4, 4:3, 9:16 y 16:9; con otro aspecto usa el más cercano.
+- Solo la primera ref; sin 2K garantizado (el tamaño lo decide la web).
+- Pausa de 20–40 s aleatoria entre ítems. Si Gemini muestra un límite diario, el
+  script corta con código 4 y un mensaje claro: reintentar más tarde.
+- La UI de Gemini cambia: los selectores están en el objeto `SEL` al tope del
+  script. Ante un fallo guarda una captura en `D:/Proyectos/_ops/gemini-web-debug/`.
+- No correr dos instancias a la vez (el perfil de Edge se bloquea).
+
+**Aviso de estilo.** Es **otro modelo** que `gemini-3-pro-image` de la API: el
+estilo puede variar (línea, paleta, deriva). **La puerta de arte de p-kh sigue
+siendo obligatoria** para todo lo generado por la web.
