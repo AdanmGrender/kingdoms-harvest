@@ -231,20 +231,47 @@ async function run() {
     summary.push(`texturas ${variant}: 17/17 correctas`);
   }
 
-  // 5. Ciclo de mejora (R38/R44): barn bajo -> obra -> medio, misma sesión.
-  console.log('Running upgrade cycle...');
+  // 5. Ciclo de mejora (R38/R44): barn bajo -> obra -> medio, misma sesión, con el flujo real del cliente:
+  //    gameStore.upgradeBuilding -> POST /api/buildings/upgrade (único) -> loadBuildings (GET /api/buildings).
+  //    El server se sustituye por page.route (la cuenta de evidencia no tiene recursos ni tiempo de obra real);
+  //    el fin simula building_complete devolviendo is_building = 0 en la recarga (como pide R38).
+  console.log('Running upgrade cycle (POST /api/buildings/upgrade)...');
+  const barnWith = (patch) => BUILDINGS_BAJO.map((b) => (b.building_id === 'barn' ? { ...b, ...patch } : b));
   await setBuildings(page, BUILDINGS_BAJO);
+  const BARN_DB_ID = BUILDINGS_BAJO.find((b) => b.building_id === 'barn').id;
+  let serverBuildings = BUILDINGS_BAJO;
+  const upgradePosts = [];
+  await page.route(/\/api\/buildings(\?.*)?$/, (route) => {
+    if (route.request().method() !== 'GET') return route.fallback();
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(serverBuildings) });
+  });
+  await page.route('**/api/buildings/upgrade', (route) => {
+    upgradePosts.push(route.request().postDataJSON());
+    serverBuildings = barnWith({ level: 4, is_building: 1 });
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ message: 'Mejora iniciada' }) });
+  });
+
   assert((await textureKeys(page)).barn === 'hubb_bld_barn', 'antes: barn no está en bajo');
-  await save(page, 'mejora_antes.webp');
+  await save(page, 'obra_antes.webp');
 
-  await setBuildings(page, BUILDINGS_BAJO.map((b) => (b.building_id === 'barn' ? { ...b, level: 4, is_building: 1 } : b)));
-  assert((await textureKeys(page)).barn === 'hubb_bld_barn_obra', 'durante: barn no está en obra');
-  await save(page, 'mejora_durante.webp');
+  await page.evaluate((id) => window.__gameStore.getState().upgradeBuilding(id), BARN_DB_ID);
+  await page.waitForTimeout(1500);
+  assert(upgradePosts.length === 1, `POST /api/buildings/upgrade se envió ${upgradePosts.length} veces, se esperaba 1`);
+  assert(upgradePosts[0].buildingDbId === BARN_DB_ID, `POST con buildingDbId ${upgradePosts[0].buildingDbId}, se esperaba ${BARN_DB_ID}`);
+  assert((await textureKeys(page)).barn === 'hubb_bld_barn_obra', 'durante: barn no está en obra tras el POST');
+  await save(page, 'obra_durante.webp');
 
-  await setBuildings(page, BUILDINGS_BAJO.map((b) => (b.building_id === 'barn' ? { ...b, level: 4, is_building: 0 } : b)));
+  // building_complete -> loadBuildings() (socketService.js:22); el server ya devuelve is_building = 0.
+  serverBuildings = barnWith({ level: 4, is_building: 0 });
+  await page.evaluate(() => window.__gameStore.getState().loadBuildings());
+  await page.waitForTimeout(1500);
   assert((await textureKeys(page)).barn === 'hubb_bld_barn_medio', 'después: barn no está en medio');
-  await save(page, 'mejora_despues.webp');
-  summary.push('ciclo barn: bajo -> obra -> medio verificado por textura');
+  assert(upgradePosts.length === 1, `tras el fin hay ${upgradePosts.length} POST de mejora, se esperaba 1`);
+  await save(page, 'obra_despues.webp');
+  // R44 (requirements.md:216) nombra las mismas capturas de la sesión como mejora_antes/despues.
+  fs.copyFileSync(path.join(EVID, 'obra_antes.webp'), path.join(EVID, 'mejora_antes.webp'));
+  fs.copyFileSync(path.join(EVID, 'obra_despues.webp'), path.join(EVID, 'mejora_despues.webp'));
+  summary.push(`ciclo barn: 1 POST /api/buildings/upgrade (buildingDbId=${BARN_DB_ID}), bajo -> obra -> medio sin recargar`);
 
   // 6. Toque tras el cambio (R30/R31): tap en un píxel opaco del barn nuevo.
   console.log('Simulating tap on upgraded Barn...');
