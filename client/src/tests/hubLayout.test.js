@@ -399,6 +399,63 @@ describe('hubLayout — texto flotante y texturas (R29)', () => {
       expect(fs.existsSync(path.join(publicDir, t.url)), t.url).toBe(true);
     }
   });
+
+  // R24: el documento de dirección de arte es coherente con HUB_TEXTURES y con la regla de tramo.
+  describe('docs/art-direction/hub-tramos-nivel.md (R24)', () => {
+    const docPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../docs/art-direction/hub-tramos-nivel.md');
+    const doc = fs.readFileSync(docPath, 'utf8');
+    const tableRows = doc.split('\n').filter((l) => l.trim().startsWith('|'));
+
+    it('la tabla de variantes lista el archivo y la clave de cada webp de edificio de HUB_TEXTURES (68)', () => {
+      const bld = HUB_TEXTURES.filter((t) => t.url.startsWith('/assets/b/buildings/'));
+      expect(bld).toHaveLength(68);
+      const variantRows = tableRows.filter((l) => l.includes('hubb_bld_<id>'));
+      expect(variantRows).toHaveLength(4);
+      for (const t of bld) {
+        const m = t.url.match(/^\/assets\/b\/buildings\/([a-z_]+?)(?:_(medio|alto|obra))?\.webp$/);
+        expect(m, t.url).not.toBeNull();
+        const [, id, variant = 'bajo'] = m;
+        expect(BUILDING_IDS, t.url).toContain(id);
+        expect(t.key, t.url).toBe(`hubb_bld_${id}${variant === 'bajo' ? '' : `_${variant}`}`);
+        // La fila de la variante documenta la plantilla de archivo y de clave de este webp.
+        const row = variantRows.find((l) => l.includes(`| \`${variant}\``));
+        expect(row, `${t.url}: fila ${variant}`).toBeTruthy();
+        const fileTpl = `<id>${variant === 'bajo' ? '' : `_${variant}`}.webp`;
+        const keyTpl = `hubb_bld_<id>${variant === 'bajo' ? '' : `_${variant}`}`;
+        expect(row, `${t.url}: archivo`).toContain(fileTpl);
+        expect(row, `${t.url}: clave`).toContain(`\`${keyTpl}\``);
+      }
+    });
+
+    it('la tabla de cortes lista cada edificio en la fila de su maxLevel y los rangos coinciden con buildingTier', () => {
+      const cutRows = tableRows
+        .map((l) => l.split('|').map((c) => c.trim()))
+        .filter((c) => /^\d+$/.test(c[1]) && c.length >= 7);
+      const seen = new Set();
+      for (const c of cutRows) {
+        const max = Number(c[1]);
+        const ids = c[2].split(',').map((s) => s.trim());
+        const range = (txt) => {
+          const [a, b = a] = txt.split('-').map(Number);
+          return [a, b];
+        };
+        const expected = { bajo: range(c[3]), medio: range(c[4]), alto: range(c[5]) };
+        for (const id of ids) {
+          seen.add(id);
+          expect(BUILDING_MAX_LEVEL[id], `${id}: maxLevel`).toBe(max);
+          for (const [tier, [lo, hi]] of Object.entries(expected)) {
+            for (let lv = lo; lv <= hi; lv += 1) expect(buildingTier(id, lv), `${id} nivel ${lv}`).toBe(tier);
+          }
+          // Cobertura completa de niveles 1..max sin huecos entre rangos.
+          expect(expected.bajo[0]).toBe(1);
+          expect(expected.medio[0]).toBe(expected.bajo[1] + 1);
+          expect(expected.alto[0]).toBe(expected.medio[1] + 1);
+          expect(expected.alto[1]).toBe(max);
+        }
+      }
+      expect([...seen].sort()).toEqual([...BUILDING_IDS].sort());
+    });
+  });
 });
 
 describe('hubLayout — findFreeTile (R26)', () => {

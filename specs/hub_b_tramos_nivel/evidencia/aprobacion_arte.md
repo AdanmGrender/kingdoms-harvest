@@ -73,8 +73,8 @@ Salen de esta prueba y valen para las 48 restantes (y para la nueva `alto` del b
 
 - **Rechazados:** ninguno. Por R23 no hay nada que regenerar.
 - **Dudosos aceptados tal cual:**
-  - `tier_trap_alto`: aspecto al 133 % (R15).
-  - `tier_stable_alto`: 118 %.
+  - `tier_trap_alto`: aspecto al 136 % (R15).
+  - `tier_stable_alto`: 119 %.
   - `tier_mill_alto`: en el límite. Se rehízo por la web y el anterior quedó en `raw/_reemplazados/`.
   - Los 7 sprites generados por la web de Gemini: posible variación de estilo, incluido el altarcito de la parcela alta.
 - **Si al verlos en el juego el owner pide cambios:** se rehacen con `scripts/gen_art_web.js` en una tarea aparte, sin frenar T11–T13.

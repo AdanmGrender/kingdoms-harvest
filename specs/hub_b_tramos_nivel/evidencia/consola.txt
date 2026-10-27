@@ -1,4 +1,4 @@
-# Consola de ejecucion del Hub con los 80 webp de edificios (Playwright 412x860 @2x, 2026-10-27T17:51:29.772Z)
+# Consola de ejecucion del Hub con los 68 webp de edificio (Playwright 412x860 @2x, 2026-10-27T17:51:29.772Z)
 pageerrors: 0
 console.error: 0
 console.warn: 10

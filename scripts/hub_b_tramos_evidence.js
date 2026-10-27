@@ -375,7 +375,7 @@ async function run() {
   const r35 = [];
   r35.push(await runBlocked('*_alto.webp', ['**/buildings/*_alto.webp'], BUILDINGS_ALTO, (id) => expectedKey(id, 'medio')));
   r35.push(await runBlocked('todos los webp de edificio', ['**/buildings/*.webp'], BUILDINGS_ALTO, () => 'hubb_placeholder'));
-  writeConsole('consola.txt', 'Consola de ejecucion del Hub con los 80 webp de edificios', logs,
+  writeConsole('consola.txt', 'Consola de ejecucion del Hub con los 68 webp de edificio', logs,
     ['', '## Aserciones superadas', ...summary.concat(r35).map((x) => `- ${x}`)]);
   console.log('Evidence generation finished successfully.');
 }
