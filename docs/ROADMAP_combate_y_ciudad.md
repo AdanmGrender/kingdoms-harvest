@@ -1,6 +1,6 @@
 # Roadmap: combate v2 y ciudad viva (features 13–22)
 
-> Estado: **PROPUESTA**, pendiente de aprobación del owner. Nada de esto está implementado.
+> Estado: **ORDEN APROBADO por el owner (2026-10-27)**. Cada feature sigue necesitando su propio spec aprobado; nada está implementado todavía.
 > Fecha: 2026-10-27. Autor: Central (director de operaciones).
 > Origen: análisis de diseño de dos juegos de referencia, *Kingdom in Chaos* (KiC) y *Last Asylum: Plague* (LA).
 > Se leyeron solo datos y textos; no se copió código ni se rompieron protecciones. El detalle está fuera del repo:
