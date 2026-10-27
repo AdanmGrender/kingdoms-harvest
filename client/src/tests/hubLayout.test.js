@@ -391,19 +391,13 @@ describe('hubLayout — texto flotante y texturas (R29)', () => {
     }
   });
 
-  it('R132 — cada fila de HUB_TEXTURES de edificios tiene su <id>[_variante].webp listado en la tabla del documento', () => {
-    const mdPath = path.resolve(process.cwd(), '../docs/art-direction/hub-tramos-nivel.md');
-    const mdContent = fs.readFileSync(mdPath, 'utf8');
-
-    // Verificar que los patrones de claves y nombres existen en el markdown
-    expect(mdContent).toContain('<id>.webp');
-    expect(mdContent).toContain('<id>_medio.webp');
-    expect(mdContent).toContain('<id>_alto.webp');
-    expect(mdContent).toContain('<id>_obra.webp');
-    expect(mdContent).toContain('hubb_bld_<id>');
-    expect(mdContent).toContain('hubb_bld_<id>_medio');
-    expect(mdContent).toContain('hubb_bld_<id>_alto');
-    expect(mdContent).toContain('hubb_bld_<id>_obra');
+  it('HUB_TEXTURES: cada URL de edificio (4 por id) apunta a un webp que existe en client/public', () => {
+    const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
+    const bld = HUB_TEXTURES.filter((t) => t.url.startsWith('/assets/b/buildings/'));
+    expect(bld).toHaveLength(BUILDING_IDS.length * 4);
+    for (const t of bld) {
+      expect(fs.existsSync(path.join(publicDir, t.url)), t.url).toBe(true);
+    }
   });
 });
 

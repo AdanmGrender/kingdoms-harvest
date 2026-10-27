@@ -1,6 +1,7 @@
 {
   "avg": 180.1,
-  "min": 122,
+  "min": 137,
+  "samples": 3595,
   "durationSeconds": 20,
   "pageerrors": 0
 }

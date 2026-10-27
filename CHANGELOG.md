@@ -8,7 +8,6 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 ## [Unreleased]
 
 ### Added
-- Hub idle — tramos de nivel (B1.3): soporte de 4 variantes visuales (bajo, medio, alto, obra) para los 17 edificios, 51 nuevos recursos webp integrados dinámicamente mediante `variantKey` sin recargas, con anclas y alturas alineadas y suite completa de tests de layout (`hub_b_tramos_nivel`)
 - Spike de dirección de arte B: combate ilustrado grimdark renacentista en Phaser 3 + pipeline de arte IA (`spike_combate_b`)
 - Harness SDD (leader / spec_author / implementer / reviewer, `feature_list.json`, `specs/`) adaptado de SSD-HARNESS-TEMPLATE
 - Hub idle vivo — escena base ilustrada (`hub_b_escena`): HubSceneB grimdark renacentista por capas, 17 ranuras de edificios, trabajadores y humo animados, ambiente por tormenta, render a resolución de dispositivo; se retira el hub viejo de WorldScene
