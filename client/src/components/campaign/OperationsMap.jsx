@@ -11,6 +11,11 @@ const TYPE_ICON = {
   boss:    { sprite: 'skull', emoji: 'skull' },
 };
 
+// Etiqueta en español del tipo de nodo (T3)
+const NODE_TYPE_LABEL = {
+  manage: 'Gestión', collect: 'Recolección', combat: 'Combate', wave: 'Oleada', boss: 'Jefe',
+};
+
 // F1: sólo los nodos combat/wave/boss se pueden re-farmear con "Asalto rápido".
 const SWEEPABLE_TYPES = ['combat', 'wave', 'boss'];
 
@@ -95,7 +100,7 @@ export default function OperationsMap({ onClose }) {
                     />
                     <div className="flex-1 text-left">
                       <p className="text-white text-sm font-semibold">{node.name}</p>
-                      <p className="text-gray-400 text-[10px] uppercase">{node.type}</p>
+                      <p className="text-gray-400 text-[10px] uppercase">{NODE_TYPE_LABEL[node.type] ?? node.type}</p>
                     </div>
                     {cleared
                       ? <SpriteIcon name="check" size={28} />

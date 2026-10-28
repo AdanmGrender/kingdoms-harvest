@@ -336,6 +336,36 @@
       "assignee": "implementer"
     },
     {
+      "id": 26,
+      "name": "fix_superposiciones_ui",
+      "title": "HUD y paneles encimados o cortados",
+      "description": "S1–S5 (HALLAZGOS 2026-10-28): píldora de clima sobre el HUD, etiqueta Objetivo oculta, árbol de investigación cortado, filtros de Logros cortados, íconos y subtítulos de Configuración.",
+      "acceptance": [
+        "Sin solapes: la píldora de clima queda bajo el TopResourceBar y el riel de objetivo",
+        "Etiqueta Objetivo visible en 360/375/390/412 sin cortes",
+        "Árbol de investigación, Logros y Configuración sin texto cortado a 360x740",
+        "vitest completo verde (salvo known_failures) y build OK"
+      ],
+      "sdd": false,
+      "status": "done",
+      "assignee": "implementer"
+    },
+    {
+      "id": 25,
+      "name": "fix_textos_ui",
+      "title": "Textos duplicados y en inglés en menú, operaciones e investigación",
+      "description": "Menú: 'Comandante Comandante' y versión 'vdev' visibles. Operaciones: tipos de nodo en inglés (MANAGE, COLLECT, COMBAT, WAVE, BOSS). Investigación: costos en inglés (gold, stone, crystal).",
+      "acceptance": [
+        "Menú sin 'Comandante Comandante' y sin 'vdev' fuera de desarrollo",
+        "Tipos de nodo de Operaciones en español",
+        "Costos del árbol de investigación con nombres de recurso en español",
+        "Tests vitest que cubren cada texto corregido; suite verde"
+      ],
+      "sdd": false,
+      "status": "done",
+      "assignee": "implementer"
+    },
+    {
       "id": 24,
       "name": "fix_pantalla_movil",
       "title": "La app entra completa en el celular real",
@@ -349,8 +379,8 @@
         "Capturas Playwright antes/después en 5 celulares con 0 elementos fuera de pantalla (hub y shop) + captura del emulador Android con la fila inferior completa; vitest completo verde y build OK; aditivo (R-ND1..ND10)"
       ],
       "sdd": true,
-      "status": "spec_ready",
-      "assignee": "spec-author"
+      "status": "in_progress",
+      "assignee": "implementer"
     }
   ]
 }

@@ -7,6 +7,9 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 
 ## [Unreleased]
 
+### Fixed
+- Textos duplicados y en inglés en menú, operaciones e investigación (`fix_textos_ui`)
+
 ### Added
 - Motor de combate v2: DEF, SPD, amenaza, multi-enemigo, log de eventos (`combate_motor_v2`)
 - Hub idle — aspecto del edificio por tramo de nivel (B1.3) (`hub_b_tramos_nivel`)
@@ -24,3 +27,4 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 - El popup de edificio muestra el nombre real (lore v2) y su nivel máximo (`fix_building_popup_id`)
 - Arreglar test preexistente GameHUD Lv5 (`fix_test_gamehud_lv5`)
 - Encuadre y alineación de los botones del hub (`fix_botones_hub`)
+- HUD y paneles encimados o cortados (`fix_superposiciones_ui`)
