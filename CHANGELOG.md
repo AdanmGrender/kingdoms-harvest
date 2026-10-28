@@ -22,3 +22,4 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 - El popup de edificio muestra el nombre real (lore v2) y su nivel máximo (`fix_building_popup_id`)
 - Arreglar test preexistente GameHUD Lv5 (`fix_test_gamehud_lv5`)
 - Encuadre y alineación de los botones del hub (`fix_botones_hub`)
+- HUD y paneles encimados o cortados (`fix_superposiciones_ui`)

@@ -347,7 +347,7 @@
         "vitest completo verde (salvo known_failures) y build OK"
       ],
       "sdd": false,
-      "status": "pending",
+      "status": "done",
       "assignee": "implementer"
     }
   ]
