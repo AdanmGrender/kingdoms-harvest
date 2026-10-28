@@ -7,6 +7,9 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 
 ## [Unreleased]
 
+### Fixed
+- Textos duplicados y en inglés en menú, operaciones e investigación (`fix_textos_ui`)
+
 ### Added
 - Motor de combate v2: DEF, SPD, amenaza, multi-enemigo, log de eventos (`combate_motor_v2`)
 - Hub idle — aspecto del edificio por tramo de nivel (B1.3) (`hub_b_tramos_nivel`)

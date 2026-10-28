@@ -9,7 +9,8 @@ export default function MainMenu() {
   const enterGame = useGameStore((s) => s.enterGame);
   const setOverlay = useGameStore((s) => s.setOverlay);
   const player = useGameStore((s) => s.player);
-  const version = import.meta.env.VITE_APP_VERSION || 'dev';
+  // Versión visible solo con una versión real o en desarrollo (T2)
+  const version = import.meta.env.VITE_APP_VERSION || (import.meta.env.DEV ? 'dev' : '');
 
   const openSettings = () => {
     // Entra al juego con el panel de ajustes ya abierto (el overlay vive
@@ -75,11 +76,13 @@ export default function MainMenu() {
 
         {player?.display_name && (
           <p className="text-[11px] text-gray-500 mt-8">
-            Comandante <span className="text-gray-300">{player.display_name}</span>
+            {/* No repetir "Comandante" si el nombre ya lo trae (T1) */}
+            {player.display_name.startsWith('Comandante') ? null : 'Comandante '}
+            <span className="text-gray-300">{player.display_name}</span>
             {player.level ? ` · Nv. ${player.level}` : ''}
           </p>
         )}
-        <p className="text-[10px] text-gray-600 mt-1">v{version}</p>
+        {version && <p className="text-[10px] text-gray-600 mt-1">v{version}</p>}
       </div>
     </div>
   );
