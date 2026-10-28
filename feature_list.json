@@ -347,7 +347,7 @@
         "Tests vitest que cubren cada texto corregido; suite verde"
       ],
       "sdd": false,
-      "status": "pending",
+      "status": "done",
       "assignee": "implementer"
     }
   ]

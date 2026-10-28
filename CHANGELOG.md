@@ -7,6 +7,9 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 
 ## [Unreleased]
 
+### Fixed
+- Textos duplicados y en inglés en menú, operaciones e investigación (`fix_textos_ui`)
+
 ### Added
 - Hub idle — aspecto del edificio por tramo de nivel (B1.3) (`hub_b_tramos_nivel`)
 - Spike de dirección de arte B: combate ilustrado grimdark renacentista en Phaser 3 + pipeline de arte IA (`spike_combate_b`)
