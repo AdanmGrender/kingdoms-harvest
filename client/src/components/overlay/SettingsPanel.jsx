@@ -126,16 +126,16 @@ export default function SettingsPanel({ onClose }) {
       <div className="px-4 py-3 space-y-4 overflow-y-auto flex-1">
         {/* ── Audio y gráficos ── */}
         <Section title="Juego">
-          <Row icon="gear" title="Silenciar audio" subtitle={muted ? 'Silenciado' : 'Sonido activo'}
+          <Row icon="moon" title="Silenciar audio" subtitle={muted ? 'Silenciado' : 'Sonido activo'}
             control={<Toggle on={!muted} onChange={toggleMute} />} />
           <VolumeRow value={volume} disabled={muted} onChange={changeVolume} />
-          <Row icon="gear" title="Efectos de ambiente" subtitle="Viñeta, cielo, luces — apagar en teléfonos lentos"
+          <Row icon="sun" title="Efectos de ambiente" subtitle="Viñeta, cielo, luces — apagar en teléfonos lentos"
             control={<Toggle on={ambientFx} onChange={toggleAmbient} />} />
         </Section>
 
         {/* ── Notificaciones del bot ── */}
         <Section title="Notificaciones del bot">
-          <Row icon="exclamation" title="Todas las notificaciones"
+          <Row icon="scroll" title="Todas las notificaciones"
             subtitle={notifEnabled ? 'Recibís DMs del bot' : 'Silenciado'}
             control={<Toggle on={notifEnabled} disabled={busy} onChange={toggleMaster} />} />
 
@@ -170,7 +170,7 @@ function Row({ icon, title, subtitle, control, small }) {
       <div className={`${small ? 'text-lg w-7' : 'text-2xl w-9'} text-center`}><SpriteIcon name={icon} size={28} /></div>
       <div className="flex-1 min-w-0">
         <p className={`${small ? 'text-xs' : 'text-sm'} text-white font-semibold truncate`}>{title}</p>
-        {subtitle && <p className="text-[11px] text-gray-400 truncate">{subtitle}</p>}
+        {subtitle && <p className="text-[11px] leading-tight text-gray-400 line-clamp-2 break-words">{subtitle}</p>}
       </div>
       {control}
     </div>
@@ -182,7 +182,7 @@ function VolumeRow({ value, disabled, onChange }) {
   const pct = Math.round((value ?? 0) * 100);
   return (
     <div className={`flex items-center gap-3 ${disabled ? 'opacity-50' : ''}`}>
-      <div className="text-2xl w-9 text-center"><SpriteIcon name="exclamation" size={32} /></div>
+      <div className="text-2xl w-9 text-center"><SpriteIcon name="tide" size={32} /></div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <p className="text-sm text-white font-semibold truncate">Volumen</p>

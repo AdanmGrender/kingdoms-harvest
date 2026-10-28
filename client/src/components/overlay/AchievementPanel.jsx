@@ -118,7 +118,7 @@ export default function AchievementPanel({ onClose }) {
       </div>
 
       {/* Category filter */}
-      <div className="flex gap-1 mb-3 overflow-x-auto pb-1">
+      <div data-testid="achievement-filters" className="flex flex-wrap gap-1 mb-3">
         <button
           onClick={() => setActiveCategory('all')}
           className={`shrink-0 text-[9px] px-2 py-1 rounded ${activeCategory === 'all' ? 'bg-yellow-700 text-white' : 'bg-gray-800 text-gray-400'}`}

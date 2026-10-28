@@ -32,9 +32,9 @@ export default function Panel({ variant = 'oak', title, onClose, className = '',
       {...rest}
     >
       {(title || onClose) && (
-        <div className="flex justify-between items-center mb-2 gap-2">
+        <div className="flex justify-between items-center mb-2 gap-2 px-1">
           {title ? (
-            <h3 className="font-display" style={{ fontSize: 20, lineHeight: 1.2 }}>
+            <h3 className="font-display min-w-0 break-words" style={{ fontSize: 20, lineHeight: 1.2 }}>
               {title}
             </h3>
           ) : (
