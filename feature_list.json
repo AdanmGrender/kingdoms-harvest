@@ -101,8 +101,8 @@
         "Frase del Escribano variable"
       ],
       "sdd": true,
-      "status": "pending",
-      "assignee": null
+      "status": "done",
+      "assignee": "spec-author"
     },
     {
       "id": 7,

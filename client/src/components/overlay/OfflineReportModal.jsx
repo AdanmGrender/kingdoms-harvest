@@ -1,10 +1,14 @@
 /**
- * OfflineReportModal — informe "Mientras no estabas" (F1 idle).
+ * OfflineReportModal — libro de cuentas del Escribano (reporte offline, F1 idle).
  * Se muestra sobre el juego cuando /player/init trae offlineReport.
- * Estilo informe militar (como la cabecera de TerritoryMapPanel).
+ * Pergamino del kit B (Panel parchment); `report.storage` trae el tope de granero por recurso.
  */
+import { useMemo } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import Panel from '../ui/Panel';
+import Button from '../ui/Button';
+import { pickEscribanoLine } from '../../config/escribanoLines';
 
 const RESOURCE_ICONS = {
   wheat: 'wheat', wood: 'wood', stone: 'stone', iron: 'iron', water: 'water', gold: 'gold',
@@ -12,7 +16,17 @@ const RESOURCE_ICONS = {
   egg: 'egg', milk: 'milk', wool: 'wool', crystal: 'gem', relic: 'relic', blueprint: 'scroll',
 };
 
-function formatAway(ms) {
+// Mismos nombres que CommerceView; el id queda como respaldo si falta alguno.
+const RESOURCE_NAMES = {
+  wheat: 'Trigo', carrot: 'Zanahoria', potato: 'Papa', tomato: 'Tomate',
+  corn: 'Maíz', pumpkin: 'Calabaza', grape: 'Uva',
+  wood: 'Madera', stone: 'Piedra', iron: 'Hierro', gold: 'Oro', water: 'Agua',
+  bread: 'Pan', planks: 'Tablones', ingots: 'Lingotes',
+  flour: 'Harina', cheese: 'Queso', egg: 'Huevo', milk: 'Leche', wool: 'Lana',
+  crystal: 'Ascua de Faro', relic: 'Reliquia', blueprint: 'Tratado',
+};
+
+export function formatAway(ms) {
   const mins = Math.floor(ms / 60000);
   if (mins < 60) return `${mins} min`;
   const hours = Math.floor(mins / 60);
@@ -20,66 +34,97 @@ function formatAway(ms) {
   return `${Math.floor(hours / 24)} días`;
 }
 
+const isFull = (entry) => !!entry
+  && Number.isFinite(entry.amount)
+  && Number.isFinite(entry.capacity)
+  && entry.amount >= entry.capacity;
+
+const SECTION_TITLE = 'text-[11px] uppercase tracking-wider mb-1.5 opacity-70';
+
 export default function OfflineReportModal() {
   const report = useGameStore((s) => s.offlineReport);
   const dismiss = useGameStore((s) => s.dismissOfflineReport);
+  const line = useMemo(() => (report ? pickEscribanoLine(report) : ''), [report]);
 
   if (!report) return null;
 
   const resources = Object.entries(report.resources || {});
   const hadDowntime = Object.keys(report.catchUp || {}).length > 0;
+  const storage = report.storage || {};
+  const fullOutside = Object.entries(storage)
+    .filter(([id, entry]) => isFull(entry) && !(id in (report.resources || {})));
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 animate-fade-in">
-      <div
-        className="w-full max-w-sm rounded-xl overflow-hidden"
-        style={{
-          background: 'rgba(23, 21, 26, 0.98)',
-          border: '1px solid rgba(217, 164, 65, 0.35)',
-          boxShadow: '0 0 40px rgba(0,0,0,0.8)',
-        }}
-      >
-        {/* Cabecera estilo informe militar */}
-        <div className="px-4 py-3 border-b border-yellow-900/40 bg-black/40 text-center">
-          <p className="text-[10px] tracking-[0.3em] text-gray-500 uppercase">Informe del Bastión</p>
-          <h3 className="text-kingdom-gold text-base font-bold font-display">
-            <SpriteIcon name="skull" size={28} /> Mientras no estabas
-          </h3>
-          <p className="text-[11px] text-gray-400">Ausente {formatAway(report.awayMs)}</p>
-        </div>
+      <Panel variant="parchment" title="Libro de cuentas del Escribano" className="w-full max-w-sm">
+        <p className="text-sm">Mientras no estabas</p>
+        <p className="text-xs opacity-70 mb-2">Ausente {formatAway(report.awayMs)}</p>
 
-        <div className="px-4 py-3 space-y-3 max-h-[50vh] overflow-y-auto">
+        <div className="space-y-3 max-h-[50vh] overflow-y-auto">
           {resources.length > 0 && (
             <div>
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">
+              <p className={SECTION_TITLE}>
                 Producción acumulada{hadDowntime ? ' (incluye recuperación)' : ''}
               </p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {resources.map(([id, amount]) => (
-                  <div key={id} className="flex items-center gap-2 bg-black/40 rounded px-2 py-1.5 border border-gray-700/40">
-                    <span className="text-lg leading-none"><SpriteIcon name={RESOURCE_ICONS[id] || 'reward_bag'} size={28} /></span>
-                    <span className="text-sm text-green-400 font-bold">+{amount}</span>
-                    <span className="text-[10px] text-gray-500 truncate">{id}</span>
-                  </div>
+              <ul className="space-y-1">
+                {resources.map(([id, amount]) => {
+                  const entry = storage[id];
+                  return (
+                    <li key={id} className="flex items-center gap-2 border-b border-kh-brass/40 py-1">
+                      <SpriteIcon name={RESOURCE_ICONS[id] || 'reward_bag'} size={28} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm truncate">{RESOURCE_NAMES[id] || id}</p>
+                        {entry && (
+                          <p className="text-xs opacity-80">
+                            <span className="font-numeric">{entry.amount} / {entry.capacity}</span>
+                            {isFull(entry) && (
+                              <span className="ml-2 font-bold text-kh-seal">Granero lleno</span>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                      <span className="font-numeric font-bold text-sm">+{amount}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          {fullOutside.length > 0 && (
+            <div>
+              <p className={SECTION_TITLE}>Almacenes al tope</p>
+              <ul className="space-y-1">
+                {fullOutside.map(([id, entry]) => (
+                  <li key={id} className="flex items-center gap-2 border-b border-kh-brass/40 py-1">
+                    <SpriteIcon name={RESOURCE_ICONS[id] || 'reward_bag'} size={28} />
+                    <p className="flex-1 min-w-0 text-sm">
+                      <span>{RESOURCE_NAMES[id] || id}</span>
+                      <span className="mx-1">—</span>
+                      <span className="font-bold text-kh-seal">Granero lleno</span>
+                      <span className="ml-1 font-numeric text-xs">({entry.amount} / {entry.capacity})</span>
+                    </p>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           )}
 
           {report.khEarned > 0 && (
-            <div className="flex items-center justify-center gap-2 bg-yellow-900/20 border border-yellow-700/40 rounded px-3 py-2">
-              <span className="text-lg"><SpriteIcon name="gem" size={28} /></span>
-              <span className="text-kingdom-gold font-bold text-sm">+{report.khEarned} KH</span>
+            <div className="flex items-center justify-center gap-2 border border-kh-brass rounded px-3 py-2">
+              <SpriteIcon name="gem" size={28} />
+              <span className="font-numeric font-bold text-sm">+{report.khEarned} KH</span>
             </div>
           )}
 
           {(report.events || []).length > 0 && (
             <div>
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">Sucesos</p>
+              <p className={SECTION_TITLE}>Sucesos</p>
               <div className="space-y-1">
                 {report.events.map((e, i) => (
-                  <p key={i} className="text-[11px] text-gray-300">
-                    <SpriteIcon name="scroll" size={28} /> {e.text}
+                  <p key={i} className="flex items-center gap-2 text-sm">
+                    <SpriteIcon name="scroll" size={28} />
+                    <span className="flex-1 min-w-0">{e.text}</span>
                   </p>
                 ))}
               </div>
@@ -87,17 +132,13 @@ export default function OfflineReportModal() {
           )}
         </div>
 
-        <div className="px-4 pb-4 pt-1">
-          <button
-            onClick={dismiss}
-            className="w-full py-2.5 rounded-lg text-sm font-bold text-white
-                       bg-gradient-to-b from-red-700 to-red-900 border border-red-500/40
-                       hover:from-red-600 hover:to-red-800 active:scale-95 transition-all"
-          >
-            Retomar el mando
-          </button>
-        </div>
-      </div>
+        <p className="mt-3 text-sm italic text-center">«{line}»</p>
+        <p className="text-xs text-center opacity-70 mb-3">— El Escribano</p>
+
+        <Button variant="primary" onClick={dismiss} className="w-full">
+          Retomar el mando
+        </Button>
+      </Panel>
     </div>
   );
 }
