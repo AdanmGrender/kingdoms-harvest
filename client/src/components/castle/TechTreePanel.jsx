@@ -4,6 +4,13 @@ import SpriteIcon from '../ui/SpriteIcon';
 
 const BRANCH_ICONS = { agriculture: 'wheat', commerce: 'gold', military: 'sword' };
 
+// Nombres de recurso en español (T4). Oro/Piedra como en CommerceView.jsx:9;
+// Ascua de Faro como en shared/gameConfig.js:39 (RESOURCES.CRYSTAL).
+const COST_LABEL = {
+  wheat: 'Trigo', wood: 'Madera', stone: 'Piedra', iron: 'Hierro', gold: 'Oro',
+  planks: 'Tablones', ingots: 'Lingotes', crystal: 'Ascua de Faro',
+};
+
 function formatTime(ms) {
   if (!ms) return '';
   const remaining = new Date(ms) - Date.now();
@@ -83,7 +90,7 @@ export default function TechTreePanel() {
                   </div>
                   <p className="text-xs text-purple-300 truncate">{tech.effect}</p>
                   <p className="text-[10px] text-gray-500 mt-0.5">
-                    Costo: {Object.entries(tech.cost).map(([k, v]) => `${v} ${k}`).join(', ')}
+                    Costo: {Object.entries(tech.cost).map(([k, v]) => `${v} ${COST_LABEL[k] ?? k}`).join(', ')}
                   </p>
                 </div>
                 <div className="shrink-0">
