@@ -8,6 +8,7 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 ## [Unreleased]
 
 ### Added
+- Motor de combate v2: DEF, SPD, amenaza, multi-enemigo, log de eventos (`combate_motor_v2`)
 - Hub idle — aspecto del edificio por tramo de nivel (B1.3) (`hub_b_tramos_nivel`)
 - Spike de dirección de arte B: combate ilustrado grimdark renacentista en Phaser 3 + pipeline de arte IA (`spike_combate_b`)
 - Harness SDD (leader / spec_author / implementer / reviewer, `feature_list.json`, `specs/`) adaptado de SSD-HARNESS-TEMPLATE
