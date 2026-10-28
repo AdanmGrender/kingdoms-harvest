@@ -334,6 +334,21 @@
       "sdd": false,
       "status": "done",
       "assignee": "implementer"
+    },
+    {
+      "id": 26,
+      "name": "fix_superposiciones_ui",
+      "title": "HUD y paneles encimados o cortados",
+      "description": "S1–S5 (HALLAZGOS 2026-10-28): píldora de clima sobre el HUD, etiqueta Objetivo oculta, árbol de investigación cortado, filtros de Logros cortados, íconos y subtítulos de Configuración.",
+      "acceptance": [
+        "Sin solapes: la píldora de clima queda bajo el TopResourceBar y el riel de objetivo",
+        "Etiqueta Objetivo visible en 360/375/390/412 sin cortes",
+        "Árbol de investigación, Logros y Configuración sin texto cortado a 360x740",
+        "vitest completo verde (salvo known_failures) y build OK"
+      ],
+      "sdd": false,
+      "status": "done",
+      "assignee": "implementer"
     }
   ]
 }

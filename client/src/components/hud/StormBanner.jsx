@@ -27,8 +27,11 @@ export default function StormBanner() {
   if (!storm) return null;
 
   return (
+    // top-[176px]: debajo del TopResourceBar (8–126) y del riel de objetivo (128–172). Con top-10 tapaba
+    // Poder y oro. El max-w deja libres las columnas laterales (80 px por lado).
     <div
-      className="fixed top-10 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2
+      data-testid="storm-banner"
+      className="fixed top-[176px] left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 max-w-[calc(100%-10rem)]
                  px-3 py-1.5 rounded-full pointer-events-none animate-fade-in"
       style={{
         background: 'rgba(23, 21, 26, 0.92)',
@@ -36,12 +39,12 @@ export default function StormBanner() {
         boxShadow: `0 0 16px ${storm.color || '#7a5a8a'}55`,
       }}
     >
-      <span className="text-base leading-none animate-pulse">{storm.icon}</span>
-      <span className="text-[11px] font-bold" style={{ color: storm.color || '#c4b5fd' }}>
+      <span className="text-base leading-none animate-pulse shrink-0">{storm.icon}</span>
+      <span className="text-[11px] font-bold min-w-0 truncate" style={{ color: storm.color || '#c4b5fd' }}>
         {storm.name}
         {storm.intensity > 1 ? ` · i${storm.intensity}` : ''}
       </span>
-      <span className="text-[10px] text-gray-400">{remainingLabel(storm.ends_at)}</span>
+      <span className="text-[10px] text-gray-400 shrink-0">{remainingLabel(storm.ends_at)}</span>
     </div>
   );
 }

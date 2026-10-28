@@ -43,13 +43,13 @@ export default function TechTreePanel() {
           <button
             key={b.id}
             onClick={() => setActiveBranch(b.id)}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex-1 min-w-0 px-1 py-2 rounded-lg text-[11px] leading-tight text-center font-bold transition-all flex flex-col items-center justify-center gap-0.5 break-words ${
               activeBranch === b.id
                 ? 'bg-purple-700 text-white'
                 : 'bg-kingdom-blue/50 text-gray-400 hover:text-white'
             }`}
           >
-            <SpriteIcon name={BRANCH_ICONS[b.id]} size={28} /> {b.name}
+            <SpriteIcon name={BRANCH_ICONS[b.id]} size={28} /><span>{b.name}</span>
           </button>
         ))}
       </div>
@@ -78,10 +78,10 @@ export default function TechTreePanel() {
               }`}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold truncate">{tech.name}</p>
+                    <p className="text-sm font-bold leading-tight break-words">{tech.name}</p>
                     {isCompleted && <span className="text-green-400 text-xs">✓</span>}
                   </div>
-                  <p className="text-xs text-purple-300 truncate">{tech.effect}</p>
+                  <p className="text-xs text-purple-300 leading-tight break-words">{tech.effect}</p>
                   <p className="text-[10px] text-gray-500 mt-0.5">
                     Costo: {Object.entries(tech.cost).map(([k, v]) => `${v} ${k}`).join(', ')}
                   </p>
