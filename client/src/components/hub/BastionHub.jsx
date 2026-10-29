@@ -8,7 +8,7 @@ import SpriteIcon from '../ui/SpriteIcon';
 export default function BastionHub() {
   const setOverlay = useGameStore((s) => s.setOverlay);
   return (
-    <div className="fixed inset-0">
+    <div className="absolute inset-0">
       <div className="absolute inset-0">
         <PhaserGame entry="hub" />
       </div>
@@ -18,11 +18,11 @@ export default function BastionHub() {
           mx-20); la fila de Operaciones queda por debajo de ambas columnas (ver .kh-rail en
           index.css). El flex-1 vacío deja pasar los taps al canvas. */}
       <div className="absolute inset-0 flex flex-col pointer-events-none">
-        <div className="pt-32 mx-20 pointer-events-auto">
+        <div className="pt-[calc(8rem+var(--kh-safe-top))] mx-20 pointer-events-auto">
           <QuestRail />
         </div>
         <div className="flex-1" />
-        <div className="px-3 pb-[84px] pt-1 flex gap-2 pointer-events-auto">
+        <div className="px-3 pb-[calc(84px+var(--kh-safe-bottom))] pt-1 flex gap-2 pointer-events-auto">
           <button
             onClick={() => setOverlay('operations', {})}
             className="flex-1 h-[52px] rounded font-bold flex items-center justify-center gap-2 transition-transform active:scale-95 font-display"

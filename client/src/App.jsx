@@ -175,7 +175,7 @@ function App() {
       const Panel = { system: SystemMapPanel, galaxy: GalaxyMapPanel }[previewPanel];
       if (Panel) {
         return (
-          <div className="w-screen h-screen bg-kingdom-bg flex items-end">
+          <div className="w-full h-full bg-kingdom-bg flex items-end">
             <div className="w-full"><Panel onClose={() => {}} /></div>
             <NotificationToast />
           </div>
@@ -183,7 +183,7 @@ function App() {
       }
       if (previewPanel === 'territory') {
         return (
-          <div className="w-screen h-screen bg-kingdom-bg overflow-y-auto p-3">
+          <div className="w-full h-full bg-kingdom-bg overflow-y-auto p-3">
             <TerritoryMapPanel />
             <NotificationToast />
           </div>
@@ -191,7 +191,7 @@ function App() {
       }
     }
     return (
-      <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
+      <div className="relative w-full h-full overflow-hidden bg-kingdom-bg">
         <PhaserGame />
         <div className="absolute top-2 left-2 z-50 px-2 py-1 rounded bg-black/70 text-yellow-300 text-xs font-mono pointer-events-none">
           ISO PREVIEW · no auth · drag to pan · wheel to zoom
@@ -204,7 +204,7 @@ function App() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-full">
         <div className="text-center p-6">
           <SpriteIcon name="exclamation" size={48} className="mx-auto mb-4" />
           <p className="text-kingdom-accent text-lg">{error}</p>
@@ -223,7 +223,7 @@ function App() {
   // QuestRail, vía BastionHub); el mundo 160×120 paseable queda detrás de
   // ?preview=world / ?iso=1 (rama ISO_PREVIEW arriba, sin tocar).
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-kingdom-bg">
+    <div className="relative w-full h-full overflow-hidden bg-kingdom-bg">
       <BastionHub />
       {/* Chrome persistente (barras, rieles, nav, banners) SOLO sin overlay:
           si no, sangra pixel/candy sobre los overlays painterly (combate,

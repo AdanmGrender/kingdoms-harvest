@@ -21,7 +21,7 @@ export default function MainMenu() {
 
   return (
     <div
-      className="relative w-screen h-screen overflow-hidden flex flex-col items-center justify-center"
+      className="relative w-full h-full overflow-hidden flex flex-col items-center justify-center"
       style={{
         backgroundColor: '#17151a',
         backgroundImage: 'url(/assets/game/ambient/menu_bg.png)',

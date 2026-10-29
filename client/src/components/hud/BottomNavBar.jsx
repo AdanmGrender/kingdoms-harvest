@@ -25,7 +25,7 @@ export default function BottomNavBar() {
   };
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none px-3 pb-2">
+    <div className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none px-3" style={{ paddingBottom: 'calc(0.5rem + var(--kh-safe-bottom))' }}>
       <div className="flex items-end justify-between gap-2">
         <IconButton icon="sword" label="Héroes" accent={KH.seal} onClick={openHeroes} style={{ width: 64, height: 64 }} />
         <IconButton icon="castle" iconSize={40} label="Bastión" accent={KH.brass} onClick={openCastle} aria-label="Castillo" style={{ width: 72, height: 72 }} />

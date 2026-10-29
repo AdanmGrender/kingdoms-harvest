@@ -1,0 +1,186 @@
+{
+  "url": "http://localhost:5173",
+  "fecha": "2026-10-28-02-32",
+  "dispositivos": {
+    "galaxy-a-360x740": {
+      "w": 360,
+      "h": 740,
+      "dpr": 3,
+      "pantallas": {
+        "hub": {
+          "file": "galaxy-a-360x740__hub.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "shop": {
+          "file": "galaxy-a-360x740__shop.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        }
+      },
+      "errores": []
+    },
+    "android-360x800": {
+      "w": 360,
+      "h": 800,
+      "dpr": 3,
+      "pantallas": {
+        "hub": {
+          "file": "android-360x800__hub.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "shop": {
+          "file": "android-360x800__shop.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        }
+      },
+      "errores": []
+    },
+    "iphone-390x844": {
+      "w": 390,
+      "h": 844,
+      "dpr": 3,
+      "pantallas": {
+        "hub": {
+          "file": "iphone-390x844__hub.png",
+          "vw": 390,
+          "vh": 844,
+          "canvases": [
+            [
+              1170,
+              2457,
+              13
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "shop": {
+          "file": "iphone-390x844__shop.png",
+          "vw": 390,
+          "vh": 844,
+          "canvases": [
+            [
+              1170,
+              2457,
+              13
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        }
+      },
+      "errores": []
+    },
+    "pixel7-412x915": {
+      "w": 412,
+      "h": 915,
+      "dpr": 2.625,
+      "pantallas": {
+        "hub": {
+          "file": "pixel7-412x915__hub.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "shop": {
+          "file": "pixel7-412x915__shop.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        }
+      },
+      "errores": []
+    },
+    "iphone-se-375x667": {
+      "w": 375,
+      "h": 667,
+      "dpr": 2,
+      "pantallas": {
+        "hub": {
+          "file": "iphone-se-375x667__hub.png",
+          "vw": 375,
+          "vh": 667,
+          "canvases": [
+            [
+              750,
+              1334,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "shop": {
+          "file": "iphone-se-375x667__shop.png",
+          "vw": 375,
+          "vh": 667,
+          "canvases": [
+            [
+              750,
+              1334,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        }
+      },
+      "errores": []
+    }
+  }
+}

@@ -14,7 +14,7 @@ body {
   font-size: 15px;
   background: #14110d; /* kh-ink */
   color: #e6dcc3; /* kh-bone */
-  min-height: 100vh;
+  min-height: var(--kh-app-h);
   overflow-x: hidden;
 }
 
@@ -326,7 +326,7 @@ body {
    ~54 px y entra en 64 − 2×2 − 2×2. Tamaños por tokens --kh-rail-w / --kh-rail-h. */
 .kh-rail {
   position: absolute;
-  top: 128px; /* justo bajo TopResourceBar (126 px a 360 y 412 px de ancho) */
+  top: calc(128px + var(--kh-safe-top)); /* justo bajo TopResourceBar (126 px a 360 y 412 px de ancho) */
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -334,8 +334,8 @@ body {
 }
 /* Riel izquierdo: el Bastión lleva ícono de edificio de 40 px (ui_kit_b) + etiqueta de 12 px = ~55 px,
    que no caben en los 44 px útiles de 52; los 6 botones suben a 64 de alto (128 → 542 px, sin pisar Operaciones). */
-.kh-rail--left { left: 8px; --kh-rail-h: 64px; }
-.kh-rail--right { right: 8px; }
+.kh-rail--left { left: calc(8px + var(--kh-safe-left)); --kh-rail-h: 64px; }
+.kh-rail--right { right: calc(8px + var(--kh-safe-right)); }
 .kh-rail > .kh-iconbtn {
   box-sizing: border-box;
   width: var(--kh-rail-w, 64px);
@@ -375,4 +375,39 @@ body {
   image-rendering: crisp-edges;
   pointer-events: none;
   user-select: none;
+}
+
+/* ── Marco de la app (fix_pantalla_movil) ──────────────────────────────────
+   Un solo alto visible (--kh-app-h) y un tope de aspecto (--kh-max-aspect, espejo de
+   MAX_ASPECT en utils/viewport.js). Por encima del tope el marco queda centrado con
+   bandas #14110d arriba y abajo. El canvas llena el marco; el chrome se corre con
+   --kh-safe-* (0 sin notch ni bandas → posiciones idénticas a las de antes). */
+:root {
+  --kh-max-aspect: 2.1;
+  --kh-app-h: 100vh;
+  --kh-frame-h: min(var(--kh-app-h), calc(100vw * var(--kh-max-aspect)));
+  --kh-band: calc((var(--kh-app-h) - var(--kh-frame-h)) / 2);
+  --kh-safe-top: max(0px, calc(env(safe-area-inset-top, 0px) - var(--kh-band)));
+  --kh-safe-bottom: max(0px, calc(env(safe-area-inset-bottom, 0px) - var(--kh-band)));
+  --kh-safe-left: env(safe-area-inset-left, 0px);
+  --kh-safe-right: env(safe-area-inset-right, 0px);
+}
+@supports (height: 100dvh) {
+  :root { --kh-app-h: 100dvh; }
+}
+.kh-shell {
+  position: relative;
+  width: 100vw;
+  height: var(--kh-app-h);
+  overflow: hidden;
+  background: #14110d; /* kh-ink: color de las bandas */
+}
+.kh-frame {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--kh-band);
+  height: var(--kh-frame-h);
+  overflow: hidden;
+  contain: layout; /* los descendientes position: fixed se anclan al marco, no al viewport */
 }
