@@ -11,6 +11,7 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 - Textos duplicados y en inglés en menú, operaciones e investigación (`fix_textos_ui`)
 
 ### Added
+- Pasivas de héroe y estados con duración en el motor v2: las 18 pasivas pasan de texto a lógica de combate (datos `HERO_PASSIVE_FX`/`COMBAT_FX`), estados `stun`/`burn`/`poison`/`defDown`/`atkDown`/`shield`/`immune` y eventos `passive`/`status`/`dot`/`heal`; el texto `passive` no cambia. Lyra y Finn quedan inertes en campaña hasta que los enemigos tengan `def`/`range` (F15–F17) (`combate_pasivas_estados`)
 - Motor de combate v2: DEF, SPD, amenaza, multi-enemigo, log de eventos (`combate_motor_v2`)
 - Hub idle — aspecto del edificio por tramo de nivel (B1.3) (`hub_b_tramos_nivel`)
 - Spike de dirección de arte B: combate ilustrado grimdark renacentista en Phaser 3 + pipeline de arte IA (`spike_combate_b`)

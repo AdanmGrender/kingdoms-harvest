@@ -224,6 +224,6 @@ describe('R38 / R-ND7 pureza', () => {
     expect(src).not.toMatch(/Math\.random/);
     expect(src).not.toMatch(/config\/database|require\(['"]fs['"]\)/);
     const reqs = [...src.matchAll(/require\(['"]([^'"]+)['"]\)/g)].map((m) => m[1]);
-    expect(reqs).toEqual(['../../../../shared/gameConfig']);
+    expect(reqs).toEqual(['../../../../shared/gameConfig', './rng']);
   });
 });

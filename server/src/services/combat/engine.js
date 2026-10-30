@@ -5,6 +5,7 @@ const { COMBAT } = require('../../../../shared/gameConfig');
 const { ENERGY_MAX, ENERGY_PER_ROUND } = require('../campaignSim');
 const { mitigate } = require('./damage');
 const { principalEnemy, heroTargetOrder, actorOrder } = require('./targeting');
+const effects = require('./effects');
 
 const heroId = (h) => `h${h.slot}`;
 
@@ -26,25 +27,31 @@ function simulateRoundV2(state, action) {
     s.events.push({ t: s.events.length, round, actor, target, kind, value, ...extra });
   };
   const hitAlive = (e) => e.hp > 0;
+  const fx = effects.begin(s, round, emit); // pasivas y estados (F14); sin ellos todo es no-op
+  const killedByDot = fx.roundStart();
 
   // 2) Habilidad (antes del orden de actores), sobre el enemigo principal.
-  if (action && action.type === 'skill') {
+  if (action && action.type === 'skill' && !killedByDot) {
     const hero = s.heroes.find((h) => h.slot === action.slot && h.alive);
     if (!hero) throw new Error('Héroe inválido para la habilidad');
     if (hero.energy < ENERGY_MAX) throw new Error('Energía insuficiente');
     const sk = hero.skill;
     const target = principalEnemy(s.enemies);
     let value = 0;
+    let m = null;
     if (sk.type === 'damage') {
-      value = mitigate(hero.atk * sk.mult, target.def, K);
+      m = fx.attackMods(hero, target, { skill: true });
+      value = mitigate(hero.atk * sk.mult * m.mul, m.defOf(target.def), K);
       target.hp -= value;
     } else if (sk.type === 'execute') {
-      value = mitigate(hero.atk * (s.isBoss ? 4 : 2), target.def, K);
+      m = fx.attackMods(hero, target, { skill: true });
+      value = mitigate(hero.atk * (s.isBoss ? 4 : 2) * m.mul, m.defOf(target.def), K);
       target.hp -= value;
     } else if (sk.type === 'shield') {
       s.shield = sk.mult; // reduce los golpes enemigos de ESTA ronda
       value = sk.mult;
     }
+    if (m) fx.afterAttack(hero, target, m);
     hero.energy = 0;
     emit(heroId(hero), sk.type === 'shield' ? null : target.id, 'skill', value,
       { skillId: sk.id, skillType: sk.type });
@@ -57,19 +64,34 @@ function simulateRoundV2(state, action) {
       const a = actor.ref;
       if (actor.side === 'h') {
         if (!a.alive) continue;
+        if (fx.skipsAction(heroId(a))) continue; // aturdido: sin golpe ni energía
         if (s.enemies.some(hitAlive)) {
-          const target = principalEnemy(s.enemies);
-          const dmg = mitigate(a.atk, target.def, K);
-          target.hp -= dmg;
-          emit(heroId(a), target.id, 'hit', dmg, { hp: Math.max(0, target.hp) });
-          if (target.hp <= 0) emit(heroId(a), target.id, 'death', 0);
+          let original = true;
+          for (let strike = 0; strike < 2; strike++) {
+            const target = principalEnemy(s.enemies);
+            const m = fx.attackMods(a, target, { skill: false });
+            const dmg = mitigate(a.atk * m.mul, m.defOf(target.def), K);
+            target.hp -= dmg;
+            fx.afterAttack(a, target, m);
+            emit(heroId(a), target.id, 'hit', dmg, { hp: Math.max(0, target.hp) });
+            if (target.hp <= 0) emit(heroId(a), target.id, 'death', 0);
+            // segundo golpe (vex): solo tras el golpe original y si queda algún enemigo vivo
+            if (!original || !s.enemies.some(hitAlive) || !fx.extraHit(a, target)) break;
+            original = false;
+          }
         }
         a.energy = Math.min(ENERGY_MAX, a.energy + ENERGY_PER_ROUND);
       } else {
         if (a.hp <= 0) continue;
+        if (fx.skipsAction(a.id)) continue; // aturdido
         const order = heroTargetOrder(s.heroes, COMBAT.threat);
         if (order.length === 0) continue;
-        let dmg = mitigate(a.dps * (1 - (s.shield || 0)), order[0].def, K);
+        const inc = fx.incoming(a, order[0], a.dps * (1 - (s.shield || 0)));
+        if (inc.dodged) {
+          emit(a.id, heroId(order[0]), 'hit', 0, { hp: Math.max(0, order[0].hp) });
+          continue;
+        }
+        let dmg = inc.absorb(mitigate(inc.raw, inc.def, K));
         for (let i = 0; i < order.length; i++) {
           const h = order[i];
           if (i > 0 && dmg <= 0) break; // el primer objetivo siempre recibe el golpe (aunque sea 0)
@@ -82,9 +104,11 @@ function simulateRoundV2(state, action) {
             emit(a.id, heroId(h), 'death', 0);
           }
         }
+        fx.afterHit(a, order[0]);
       }
     }
   }
+  fx.roundEnd();
   s.shield = 0;
 
   // 4) Resultado: victoria > derrota por muerte > timeout.
