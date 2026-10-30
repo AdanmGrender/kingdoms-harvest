@@ -7,7 +7,7 @@ import { KH, RING } from './kitPieces';
  * el aro se recorta con `clip-path` (anillo, evenodd) para dejar ver el retrato.
  * Sin `src` queda un disco kh-oak, nunca una imagen rota.
  */
-export default function PortraitRing({ src, size = 64, alt = '', className = '' }) {
+export default function PortraitRing({ src, size = 64, alt = '', className = '', children }) {
   const cx = size / 2;
   const cy = size / 2;
   const R = size / 2;
@@ -32,6 +32,14 @@ export default function PortraitRing({ src, size = 64, alt = '', className = '' 
           data-ring-fill
           style={{ position: 'absolute', inset, borderRadius: '50%', backgroundColor: KH.oak }}
         />
+      )}
+      {children && (
+        <span
+          data-ring-content
+          style={{ position: 'absolute', inset, borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          {children}
+        </span>
       )}
       <span
         data-ring

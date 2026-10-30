@@ -234,3 +234,67 @@ describe('pantallasB T5 — MissionsPanel', () => {
     }
   });
 });
+
+// ── T6 — HeroPanel (R26–R30, R7, R14) ────────────────────────────────────────
+import HeroPanel from '../components/overlay/HeroPanel';
+
+const mkHero = (i, rarity) => ({
+  dbId: i, heroId: 'aria', id: 'aria', name: `Héroe ${i}`, rarity, level: 3, xp: 10, xpNeeded: 100,
+  class: 'warrior', sprite: 'warrior', passive: 'p', stats: { atk: 10, def: 10, hp: 50, spd: 5, mgk: 2 },
+  equipment: {}, deployed: false, inRecovery: false,
+});
+
+describe('pantallasB T6 — HeroPanel', () => {
+  const setHeroes = (heroes) => useGameStore.setState({
+    heroes, heroItems: [], tokenInfo: { balance: 0 }, resources: {},
+    loadHeroes: vi.fn(), loadHeroItems: vi.fn(), loadDeployedHero: vi.fn(),
+  });
+
+  it('roster de 3 héroes: 3+1 .kh-ring con img, Panel del kit, 5 barras por héroe seleccionado', () => {
+    setHeroes([mkHero(1, 'common'), mkHero(2, 'rare'), mkHero(3, 'epic')]);
+    const { container } = render(<HeroPanel onClose={() => {}} />);
+    expect(container.querySelector('.kh-panel')).not.toBeNull();
+    // 3 tarjetas + 1 detalle del seleccionado
+    const rings = container.querySelectorAll('.kh-ring');
+    expect(rings.length).toBe(4);
+    rings.forEach((r) => expect(r.querySelector('img')).not.toBeNull());
+    const detailBars = container.querySelectorAll('[role=progressbar]');
+    expect(detailBars.length).toBe(6); // 5 stats + XP
+    expect(container.innerHTML).not.toContain('bg-gray-700');
+  });
+
+  it('si la imagen falla desaparece la img y aparece el sprite dentro del anillo', () => {
+    setHeroes([mkHero(1, 'common')]);
+    const { container } = render(<HeroPanel onClose={() => {}} />);
+    const ring = container.querySelector('.kh-ring');
+    fireEvent.error(ring.querySelector('img'));
+    const same = container.querySelector('.kh-ring');
+    expect(same.querySelector('img')).toBeNull();
+    expect(same.querySelector('[data-ring-content]')).not.toBeNull();
+  });
+
+  it.each([
+    ['common', 'Común', '#4a4a48'], ['rare', 'Rara', '#b08d57'],
+    ['epic', 'Épica', '#e07b2a'], ['legendary', 'Legendaria', '#d9b77a'],
+  ])('rareza %s: texto visible y borde de token kh', (rarity, label, hex) => {
+    setHeroes([mkHero(1, rarity)]);
+    const { container } = render(<HeroPanel onClose={() => {}} />);
+    expect(container.textContent).toContain(label);
+    const card = container.querySelector(`button[data-rarity="${rarity}"]`);
+    const detail = container.querySelector(`div[data-rarity="${rarity}"]`);
+    expect(detail.style.border.toLowerCase()).toContain(
+      `rgb(${parseInt(hex.slice(1, 3), 16)}, ${parseInt(hex.slice(3, 5), 16)}, ${parseInt(hex.slice(5, 7), 16)})`,
+    );
+    expect(card).not.toBeNull();
+  });
+
+  it('estados vacíos en bone-dim ≥ 12 px y botones del kit', () => {
+    setHeroes([]);
+    render(<HeroPanel onClose={() => {}} />);
+    const el = screen.getByText('Sin héroes');
+    expect(el.className).toContain('text-kh-bone-dim');
+    expect(el.className).toContain('text-xs');
+    expect(screen.getByText('Seleccioná un héroe').className).toContain('text-kh-bone-dim');
+    expect(screen.getByRole('button', { name: 'Invocar primero' })).toHaveClass('kh-btn');
+  });
+});

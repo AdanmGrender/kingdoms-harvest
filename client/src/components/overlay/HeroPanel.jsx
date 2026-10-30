@@ -6,12 +6,18 @@ import useGameStore from '../../store/gameStore';
 import { CharacterSprite } from '../ui/SpriteIcon';
 import { HERO_LORE } from '../../config/heroLore';
 import SpriteIcon from '../ui/SpriteIcon';
+import Panel from '../ui/Panel';
+import Button from '../ui/Button';
+import Bar from '../ui/Bar';
+import PortraitRing from '../ui/PortraitRing';
+import { KH } from '../ui/kitPieces';
 
+// Rareza (R28): borde por token kh + etiqueta de texto siempre visible (Q5: español, mapa local).
 const RARITY_COLORS = {
-  common:    { text: 'text-gray-300',   border: 'border-gray-500',   bg: 'bg-gray-800/60',    badge: 'bg-gray-700'   },
-  rare:      { text: 'text-teal-300',   border: 'border-teal-500',   bg: 'bg-teal-900/30',    badge: 'bg-teal-800'   },
-  epic:      { text: 'text-orange-300', border: 'border-orange-500', bg: 'bg-orange-900/30',  badge: 'bg-orange-800' },
-  legendary: { text: 'text-yellow-300', border: 'border-yellow-400', bg: 'bg-yellow-900/30',  badge: 'bg-yellow-700' },
+  common:    { label: 'Común',      border: KH.iron },
+  rare:      { label: 'Rara',       border: KH.brass },
+  epic:      { label: 'Épica',      border: KH.ember },
+  legendary: { label: 'Legendaria', border: KH['brass-light'] },
 };
 
 const RARITY_ICONS = {
@@ -36,42 +42,41 @@ const STAT_CAPS  = { atk: 50,  def: 50,  hp: 200, spd: 20, mgk: 50  };
 const SLOT_LABELS = { weapon: 'Arma', armor: 'Armadura', accessory: 'Accesorio' };
 
 /**
- * Retrato de héroe: intenta primero el PNG generado por el agente de arte en
- * /assets/game/heroes/<id>.png (puede no existir todavía) y cae al
- * CharacterSprite legacy si el archivo falta (onError, estado por héroe).
- * Borde según rareza — misma convención RARITY_COLORS del panel.
+ * Retrato de héroe (R26, R27): PNG de /assets/game/heroes/<id>.png dentro de PortraitRing;
+ * si la imagen falla (onError) el anillo muestra el CharacterSprite.
  */
-function HeroPortrait({ hero, height }) {
-  const rc = RARITY_COLORS[hero.rarity] || RARITY_COLORS.common;
+function HeroPortrait({ hero, size }) {
   const heroId = hero.heroId || hero.id;
   const [failed, setFailed] = useState(false);
   useEffect(() => { setFailed(false); }, [heroId]);
-  if (failed || !heroId) return <CharacterSprite name={hero.sprite} height={height} />;
+  if (failed || !heroId) {
+    return (
+      <PortraitRing size={size}>
+        <CharacterSprite name={hero.sprite} height={Math.round(size * 0.7)} />
+      </PortraitRing>
+    );
+  }
   return (
-    <img
-      src={`/assets/game/heroes/${heroId}.png`}
-      alt={hero.name}
-      onError={() => setFailed(true)}
-      className={`object-contain rounded-md border ${rc.border} shrink-0 bg-black/30`}
-      style={{ height, width: height }}
-      draggable={false}
-    />
+    <PortraitRing size={size}>
+      <img
+        src={`/assets/game/heroes/${heroId}.png`}
+        alt={hero.name}
+        onError={() => setFailed(true)}
+        className="w-full h-full object-cover"
+        draggable={false}
+      />
+    </PortraitRing>
   );
 }
 
 function StatBar({ stat, value }) {
   const pct = Math.min(100, Math.round((value / STAT_CAPS[stat]) * 100));
-  // Paleta grimdark (era arcoíris candy): sangre/acero/oliva/oro/teal — on-palette,
-  // aún diferenciables.
-  const color = { atk: '#b32821', def: '#7d8794', hp: '#6a9a4a', spd: '#d9a441', mgk: '#4fd8c8' }[stat];
   return (
-    <div className="flex items-center gap-1.5 text-[10px]">
+    <div className="flex items-center gap-1.5 text-xs">
       <span className="w-5 text-center"><SpriteIcon name={STAT_ICONS[stat]} size={28} /></span>
-      <span className="w-6 text-gray-400 uppercase">{stat}</span>
-      <div className="flex-1 h-1.5 rounded-full bg-gray-700">
-        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
-      </div>
-      <span className="w-6 text-right text-gray-300">{value}</span>
+      <span className="w-8 text-kh-bone-dim uppercase">{stat}</span>
+      <Bar className="flex-1" value={pct} tone={stat === 'hp' ? 'seal' : 'ember'} label={stat} />
+      <span className="w-8 text-right text-kh-bone">{value}</span>
     </div>
   );
 }
@@ -97,23 +102,30 @@ function HeroCard({ hero, selected, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`p-2.5 rounded-lg border text-left transition-all w-full ${rc.border} ${rc.bg} ${selected ? 'ring-2 ring-yellow-400' : ''}`}
+      data-rarity={hero.rarity}
+      aria-pressed={selected}
+      className="p-2 rounded-lg text-left transition-all w-full"
+      style={{
+        minHeight: 44,
+        backgroundColor: selected ? KH['oak-light'] : KH.oak,
+        border: `2px solid ${selected ? KH['brass-light'] : rc.border}`,
+      }}
     >
       <div className="flex items-center gap-2">
-        <HeroPortrait hero={hero} height={40} />
+        <HeroPortrait hero={hero} size={48} />
         <div className="flex-1 min-w-0">
-          <p className={`text-xs font-bold truncate ${rc.text}`}>{hero.name}</p>
-          <p className="text-gray-500 text-[10px]">
-            {/* Punto de rareza en el color de la paleta (era emoji azul/violeta). */}
-            <span className={rc.text}>●</span> {hero.rarity} · Nv.{hero.level}
+          <p className="text-xs font-bold truncate text-kh-bone">{hero.name}</p>
+          <p className="text-kh-bone-dim text-xs">
+            {rc.label} · Nv.{hero.level}
           </p>
           {hero.deployed && (
-            <span className="inline-block mt-0.5 text-[9px] px-1.5 py-0.5 rounded bg-green-800 text-green-300 font-bold">
+            <span className="inline-block mt-0.5 text-xs px-1.5 py-0.5 rounded font-bold text-kh-bone"
+              style={{ backgroundColor: KH['oak-light'], border: `1px solid ${KH['brass-light']}` }}>
               EN COMBATE
             </span>
           )}
           {hero.inRecovery && (
-            <span className="inline-block mt-0.5 text-[9px] px-1.5 py-0.5 rounded bg-red-900 text-red-300">
+            <span className="inline-block mt-0.5 text-xs px-1.5 py-0.5 rounded text-kh-bone" style={{ backgroundColor: KH.seal }}>
               <SpriteIcon name="moon" size={28} /> <RecoveryTimer until={hero.recoveryUntil} />
             </span>
           )}
@@ -138,82 +150,76 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
   return (
     <div className="space-y-3">
       {/* Hero header */}
-      <div className={`p-3 rounded-lg border ${rc.border} ${rc.bg}`}>
+      <div className="p-3 rounded-lg" data-rarity={hero.rarity}
+        style={{ backgroundColor: KH.oak, border: `2px solid ${rc.border}` }}>
         <div className="flex items-center gap-3">
-          <HeroPortrait hero={hero} height={64} />
-          <div className="flex-1">
-            <p className={`text-sm font-bold ${rc.text} font-display`}>{hero.name}</p>
+          <HeroPortrait hero={hero} size={72} />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-kh-bone font-display break-words">{hero.name}</p>
             {lore?.title && (
-              <p className="text-gray-400 text-[10px] italic -mt-0.5">«{lore.title}»</p>
+              <p className="text-kh-bone-dim text-xs italic -mt-0.5">«{lore.title}»</p>
             )}
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`text-[10px] px-1.5 py-0.5 rounded ${rc.badge} ${rc.text}`}>{hero.rarity}</span>
-              <span className="text-gray-400 text-[10px]">Nv.{hero.level} / 20</span>
+              <span className="text-xs px-1.5 py-0.5 rounded text-kh-bone"
+                style={{ backgroundColor: KH['oak-light'], border: `1px solid ${rc.border}` }}>{rc.label}</span>
+              <span className="text-kh-bone-dim text-xs">Nv.{hero.level} / 20</span>
             </div>
             {/* XP bar */}
             <div className="mt-1.5">
-              <div className="h-1.5 rounded-full bg-gray-700">
-                <div className="h-full rounded-full bg-yellow-500 transition-all" style={{ width: `${xpPct}%` }} />
-              </div>
-              <p className="text-gray-500 text-[9px] mt-0.5">{hero.xp} / {hero.xpNeeded} XP</p>
+              <Bar value={xpPct} tone="ember" label="Experiencia" />
+              <p className="text-kh-bone-dim text-xs mt-0.5">{hero.xp} / {hero.xpNeeded} XP</p>
             </div>
           </div>
         </div>
-        <p className="text-gray-400 text-[10px] mt-2 italic">{hero.passive}</p>
+        <p className="text-kh-bone-dim text-xs mt-2 italic">{hero.passive}</p>
         {lore?.bio && (
-          <p className="text-gray-500 text-[10px] mt-2 leading-relaxed border-t border-gray-700/40 pt-2">
+          <p className="text-kh-bone-dim text-xs mt-2 leading-relaxed pt-2" style={{ borderTop: `1px solid ${KH.iron}` }}>
             {lore.bio}
           </p>
         )}
       </div>
 
       {/* Combat deployment */}
-      <div className="p-2 rounded-lg border border-gray-700/50 bg-black/20">
+      <div className="p-2 rounded-lg" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.iron}` }}>
         {hero.inRecovery ? (
           <div className="text-center">
-            <p className="text-red-400 text-[10px] font-bold"><SpriteIcon name="moon" size={28} /> Recuperándose</p>
-            <p className="text-gray-500 text-[9px]">
+            <p className="text-kh-bone text-xs font-bold"><SpriteIcon name="moon" size={28} /> Recuperándose</p>
+            <p className="text-kh-bone-dim text-xs">
               Disponible en <RecoveryTimer until={hero.recoveryUntil} />
             </p>
           </div>
         ) : hero.deployed ? (
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-400 text-[10px] font-bold"><SpriteIcon name="sword" size={28} /> Desplegado en combate</p>
-              <p className="text-gray-500 text-[9px]">{CLASS_BONUS_LABELS[hero.class]}</p>
+              <p className="text-kh-brass-light text-xs font-bold"><SpriteIcon name="sword" size={28} /> Desplegado en combate</p>
+              <p className="text-kh-bone-dim text-xs">{CLASS_BONUS_LABELS[hero.class]}</p>
             </div>
-            <button
-              onClick={() => onRecall(hero.dbId)}
-              disabled={loading}
-              className="text-[9px] px-2 py-1 rounded border border-gray-500 text-gray-300 hover:border-red-400 hover:text-red-300 disabled:opacity-50"
-            >
+            <Button onClick={() => onRecall(hero.dbId)} disabled={loading} style={{ fontSize: 13 }}>
               Retirar
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-[10px]">Sin desplegar</p>
-              <p className="text-gray-600 text-[9px]">{CLASS_BONUS_LABELS[hero.class]}</p>
+              <p className="text-kh-bone-dim text-xs">Sin desplegar</p>
+              <p className="text-kh-bone-dim text-xs">{CLASS_BONUS_LABELS[hero.class]}</p>
             </div>
-            <button
-              onClick={() => onDeploy(hero.dbId)}
-              disabled={loading}
-              className="text-[9px] px-2 py-1 rounded border border-teal-600 text-teal-300 hover:bg-teal-900/30 disabled:opacity-50"
-            >
+            <Button onClick={() => onDeploy(hero.dbId)} disabled={loading} style={{ fontSize: 13 }}>
               Desplegar
-            </button>
+            </Button>
           </div>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1">
+      <div className="flex gap-1" role="tablist">
         {['stats', 'equip'].map((tab) => (
           <button
             key={tab}
+            role="tab"
+            aria-selected={activeTab === tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-1 rounded text-[10px] font-bold transition-colors ${activeTab === tab ? 'bg-yellow-700 text-white' : 'bg-gray-800 text-gray-400'}`}
+            className={`kh-tab flex-1 rounded font-bold ${activeTab === tab ? 'kh-tab--active' : ''}`}
           >
             {tab === 'stats' ? 'Stats' : 'Equipar'}
           </button>
@@ -221,7 +227,7 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
       </div>
 
       {activeTab === 'stats' && (
-        <div className="space-y-1.5 p-2 rounded-lg bg-black/20">
+        <div className="space-y-1.5 p-2 rounded-lg" style={{ backgroundColor: KH.ink }}>
           {Object.entries(hero.stats).map(([stat, val]) => (
             STAT_ICONS[stat] && <StatBar key={stat} stat={stat} value={val} />
           ))}
@@ -234,35 +240,31 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
             const equippedId = hero.equipment[slot];
             const availableItems = itemsBySlot[slot] || [];
             return (
-              <div key={slot} className="p-2 rounded-lg bg-black/20 border border-gray-700/50">
+              <div key={slot} className="p-2 rounded-lg" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.iron}` }}>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] text-gray-400">{SLOT_LABELS[slot]}</span>
+                  <span className="text-xs text-kh-bone-dim">{SLOT_LABELS[slot]}</span>
                   {equippedId && (
-                    <button
-                      onClick={() => onUnequip(hero.dbId, slot)}
-                      disabled={loading}
-                      className="text-[9px] text-red-400 hover:text-red-300 disabled:opacity-50"
-                    >
+                    <Button onClick={() => onUnequip(hero.dbId, slot)} disabled={loading} style={{ fontSize: 13 }}>
                       Quitar
-                    </button>
+                    </Button>
                   )}
                 </div>
                 {equippedId ? (
-                  <p className="text-yellow-300 text-[10px]"><SpriteIcon name="check" size={28} /> {equippedId.replace(/_/g, ' ')}</p>
+                  <p className="text-kh-brass-light text-xs"><SpriteIcon name="check" size={28} /> {equippedId.replace(/_/g, ' ')}</p>
                 ) : (
-                  <p className="text-gray-600 text-[10px]">— vacío —</p>
+                  <p className="text-kh-bone-dim text-xs">— vacío —</p>
                 )}
                 {availableItems.length > 0 && (
                   <div className="mt-1.5 flex flex-wrap gap-1">
                     {availableItems.map((item) => (
-                      <button
+                      <Button
                         key={item.id}
                         onClick={() => onEquip(hero.dbId, item.id)}
                         disabled={loading || item.id === equippedId}
-                        className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${item.id === equippedId ? 'border-yellow-600 text-yellow-400 opacity-50' : 'border-gray-600 text-gray-300 hover:border-blue-400 hover:text-blue-300'} disabled:opacity-40`}
+                        style={{ fontSize: 13 }}
                       >
                         <SpriteIcon name="backpack" size={28} /> {item.name} ×{item.quantity}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
@@ -274,14 +276,9 @@ function HeroDetail({ hero, heroItems, onLevelUp, onEquip, onUnequip, onDeploy, 
 
       {/* Level up button */}
       {hero.level < 20 && (
-        <button
-          onClick={() => onLevelUp(hero.dbId)}
-          disabled={loading}
-          className="w-full py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50"
-          style={{ background: 'linear-gradient(135deg, #b45309, #d97706)' }}
-        >
+        <Button variant="primary" onClick={() => onLevelUp(hero.dbId)} disabled={loading} className="w-full" style={{ fontSize: 14 }}>
           Nivel {hero.level + 1} · <SpriteIcon name="gold" size={28} /> {goldCost} oro
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -361,62 +358,44 @@ export default function HeroPanel({ onClose }) {
   const tokenBalance = tokenInfo?.balance ?? 0;
 
   return (
-    <div
-      className="mx-2 mb-2 p-4 pb-6 rounded-t-xl max-h-[75vh] overflow-y-auto"
-      style={{ background: 'rgba(51, 47, 43, 0.97)', border: '1px solid rgba(255, 215, 0, 0.3)' }}
+    <Panel
+      title={<><SpriteIcon name="sword" size={28} /> Héroes del Reino</>}
+      onClose={onClose}
+      className="mx-2 mb-2 overflow-y-auto"
+      style={{ maxHeight: 'calc(var(--kh-frame-h) * 0.75)' }}
     >
-      {/* Header */}
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold font-display">
-          <SpriteIcon name="sword" size={28} /> Héroes del Reino
-        </h3>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setView(view === 'summon' ? 'roster' : 'summon')}
-            className="text-[10px] px-2 py-1 rounded border border-yellow-600 text-yellow-300 hover:bg-yellow-900/30"
-          >
-            Invocar
-          </button>
-          <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
-        </div>
+      <div className="flex justify-end mb-3">
+        <Button onClick={() => setView(view === 'summon' ? 'roster' : 'summon')} style={{ fontSize: 14 }}>
+          Invocar
+        </Button>
       </div>
 
       {/* Summon panel */}
       {view === 'summon' && (
-        <div className="mb-4 p-3 rounded-lg space-y-3" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(217,164,65,0.4)' }}>
-          <p className="text-yellow-200 text-xs font-bold text-center font-display">
+        <div className="mb-4 p-3 rounded-lg space-y-3" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.brass}` }}>
+          <p className="text-kh-brass-light text-sm font-bold text-center font-display">
             Portal de Invocación
           </p>
-          <p className="text-gray-400 text-[10px] text-center">
+          <p className="text-kh-bone-dim text-xs text-center">
             Invoca un héroe aleatorio. La rareza determina el costo en tokens.
           </p>
-          <div className="grid grid-cols-2 gap-2 text-[10px] text-center text-gray-300">
+          <div className="grid grid-cols-2 gap-2 text-xs text-center text-kh-bone">
             <span>Común: 200 <SpriteIcon name="gem" size={28} /></span>
             <span>Raro: 500 <SpriteIcon name="gem" size={28} /></span>
             <span>Épico: 1000 <SpriteIcon name="gem" size={28} /></span>
             <span><SpriteIcon name="star" size={28} /> Legendario: 2000 <SpriteIcon name="gem" size={28} /></span>
           </div>
           <div className="flex gap-2">
-            <button
-              onClick={() => doSummon(true)}
-              disabled={loading}
-              className="flex-1 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
-            >
+            <Button variant="primary" onClick={() => doSummon(true)} disabled={loading} className="flex-1" style={{ fontSize: 13 }}>
               <SpriteIcon name="gem" size={28} /> {tokenBalance} tokens disponibles
               <br />
-              <span className="text-[9px] opacity-75">Invocar (tokens)</span>
-            </button>
-            <button
-              onClick={() => doSummon(false)}
-              disabled={loading}
-              className="flex-1 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #92400e, #d97706)' }}
-            >
+              <span className="text-xs">Invocar (tokens)</span>
+            </Button>
+            <Button onClick={() => doSummon(false)} disabled={loading} className="flex-1" style={{ fontSize: 13 }}>
               <SpriteIcon name="gold" size={28} /> {goldAmount} oro
               <br />
-              <span className="text-[9px] opacity-75">Común (500 oro)</span>
-            </button>
+              <span className="text-xs">Común (500 oro)</span>
+            </Button>
           </div>
         </div>
       )}
@@ -428,13 +407,10 @@ export default function HeroPanel({ onClose }) {
           <div className="w-2/5 space-y-1.5 shrink-0">
             {heroes.length === 0 ? (
               <div className="text-center py-4">
-                <p className="text-gray-500 text-xs">Sin héroes</p>
-                <button
-                  onClick={() => setView('summon')}
-                  className="mt-2 text-[10px] text-purple-400 underline"
-                >
+                <p className="text-kh-bone-dim text-xs">Sin héroes</p>
+                <Button onClick={() => setView('summon')} className="mt-2" style={{ fontSize: 13 }}>
                   Invocar primero
-                </button>
+                </Button>
               </div>
             ) : (
               heroes.map((hero) => (
@@ -462,11 +438,11 @@ export default function HeroPanel({ onClose }) {
                 loading={loading}
               />
             ) : (
-              <p className="text-gray-600 text-xs text-center mt-8">Seleccioná un héroe</p>
+              <p className="text-kh-bone-dim text-xs text-center mt-8">Seleccioná un héroe</p>
             )}
           </div>
         </div>
       )}
-    </div>
+    </Panel>
   );
 }
