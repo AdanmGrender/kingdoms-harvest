@@ -1157,6 +1157,55 @@ const COMBAT = {
   threat: { warrior: 1.5, paladin: 1.3, rogue: 1.0, ranger: 0.7, mage: 0.5 },
 };
 
+// F14 (combate_pasivas_estados): las 18 pasivas de HEROES como DATOS para el motor v2
+// (combat/effects.js). El texto `passive` de HEROES no se toca; esto lo hace ejecutable.
+// Efecto: { trigger, cond?, effect, value?, type?, chance?, dur?, mode?, scope?, cap? }
+//   trigger: 'stat' | 'attack' | 'defend' | 'roundStart'
+//   cond: { k, v? } o array de condiciones (todas deben cumplirse); ausente = siempre
+//   scope: 'self' (por defecto) | 'allies' | 'adjacent' | 'target' | 'attacker'
+// Todo número de balance de las pasivas vive acá (nada hardcodeado en el motor).
+const HERO_PASSIVE_FX = {
+  aria:     [{ trigger: 'stat', cond: { k: 'numAdvantage' }, effect: 'atkMod', value: 0.15 }],
+  thorin:   [{ trigger: 'stat', cond: { k: 'selfHpBelow', v: 0.5 }, effect: 'defMod', value: 0.30 }],
+  lyra:     [{ trigger: 'attack', cond: { k: 'isSkill' }, effect: 'ignoreDef', value: 0.10 }],
+  zara:     [{ trigger: 'attack', effect: 'applyStatus', type: 'atkDown', value: 0.20, dur: 2, scope: 'target' }],
+  finn:     [{ trigger: 'stat', cond: { k: 'targetRanged' }, effect: 'atkMod', value: 0.20 }],
+  elena:    [{ trigger: 'defend', cond: { k: 'attackerMelee' }, effect: 'dodge', chance: 0.15 }],
+  viktor:   [{ trigger: 'stat', cond: { k: 'allyAdjacent' }, effect: 'defMod', value: 0.10, scope: 'adjacent' }],
+  seraph:   [{ trigger: 'roundStart', effect: 'heal', value: 0.08, scope: 'self' }],
+  shadow:   [{ trigger: 'attack', cond: { k: 'firstAttack' }, effect: 'dmgMult', value: 1.40 }],
+  vex:      [{ trigger: 'attack', effect: 'extraHit', chance: 0.25 }],
+  varok:    [{ trigger: 'stat', cond: { k: 'roundEq', v: 1 }, effect: 'atkMod', value: 0.25 }],
+  morghal:  [
+    { trigger: 'roundStart', effect: 'heal', value: 0.05, scope: 'self' },
+    { trigger: 'defend', effect: 'applyStatus', type: 'atkDown', value: 0.05, dur: 2, scope: 'attacker' },
+  ],
+  azyra:    [
+    { trigger: 'defend', effect: 'dodge', chance: 0.20 },
+    { trigger: 'attack', effect: 'crit', chance: 0.10 },
+  ],
+  fenn:     [{ trigger: 'stat', effect: 'atkModPerRound', value: 0.08, cap: 0.40 }],
+  kryx:     [
+    { trigger: 'roundStart', cond: { k: 'roundMultiple', v: 3 }, effect: 'charge' },
+    { trigger: 'attack', cond: [{ k: 'isSkill' }, { k: 'charged' }], effect: 'dmgMult', value: 1.60 },
+  ],
+  serafina: [{ trigger: 'roundStart', effect: 'applyStatus', type: 'shield', mode: 'pct', value: 0.15, dur: 1, scope: 'allies' }],
+  gorr:     [{ trigger: 'attack', effect: 'applyStatus', type: 'stun', value: 1, dur: 1, chance: 0.20, scope: 'target' }],
+  nyx:      [
+    { trigger: 'attack', cond: { k: 'targetHpBelow', v: 0.15 }, effect: 'execute' },
+    { trigger: 'attack', cond: { k: 'targetWounded' }, effect: 'dmgMult', value: 1.50 },
+  ],
+};
+
+// F14: constantes de los estados con duración (combat/effects.js).
+const COMBAT_FX = {
+  statusTypes: ['stun', 'burn', 'poison', 'defDown', 'atkDown', 'shield', 'immune'],
+  controlTypes: ['stun'],         // los que bloquea la inmunidad a control
+  critMult: 1.5,                  // multiplicador de crítico
+  dotMinDamage: 1,                // piso del daño por tick de burn/poison
+  rangedValue: 'ranged',          // valor de enemy.range que cuenta como "a distancia"
+};
+
 module.exports = {
   SEASONS,
   SEASON_DURATION_MS,
@@ -1200,4 +1249,6 @@ module.exports = {
   GALAXY_SYSTEMS,
   WARP_TURBULENCE_MULT,
   COMBAT,
+  HERO_PASSIVE_FX,
+  COMBAT_FX,
 };
