@@ -62,7 +62,7 @@ export default function MissionsPanel({ onClose }) {
         {completed.slice(0, 5).map((m) => (
           <div key={m.id} className="game-card py-2 opacity-60">
             <p className="text-xs font-bold">{m.title || m.name || 'Misión'}</p>
-            <p className="text-xs text-kh-brass-light"><SpriteIcon name="check" size={20} /> Completada</p>
+            <p className="text-xs text-kh-brass-light"><SpriteIcon name="check" size={28} /> Completada</p>
           </div>
         ))}
 

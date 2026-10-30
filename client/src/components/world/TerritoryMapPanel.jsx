@@ -2,6 +2,9 @@ import React, { useEffect, useState, useMemo } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 import { FACTION_ICONS } from '../../config/factionIcons';
+import Button from '../ui/Button';
+import ResultBanner from '../ui/ResultBanner';
+import { KH } from '../ui/kitPieces';
 
 // Tipos de terreno del páramo (re-theme grimdark — ver docs/art-style.md)
 const TYPE_ICON = {
@@ -20,7 +23,7 @@ const TYPE_LABEL = {
   coast: 'Costa', ruins: 'Ruinas', sand: 'Dunas', snow: 'Tundra',
 };
 
-const FALLBACK_BORDER = '#3b3b5e';
+const FALLBACK_BORDER = KH.iron;
 
 /**
  * TerritoryMapPanel — 3×3 grid of world territories. Each tile shows owner
@@ -70,33 +73,27 @@ export default function TerritoryMapPanel() {
 
   return (
     <div className="relative space-y-3">
-      {/* Fondo aéreo de la megaciudad arruinada (arte original grimdark) */}
+      {/* Fondo plano oak (R25): sin imagen ambient legada */}
       <div
+        aria-hidden="true"
         className="absolute inset-0 -m-2 rounded-lg pointer-events-none"
-        style={{
-          backgroundImage: 'url(/assets/game/ambient/world_map_bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.5,
-          maskImage: 'linear-gradient(to bottom, black 55%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent)',
-        }}
+        style={{ backgroundColor: KH.oak, opacity: 0.5 }}
       />
       {/* Cabecera estilo informe de campaña (ref: mapa de sistema, docs/art-style.md) */}
-      <div className="relative border border-yellow-700/40 rounded-md px-2 py-1.5 bg-black/60">
-        <p className="font-medieval text-[13px] text-kingdom-gold tracking-wide text-center uppercase">
+      <div className="relative rounded-md px-2 py-1.5" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.brass}` }}>
+        <p className="font-display text-sm text-kh-brass-light tracking-wide text-center uppercase">
           Mapa de Campaña — Sector en Disputa
         </p>
-        <p className="text-[10px] text-gray-300 text-center">
+        <p className="text-xs text-kh-bone-dim text-center">
           Conquistá territorios para tu facción · tributo pasivo por hora
         </p>
       </div>
 
       {/* Leyenda (ref: recuadro LEGEND del mapa de sistema) */}
-      <div className="flex items-center justify-center gap-3 text-[9px] text-gray-400">
-        <span><span className="inline-block w-2 h-2 rounded-sm bg-gray-600 mr-1" />Libre</span>
-        <span><span className="inline-block w-2 h-2 rounded-sm bg-green-500 mr-1" />Tu facción</span>
-        <span><span className="inline-block w-2 h-2 rounded-sm bg-red-600 mr-1" />Rival</span>
+      <div className="flex items-center justify-center gap-3 text-xs text-kh-bone-dim">
+        <span><span className="inline-block w-2 h-2 rounded-sm mr-1" style={{ backgroundColor: KH.iron }} />Libre</span>
+        <span><span className="inline-block w-2 h-2 rounded-sm mr-1" style={{ backgroundColor: KH['brass-light'] }} />Tu facción</span>
+        <span><span className="inline-block w-2 h-2 rounded-sm mr-1" style={{ backgroundColor: KH.seal }} />Rival</span>
         <span><SpriteIcon name="shield" size={28} /> Defensa</span>
       </div>
 
@@ -109,29 +106,31 @@ export default function TerritoryMapPanel() {
             <button
               key={t.id}
               onClick={() => setSelected(t)}
-              className={`relative rounded-md p-2 text-left transition-all border
-                bg-black/40 hover:bg-black/60 border-gray-700/60 ${
-                selected?.id === t.id ? 'ring-2 ring-yellow-400' : ''
-              }`}
-              style={{ borderTop: `3px solid ${ownerColor}` }}
+              className="relative rounded-md p-2 text-left transition-all"
+              style={{
+                minHeight: 44,
+                backgroundColor: selected?.id === t.id ? KH['oak-light'] : KH.oak,
+                border: `1px solid ${selected?.id === t.id ? KH['brass-light'] : KH.iron}`,
+                borderTop: `3px solid ${ownerColor}`,
+              }}
             >
               {/* POI numerado (ref: battle sites numerados del mapa) */}
-              <span className="absolute top-1 right-1.5 text-[9px] font-bold text-gray-500">
+              <span className="absolute top-1 right-1.5 text-xs font-bold text-kh-bone-dim">
                 {String(idx + 1).padStart(2, '0')}
               </span>
               <div className="flex items-start gap-2">
                 <span className="text-2xl leading-none"><SpriteIcon name={TYPE_ICON[t.type] || 'map'} size={28} /></span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-bold leading-tight truncate">{t.name}</p>
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-xs font-bold leading-tight truncate text-kh-bone">{t.name}</p>
+                  <p className="text-xs text-kh-bone-dim">
                     {TYPE_LABEL[t.type] || t.type} · <SpriteIcon name="shield" size={28} />{t.defense_strength}
                   </p>
                   {t.owner ? (
-                    <p className="text-[10px] mt-0.5 truncate" style={{ color: ownerColor }}>
+                    <p className="text-xs mt-0.5 truncate text-kh-bone" style={{ borderLeft: `3px solid ${ownerColor}`, paddingLeft: 4 }}>
                       <SpriteIcon name={FACTION_ICONS[t.owner.id]} size={28} /> {ownedByMe ? '(tuya)' : t.owner.name}
                     </p>
                   ) : (
-                    <p className="text-[10px] text-gray-500 mt-0.5">Libre</p>
+                    <p className="text-xs text-kh-bone-dim mt-0.5">Libre</p>
                   )}
                 </div>
               </div>
@@ -142,32 +141,34 @@ export default function TerritoryMapPanel() {
 
       {/* Selected detail */}
       {selected && (
-        <div className="game-card border-yellow-700/40 space-y-2">
+        <div className="game-card space-y-2" style={{ borderColor: KH.brass }}>
           <div className="flex items-center justify-between">
             <p className="font-bold text-sm"><SpriteIcon name={TYPE_ICON[selected.type]} size={28} /> {selected.name}</p>
-            <span className="text-[10px] text-gray-400">DEF {selected.defense_strength}</span>
+            <span className="text-xs text-kh-bone-dim">DEF {selected.defense_strength}</span>
           </div>
           {Object.keys(selected.resources_bonus || {}).length > 0 && (
-            <p className="text-[10px] text-yellow-300">
+            <p className="text-xs text-kh-brass-light">
               Bonus pasivo: {Object.entries(selected.resources_bonus).map(([k, v]) => `+${v} ${k}`).join(', ')}
             </p>
           )}
           {selected.owner ? (
-            <p className="text-[11px]" style={{ color: selected.owner.color }}>
+            <p className="text-xs text-kh-bone" style={{ borderLeft: `3px solid ${selected.owner.color || KH.iron}`, paddingLeft: 4 }}>
               <SpriteIcon name={FACTION_ICONS[selected.owner.id]} size={28} /> Controla: <span className="font-bold">{selected.owner.name}</span>
             </p>
           ) : (
-            <p className="text-[11px] text-gray-400">Territorio libre — el primero en ganar lo conquista</p>
+            <p className="text-xs text-kh-bone-dim">Territorio libre — el primero en ganar lo conquista</p>
           )}
-          <button
+          <Button
+            variant="primary"
             onClick={() => handleAttack(selected)}
             disabled={selected.owner?.id === player?.faction_id}
-            className="w-full py-2 rounded-lg bg-red-700 hover:bg-red-600 text-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full"
+            style={{ fontSize: 13 }}
           >
             <SpriteIcon name="flame" size={28} /> Asaltar con todas las tropas
-          </button>
+          </Button>
           {!player?.faction_id && (
-            <p className="text-[10px] text-gray-500 text-center">
+            <p className="text-xs text-kh-bone-dim text-center">
               Sin facción podés ganar XP/loot, pero el territorio no cambia de dueño.
             </p>
           )}
@@ -176,29 +177,26 @@ export default function TerritoryMapPanel() {
 
       {/* Last battle result */}
       {result && (
-        <div className={`game-card animate-fade-in ${
-          result.winner === 'attacker' ? 'border-green-500' : 'border-red-500'
-        }`}>
-          <p className="text-center font-bold mb-1 text-sm">
-            {result.winner === 'attacker' ? 'Victoria' : 'Derrota'} en {result.territory.name}
-          </p>
-          <p className="text-xs text-gray-400 text-center mb-1">
-            ATK {result.attackPower} vs DEF {result.defensePower}
-          </p>
+        <ResultBanner
+          outcome={result.winner === 'attacker' ? 'victory' : 'defeat'}
+          title={`${result.winner === 'attacker' ? 'Victoria' : 'Derrota'} en ${result.territory.name}`}
+          onClose={() => setResult(null)}
+        >
+          <p className="text-xs">ATK {result.attackPower} vs DEF {result.defensePower}</p>
           {result.territoryFlipped && (
-            <p className="text-xs text-yellow-400 text-center">
+            <p className="text-xs">
               <SpriteIcon name="alliance" size={28} /> ¡Territorio conquistado! +{result.pointsAwarded} puntos de facción
             </p>
           )}
           {result.tokensAwarded > 0 && (
-            <p className="text-xs text-yellow-300 text-center">+{result.tokensAwarded} KH</p>
+            <p className="text-xs">+{result.tokensAwarded} KH</p>
           )}
           {result.loot && Object.keys(result.loot).length > 0 && (
-            <p className="text-xs text-kingdom-gold text-center">
+            <p className="text-xs">
               Botín: {Object.entries(result.loot).map(([k, v]) => `${v} ${k}`).join(', ')}
             </p>
           )}
-        </div>
+        </ResultBanner>
       )}
     </div>
   );

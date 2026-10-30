@@ -4,6 +4,14 @@
 import { useState, useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import Panel from '../ui/Panel';
+import Button from '../ui/Button';
+import ResultBanner from '../ui/ResultBanner';
+import { KH } from '../ui/kitPieces';
+
+// Insignia de estado: etiqueta de texto siempre visible; el tono solo tiñe el borde (R10).
+const chipStyle = (tone) => ({ backgroundColor: tone === 'seal' ? KH.seal : KH['oak-light'], border: `1px solid ${tone === 'seal' ? KH.seal : tone === 'iron' ? KH.iron : KH['brass-light']}` });
+const inputStyle = { backgroundColor: KH.ink, border: `1px solid ${KH.iron}`, minHeight: 44, minWidth: 44 };
 
 const SIEGE_ABILITIES = {
   arrow_rain:    { name: 'Lluvia de Flechas', icon: 'bow', description: 'Reduce defensa enemiga un 20%' },
@@ -16,13 +24,8 @@ const TROOP_ICONS = {
   militia: 'sword', archer: 'bow', cavalry: 'horse', spearman: 'spear', siege_ram: 'ram',
 };
 
-const TYPE_COLORS = {
-  plains:   'text-green-400',
-  forest:   'text-emerald-400',
-  mountain: 'text-gray-300',
-  coastal:  'text-blue-400',
-  ruins:    'text-purple-400',
-};
+// El tipo de plaza se lee por su etiqueta (`typeLabel`); el color es uno solo (R10).
+const TYPE_COLORS = {};
 
 function TerritoryTab({ playerFactionId }) {
   const territories    = useGameStore((s) => s.territories);
@@ -66,25 +69,27 @@ function TerritoryTab({ playerFactionId }) {
   return (
     <div>
       {/* Summary */}
-      <div className="flex gap-2 mb-2 text-[10px]">
-        <span className="px-2 py-0.5 rounded bg-green-900/50 text-green-400">
+      <div className="flex gap-2 mb-2 text-xs">
+        <span className="px-2 py-0.5 rounded text-kh-bone" style={chipStyle('brass')}>
           <SpriteIcon name="check" size={28} /> Tu facción: {ownedByMyFaction}
         </span>
-        <span className="px-2 py-0.5 rounded bg-gray-700/50 text-gray-400">
+        <span className="px-2 py-0.5 rounded text-kh-bone-dim" style={chipStyle('iron')}>
           <SpriteIcon name="alliance" size={28} /> Neutral: {neutral}
         </span>
-        <span className="px-2 py-0.5 rounded bg-red-900/50 text-red-400">
+        <span className="px-2 py-0.5 rounded text-kh-bone" style={chipStyle('seal')}>
           <SpriteIcon name="sword" size={28} /> Enemigos: {territories.length - ownedByMyFaction - neutral}
         </span>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-1 mb-2">
+      <div className="flex gap-1 mb-2" role="tablist">
         {[['all','Todos'],['mine','Mis'],['neutral','Neutral'],['enemy','Enemigos']].map(([f, label]) => (
           <button
             key={f}
+            role="tab"
+            aria-selected={filter === f}
             onClick={() => setFilter(f)}
-            className={`flex-1 text-[9px] py-1 rounded ${filter === f ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400'}`}
+            className={`kh-tab flex-1 ${filter === f ? 'kh-tab--active' : ''}`}
           >
             {label}
           </button>
@@ -101,28 +106,28 @@ function TerritoryTab({ playerFactionId }) {
               <button
                 key={t.id}
                 onClick={() => { setSelected(t); setArmy({}); }}
-                className={`w-full text-left p-1.5 rounded border text-[10px] transition-all ${
-                  selected?.id === t.id ? 'border-yellow-400 bg-yellow-900/20' :
-                  isMine  ? 'border-green-700/50 bg-green-900/10' :
-                  isEnemy ? 'border-red-700/40 bg-red-900/10' :
-                  'border-gray-700/40 bg-gray-900/10'
-                }`}
+                className="w-full text-left p-1.5 rounded text-xs transition-all"
+                style={{
+                  minHeight: 44,
+                  backgroundColor: selected?.id === t.id ? KH['oak-light'] : KH.oak,
+                  border: `1px solid ${selected?.id === t.id ? KH['brass-light'] : isMine ? KH.brass : isEnemy ? KH.seal : KH.iron}`,
+                }}
               >
                 <div className="flex items-center gap-1">
                   <SpriteIcon name="map" size={28} />
-                  <span className="truncate font-semibold text-white">{t.name}</span>
+                  <span className="truncate font-semibold text-kh-bone">{t.name}</span>
                 </div>
                 <div className="flex items-center gap-1 mt-0.5">
-                  {isMine  && <span className="text-[8px] px-1 rounded bg-green-800 text-green-300">Tuyo</span>}
-                  {isEnemy && <span className="text-[8px] px-1 rounded bg-red-800 text-red-300">Enemigo</span>}
-                  {!t.ownerFactionId && <span className="text-[8px] px-1 rounded bg-gray-700 text-gray-400">Neutral</span>}
-                  <span className="text-gray-500 text-[8px]">DEF {t.defenseStrength}</span>
+                  {isMine  && <span className="text-xs px-1 rounded text-kh-bone" style={chipStyle('brass')}>Tuyo</span>}
+                  {isEnemy && <span className="text-xs px-1 rounded text-kh-bone" style={chipStyle('seal')}>Enemigo</span>}
+                  {!t.ownerFactionId && <span className="text-xs px-1 rounded text-kh-bone-dim" style={chipStyle('iron')}>Neutral</span>}
+                  <span className="text-kh-bone-dim text-xs">DEF {t.defenseStrength}</span>
                 </div>
               </button>
             );
           })}
           {filteredTerritories.length === 0 && (
-            <p className="text-gray-600 text-[10px] text-center py-4">Sin territorios</p>
+            <p className="text-kh-bone-dim text-xs text-center py-4">Sin territorios</p>
           )}
         </div>
 
@@ -130,15 +135,15 @@ function TerritoryTab({ playerFactionId }) {
         <div className="flex-1 min-w-0">
           {selected ? (
             <div className="space-y-1.5">
-              <div className="p-2 rounded bg-black/20 border border-gray-700/40">
-                <p className={`text-xs font-bold ${TYPE_COLORS[selected.type] || 'text-white'}`}>
+              <div className="p-2 rounded" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.iron}` }}>
+                <p className={`text-xs font-bold ${TYPE_COLORS[selected.type] || 'text-kh-bone'}`}>
                   <SpriteIcon name="map" size={28} /> {selected.name}
                 </p>
-                <p className="text-gray-400 text-[9px]">{selected.typeLabel}</p>
-                <p className="text-yellow-400 text-[9px] mt-1"><SpriteIcon name="gold" size={28} /> {selected.bonusDesc}</p>
-                <p className="text-gray-500 text-[9px]">Dueño: {selected.ownerFactionName}</p>
+                <p className="text-kh-bone-dim text-xs">{selected.typeLabel}</p>
+                <p className="text-kh-brass-light text-xs mt-1"><SpriteIcon name="gold" size={28} /> {selected.bonusDesc}</p>
+                <p className="text-kh-bone-dim text-xs">Dueño: {selected.ownerFactionName}</p>
                 {selected.conqueredAt && (
-                  <p className="text-gray-600 text-[9px]">
+                  <p className="text-kh-bone-dim text-xs">
                     Conquistado: {new Date(selected.conqueredAt).toLocaleDateString()}
                   </p>
                 )}
@@ -146,16 +151,16 @@ function TerritoryTab({ playerFactionId }) {
 
               {selected.ownerFactionId !== playerFactionId && (
                 <>
-                  <p className="text-gray-400 text-[9px] font-bold">Ejército de ataque:</p>
+                  <p className="text-kh-bone-dim text-xs font-bold">Ejército de ataque:</p>
                   {readyTroops.length === 0 ? (
-                    <p className="text-gray-600 text-[9px]">Sin tropas disponibles</p>
+                    <p className="text-kh-bone-dim text-xs">Sin tropas disponibles</p>
                   ) : (
                     <div className="space-y-1">
                       {readyTroops.map((t) => (
                         <div key={t.troop_id} className="flex items-center gap-1">
-                          <span className="text-[10px] w-4"><SpriteIcon name={TROOP_ICONS[t.troop_id]} size={28} /></span>
-                          <span className="text-gray-400 text-[9px] flex-1 truncate">{t.troop_id}</span>
-                          <span className="text-gray-500 text-[9px]">/{t.quantity}</span>
+                          <span className="text-xs w-4"><SpriteIcon name={TROOP_ICONS[t.troop_id]} size={28} /></span>
+                          <span className="text-kh-bone-dim text-xs flex-1 truncate">{t.troop_id}</span>
+                          <span className="text-kh-bone-dim text-xs">/{t.quantity}</span>
                           <input
                             type="number"
                             min="0"
@@ -165,32 +170,27 @@ function TerritoryTab({ playerFactionId }) {
                               const v = Math.min(Number(e.target.value), t.quantity);
                               setArmy((prev) => ({ ...prev, [t.troop_id]: v }));
                             }}
-                            className="w-10 text-[9px] text-center rounded bg-gray-800 border border-gray-600 text-white"
+                            className="w-11 text-xs text-center rounded text-kh-bone" style={inputStyle}
                           />
                         </div>
                       ))}
                     </div>
                   )}
-                  <button
-                    onClick={doAttack}
-                    disabled={loading || totalArmy === 0}
-                    className="w-full py-1.5 rounded text-[10px] font-bold text-white disabled:opacity-40"
-                    style={{ background: 'linear-gradient(135deg, #7f1d1d, #dc2626)' }}
-                  >
+                  <Button variant="primary" onClick={doAttack} disabled={loading || totalArmy === 0} className="w-full" style={{ fontSize: 13 }}>
                     {loading ? 'Atacando...' : `Atacar (${totalArmy} tropas)`}
-                  </button>
+                  </Button>
                 </>
               )}
 
               {selected.ownerFactionId === playerFactionId && (
-                <div className="p-2 rounded bg-green-900/20 border border-green-700/30">
-                  <p className="text-green-400 text-[10px] font-bold"><SpriteIcon name="check" size={28} /> Territorio propio</p>
-                  <p className="text-gray-400 text-[9px]">Recibís {selected.bonusDesc} mientras lo controles.</p>
+                <div className="p-2 rounded" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.brass}` }}>
+                  <p className="text-kh-brass-light text-xs font-bold"><SpriteIcon name="check" size={28} /> Territorio propio</p>
+                  <p className="text-kh-bone-dim text-xs">Recibís {selected.bonusDesc} mientras lo controles.</p>
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-gray-600 text-[10px] text-center mt-8">
+            <p className="text-kh-bone-dim text-xs text-center mt-8">
               Seleccioná un territorio
             </p>
           )}
@@ -257,26 +257,19 @@ function PvPTab() {
     const won = result.winner === 'attacker';
     const loot = result.loot || {};
     return (
-      <div className="space-y-3">
-        <div className={`p-3 rounded-lg border ${won ? 'border-green-600 bg-green-900/20' : 'border-red-700 bg-red-900/20'}`}>
-          <p className={`text-sm font-bold ${won ? 'text-green-400' : 'text-red-400'}`}>
-            {won ? '¡Victoria!' : 'Derrota'} vs {result.defenderName}
+      <ResultBanner
+        outcome={won ? 'victory' : 'defeat'}
+        title={`${won ? '¡Victoria!' : 'Derrota'} vs ${result.defenderName}`}
+        onClose={() => { setResult(null); setSelected(null); setArmy({}); }}
+        closeLabel="← Volver"
+      >
+        {won && Object.keys(loot).length > 0 && (
+          <p className="text-xs">
+            Botín: {Object.entries(loot).map(([r, a]) => `${a}x ${r}`).join(', ')}
           </p>
-          {won && Object.keys(loot).length > 0 && (
-            <p className="text-yellow-300 text-xs mt-1">
-              Botín: {Object.entries(loot).map(([r, a]) => `${a}x ${r}`).join(', ')}
-            </p>
-          )}
-          <p className="text-gray-400 text-xs mt-1">{result.message}</p>
-        </div>
-        <button
-          onClick={() => { setResult(null); setSelected(null); setArmy({}); }}
-          className="w-full py-2 rounded text-xs font-bold text-white"
-          style={{ background: 'rgba(55,65,81,0.8)' }}
-        >
-          ← Volver
-        </button>
-      </div>
+        )}
+        <p className="text-xs">{result.message}</p>
+      </ResultBanner>
     );
   }
 
@@ -284,10 +277,10 @@ function PvPTab() {
     <div className="space-y-3">
       {/* Target list */}
       <div>
-        <p className="text-gray-400 text-[10px] font-bold mb-1">Jugadores disponibles:</p>
+        <p className="text-kh-bone-dim text-xs font-bold mb-1">Jugadores disponibles:</p>
         <div className="space-y-1 max-h-36 overflow-y-auto">
           {pvpPlayers.length === 0 && (
-            <p className="text-gray-600 text-[10px] text-center py-3">Sin jugadores disponibles</p>
+            <p className="text-kh-bone-dim text-xs text-center py-3">Sin jugadores disponibles</p>
           )}
           {pvpPlayers.map((p) => {
             const cdMs = getCooldownMs(p);
@@ -296,18 +289,19 @@ function PvPTab() {
               <button
                 key={p.id}
                 onClick={() => { setSelected(p); setArmy({}); setResult(null); }}
-                className={`w-full text-left px-2 py-1.5 rounded text-[10px] transition-all flex items-center gap-2 ${
-                  selected?.id === p.id
-                    ? 'bg-red-900/40 border border-red-600'
-                    : 'bg-gray-800/60 border border-gray-700/40 hover:border-red-700/50'
-                }`}
+                className="w-full text-left px-2 py-1.5 rounded text-xs transition-all flex items-center gap-2"
+                style={{
+                  minHeight: 44,
+                  backgroundColor: selected?.id === p.id ? KH['oak-light'] : KH.oak,
+                  border: `1px solid ${selected?.id === p.id ? KH['brass-light'] : KH.iron}`,
+                }}
               >
                 <span className="text-base"><SpriteIcon name={FACTION_ICONS[p.faction_id] || 'sword'} size={28} /></span>
-                <span className="flex-1 font-semibold text-white truncate">{p.display_name || `Jugador #${p.id}`}</span>
+                <span className="flex-1 font-semibold text-kh-bone truncate">{p.display_name || `Jugador #${p.id}`}</span>
                 {onCooldown ? (
-                  <span className="text-orange-400 text-[9px] font-mono"><SpriteIcon name="speedup" size={28} /> {formatCooldown(cdMs)}</span>
+                  <span className="text-kh-ember text-xs font-mono"><SpriteIcon name="speedup" size={28} /> {formatCooldown(cdMs)}</span>
                 ) : (
-                  <span className="text-gray-400">Nv.{p.level}</span>
+                  <span className="text-kh-bone-dim">Nv.{p.level}</span>
                 )}
               </button>
             );
@@ -319,7 +313,7 @@ function PvPTab() {
         <>
           {/* Ability selector */}
           <div>
-            <p className="text-gray-400 text-[10px] font-bold mb-1">Habilidad de asedio:</p>
+            <p className="text-kh-bone-dim text-xs font-bold mb-1">Habilidad de asedio:</p>
             <div className="flex gap-1 flex-wrap">
               {[null, ...Object.entries(SIEGE_ABILITIES)].map((entry) => {
                 const [id, ab] = Array.isArray(entry) ? entry : [null, null];
@@ -328,9 +322,8 @@ function PvPTab() {
                   <button
                     key={id || 'none'}
                     onClick={() => setAbilityId(id)}
-                    className={`px-2 py-1 rounded text-[9px] font-bold transition-all ${
-                      active ? 'bg-purple-700 text-white' : 'bg-gray-700 text-gray-400'
-                    }`}
+                    aria-pressed={active}
+                    className={`kh-tab font-bold ${active ? 'kh-tab--active' : ''}`}
                   >
                     {ab ? ab.name : '— Ninguna'}
                   </button>
@@ -341,16 +334,16 @@ function PvPTab() {
 
           {/* Army builder */}
           <div>
-            <p className="text-gray-400 text-[10px] font-bold mb-1">Ejército de ataque:</p>
+            <p className="text-kh-bone-dim text-xs font-bold mb-1">Ejército de ataque:</p>
             {readyTroops.length === 0 ? (
-              <p className="text-gray-600 text-[9px]">Sin tropas disponibles</p>
+              <p className="text-kh-bone-dim text-xs">Sin tropas disponibles</p>
             ) : (
               <div className="space-y-1">
                 {readyTroops.map((t) => (
                   <div key={t.troop_id} className="flex items-center gap-2">
-                    <span className="text-[10px] w-5"><SpriteIcon name={TROOP_ICONS[t.troop_id]} size={28} /></span>
-                    <span className="text-gray-400 text-[9px] flex-1">{t.troop_id}</span>
-                    <span className="text-gray-500 text-[9px]">/{t.quantity}</span>
+                    <span className="text-xs w-5"><SpriteIcon name={TROOP_ICONS[t.troop_id]} size={28} /></span>
+                    <span className="text-kh-bone-dim text-xs flex-1">{t.troop_id}</span>
+                    <span className="text-kh-bone-dim text-xs">/{t.quantity}</span>
                     <input
                       type="number" min="0" max={t.quantity}
                       value={army[t.troop_id] || 0}
@@ -358,7 +351,7 @@ function PvPTab() {
                         const v = Math.min(Number(e.target.value), t.quantity);
                         setArmy((prev) => ({ ...prev, [t.troop_id]: v }));
                       }}
-                      className="w-10 text-[9px] text-center rounded bg-gray-800 border border-gray-600 text-white"
+                      className="w-11 text-xs text-center rounded text-kh-bone" style={inputStyle}
                     />
                   </div>
                 ))}
@@ -367,18 +360,13 @@ function PvPTab() {
           </div>
 
           {selectedCooldownMs > 0 ? (
-            <div className="w-full py-2 rounded text-xs font-bold text-center text-orange-400 bg-orange-900/20 border border-orange-700/40">
+            <div className="w-full py-2 rounded text-xs font-bold text-center text-kh-ember" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.ember}` }}>
               <SpriteIcon name="speedup" size={28} /> Cooldown: {formatCooldown(selectedCooldownMs)}
             </div>
           ) : (
-            <button
-              onClick={doAttack}
-              disabled={loading || totalArmy === 0}
-              className="w-full py-2 rounded text-xs font-bold text-white disabled:opacity-40"
-              style={{ background: loading ? 'rgba(55,65,81,0.8)' : 'linear-gradient(135deg, #7f1d1d, #dc2626)' }}
-            >
+            <Button variant="primary" onClick={doAttack} disabled={loading || totalArmy === 0} className="w-full" style={{ fontSize: 13 }}>
               {loading ? 'Atacando...' : `Atacar a ${selected.display_name} (${totalArmy} tropas)`}
-            </button>
+            </Button>
           )}
         </>
       )}
@@ -437,20 +425,14 @@ export default function WarPanel({ data, onClose }) {
   };
 
   return (
-    <div
-      className="mx-2 mb-2 p-4 rounded-t-xl max-h-[65vh] overflow-y-auto"
-      style={{ background: 'rgba(51, 47, 43, 0.95)', border: '1px solid rgba(255, 215, 0, 0.3)' }}
+    <Panel
+      title="Zona de Guerra"
+      onClose={onClose}
+      className="mx-2 mb-2 overflow-y-auto"
+      style={{ maxHeight: 'calc(var(--kh-frame-h) * 0.65)' }}
     >
-      {/* Header */}
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-yellow-400 text-sm font-bold font-display">
-          Zona de Guerra
-        </h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
-      </div>
-
       {/* Tabs */}
-      <div className="flex gap-1 mb-3 flex-wrap">
+      <div className="flex gap-1 mb-3 flex-wrap" role="tablist">
         {[
           { id: 'territories', label: 'Territorios' },
           { id: 'pvp',         label: 'PvP' },
@@ -459,7 +441,9 @@ export default function WarPanel({ data, onClose }) {
         ].map(({ id, label }) => (
           <button
             key={id}
-            className={`flex-1 text-[10px] py-1.5 rounded ${activeTab === id ? 'bg-red-700 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'}`}
+            role="tab"
+            aria-selected={activeTab === id}
+            className={`kh-tab flex-1 ${activeTab === id ? 'kh-tab--active' : ''}`}
             onClick={() => setActiveTab(id)}
           >
             {label}
@@ -479,7 +463,7 @@ export default function WarPanel({ data, onClose }) {
       {activeTab === 'active' && (
         <div className="space-y-2 mb-3">
           {activeSieges.length === 0 ? (
-            <p className="text-gray-500 text-xs text-center py-4">No tienes asedios activos.</p>
+            <p className="text-kh-bone-dim text-xs text-center py-4">No tienes asedios activos.</p>
           ) : (
             activeSieges.map((siege) => {
               const army = parseJSON(siege.attacker_army);
@@ -488,31 +472,30 @@ export default function WarPanel({ data, onClose }) {
                 <div
                   key={siege.id}
                   className="p-2 rounded"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,215,0,0.15)' }}
+                  style={{ backgroundColor: KH.ink, border: `1px solid ${KH.iron}` }}
                 >
                   {/* Status + countdown */}
                   <div className="flex justify-between items-center mb-1">
-                    <span className={`text-[10px] px-2 py-0.5 rounded ${
-                      siege.status === 'marching' ? 'bg-stone-700 text-teal-300' : 'bg-red-800 text-red-300'
-                    }`}>
+                    <span className="text-xs px-2 py-0.5 rounded text-kh-bone"
+                      style={chipStyle(siege.status === 'marching' ? 'iron' : 'seal')}>
                       {siege.status === 'marching' ? 'En marcha' : 'En combate'}
                     </span>
                     {siege.status === 'marching' && (
-                      <span className="text-yellow-300 text-xs font-mono">
+                      <span className="text-kh-ember text-xs font-mono">
                         {formatCountdown(siege.arrives_at)}
                       </span>
                     )}
                   </div>
 
                   {/* Role */}
-                  <div className="text-gray-400 text-[10px] mb-1">
+                  <div className="text-kh-bone-dim text-xs mb-1">
                     {isMine ? 'Atacando' : 'Defendiendo'}
                   </div>
 
                   {/* Army composition */}
                   <div className="flex gap-2 mb-1">
                     {Object.entries(army).map(([troopId, qty]) => (
-                      <span key={troopId} className="text-white text-xs">
+                      <span key={troopId} className="text-kh-bone text-xs">
                         <SpriteIcon name={TROOP_ICONS[troopId]} size={28} /> x{qty}
                       </span>
                     ))}
@@ -522,14 +505,14 @@ export default function WarPanel({ data, onClose }) {
                   {siege.status === 'fighting' && isMine && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {Object.entries(SIEGE_ABILITIES).map(([id, ab]) => (
-                        <button
+                        <Button
                           key={id}
-                          className="bg-purple-800 hover:bg-purple-700 text-white text-[10px] px-2 py-1 rounded"
                           onClick={() => useSiegeAbility(siege.id, id)}
                           title={ab.description}
+                          style={{ fontSize: 13 }}
                         >
                           <SpriteIcon name="flame" size={28} /> {ab.name}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   )}
@@ -544,7 +527,7 @@ export default function WarPanel({ data, onClose }) {
       {activeTab === 'history' && (
         <div className="space-y-2 mb-3">
           {historySieges.length === 0 ? (
-            <p className="text-gray-500 text-xs text-center py-4">No hay resultados recientes.</p>
+            <p className="text-kh-bone-dim text-xs text-center py-4">No hay resultados recientes.</p>
           ) : (
             historySieges.map((siege) => {
               const result = parseJSON(siege.result);
@@ -556,30 +539,29 @@ export default function WarPanel({ data, onClose }) {
                 <div
                   key={siege.id}
                   className="p-2 rounded"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,215,0,0.15)' }}
+                  style={{ backgroundColor: KH.ink, border: `1px solid ${KH.iron}` }}
                 >
                   {/* Result badge */}
                   <div className="flex justify-between items-center mb-1">
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${
-                      won ? 'bg-green-800 text-green-300' : 'bg-red-800 text-red-300'
-                    }`}>
+                    <span className="text-xs px-2 py-0.5 rounded font-bold text-kh-bone"
+                      style={chipStyle(won ? 'brass' : 'seal')}>
                       {won ? 'Victoria' : 'Derrota'}
                     </span>
-                    <span className="text-gray-500 text-[10px]">
+                    <span className="text-kh-bone-dim text-xs">
                       {isMine ? 'Ataque' : 'Defensa'}
                     </span>
                   </div>
 
                   {/* Loot */}
                   {won && Object.keys(loot).length > 0 && (
-                    <div className="text-green-400 text-[10px] mt-1">
+                    <div className="text-kh-brass-light text-xs mt-1">
                       Botin: {Object.entries(loot).map(([res, amt]) => `${amt} ${res}`).join(', ')}
                     </div>
                   )}
 
                   {/* Losses */}
                   {result.attackerLosses && (
-                    <div className="text-red-400 text-[10px] mt-1">
+                    <div className="text-kh-bone-dim text-xs mt-1">
                       Perdidas: {Object.entries(isMine ? result.attackerLosses : (result.defenderLosses || {}))
                         .filter(([, v]) => v > 0)
                         .map(([id, v]) => `${id} -${v}`)
@@ -595,19 +577,13 @@ export default function WarPanel({ data, onClose }) {
 
       {/* Action buttons */}
       <div className="flex gap-2">
-        <button
-          className="flex-1 bg-stone-700 hover:bg-stone-600 border border-yellow-700/50 text-white text-xs py-2 rounded"
-          onClick={() => openTroopPanel('troops')}
-        >
+        <Button className="flex-1" onClick={() => openTroopPanel('troops')} style={{ fontSize: 13 }}>
           Gestionar Tropas
-        </button>
-        <button
-          className="flex-1 bg-red-700 hover:bg-red-600 text-white text-xs py-2 rounded"
-          onClick={() => openTroopPanel('army')}
-        >
+        </Button>
+        <Button variant="primary" className="flex-1" onClick={() => openTroopPanel('army')} style={{ fontSize: 13 }}>
           Declarar Guerra
-        </button>
+        </Button>
       </div>
-    </div>
+    </Panel>
   );
 }

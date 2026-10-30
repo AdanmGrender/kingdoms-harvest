@@ -104,7 +104,7 @@ describe('pantallasB — R25 fondos viejos', () => {
 
 // ── T4 — Configuración y Notificaciones (R2, R7, R8, R10, R14, R38) ──────────
 import { render, screen, fireEvent } from '@testing-library/react';
-import { vi, beforeEach } from 'vitest';
+import { vi, beforeEach, afterEach } from 'vitest';
 import SettingsPanel from '../components/overlay/SettingsPanel';
 import NotificationPrefsPanel from '../components/ui/NotificationPrefsPanel';
 import useGameStore from '../store/gameStore';
@@ -377,5 +377,169 @@ describe('pantallasB T7 — mapas', () => {
     useGameStore.setState({ galaxyMap: null, loadGalaxy: vi.fn(), launchWarp: vi.fn(), setOverlay: vi.fn() });
     render(<GalaxyMapPanel onClose={() => {}} />);
     expect(screen.getByText(/Trazando los Caminos Velados/).className).toContain('text-kh-bone-dim');
+  });
+});
+
+// ── T8 — Resultados con ResultBanner (R15–R21) ───────────────────────────────
+import CombatInstancePanel from '../components/campaign/CombatInstancePanel';
+import WarPanel from '../components/overlay/WarPanel';
+import TerritoryMapPanel from '../components/world/TerritoryMapPanel';
+import { act } from '@testing-library/react';
+
+const runState = () => ({
+  round: 2, maxRounds: 10, enemy: { hp: 10, maxHp: 100 },
+  heroes: [{ slot: 0, name: 'Ari', hp: 5, alive: true, energy: 1, energyMax: 3, skill: { icon: 'sword' } }],
+});
+
+describe('pantallasB T8 — resultados', () => {
+  const mountCombat = async (outcome) => {
+    useGameStore.setState({
+      activeRun: { runId: 1, node: { id: 'n1', type: 'combat', name: 'Nodo' }, state: runState() },
+      stepInstance: vi.fn().mockResolvedValue({ result: outcome }),
+      clearActiveRun: vi.fn(), addNotification: vi.fn(),
+    });
+    const onClose = vi.fn();
+    const r = render(<CombatInstancePanel onClose={onClose} />);
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Avanzar ronda' })); });
+    return { ...r, onClose };
+  };
+
+  it('victoria: ResultBanner victory, fanfarria EmberField z-[20] y botón Volver', async () => {
+    const { container, onClose } = await mountCombat('victory');
+    const banner = container.querySelector('[data-outcome="victory"]');
+    expect(banner).not.toBeNull();
+    expect(screen.getByText('¡Victoria!')).toBeTruthy();
+    expect(hasFanfare(container)).not.toBeNull();
+    expect(container.querySelector('[data-defeat-veil]')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Volver' }));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('derrota: ResultBanner defeat, velo de lacre y sin fanfarria', async () => {
+    const { container } = await mountCombat('defeat');
+    expect(container.querySelector('[data-outcome="defeat"]')).not.toBeNull();
+    expect(screen.getByText('Derrota')).toBeTruthy();
+    expect(container.querySelector('[data-defeat-veil]')).not.toBeNull();
+    expect(hasFanfare(container)).toBeNull();
+  });
+
+  it('CombatInstancePanel no usa vh propio y mantiene el cierre del kit', () => {
+    const src = read('components/campaign/CombatInstancePanel.jsx');
+    expect(RE_VIEWPORT.test(src)).toBe(false);
+    expect(src).not.toMatch(/[\u2715\u2713]/);
+  });
+
+  it('TerritoryMapPanel: derrota/victoria con ResultBanner, con y sin botín', async () => {
+    const attackTerritory = vi.fn().mockResolvedValue({
+      winner: 'attacker', attackPower: 50, defensePower: 20, territory: { name: 'Plaza Norte' },
+      territoryFlipped: true, pointsAwarded: 5, tokensAwarded: 2, loot: { gold: 30 },
+    });
+    useGameStore.setState({
+      player: { faction_id: 'f1' }, troops: [{ troop_id: 'sword', quantity: 3 }],
+      territories: [{ id: 't1', name: 'Plaza Norte', type: 'plains', defense_strength: 10, owner: null }],
+      loadTerritories: vi.fn(), loadTroops: vi.fn(), attackTerritory,
+    });
+    const { container } = render(<TerritoryMapPanel data={{}} onClose={() => {}} />);
+    fireEvent.click(screen.getAllByRole('button').find((b) => b.textContent.includes('Plaza Norte')));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Asaltar con todas las tropas/ })); });
+    expect(container.querySelector('[data-outcome="victory"]')).not.toBeNull();
+    expect(container.textContent).toContain('Botín: 30 gold');
+    expect(container.textContent).toContain('Victoria en Plaza Norte');
+  });
+
+  it('WarPanel y TerritoryMapPanel: sin 100vh, glifos ni grises de Tailwind', () => {
+    for (const f of ['components/overlay/WarPanel.jsx', 'components/world/TerritoryMapPanel.jsx']) {
+      const src = read(f);
+      expect(RE_VIEWPORT.test(src)).toBe(false);
+      expect(RE_TW_COLOR.test(src)).toBe(false);
+      expect(RE_GLYPH.test(src)).toBe(false);
+      expect(RE_LEGACY_BTN.test(src)).toBe(false);
+    }
+  });
+
+  it('WarPanel: Panel con tope --kh-frame-h y pestañas .kh-tab', () => {
+    useGameStore.setState({
+      sieges: [], player: { faction_id: 'f1' }, territories: [], troops: [], pvpPlayers: [], pvpCooldowns: {},
+      loadSieges: vi.fn(), loadTroops: vi.fn(), loadTerritories: vi.fn(), loadPvpPlayers: vi.fn(), useSiegeAbility: vi.fn(),
+    });
+    const { container } = render(<WarPanel data={{}} onClose={() => {}} />);
+    expect(container.querySelector('.kh-panel').style.maxHeight).toContain('var(--kh-frame-h)');
+    expect(container.querySelectorAll('.kh-tab').length).toBeGreaterThanOrEqual(4);
+    fireEvent.click(screen.getByRole('tab', { name: 'PvP' }));
+    expect(screen.getByRole('tab', { name: 'PvP' }).getAttribute('aria-selected')).toBe('true');
+  });
+});
+
+function hasFanfare(container) {
+  const found = Array.from(container.querySelectorAll('[aria-hidden="true"]')).find((e) => String(e.className).includes('z-[20]'));
+  return found || null;
+}
+
+// ── T9 — MainMenu (R3, R6, R22, R24, R25) ────────────────────────────────────
+import MainMenu, { MENU_KEY_ART } from '../components/menu/MainMenu';
+import { KH as KHT } from '../components/ui/kitPieces';
+
+// Contraste WCAG 2.x entre dos colores #rrggbb.
+function lumOf(hex) {
+  const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+const contrastOf = (a, b) => {
+  const [hi, lo] = [lumOf(a), lumOf(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+
+describe('pantallasB T9 — MainMenu', () => {
+  const origImage = globalThis.Image;
+  afterEach(() => { globalThis.Image = origImage; });
+  const stubImage = (ok) => {
+    globalThis.Image = class {
+      set src(v) { this._s = v; setTimeout(() => (ok ? this.onload?.() : this.onerror?.()), 0); }
+    };
+  };
+
+  it('sin key art: fondo plano ink, sin background-image y sin menu_bg', async () => {
+    stubImage(false);
+    useGameStore.setState({ player: { display_name: 'Aldric', level: 3 }, enterGame: vi.fn(), setOverlay: vi.fn() });
+    const { container } = render(<MainMenu />);
+    await act(async () => { await new Promise((r) => setTimeout(r, 5)); });
+    const root = container.firstChild;
+    expect(root.style.backgroundColor).not.toBe('');
+    expect(root.style.backgroundImage).toBe('');
+    expect(root.style.paddingTop).toContain('--kh-safe-top');
+    expect(root.style.paddingBottom).toContain('--kh-safe-bottom');
+    expect(root.className).toContain('w-full');
+    expect(root.className).toContain('h-full');
+    expect(container.innerHTML).not.toContain('menu_bg');
+    expect(contrastOf(KHT['bone-dim'], KHT.ink)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastOf(KHT.bone, KHT.ink)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastOf(KHT['brass-light'], KHT.ink)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('con key art cargada: se pinta MENU_KEY_ART bajo la capa oscura', async () => {
+    stubImage(true);
+    useGameStore.setState({ player: null, enterGame: vi.fn(), setOverlay: vi.fn() });
+    const { container } = render(<MainMenu />);
+    await act(async () => { await new Promise((r) => setTimeout(r, 5)); });
+    expect(MENU_KEY_ART).toBe('/assets/b/menu/key_art.webp');
+    expect(container.firstChild.style.backgroundImage).toContain('key_art.webp');
+  });
+
+  it('botones Button: primary Entrar al Bastión y secondary Configuración; acciones intactas', async () => {
+    stubImage(false);
+    const enterGame = vi.fn(); const setOverlay = vi.fn();
+    useGameStore.setState({ player: null, enterGame, setOverlay });
+    render(<MainMenu />);
+    const enter = screen.getByRole('button', { name: /Entrar al Bastión/ });
+    const cfg = screen.getByRole('button', { name: /Configuración/ });
+    expect(enter.getAttribute('data-variant')).toBe('primary');
+    expect(cfg.getAttribute('data-variant')).toBe('secondary');
+    expect(screen.getByRole('heading', { level: 1 }).className).toContain('font-display');
+    fireEvent.click(enter);
+    expect(enterGame).toHaveBeenCalledTimes(1);
+    fireEvent.click(cfg);
+    expect(enterGame).toHaveBeenCalledTimes(2);
+    expect(setOverlay).toHaveBeenCalledWith('settings', {});
   });
 });
