@@ -12,6 +12,9 @@ import api from '../../services/api';
 import useGameStore from '../../store/gameStore';
 import EventBridge from '../../game/EventBridge';
 import SpriteIcon from '../ui/SpriteIcon';
+import Panel from '../ui/Panel';
+import Toggle from '../ui/Toggle';
+import { KH } from '../ui/kitPieces';
 
 const NOTIF_TYPES = [
   { key: 'crops',          icon: 'wheat', label: 'Cultivos listos' },
@@ -108,40 +111,31 @@ export default function SettingsPanel({ onClose }) {
   const version = import.meta.env.VITE_APP_VERSION || 'dev';
 
   return (
-    <div
-      className="mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
-      style={{
-        background: 'rgba(23, 21, 26, 0.97)',
-        border: '1px solid rgba(217, 164, 65, 0.3)',
-        maxHeight: '75vh',
-      }}
+    <Panel
+      title={<><SpriteIcon name="gear" size={28} /> Configuración</>}
+      onClose={onClose}
+      className="mx-2 mb-2 overflow-hidden flex flex-col"
+      style={{ maxHeight: 'calc(var(--kh-frame-h) * 0.75)' }}
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 shrink-0">
-        <h3 className="text-yellow-400 text-sm font-bold font-display">
-          <SpriteIcon name="gear" size={28} /> Configuración
-        </h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
-      </div>
-
-      <div className="px-4 py-3 space-y-4 overflow-y-auto flex-1">
+      <div className="px-2 py-1 space-y-4 overflow-y-auto flex-1 min-h-0">
         {/* ── Audio y gráficos ── */}
         <Section title="Juego">
           <Row icon="moon" title="Silenciar audio" subtitle={muted ? 'Silenciado' : 'Sonido activo'}
-            control={<Toggle on={!muted} onChange={toggleMute} />} />
+            control={<Toggle on={!muted} label="Silenciar audio" onChange={toggleMute} />} />
           <VolumeRow value={volume} disabled={muted} onChange={changeVolume} />
           <Row icon="sun" title="Efectos de ambiente" subtitle="Viñeta, cielo, luces — apagar en teléfonos lentos"
-            control={<Toggle on={ambientFx} onChange={toggleAmbient} />} />
+            control={<Toggle on={ambientFx} label="Efectos de ambiente" onChange={toggleAmbient} />} />
         </Section>
 
         {/* ── Notificaciones del bot ── */}
         <Section title="Notificaciones del bot">
           <Row icon="scroll" title="Todas las notificaciones"
             subtitle={notifEnabled ? 'Recibís DMs del bot' : 'Silenciado'}
-            control={<Toggle on={notifEnabled} disabled={busy} onChange={toggleMaster} />} />
+            control={<Toggle on={notifEnabled} disabled={busy} label="Todas las notificaciones" onChange={toggleMaster} />} />
 
           {notifEnabled && prefs && NOTIF_TYPES.map(({ key, icon, label }) => (
             <Row key={key} icon={icon} title={label} small
-              control={<Toggle on={prefs[key] !== 0 && prefs[key] !== false} onChange={() => togglePref(key)} />} />
+              control={<Toggle on={prefs[key] !== 0 && prefs[key] !== false} label={label} onChange={() => togglePref(key)} />} />
           ))}
         </Section>
 
@@ -151,14 +145,14 @@ export default function SettingsPanel({ onClose }) {
           <Row icon="gear" title="Versión" subtitle={version} />
         </Section>
       </div>
-    </div>
+    </Panel>
   );
 }
 
 function Section({ title, children }) {
   return (
     <div>
-      <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-2">{title}</p>
+      <p className="text-[10px] text-kh-bone-dim uppercase tracking-wider mb-2">{title}</p>
       <div className="space-y-3">{children}</div>
     </div>
   );
@@ -169,8 +163,8 @@ function Row({ icon, title, subtitle, control, small }) {
     <div className="flex items-center gap-3">
       <div className={`${small ? 'text-lg w-7' : 'text-2xl w-9'} text-center`}><SpriteIcon name={icon} size={28} /></div>
       <div className="flex-1 min-w-0">
-        <p className={`${small ? 'text-xs' : 'text-sm'} text-white font-semibold truncate`}>{title}</p>
-        {subtitle && <p className="text-[11px] leading-tight text-gray-400 line-clamp-2 break-words">{subtitle}</p>}
+        <p className={`${small ? 'text-xs' : 'text-sm'} text-kh-bone font-semibold truncate`}>{title}</p>
+        {subtitle && <p className="text-[11px] leading-tight text-kh-bone-dim line-clamp-2 break-words">{subtitle}</p>}
       </div>
       {control}
     </div>
@@ -185,8 +179,8 @@ function VolumeRow({ value, disabled, onChange }) {
       <div className="text-2xl w-9 text-center"><SpriteIcon name="tide" size={32} /></div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-white font-semibold truncate">Volumen</p>
-          <span className="text-[11px] text-gray-400 tabular-nums">{pct}%</span>
+          <p className="text-sm text-kh-bone font-semibold truncate">Volumen</p>
+          <span className="text-[11px] text-kh-bone-dim tabular-nums">{pct}%</span>
         </div>
         <input
           type="range"
@@ -195,8 +189,8 @@ function VolumeRow({ value, disabled, onChange }) {
           value={pct}
           disabled={disabled}
           onChange={(e) => onChange(Number(e.target.value) / 100)}
-          className="w-full mt-1 accent-yellow-500 cursor-pointer disabled:cursor-default"
-          style={{ height: '18px' }}
+          className="w-full mt-1 cursor-pointer disabled:cursor-default"
+          style={{ height: '18px', accentColor: KH['brass-light'] }}
           aria-label="Volumen maestro"
         />
       </div>
@@ -204,18 +198,3 @@ function VolumeRow({ value, disabled, onChange }) {
   );
 }
 
-function Toggle({ on, disabled, onChange }) {
-  return (
-    <button
-      onClick={onChange}
-      disabled={disabled}
-      className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${disabled ? 'opacity-50' : ''}`}
-      style={{ background: on ? '#16a34a' : '#3f3f46' }}
-    >
-      <span
-        className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all"
-        style={{ left: on ? '22px' : '2px' }}
-      />
-    </button>
-  );
-}

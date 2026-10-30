@@ -5,6 +5,8 @@
 import { useEffect } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import Panel from '../ui/Panel';
+import Button from '../ui/Button';
 
 const RESOURCE_ICONS = {
   gold: 'gold', wood: 'wood', stone: 'stone', iron: 'iron',
@@ -29,30 +31,21 @@ export default function MissionsPanel({ onClose }) {
   const completed = list.filter((m) => m.status === 'completed');
 
   return (
-    <div
-      className="mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
-      style={{
-        background: 'rgba(51, 47, 43, 0.97)',
-        border: '1px solid rgba(255, 215, 0, 0.3)',
-        maxHeight: '75vh',
-      }}
+    <Panel
+      title={<><SpriteIcon name="scroll" size={28} /> Misiones</>}
+      onClose={onClose}
+      className="mx-2 mb-2 overflow-hidden flex flex-col"
+      style={{ maxHeight: 'calc(var(--kh-frame-h) * 0.75)' }}
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-yellow-900/30 shrink-0">
-        <h3 className="text-yellow-400 text-sm font-bold font-display">
-          <SpriteIcon name="scroll" size={28} /> Misiones
-        </h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
-      </div>
-
-      <div className="px-3 py-3 overflow-y-auto flex-1 space-y-2">
+      <div className="px-1 py-1 overflow-y-auto flex-1 min-h-0 space-y-2">
         {list.length === 0 && (
-          <p className="text-gray-400 text-xs text-center py-6">
+          <p className="text-kh-bone-dim text-xs text-center py-6">
             Sin misiones cargadas.
           </p>
         )}
 
         {active.length > 0 && (
-          <p className="text-[11px] text-gray-400 uppercase">Activas</p>
+          <p className="text-xs text-kh-bone-dim uppercase">Activas</p>
         )}
         {active.map((m) => (
           <MissionCard
@@ -64,27 +57,20 @@ export default function MissionsPanel({ onClose }) {
         ))}
 
         {completed.length > 0 && (
-          <p className="text-[11px] text-gray-500 uppercase mt-2">Completadas (recientes)</p>
+          <p className="text-xs text-kh-bone-dim uppercase mt-2">Completadas (recientes)</p>
         )}
         {completed.slice(0, 5).map((m) => (
           <div key={m.id} className="game-card py-2 opacity-60">
             <p className="text-xs font-bold">{m.title || m.name || 'Misión'}</p>
-            <p className="text-[10px] text-green-400">✓ Completada</p>
+            <p className="text-xs text-kh-brass-light"><SpriteIcon name="check" size={20} /> Completada</p>
           </div>
         ))}
 
-        <button
-          onClick={generateMissions}
-          className="w-full py-2 rounded-lg text-xs font-bold mt-3"
-          style={{
-            background: 'linear-gradient(135deg, #b45309, #d97706)',
-            color: 'white',
-          }}
-        >
+        <Button variant="primary" onClick={generateMissions} className="w-full mt-3" style={{ fontSize: 14 }}>
           Generar nuevas misiones
-        </button>
+        </Button>
       </div>
-    </div>
+    </Panel>
   );
 }
 
@@ -98,24 +84,18 @@ function MissionCard({ m, onAccept, onComplete }) {
   return (
     <div className="game-card py-2">
       <p className="text-sm font-bold">{title}</p>
-      {desc && <p className="text-[11px] text-gray-400 mt-0.5">{desc}</p>}
+      {desc && <p className="text-xs text-kh-bone-dim mt-0.5">{desc}</p>}
       {cost && (
-        <p className="text-[10px] text-gray-500 mt-1">Pide: {formatCost(cost)}</p>
+        <p className="text-xs text-kh-bone-dim mt-1">Pide: {formatCost(cost)}</p>
       )}
       {reward && (
-        <p className="text-[10px] text-yellow-400">Premia: {formatCost(reward)}</p>
+        <p className="text-xs text-kh-brass-light">Premia: {formatCost(reward)}</p>
       )}
       <div className="mt-2 flex gap-2">
         {isAvailable ? (
-          <button
-            onClick={onAccept}
-            className="btn-primary text-[10px] px-3 py-1 flex-1"
-          >Aceptar</button>
+          <Button variant="primary" onClick={onAccept} className="flex-1" style={{ fontSize: 14 }}>Aceptar</Button>
         ) : (
-          <button
-            onClick={onComplete}
-            className="text-[10px] px-3 py-1 flex-1 rounded bg-green-700 hover:bg-green-600 text-white"
-          >Completar</button>
+          <Button variant="primary" onClick={onComplete} className="flex-1" style={{ fontSize: 14 }}>Completar</Button>
         )}
       </div>
     </div>

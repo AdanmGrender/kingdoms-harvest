@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
+import Button from '../ui/Button';
 
 const BRANCH_ICONS = { agriculture: 'wheat', commerce: 'gold', military: 'sword' };
 
@@ -36,7 +37,7 @@ export default function TechTreePanel() {
   }, []);
 
   if (!techResearch) {
-    return <p className="text-gray-400 text-sm text-center py-4">Cargando árbol de investigación...</p>;
+    return <p className="text-kh-bone-dim text-sm text-center py-4">Cargando árbol de investigación...</p>;
   }
 
   const branch = techResearch.branches?.find((b) => b.id === activeBranch);
@@ -44,16 +45,16 @@ export default function TechTreePanel() {
 
   return (
     <div className="space-y-3">
-      {/* Branch tabs */}
-      <div className="flex gap-2">
+      {/* Pestañas de rama (R39–R41, R44): hasta 2 líneas, mín. 44 px de alto */}
+      <div className="flex gap-2" role="tablist">
         {(techResearch.branches || []).map((b) => (
           <button
             key={b.id}
+            role="tab"
+            aria-selected={activeBranch === b.id}
             onClick={() => setActiveBranch(b.id)}
-            className={`flex-1 min-w-0 px-1 py-2 rounded-lg text-[11px] leading-tight text-center font-bold transition-all flex flex-col items-center justify-center gap-0.5 break-words ${
-              activeBranch === b.id
-                ? 'bg-purple-700 text-white'
-                : 'bg-kingdom-blue/50 text-gray-400 hover:text-white'
+            className={`kh-tab flex-1 min-w-0 rounded-lg font-bold flex flex-col items-center justify-center gap-0.5 break-words ${
+              activeBranch === b.id ? 'kh-tab--active' : ''
             }`}
           >
             <SpriteIcon name={BRANCH_ICONS[b.id]} size={28} /><span>{b.name}</span>
@@ -63,10 +64,10 @@ export default function TechTreePanel() {
 
       {/* In-progress banner */}
       {inProgress && (
-        <div className="game-card border-purple-600 bg-purple-900/20">
+        <div className="game-card" style={{ borderColor: '#d9b77a' }} data-testid="tech-in-progress">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-purple-300"><SpriteIcon name="tech" size={28} /> Investigando: <span className="font-bold text-white">{inProgress.tech_id}</span></p>
-            <p className="text-xs text-yellow-400 font-mono">{formatTime(inProgress.research_complete_at)}</p>
+            <p className="text-xs text-kh-bone-dim"><SpriteIcon name="tech" size={28} /> Investigando: <span className="font-bold text-kh-bone">{inProgress.tech_id}</span></p>
+            <p className="text-xs text-kh-ember font-mono">{formatTime(inProgress.research_complete_at)}</p>
           </div>
         </div>
       )}
@@ -80,32 +81,35 @@ export default function TechTreePanel() {
             const canResearch = !isCompleted && !isResearching && !inProgress;
 
             return (
-              <div key={tech.id} className={`game-card flex items-center justify-between gap-3 ${
-                isCompleted ? 'border-green-700 opacity-80' : ''
-              }`}>
+              <div
+                key={tech.id}
+                className={`game-card flex items-center justify-between gap-3 ${isCompleted ? 'opacity-80' : ''}`}
+                data-completed={isCompleted ? 'true' : undefined}
+              >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold leading-tight break-words">{tech.name}</p>
-                    {isCompleted && <span className="text-green-400 text-xs">✓</span>}
                   </div>
-                  <p className="text-xs text-purple-300 leading-tight break-words">{tech.effect}</p>
-                  <p className="text-[10px] text-gray-500 mt-0.5">
+                  <p className="text-xs text-kh-brass-light leading-tight break-words">{tech.effect}</p>
+                  <p className="text-xs text-kh-bone-dim mt-0.5">
                     Costo: {Object.entries(tech.cost).map(([k, v]) => `${v} ${COST_LABEL[k] ?? k}`).join(', ')}
                   </p>
                 </div>
                 <div className="shrink-0">
                   {isCompleted ? (
-                    <span className="text-green-400 text-lg"><SpriteIcon name="check" size={28} /></span>
+                    <span aria-label="Completada"><SpriteIcon name="check" size={28} /></span>
                   ) : isResearching ? (
-                    <span className="text-xs text-yellow-400 font-mono">{formatTime(tech.completeAt)}</span>
+                    <span className="text-xs text-kh-ember font-mono">{formatTime(tech.completeAt)}</span>
                   ) : (
-                    <button
+                    <Button
+                      variant="primary"
                       onClick={() => startResearch(activeBranch, tech.id)}
                       disabled={!canResearch}
-                      className="btn-primary text-xs px-3 py-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="px-3"
+                      style={{ fontSize: 13 }}
                     >
                       Investigar
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
