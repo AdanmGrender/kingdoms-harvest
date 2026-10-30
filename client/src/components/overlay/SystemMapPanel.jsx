@@ -7,6 +7,10 @@ import { useEffect, useState } from 'react';
 import useGameStore from '../../store/gameStore';
 import StarMap from './StarMap';
 import SpriteIcon from '../ui/SpriteIcon';
+import Panel from '../ui/Panel';
+import Button from '../ui/Button';
+import { KH } from '../ui/kitPieces';
+import useMapBackground, { MARCA_BG } from './useMapBackground';
 
 const RES_ICON = {
   gold: 'gold', iron: 'iron', stone: 'stone', water: 'water', wheat: 'wheat', crystal: 'gem',
@@ -31,11 +35,12 @@ function etaLabel(arrivesAt) {
   return m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`;
 }
 
+// Estado por tokens kh (R31); el estado se lee por la etiqueta, no solo por el color.
 const STATE_STYLE = {
-  claimed:   { ring: '#4ade80', tag: 'Controlado', tagColor: '#4ade80' },
-  available: { ring: '#d9a441', tag: 'Disponible', tagColor: '#d9a441' },
-  traveling: { ring: '#4fd8c8', tag: 'En tránsito', tagColor: '#4fd8c8' },
-  locked:    { ring: '#3b3b44', tag: 'Bloqueado', tagColor: '#6b7280' },
+  claimed:   { ring: KH['brass-light'], tag: 'Controlado',  tagColor: KH['brass-light'] },
+  available: { ring: KH.brass,          tag: 'Disponible',  tagColor: KH.brass },
+  traveling: { ring: KH.ember,          tag: 'En tránsito', tagColor: KH.ember },
+  locked:    { ring: KH.iron,           tag: 'Bloqueado',   tagColor: KH['bone-dim'] },
 };
 
 export default function SystemMapPanel({ onClose }) {
@@ -56,6 +61,7 @@ export default function SystemMapPanel({ onClose }) {
     return () => { clearInterval(poll); clearInterval(clock); };
   }, []);
 
+  const bg = useMapBackground(MARCA_BG);
   const sys = systemMap;
   const sel = sys?.planets.find((p) => p.id === selected);
 
@@ -65,68 +71,54 @@ export default function SystemMapPanel({ onClose }) {
   };
 
   return (
-    <div
-      className="mx-2 mb-2 rounded-t-xl overflow-hidden flex flex-col"
-      style={{
-        // Mapa estelar del sistema de fondo (oscurecido para que se lea la UI).
-        backgroundImage:
-          'linear-gradient(rgba(23,21,26,0.90), rgba(23,21,26,0.96)), url(/assets/game/ambient/system_bg.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        border: '1px solid rgba(79, 216, 200, 0.4)',
-        maxHeight: '80vh',
-      }}
+    <Panel
+      title={<><SpriteIcon name="map" size={28} /> Mapa de la Marca</>}
+      onClose={onClose}
+      className="mx-2 mb-2 overflow-hidden flex flex-col"
+      style={{ ...bg, maxHeight: 'calc(var(--kh-frame-h) * 0.8)' }}
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-900/40 shrink-0 bg-black/30">
-        <div>
-          <h3 className="text-cyan-300 text-sm font-bold font-display">
-            <SpriteIcon name="map" size={28} /> Mapa de la Marca
-          </h3>
-          <p className="text-[10px] text-gray-500">Extendé tu dominio plaza a plaza</p>
-        </div>
-        <div className="flex items-center gap-1">
-          {allClaimed && (
-            <button
-              onClick={() => setOverlay('galaxy', {})}
-              className="text-[10px] px-2 py-1 rounded bg-black/40 border border-purple-700/40 text-purple-300"
-            >
-              Reinos Caídos
-            </button>
-          )}
-          <button onClick={onClose} className="text-gray-400 hover:text-white text-lg px-2">✕</button>
-        </div>
+      <span aria-hidden="true" className="block mb-2" style={{ height: 2, backgroundColor: KH.macula }} />
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <p className="text-xs text-kh-bone-dim">Extendé tu dominio plaza a plaza</p>
+        {allClaimed && (
+          <Button onClick={() => setOverlay('galaxy', {})} style={{ fontSize: 13 }}>
+            Reinos Caídos
+          </Button>
+        )}
       </div>
 
-      <div className="px-4 py-3 space-y-3 overflow-y-auto flex-1">
-        {!sys && <p className="text-center text-gray-500 text-xs py-6">Cargando cartografía…</p>}
+      <div className="space-y-3 overflow-y-auto flex-1 min-h-0">
+        {!sys && <p className="text-center text-kh-bone-dim text-xs py-6">Cargando cartografía…</p>}
         {allClaimed && (
-          <div className="rounded-lg bg-purple-900/20 border border-purple-600/40 p-2 text-center">
-            <p className="text-[11px] text-purple-300">
+          <div className="rounded-lg p-2 text-center" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.brass}` }}>
+            <p className="text-xs text-kh-bone">
               <SpriteIcon name="world" size={28} /> ¡Marca dominada! El <b>Velo</b> se puede cruzar —
-              <button onClick={() => setOverlay('galaxy', {})} className="underline ml-1">partí a los Reinos Caídos</button>
+              <button onClick={() => setOverlay('galaxy', {})} className="underline ml-1 text-kh-brass-light" style={{ minHeight: 44 }}>
+                partí a los Reinos Caídos
+              </button>
             </p>
           </div>
         )}
 
         {sys && !sys.unlocked && (
-          <div className="rounded-lg bg-black/40 border border-cyan-800/40 p-3 text-center">
+          <div className="rounded-lg p-3 text-center" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.iron}` }}>
             <p className="text-2xl mb-1"><SpriteIcon name="shield" size={32} /></p>
-            <p className="text-xs text-gray-300">
-              La escala Sistema se abre con <b className="text-cyan-300">Torre del Señor nivel {sys.unlockLevel}</b>
+            <p className="text-xs text-kh-bone">
+              La escala Sistema se abre con <b className="text-kh-brass-light">Torre del Señor nivel {sys.unlockLevel}</b>
             </p>
-            <p className="text-[10px] text-gray-500 mt-1">Actual: nivel {sys.throneLevel}</p>
+            <p className="text-xs text-kh-bone-dim mt-1">Actual: nivel {sys.throneLevel}</p>
           </div>
         )}
 
         {/* Nave en tránsito */}
         {sys?.ship?.status === 'traveling' && (
-          <div className="rounded-lg bg-cyan-900/20 border border-cyan-600/40 p-2.5 flex items-center gap-2 animate-fade-in">
+          <div className="rounded-lg p-2.5 flex items-center gap-2 animate-fade-in" style={{ backgroundColor: KH.ink, border: `1px solid ${KH.ember}` }}>
             <span className="text-xl animate-pulse"><SpriteIcon name="speedup" size={28} /></span>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] text-cyan-300 font-bold truncate">
+              <p className="text-xs text-kh-bone font-bold break-words">
                 Caravana en ruta a {sys.planets.find((p) => p.id === sys.ship.target)?.name}
               </p>
-              <p className="text-[10px] text-gray-400">Llega en {etaLabel(sys.ship.arrivesAt)}</p>
+              <p className="text-xs text-kh-bone-dim">Llega en {etaLabel(sys.ship.arrivesAt)}</p>
             </div>
           </div>
         )}
@@ -139,50 +131,51 @@ export default function SystemMapPanel({ onClose }) {
             onSelect={setSelected}
             ship={sys.ship}
             shipIcon="speedup"
-            theme="#4fd8c8"
+            theme={KH.brass}
+            stateStyle={STATE_STYLE}
           />
         )}
 
         {/* Detalle del planeta seleccionado */}
         {sel && sel.state !== 'locked' && (
-          <div className="game-card border-cyan-700/40 space-y-2 animate-fade-in">
+          <div className="game-card space-y-2 animate-fade-in" style={{ borderColor: STATE_STYLE[sel.state]?.ring }}>
             <div className="flex items-center gap-2">
               <span className="text-2xl"><SpriteIcon name="map" size={32} /></span>
-              <div>
-                <p className="font-bold text-sm">{sel.name}</p>
-                <p className="text-[10px] text-gray-400">{sel.desc}</p>
+              <div className="min-w-0">
+                <p className="font-bold text-sm break-words">{sel.name}</p>
+                <p className="text-xs text-kh-bone-dim">{sel.desc}</p>
+                <p className="text-xs font-bold" style={{ color: STATE_STYLE[sel.state]?.tagColor }}>{STATE_STYLE[sel.state]?.tag}</p>
               </div>
             </div>
             {tributeLabel(sel.tribute) && (
-              <p className="text-[11px] text-green-300">Tributo pasivo: {tributeLabel(sel.tribute)}</p>
+              <p className="text-xs text-kh-brass-light">Tributo pasivo: {tributeLabel(sel.tribute)}</p>
             )}
             {sel.state === 'available' && (
               <>
-                <div className="flex justify-between text-[11px] text-gray-300">
-                  <span>Costo de viaje: <b className="text-yellow-300">{costLabel(sel.cost)}</b></span>
+                <div className="flex justify-between gap-2 text-xs text-kh-bone">
+                  <span>Costo de viaje: <b className="text-kh-brass-light">{costLabel(sel.cost)}</b></span>
                   <span><SpriteIcon name="speedup" size={28} /> {sel.travelMin} min</span>
                 </div>
-                <button
+                <Button
+                  variant="primary"
                   onClick={() => doLaunch(sel.id)}
                   disabled={sys.ship.status === 'traveling'}
-                  className="w-full py-2 rounded-lg text-xs font-bold text-white
-                             bg-gradient-to-b from-cyan-700 to-cyan-900 border border-cyan-500/40
-                             hover:from-cyan-600 hover:to-cyan-800 active:scale-95 transition-all
-                             disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full"
+                  style={{ fontSize: 14 }}
                 >
                   <SpriteIcon name="speedup" size={28} /> Enviar la Nave
-                </button>
+                </Button>
               </>
             )}
             {sel.state === 'claimed' && (
-              <p className="text-[11px] text-green-400 text-center">✓ Bajo tu control — rinde tributo cada hora</p>
+              <p className="text-xs text-kh-brass-light text-center"><SpriteIcon name="check" size={28} /> Bajo tu control — rinde tributo cada hora</p>
             )}
             {sel.state === 'traveling' && (
-              <p className="text-[11px] text-cyan-300 text-center"><SpriteIcon name="speedup" size={28} /> La caravana está en camino…</p>
+              <p className="text-xs text-kh-bone text-center"><SpriteIcon name="speedup" size={28} /> La caravana está en camino…</p>
             )}
           </div>
         )}
       </div>
-    </div>
+    </Panel>
   );
 }

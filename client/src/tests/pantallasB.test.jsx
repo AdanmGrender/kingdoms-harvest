@@ -298,3 +298,84 @@ describe('pantallasB T6 — HeroPanel', () => {
     expect(screen.getByRole('button', { name: 'Invocar primero' })).toHaveClass('kh-btn');
   });
 });
+
+// ── T7 — Mapas Sistema y Galaxia (R25, R31–R36) ──────────────────────────────
+import SystemMapPanel from '../components/overlay/SystemMapPanel';
+import GalaxyMapPanel from '../components/overlay/GalaxyMapPanel';
+
+const allStates = [
+  { id: 'a', name: 'Alfa Uno', state: 'claimed', desc: 'd', tribute: { gold: 1 }, cost: {}, travelMin: 5, warpMin: 600 },
+  { id: 'b', name: 'Beta Dos', state: 'available', desc: 'd', tribute: { gold: 1 }, cost: { gold: 10 }, travelMin: 5, warpMin: 600 },
+  { id: 'c', name: 'Gama Tres', state: 'traveling', desc: 'd', tribute: {}, cost: {}, travelMin: 5, warpMin: 600 },
+  { id: 'd', name: 'Delta Cuatro', state: 'locked', desc: 'd', tribute: {}, cost: {}, travelMin: 5, warpMin: 600 },
+];
+
+describe('pantallasB T7 — mapas', () => {
+  it('SystemMapPanel: Panel con tope --kh-frame-h, fondo oak plano, filete macula aria-hidden', () => {
+    const setOverlay = vi.fn();
+    useGameStore.setState({
+      systemMap: { unlocked: true, planets: allStates, ship: { status: 'idle' } },
+      loadSystem: vi.fn(), launchShip: vi.fn(), setOverlay,
+    });
+    const { container } = render(<SystemMapPanel onClose={() => {}} />);
+    const panel = container.querySelector('.kh-panel');
+    expect(panel.style.maxHeight).toContain('var(--kh-frame-h)');
+    expect(panel.style.backgroundColor).not.toBe('');
+    expect(panel.style.backgroundImage).toBe('');
+    const rule = container.querySelector('[aria-hidden="true"][style*="background-color"]');
+    expect(rule).not.toBeNull();
+    expect(container.innerHTML).not.toMatch(/cyan|purple|gray-|\u2715|\u2713/);
+    expect(container.innerHTML).not.toMatch(/\d+vh/);
+  });
+
+  it('SystemMapPanel: los 4 estados llevan etiqueta de texto en el detalle', () => {
+    useGameStore.setState({
+      systemMap: { unlocked: true, planets: allStates, ship: { status: 'idle' } },
+      loadSystem: vi.fn(), launchShip: vi.fn(), setOverlay: vi.fn(),
+    });
+    render(<SystemMapPanel onClose={() => {}} />);
+    const expected = { 'Alfa Uno': 'Controlado', 'Beta Dos': 'Disponible', 'Gama Tres': 'En tránsito' };
+    for (const [name, tag] of Object.entries(expected)) {
+      fireEvent.click(screen.getAllByRole('button').find((b) => b.textContent.includes(name.split(' ')[0])));
+      expect(screen.getAllByText(tag).length).toBeGreaterThan(0);
+    }
+    expect(screen.getByRole('button', { name: /Enviar la Nave|Beta/ })).toBeTruthy();
+  });
+
+  it('SystemMapPanel: todos reclamados muestra Reinos Caídos y cambia de mapa', () => {
+    const setOverlay = vi.fn();
+    useGameStore.setState({
+      systemMap: { unlocked: true, planets: [{ ...allStates[0] }], ship: { status: 'idle' } },
+      loadSystem: vi.fn(), launchShip: vi.fn(), setOverlay,
+    });
+    render(<SystemMapPanel onClose={() => {}} />);
+    const btn = screen.getAllByRole('button', { name: 'Reinos Caídos' })[0];
+    expect(btn).toHaveClass('kh-btn');
+    fireEvent.click(btn);
+    expect(setOverlay).toHaveBeenCalledWith('galaxy', {});
+  });
+
+  it('GalaxyMapPanel: etiquetas Dominado/Alcanzable/En los Caminos Velados y botón Sistema', () => {
+    const setOverlay = vi.fn();
+    useGameStore.setState({
+      galaxyMap: { unlocked: true, systems: allStates, warp: { status: 'idle' } },
+      loadGalaxy: vi.fn(), launchWarp: vi.fn(), setOverlay,
+    });
+    const { container } = render(<GalaxyMapPanel onClose={() => {}} />);
+    expect(container.querySelector('.kh-panel').style.maxHeight).toContain('var(--kh-frame-h)');
+    expect(container.innerHTML).not.toMatch(/purple|cyan|gray-|\u2715|\u2713/);
+    const expected = { Alfa: 'Dominado', Beta: 'Alcanzable', Gama: 'En los Caminos Velados' };
+    for (const [name, tag] of Object.entries(expected)) {
+      fireEvent.click(screen.getAllByRole('button').find((b) => b.textContent.includes(name)));
+      expect(screen.getAllByText(tag).length).toBeGreaterThan(0);
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'Sistema' }));
+    expect(setOverlay).toHaveBeenCalledWith('system', {});
+  });
+
+  it('GalaxyMapPanel: estado bloqueado y mapa sin cargar en bone-dim', () => {
+    useGameStore.setState({ galaxyMap: null, loadGalaxy: vi.fn(), launchWarp: vi.fn(), setOverlay: vi.fn() });
+    render(<GalaxyMapPanel onClose={() => {}} />);
+    expect(screen.getByText(/Trazando los Caminos Velados/).className).toContain('text-kh-bone-dim');
+  });
+});
