@@ -66,3 +66,17 @@ describe('clases heredadas con su nombre (R30)', () => {
     expect(rule('.game-card').join('')).toMatch(/kh-oak|#2a2119/);
   });
 });
+
+describe('pestañas .kh-tab (pantallas_b R44)', () => {
+  it('.kh-tab y .kh-tab--active existen con min-height 44px y tokens kh', () => {
+    const tab = rule('.kh-tab').find((r) => /^\s*\.kh-tab\s*\{/.test(r));
+    const active = rule('.kh-tab--active').join('');
+    expect(tab).toMatch(/min-height:\s*44px/);
+    expect(tab).toMatch(/#2a2119/i); // oak
+    expect(tab).toMatch(/#4a4a48/i); // iron
+    expect(tab).toMatch(/#a89c84/i); // bone-dim
+    expect(active).toMatch(/#3d3024/i); // oak-light
+    expect(active).toMatch(/#d9b77a/i); // brass-light
+    expect(active).toMatch(/#e6dcc3/i); // bone
+  });
+});

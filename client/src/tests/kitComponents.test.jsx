@@ -172,3 +172,72 @@ describe('PortraitRing (R28)', () => {
     expect(container.querySelector('[data-ring]').style.backgroundImage).toContain('portrait_ring.webp');
   });
 });
+
+// ── pantallas_b T2: Toggle (R37) y ResultBanner (R15, R16) ───────────────────
+import Toggle from '../components/ui/Toggle';
+import ResultBanner from '../components/ui/ResultBanner';
+import { KH } from '../components/ui/kitPieces';
+import { contrast } from './helpers/contrast';
+
+describe('Toggle (pantallas_b R37)', () => {
+  it('role=switch con aria-checked y colores por estado', () => {
+    const { container, rerender } = render(<Toggle on label="Audio" onChange={() => {}} />);
+    const sw = screen.getByRole('switch', { name: 'Audio' });
+    expect(sw).toHaveAttribute('aria-checked', 'true');
+    expect(container.querySelector('[data-toggle-track]').style.backgroundColor).toBe('rgb(217, 183, 122)'); // brass-light
+    expect(container.querySelector('[data-toggle-knob]').style.backgroundColor).toBe('rgb(230, 220, 195)'); // bone
+    rerender(<Toggle on={false} label="Audio" onChange={() => {}} />);
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
+    expect(container.querySelector('[data-toggle-track]').style.backgroundColor).toBe('rgb(74, 74, 72)'); // iron
+  });
+
+  it('área táctil 44×44, onChange y disabled', () => {
+    const fn = vi.fn();
+    const { rerender } = render(<Toggle on onChange={fn} />);
+    const sw = screen.getByRole('switch');
+    expect(px(sw.style.minWidth)).toBeGreaterThanOrEqual(44);
+    expect(px(sw.style.minHeight)).toBeGreaterThanOrEqual(44);
+    fireEvent.click(sw);
+    expect(fn).toHaveBeenCalledTimes(1);
+    rerender(<Toggle on disabled onChange={fn} />);
+    expect(screen.getByRole('switch')).toBeDisabled();
+  });
+
+  it('contraste pista encendida/apagada ≥ 3:1 (4.65)', () => {
+    const c = contrast(KH['brass-light'], KH.iron);
+    expect(c).toBeGreaterThanOrEqual(3);
+    expect(c).toBeCloseTo(4.65, 1);
+  });
+});
+
+describe('ResultBanner (pantallas_b R15, R16)', () => {
+  it.each([['victory', '¡Victoria!'], ['defeat', 'Derrota']])('outcome %s', (outcome, title) => {
+    const onClose = vi.fn();
+    const { container } = render(
+      <ResultBanner outcome={outcome} title={title} onClose={onClose}><p>Botín: 3 hierro</p></ResultBanner>,
+    );
+    const status = screen.getByRole('status');
+    expect(status).toHaveAttribute('data-outcome', outcome);
+    expect(status).toHaveAttribute('data-variant', 'parchment');
+    expect(screen.getByText(title)).toBeInTheDocument();
+    expect(screen.getByText('Botín: 3 hierro')).toBeInTheDocument();
+    expect(screen.getAllByRole('button')).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button'));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('[data-banner-band]')).not.toBeNull();
+  });
+
+  it('derrota: franja seal con texto bone; victoria: filete brass-light', () => {
+    const { container, rerender } = render(<ResultBanner outcome="defeat" title="Derrota" onClose={() => {}} />);
+    const band = () => container.querySelector('[data-banner-band]');
+    expect(band().style.backgroundColor).toBe('rgb(122, 31, 26)');
+    expect(band().style.color).toBe('rgb(230, 220, 195)');
+    rerender(<ResultBanner outcome="victory" title="¡Victoria!" onClose={() => {}} />);
+    expect(band().style.borderTop).toContain('rgb(217, 183, 122)');
+  });
+
+  it('outcome desconocido se trata como derrota', () => {
+    render(<ResultBanner outcome="x" title="?" onClose={() => {}} />);
+    expect(screen.getByRole('status')).toHaveAttribute('data-outcome', 'defeat');
+  });
+});

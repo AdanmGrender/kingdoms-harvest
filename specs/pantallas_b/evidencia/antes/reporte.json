@@ -1,0 +1,348 @@
+{
+  "url": "http://localhost:5173",
+  "fecha": "2026-10-30-14-16",
+  "dispositivos": {
+    "galaxy-a-360x740": {
+      "w": 360,
+      "h": 740,
+      "dpr": 3,
+      "pantallas": {
+        "menu": {
+          "file": "galaxy-a-360x740__menu.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "heroes": {
+          "file": "galaxy-a-360x740__heroes.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "operations": {
+          "file": "galaxy-a-360x740__operations.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "missions": {
+          "file": "galaxy-a-360x740__missions.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "tech": {
+          "file": "galaxy-a-360x740__tech.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "settings": {
+          "file": "galaxy-a-360x740__settings.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "system": {
+          "file": "galaxy-a-360x740__system.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "galaxy": {
+          "file": "galaxy-a-360x740__galaxy.png",
+          "vw": 360,
+          "vh": 740,
+          "canvases": [
+            [
+              1080,
+              2220,
+              0
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        }
+      },
+      "errores": []
+    },
+    "android-360x800": {
+      "w": 360,
+      "h": 800,
+      "dpr": 3,
+      "pantallas": {
+        "menu": {
+          "file": "android-360x800__menu.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "heroes": {
+          "file": "android-360x800__heroes.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "operations": {
+          "file": "android-360x800__operations.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "missions": {
+          "file": "android-360x800__missions.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "tech": {
+          "file": "android-360x800__tech.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "settings": {
+          "file": "android-360x800__settings.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "system": {
+          "file": "android-360x800__system.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "galaxy": {
+          "file": "android-360x800__galaxy.png",
+          "vw": 360,
+          "vh": 800,
+          "canvases": [
+            [
+              1080,
+              2268,
+              22
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        }
+      },
+      "errores": []
+    },
+    "pixel7-412x915": {
+      "w": 412,
+      "h": 915,
+      "dpr": 2.625,
+      "pantallas": {
+        "menu": {
+          "file": "pixel7-412x915__menu.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "heroes": {
+          "file": "pixel7-412x915__heroes.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "operations": {
+          "file": "pixel7-412x915__operations.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "missions": {
+          "file": "pixel7-412x915__missions.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "tech": {
+          "file": "pixel7-412x915__tech.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "settings": {
+          "file": "pixel7-412x915__settings.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "system": {
+          "file": "pixel7-412x915__system.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        },
+        "galaxy": {
+          "file": "pixel7-412x915__galaxy.png",
+          "vw": 412,
+          "vh": 915,
+          "canvases": [
+            [
+              1082,
+              2271,
+              25
+            ]
+          ],
+          "fuera": [],
+          "nFuera": 0
+        }
+      },
+      "errores": []
+    }
+  }
+}

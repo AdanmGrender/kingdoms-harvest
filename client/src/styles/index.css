@@ -274,6 +274,25 @@ body {
   pointer-events: none;
 }
 
+/* Pestañas del kit (pantallas_b R44): inactiva oak + borde iron + bone-dim (5.83:1);
+   activa oak-light + borde brass-light + bone. El texto puede partirse en 2 líneas. */
+.kh-tab {
+  min-height: 44px;
+  padding: 4px 10px;
+  font-size: 13px;
+  line-height: 1.2;
+  text-align: center;
+  background-color: #2a2119;
+  border: 2px solid #4a4a48;
+  color: #a89c84;
+  cursor: pointer;
+}
+.kh-tab--active {
+  background-color: #3d3024;
+  border-color: #d9b77a;
+  color: #e6dcc3;
+}
+
 /* Panel del kit: la masa y el 9-slice van inline (Panel.jsx); aquí solo el box model */
 .kh-panel {
   position: relative;
