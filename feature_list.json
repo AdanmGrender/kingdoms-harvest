@@ -209,8 +209,8 @@
         "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
       ],
       "sdd": true,
-      "status": "pending",
-      "assignee": null
+      "status": "spec_ready",
+      "assignee": "spec-author"
     },
     {
       "id": 15,
