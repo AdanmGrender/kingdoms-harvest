@@ -142,8 +142,8 @@
         "Todas las pantallas principales con el contrato visual B"
       ],
       "sdd": true,
-      "status": "pending",
-      "assignee": null
+      "status": "in_progress",
+      "assignee": "spec-author"
     },
     {
       "id": 10,
