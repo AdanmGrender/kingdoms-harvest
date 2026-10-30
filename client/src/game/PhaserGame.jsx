@@ -15,6 +15,10 @@ function measure(container) {
   return { w, h };
 }
 
+function removeStrayCanvases(container) {
+  container?.querySelectorAll('canvas').forEach((c) => c.remove());
+}
+
 export default function PhaserGame({ entry = 'preview' }) {
   const gameRef = useRef(null);
 
@@ -62,6 +66,9 @@ export default function PhaserGame({ entry = 'preview' }) {
     });
     const hub = settings.entry === 'hub';
 
+    // Guard (R27): un solo <canvas> en el contenedor aunque quede uno huérfano (StrictMode/HMR).
+    removeStrayCanvases(container);
+
     const game = new Phaser.Game({
       ...buildGameConfig(settings),
       parent: 'phaser-container',
@@ -106,9 +113,25 @@ export default function PhaserGame({ entry = 'preview' }) {
     // Also handle orientation change for mobile
     window.addEventListener('orientationchange', handleOrientation);
 
+    // El contenedor puede cambiar de alto sin 'resize' de window (p. ej. --kh-app-h por
+    // Telegram viewportChanged): se reajusta con la misma handleResize (R6).
+    let resizeObserver = null;
+    if (container && typeof ResizeObserver !== 'undefined') {
+      let lastW = container.clientWidth;
+      let lastH = container.clientHeight;
+      resizeObserver = new ResizeObserver(() => {
+        if (container.clientWidth === lastW && container.clientHeight === lastH) return;
+        lastW = container.clientWidth;
+        lastH = container.clientHeight;
+        handleResize();
+      });
+      resizeObserver.observe(container);
+    }
+
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleOrientation);
+      if (resizeObserver) resizeObserver.disconnect();
       clearTimeout(orientationTimer);
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
@@ -116,6 +139,7 @@ export default function PhaserGame({ entry = 'preview' }) {
         gameRef.current.destroy(true);
         gameRef.current = null;
       }
+      removeStrayCanvases(container);
     };
   }, []);
 

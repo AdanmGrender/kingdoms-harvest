@@ -28,3 +28,4 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 - Arreglar test preexistente GameHUD Lv5 (`fix_test_gamehud_lv5`)
 - Encuadre y alineación de los botones del hub (`fix_botones_hub`)
 - HUD y paneles encimados o cortados (`fix_superposiciones_ui`)
+- Adaptación de pantalla móvil: corrección de viewport meta, AppFrame, ResizeObserver en Phaser y safe areas (`fix_pantalla_movil`)

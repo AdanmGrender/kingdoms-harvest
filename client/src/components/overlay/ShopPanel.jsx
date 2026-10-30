@@ -57,14 +57,14 @@ export default function ShopPanel({ onClose }) {
     : null;
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-40 rounded-t-2xl overflow-hidden"
+    <div className="absolute inset-x-0 bottom-0 z-40 rounded-t-2xl overflow-hidden flex flex-col"
       style={{
         background: 'linear-gradient(180deg, #332f2b 0%, #1a1712 100%)',
         border: '1px solid rgba(255,255,255,0.10)',
-        maxHeight: '78vh',
+        maxHeight: 'calc(var(--kh-frame-h) * 0.78)', // 78 % del marco (el padre inmediato mide 0: un % no sirve)
       }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3"
+      <div className="flex items-center justify-between px-4 py-3 shrink-0"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-2">
           <SpriteIcon name="gem" size={28} />
@@ -84,7 +84,7 @@ export default function ShopPanel({ onClose }) {
         </div>
       </div>
 
-      <div className="overflow-y-auto px-4 py-3" style={{ maxHeight: 'calc(78vh - 56px)' }}>
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3" style={{ paddingBottom: 'calc(0.75rem + var(--kh-safe-bottom))' }}>
         {/* Packs */}
         <div className="flex flex-col gap-2">
           {catalog.map((pack) => {

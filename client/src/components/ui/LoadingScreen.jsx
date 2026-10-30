@@ -3,7 +3,7 @@ import SpriteIcon from './SpriteIcon';
 
 function LoadingScreen() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-kingdom-bg">
+    <div className="flex flex-col items-center justify-center h-full bg-kingdom-bg">
       <div className="mb-4 animate-pulse">
         <SpriteIcon name="castle_flag" size={72} />
       </div>

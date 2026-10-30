@@ -364,6 +364,23 @@
       "sdd": false,
       "status": "done",
       "assignee": "implementer"
+    },
+    {
+      "id": 24,
+      "name": "fix_pantalla_movil",
+      "title": "La app entra completa en el celular real",
+      "description": "Alto visible real (dvh/viewportStableHeight), safe-area con viewport-fit=cover, tope de proporción 2.1 con bandas, desborde de la tienda a 360x740 y verificación de canvas único. Hallazgos P1-P5 de la línea base 2026-10-28. Sin arte nuevo.",
+      "acceptance": [
+        "Fila inferior del hub (Héroes/Bastión/Mundo) visible completa en Chrome Android con barras del navegador y en Telegram WebApp (alto visible real: dvh con fallback + viewportStableHeight)",
+        "viewport-fit=cover y safe-area-inset aplicados: barra superior, riel, botonera y Operaciones fuera del notch y de la barra de gestos",
+        "Tope de proporción 2.1 (tipo Last Asylum): más alto → marco centrado con bandas kh-ink; ≤ 2.1 sin cambios visibles",
+        "ShopPanel a 360x740: borde inferior del panel y del scroller dentro de la pantalla, último bloque alcanzable",
+        "Un solo canvas Phaser (dev, build de producción y tras desmontar)",
+        "Capturas Playwright antes/después en 5 celulares con 0 elementos fuera de pantalla (hub y shop) + captura del emulador Android con la fila inferior completa; vitest completo verde y build OK; aditivo (R-ND1..ND10)"
+      ],
+      "sdd": true,
+      "status": "done",
+      "assignee": "implementer"
     }
   ]
 }

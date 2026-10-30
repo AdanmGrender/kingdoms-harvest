@@ -78,7 +78,7 @@ export default function TopResourceBar() {
   if (!player) return null;
 
   return (
-    <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none px-2 pt-2">
+    <div className="absolute top-0 left-0 right-0 z-30 pointer-events-none px-2" style={{ paddingTop: 'calc(0.5rem + var(--kh-safe-top))' }}>
       <Panel className="pointer-events-auto" style={COMPACT}>
         {/* Fila 1 */}
         <div className="flex items-center gap-1.5">
