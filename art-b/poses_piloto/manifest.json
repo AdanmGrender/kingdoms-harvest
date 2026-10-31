@@ -14,5 +14,13 @@
     "out": "art-b/poses_piloto/raw/bruto_poses.png",
     "refs": ["art-b/poses_piloto/refs/bruto_ref.png"],
     "prompt": "A creature pose sheet. The attached image shows the same hulking creature twice (idle on the left, knocked back on the right): keep its design IDENTICAL: goat-headed beastman, huge curled ram horns, grey diseased skin with sickly yellow-green pustules, chains, rusted spiked pauldron and bracer, skull loincloth, rusted butcher's cleaver. Draw that SAME beastman TWICE in one horizontal row, each full body fully visible, same size, same ink style, with a wide clear empty gap between them so nothing touches or overlaps, all on ONE perfectly flat uniform light grey (#d0d0d0) background with no ground line, no floor, no cast shadow, no labels, no text. Pose 1 ATTACK: a brutal overhead chop, the rusted butcher's cleaver raised high behind the horned head and starting to slam down to the left, torso twisted, mouth open bleating and roaring, one heavy step forward, facing LEFT. Pose 2 KO: defeated, collapsing, falling onto its back with knees buckling, the cleaver dropping limp to the ground, horned head lolling, no blood, no gore, facing LEFT"
+  },
+  {
+    "id": "bruto_ko_r3",
+    "kind": "sheet",
+    "aspect": "16:9",
+    "out": "art-b/poses_piloto/raw/bruto_ko_r3.png",
+    "refs": ["art-b/poses_piloto/refs/bruto_idle_ref.png"],
+    "prompt": "A creature pose illustration with exactly ONE creature in the whole picture. The attached image shows the same hulking creature standing idle: use it ONLY for its design, do NOT copy its standing pose, and do NOT draw it twice. Keep its design IDENTICAL: goat-headed beastman, huge curled ram horns, grey diseased skin with sickly yellow-green pustules, chains, rusted spiked pauldron and bracer, skull loincloth, rusted butcher's cleaver. Draw that SAME beastman ONCE only (a single figure, no second creature, no copy, no mirrored duplicate), alone, centered, full body fully visible, same ink style and same body scale as the reference, on ONE perfectly flat uniform light grey (#d0d0d0) background with no ground line, no floor, no cast shadow, no labels, no text. Bruto KO pose: the same goat-man collapsing, dropped to both knees or slumped forward onto one hand, head hanging low with the ram horns tilted toward the ground, the cleaver fallen from his open hand and lying on the ground beside him, silhouette clearly lower and wider than the standing idle; eyes rolled back, mouth slack with only clear or greenish drool; no blood, no red liquid, no wounds, no gore. Facing LEFT"
   }
 ]

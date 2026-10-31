@@ -3,3 +3,5 @@
 {"item":"warrior_poses","via":"web","ok":false,"why":"timeout (120s) esperando la imagen generada","ts":"2026-10-31T19:57:49.581Z"}
 {"item":"warrior_poses","via":"web","ok":true,"aspect":"16:9","ref":"art-b/poses_piloto/refs/warrior_ref.png","w":1376,"h":768,"bytes":1346339,"ms":31320,"ts":"2026-10-31T19:58:33.259Z"}
 {"item":"bruto_poses","via":"web","ok":true,"aspect":"16:9","ref":"art-b/poses_piloto/refs/bruto_ref.png","w":1376,"h":768,"bytes":1673697,"ms":32724,"ts":"2026-10-31T19:59:12.419Z"}
+{"item":"bruto_ko_r3","via":"web","ok":true,"aspect":"16:9","ref":"art-b/poses_piloto/refs/bruto_ref.png","w":1376,"h":768,"bytes":1634398,"ms":24770,"ts":"2026-10-31T20:25:33.563Z"}
+{"item":"bruto_ko_r3","via":"web","ok":true,"aspect":"16:9","ref":"art-b/poses_piloto/refs/bruto_idle_ref.png","w":1376,"h":768,"bytes":1303322,"ms":25035,"ts":"2026-10-31T20:26:56.659Z"}

@@ -69,3 +69,11 @@ fluidez en el combate B **sin animación cuadro a cuadro**. Decide el owner si s
 - Regla para r3 (literal): "bruto KO pose: the same goat-man collapsing, dropped to both knees or slumped forward onto one hand, head hanging low with the ram horns tilted toward the ground, the cleaver fallen from his open hand and lying on the ground beside him, silhouette clearly lower and wider than the standing idle; eyes rolled back, mouth slack with only clear or greenish drool; no blood, no red liquid, no wounds, no gore."
 - Video: el warrior se lee por silueta; el bruto KO no se distingue del idle.
 - Se commitean las 5 aprobadas + `warrior_poses.png` crudo + `bruto_poses.png` (r2, fuente de `bruto_attack`). `bruto_ko.webp` (r2) NO se commitea; r3 en curso. Generaciones usadas hasta aquí: 4 de 8; tope r3: 2.
+
+## r3 — regeneración de bruto_ko (en espera de veredicto p-kh)
+- 5 aprobadas commiteadas en 30443f0. `bruto_ko.webp` (r2, con sangre) reemplazado por r3 y **sin commitear**.
+- Manifest: entrada `bruto_ko_r3` (una sola figura, regla literal del veredicto + diseño v2 del bruto). Refs solo v2.
+- **Generaciones: 6 de 8** (quedan 2). Intento 1 (ref idle+hit): la web dibujó **dos** brutos → descartado (`raw/bruto_ko_r3_intento1_dos_figuras.png`). Intento 2 (ref solo `bruto_idle` v2, `refs/bruto_idle_ref.png`, prompt "ONCE only"): una figura → `raw/bruto_ko_r3.png`.
+- Escala: la web dibuja el KO ocupando todo el cuadro (área opaca 1,55× la del idle ⇒ cuerpo ≈1,24× más grande). Se procesó con `--scale 0.72` (área ≈ 200k px ≈ idle 216k; 744×553 vs idle 620×720, ~77 % de alto y 1,2× de ancho) para que quede más bajo y más ancho que el idle al mismo tamaño de cuerpo. **Dudoso**: criterio por área, no por cabeza; si p-kh lo ve chico/grande se reprocesa sin gastar generación.
+- Verificación: esquinas alfa 0 y borde 100 % transparente; 2 componentes (cuerpo 192k + cuchilla caída en el suelo 11,8k, a propósito); sin tira de piso (las últimas filas se afinan 187→0 px); rojizos 0,48 % (idle 1,35 %), repartidos por la hombrera/hatching como el idle, sin manchas en boca/cuello por el mapa de color. **No pude mirar la imagen con visión**: revisión por geometría.
+- Evidencia: `contact_poses.webp` (idle | attack | hit | ko r3 + crudo r3; `art-b/poses_piloto/contact.js`) y `despues.webm` regrabado (13,5 s, 58 fps, 0 errores).

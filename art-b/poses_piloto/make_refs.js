@@ -21,4 +21,5 @@ async function sheet(files, out) {
 (async () => {
   await sheet(['heroes/warrior_idle.webp', 'heroes/warrior_attack.webp'], 'warrior_ref.png');
   await sheet(['enemies/bruto_idle.webp', 'enemies/bruto_hit.webp'], 'bruto_ref.png');
+  await sheet(['enemies/bruto_idle.webp'], 'bruto_idle_ref.png'); // r3: una sola figura (con dos la web dibujó dos KO)
 })();
