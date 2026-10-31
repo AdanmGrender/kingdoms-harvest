@@ -1,0 +1,130 @@
+{
+  "motor": "v2",
+  "calidad": "low",
+  "viewport": {
+    "w": 412,
+    "h": 860,
+    "dpr": 2
+  },
+  "entrada": {
+    "kind": "combat",
+    "engine": 2,
+    "nEnemies": 1
+  },
+  "resultado": "victoria",
+  "duracionS": 10.1,
+  "rondas": [
+    {
+      "ronda": 1,
+      "hpEnemigos": [
+        340
+      ]
+    },
+    {
+      "ronda": 2,
+      "hpEnemigos": [
+        280
+      ]
+    },
+    {
+      "ronda": 3,
+      "hpEnemigos": [
+        220
+      ]
+    },
+    {
+      "ronda": 4,
+      "hpEnemigos": [
+        160
+      ]
+    },
+    {
+      "ronda": 5,
+      "hpEnemigos": [
+        100
+      ]
+    },
+    {
+      "ronda": 6,
+      "hpEnemigos": [
+        40
+      ]
+    },
+    {
+      "ronda": 7,
+      "hpEnemigos": [
+        -20
+      ]
+    }
+  ],
+  "errores": [
+    "warning: [Telegram.WebApp] Header color is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Background color is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Closing confirmation is not supported in version 6.0"
+  ],
+  "medidasInicio": {
+    "vw": 412,
+    "vh": 860,
+    "nBotones": 8,
+    "botonesBajo44": [],
+    "barrasEnemigo": 1,
+    "cajaBarras": {
+      "x": 16,
+      "y": 68,
+      "w": 380,
+      "h": 33,
+      "r": 396,
+      "b": 101
+    },
+    "cajaAvanzar": {
+      "x": 16,
+      "y": 700,
+      "w": 380,
+      "h": 48,
+      "r": 396,
+      "b": 748
+    },
+    "barrasTapanAvanzar": false,
+    "barrasTapanHeroes": false,
+    "canvases": [
+      [
+        824,
+        1720
+      ],
+      [
+        824,
+        1720
+      ]
+    ]
+  },
+  "medidasFin": {
+    "vw": 412,
+    "vh": 860,
+    "nBotones": 8,
+    "botonesBajo44": [],
+    "barrasEnemigo": 1,
+    "cajaBarras": {
+      "x": 16,
+      "y": 68,
+      "w": 380,
+      "h": 33,
+      "r": 396,
+      "b": 101
+    },
+    "cajaAvanzar": null,
+    "barrasTapanAvanzar": false,
+    "barrasTapanHeroes": false,
+    "canvases": [
+      [
+        824,
+        1720
+      ],
+      [
+        824,
+        1720
+      ]
+    ]
+  },
+  "erroresVeilSintetico": []
+}

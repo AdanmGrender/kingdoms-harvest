@@ -1,0 +1,14 @@
+{
+  "dispositivo": "escritorio · Chromium headless (Playwright) · viewport 412x860 @2x",
+  "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "calidad": "medium",
+  "motor": "v1",
+  "metodo": "frames de requestAnimationFrame por ventana de 500 ms (×2), solo durante el combate; Phaser avanza por rAF (equivale a game.loop.actualFps)",
+  "n": 16,
+  "avg": 60,
+  "p5": 60,
+  "min": 60,
+  "cumple": {
+    "medioAvg50": null
+  }
+}
