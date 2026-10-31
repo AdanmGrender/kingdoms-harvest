@@ -10,3 +10,9 @@
 - APROBADOS (15): `rogue_idle`, `rogue_attack`, `carroneros_idle/hit`, `aullador_idle/hit`, `coloso_idle/hit`, `boss_devorador_idle/hit`, `boss_heraldo_idle/hit`, `sin_rostro_idle/hit` (los 4 brazos son el diseño), `voz_del_velo_idle`. Orientación frontal de coloso y voz_del_velo aceptada como excepción.
 - `boss_devorador_hit`: NO regenerar; reprocesado con `--height 720 --margin 8 --quality 77` (8 px transparentes arriba; 687x720, 96 KB; filas 0-11 con alfa 0).
 - `voz_del_velo_hit`: REGENERAR (1 generación, `--ref` su idle). Regla literal copiada al manifest: «whole figure tilted 25-30 degrees backwards and turned three-quarter to the LEFT, silhouette clearly different from the reference: veil ripped wide open to one side, two hands thrown up above the head, bell swinging far to the right, candles blown sideways, lower robe flaring out to the right; keep design and colours identical; nothing on the ground; do not repeat the reference pose».
+
+## P3 — voz_del_velo_hit r2 + 5 fondos (T10) · veredicto de p-kh (vía Central, t_2b6ae119)
+- TODO APROBADO (6 de 6, 0 regeneraciones). Generaciones web usadas ≈23-24 de 40.
+- `enemies/voz_del_velo_hit`: APROBADO (no cumple la regla literal, pero la silueta cambia por completo y el barrido va a la derecha, lejos de los héroes).
+- `bg/combat_moor`, `combat_cathedral`, `combat_ashfield` (reintento limpio), `combat_veil_marsh`, `combat_veil_gate`: APROBADOS.
+- Nota a cumplir: en la captura del juego (Etapa C, T12) verificar que el portal de `combat_veil_gate` no tape los efectos verdes; si los tapa, oscurecer el fondo por código, sin regenerar.

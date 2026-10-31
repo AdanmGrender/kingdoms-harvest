@@ -223,6 +223,51 @@
     "refs": [
       "client/public/assets/b/enemies/voz_del_velo_idle.webp"
     ],
-    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature, nothing on the ground under it. New pose clearly different: the apparition recoiling from a heavy blow, veil torn open and flaring, ring of mouths gaping in a scream, bell swinging, candles guttering, body leaning far backwards, hands splayed, three-quarter view facing LEFT"
+    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature. whole figure tilted 25-30 degrees backwards and turned three-quarter to the LEFT, silhouette clearly different from the reference: veil ripped wide open to one side, two hands thrown up above the head, bell swinging far to the right, candles blown sideways, lower robe flaring out to the right; keep design and colours identical; nothing on the ground; do not repeat the reference pose"
+  },
+  {
+    "id": "bg_combat_moor",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": [
+      "art-b/gr/refs/bg_combat.webp"
+    ],
+    "prompt": "vertical portrait combat backdrop for a mobile game: a fog-choked blighted moor at night, dead twisted trees, leaning standing stones, a half-sunken cart, a crow-covered mass grave mound with a few planted spears and tattered banners, thin sickly-green mist rolling over black puddles, a pale moon behind torn clouds, a wide open flat ground filling the lower half of the image as an empty stage, middle kept uncluttered, darker vignette at the edges, no people, no creatures, no text. Same ink-engraving grimdark Renaissance style, palette and mood as the reference"
+  },
+  {
+    "id": "bg_combat_cathedral",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": [
+      "art-b/gr/refs/bg_combat.webp"
+    ],
+    "prompt": "vertical portrait combat backdrop for a mobile game: the collapsed nave of a ruined Renaissance cathedral, broken pointed arches and fallen columns, a rotten altar swollen with fungus and candles guttering on iron stands, shattered stained glass leaking a sickly green light, hanging chains and rib-like roof beams, scattered bones and pews, a wide open flat ground filling the lower half of the image as an empty stage, middle kept uncluttered, darker vignette at the edges, no people, no creatures, no text. Same ink-engraving grimdark Renaissance style, palette and mood as the reference"
+  },
+  {
+    "id": "bg_combat_ashfield",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": [
+      "art-b/gr/refs/bg_combat.webp"
+    ],
+    "prompt": "vertical portrait combat backdrop for a mobile game: an endless ash-grey plain after a burning, the charred skeleton of a timbered village on the horizon, smouldering embers drifting in the air, cracked dry earth, scorched wagon wheels and a toppled bell, a dim red-orange glow under heavy smoke clouds, a wide open flat ground filling the lower half of the image as an empty stage, middle kept uncluttered, darker vignette at the edges, no people, no creatures, no text. Same ink-engraving grimdark Renaissance style, palette and mood as the reference"
+  },
+  {
+    "id": "bg_combat_veil_marsh",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": [
+      "art-b/gr/refs/bg_combat.webp"
+    ],
+    "prompt": "vertical portrait combat backdrop for a mobile game: a shallow cold marsh at the edge of the torn Veil, still black water reflecting a pale violet-green tear in the sky like a rent in cloth, drowned lanterns and rotting jetties, reeds, thick low mist, rippling rings in the water, a wide open flat ground filling the lower half of the image as an empty stage, middle kept uncluttered, darker vignette at the edges, no people, no creatures, no text. Same ink-engraving grimdark Renaissance style, palette and mood as the reference"
+  },
+  {
+    "id": "bg_combat_veil_gate",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": [
+      "art-b/gr/refs/bg_combat.webp"
+    ],
+    "prompt": "vertical portrait combat backdrop for a mobile game: the shattered threshold of an ancient stone gate city, a huge broken arch half-collapsed in the background with a glowing violet-green rent of the Veil hanging inside it like a torn curtain, cracked flagstones, extinguished braziers and fallen statues, banners in rags, a wide open flat ground filling the lower half of the image as an empty stage, middle kept uncluttered, darker vignette at the edges, no people, no creatures, no text. Same ink-engraving grimdark Renaissance style, palette and mood as the reference"
   }
 ]

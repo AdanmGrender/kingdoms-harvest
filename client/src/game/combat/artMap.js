@@ -15,13 +15,27 @@ export const HERO_ART = {
   warrior: ['idle', 'attack'],
   mage: ['idle', 'attack'],
   ranger: ['idle', 'attack'],
+  paladin: ['idle', 'attack'],
+  rogue: ['idle', 'attack'],
 };
 export const ENEMY_ART = {
   bruto: ['idle', 'hit'],
+  carroneros: ['idle', 'hit'],
+  aullador: ['idle', 'hit'],
+  coloso: ['idle', 'hit'],
+  boss_devorador: ['idle', 'hit'],
+  boss_heraldo: ['idle', 'hit'],
+  sin_rostro: ['idle', 'hit'],
+  voz_del_velo: ['idle', 'hit'],
 };
 // Fondos: clave → archivo (sin extensión).
 export const BG_ART = {
   crypt: 'combat_crypt',
+  moor: 'combat_moor',
+  cathedral: 'combat_cathedral',
+  ashfield: 'combat_ashfield',
+  veil_marsh: 'combat_veil_marsh',
+  veil_gate: 'combat_veil_gate',
 };
 
 // Intención por heroId (vacío en S0; S2 = un arte por héroe).
@@ -30,10 +44,18 @@ export const HERO_BY_ID = {};
 export const HERO_BY_CLASS = { warrior: 'warrior', mage: 'mage', ranger: 'ranger', paladin: 'paladin', rogue: 'rogue' };
 
 // Intención de enemigo por nodo y por tipo (nombres de la lista de design §11).
-export const ENEMY_BY_NODE = { a1n5: 'boss_heraldo', a1n9: 'boss_devorador', a2n5: 'coloso', a2n10: 'boss_heraldo' };
-export const ENEMY_BY_TYPE = { combat: 'bruto', wave: 'coloso', boss: 'boss_devorador' };
-// Intención de fondo por tipo de nodo.
+// Mapeo Q4 (design §175) + los dos de acto 2 de §11 (a2n7 «Los Sin Rostro», a2n10 «La Voz del Velo»); el resto cae a `bruto`.
+export const ENEMY_BY_NODE = {
+  a1n3: 'bruto', a1n7: 'carroneros', a1n4: 'aullador', a1n8: 'aullador',
+  a1n5: 'boss_heraldo', a1n9: 'boss_devorador', a2n5: 'coloso', a2n7: 'sin_rostro', a2n10: 'voz_del_velo',
+};
+export const ENEMY_BY_TYPE = { combat: 'bruto', wave: 'bruto', boss: 'boss_devorador' };
+// Intención de fondo por tipo de nodo (defecto) y por acto+tipo (`<acto>:<tipo>`).
 export const BG_BY_TYPE = { combat: 'crypt', wave: 'crypt', boss: 'crypt' };
+export const BG_BY_ACT_TYPE = {
+  '1:combat': 'crypt', '1:wave': 'moor', '1:boss': 'cathedral',
+  '2:combat': 'ashfield', '2:wave': 'veil_marsh', '2:boss': 'veil_gate',
+};
 
 const isStr = (v) => typeof v === 'string' && v.length > 0;
 const has = (obj, k) => isStr(k) && Object.prototype.hasOwnProperty.call(obj, k);
@@ -57,10 +79,18 @@ export function enemyArt(node) {
   return wanted && has(ENEMY_ART, wanted) ? wanted : FALLBACK.enemy;
 }
 
-/** Clave de fondo de un nodo. Nunca lanza. */
+const actOf = (n) => {
+  if (Number.isInteger(n.act)) return n.act;
+  const m = isStr(n.id) ? /^a(\d+)n\d+$/.exec(n.id) : null;
+  return m ? Number(m[1]) : null;
+};
+
+/** Clave de fondo de un nodo (acto+tipo → tipo → `crypt`). Nunca lanza. */
 export function bgArt(node) {
   const n = nodeOf(node);
-  const wanted = has(BG_BY_TYPE, n.type) ? BG_BY_TYPE[n.type] : null;
+  const act = actOf(n);
+  const byAct = act != null && isStr(n.type) ? `${act}:${n.type}` : null;
+  const wanted = (byAct && has(BG_BY_ACT_TYPE, byAct) && BG_BY_ACT_TYPE[byAct]) || (has(BG_BY_TYPE, n.type) ? BG_BY_TYPE[n.type] : null);
   return wanted && has(BG_ART, wanted) ? wanted : FALLBACK.bg;
 }
 

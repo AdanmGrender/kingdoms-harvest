@@ -88,11 +88,29 @@ describe('R30: mapa de arte exhaustivo', () => {
       expect(Object.keys(HERO_ART), `${id}:${h.class}`).toContain(k);
     }
   });
-  it('paladin y rogue (sin arte aún) → warrior; las demás clases, su propia clave', () => {
-    expect(heroArt('viktor', 'paladin')).toBe('warrior');
-    expect(heroArt('shadow', 'rogue')).toBe('warrior');
+  it('S1 (T8): cada clase, incluidas paladin y rogue, resuelve a su propia clave (antes → warrior hasta que existiera su arte; design.md:105)', () => {
+    expect(heroArt('viktor', 'paladin')).toBe('paladin');
+    expect(heroArt('shadow', 'rogue')).toBe('rogue');
     expect(heroArt('lyra', 'mage')).toBe('mage');
     expect(heroArt('finn', 'ranger')).toBe('ranger');
+    expect(heroArt('x', 'warrior')).toBe('warrior');
+    expect(heroArt(null, 'zzz')).toBe('warrior');
+  });
+  it('Q4: mapeo enemigo ↔ nodo (design.md:175) + a2n7/a2n10 (§11); el resto cae a bruto', () => {
+    const want = {
+      a1n3: 'bruto', a1n7: 'carroneros', a1n4: 'aullador', a1n8: 'aullador', a1n5: 'boss_heraldo',
+      a1n9: 'boss_devorador', a2n5: 'coloso', a2n7: 'sin_rostro', a2n10: 'voz_del_velo',
+      a2n2: 'bruto', a2n4: 'bruto', a2n8: 'bruto', a2n9: 'bruto',
+    };
+    for (const n of NODES) expect(enemyArt(n), n.id).toBe(want[n.id]);
+    expect(Object.keys(ENEMY_ART).sort()).toEqual(['aullador', 'boss_devorador', 'boss_heraldo', 'bruto', 'carroneros', 'coloso', 'sin_rostro', 'voz_del_velo']);
+  });
+  it('fondos por acto+tipo: 6 fondos distintos y los 13 nodos cubiertos', () => {
+    const want = { '1:combat': 'crypt', '1:wave': 'moor', '1:boss': 'cathedral', '2:combat': 'ashfield', '2:wave': 'veil_marsh', '2:boss': 'veil_gate' };
+    for (const n of NODES) expect(bgArt(n), n.id).toBe(want[`${n.act}:${n.type}`]);
+    expect(new Set(NODES.map((n) => bgArt(n)))).toEqual(new Set(Object.keys(BG_ART)));
+    expect(bgArt({ id: 'a2n4', type: 'wave' })).toBe('veil_marsh'); // el acto sale del id si falta `act`
+    expect(bgArt({ type: 'wave' })).toBe('crypt'); // sin acto → por tipo
   });
   it('cada nodo resuelve enemigo y fondo existentes', () => {
     for (const n of NODES) {
