@@ -181,3 +181,6 @@ Recomendación: **S0 en Etapa A, S1 en Etapa B, S2 solo si el owner lo pide** (Q
 | Q10 | ¿Los efectos de pantalla (shake/zoom) respetan una preferencia de movimiento reducido? | Sí: `prefers-reduced-motion` → sin shake ni zoom; los beats siguen. |
 | Q11 | ¿Se retira `assets/game/{dioramas,enemies,heroes}` del repo? | No en F7; solo se dejan de referenciar desde combate. Borrado en una feature aparte tras auditar `HeroPanel` y `WaveDefensePanel`. |
 | Q12 | `[Gate de status]` La tarea de spec pidió dejar `in_progress`; `docs/specs.md` reserva `in_progress` para después del gate humano. | Se dejó `in_progress` por pedido explícito de la tarea; si el owner prefiere el proceso estricto, volver a `spec_ready`. |
+
+### Respuestas del owner (2026-10-31, "apruebo todo")
+Todas según la recomendación de la tabla: Q1 Phaser.Game aparte + `loop.sleep()` del hub · Q2 `engineVersion` sigue en 1; el paso a 2 va después de F7, en commit propio · Q3 S0 en Etapa A, S1 en Etapa B (≈27 llamadas, ≈3,5 USD), S2 no · Q4 lista y mapeo de §11 · Q5 oleadas fuera de F7 · Q6 ícono de clase del kit · Q7 calidad solo en `localStorage` · Q8 2500+300 ms, un toque salta · Q9 emulador `kh_pixel7` + escritorio · Q10 `prefers-reduced-motion` sin shake/zoom · Q11 no se borra `assets/game/` en F7 · Q12 queda `in_progress`.
