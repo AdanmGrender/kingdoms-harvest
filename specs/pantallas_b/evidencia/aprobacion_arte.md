@@ -80,7 +80,21 @@ Editar el prompt en `art-b/menu/manifest.json` y correr (el perfil ya tiene sesi
 
 Nota de entorno: `msedge` no está en la ruta estándar de Playwright en esta máquina; se lanzó con un wrapper local (fuera del repo) que fuerza `executablePath` de EdgeCore 156. No se modificó `gen_art_web.js`.
 
-## Ronda 2 (2026-10-31) — `key_art` regenerado, pendiente de veredicto de p-kh
+## Ronda 2 (2026-10-31) — `key_art` regenerado
+
+### Veredicto p-kh ronda 2 (2026-10-31): `key_art` **APROBADO** · puerta T11 cerrada
+
+Revisé a ojo `key_art.webp` a tamaño completo, la hoja `contacto_arte.webp`, la hoja `contacto_menu_con_arte.webp` y la captura `galaxy-a-360x740__menu.webp` a tamaño completo.
+
+- **Composición**: ahora cumple. El torreón está en ruinas (torres partidas, muralla caída, arco abierto) y queda en el cuarto inferior. El brasero queda arriba del torreón, a ≈ 76–80 % de la altura. En las tres capturas el tagline, el título, los dos botones y la línea «Comandante…/vdev» caen sobre cielo calmo, y el castillo se ve entero debajo del bloque. Es justo lo pedido: el arte acompaña al menú y no queda tapado.
+- **Línea «Comandante Dev · Nv. 1 / vdev»**: en 360×740, que es el caso más justo, queda entre las chispas del brasero (a la derecha) y las almenas (debajo), sin tocarlas. Se lee bien.
+- **Riesgo del cielo «vacío»**: en el archivo suelto, la franja central es una aguada lisa de nubes en bandas, con menos rayado que el hub. En la app, bajo la capa `ink` 0,7, se lee como un cielo encapotado y oscuro, y el rayado de las nubes de arriba (0–25 %) da textura. No se ve vacío: da escala y aire al bastión. No hace falta pedir más rayado. Si se pidiera, el rayado volvería a meter ruido detrás del texto.
+- **Texto, verde y estilo**: no tiene letras, firma ni marca de agua. No hay verde: el brillo del horizonte es óxido y la llama es naranja. El estilo es grabado con rayado en las nubes altas, el castillo y la roca, de la misma familia B que `marca`, `reinos` y el hub.
+- **R22**: las mediciones de arriba (≥ 4,5 incluso en p99) coinciden con lo que se ve: el texto se lee limpio en los tres tamaños.
+
+**No hace falta mover el bloque del menú.** `MainMenu.jsx` se queda como está y T9 no se toca. La puerta de arte T11 queda cerrada: `key_art`, `marca` y `reinos` están aprobados. El implementer (t_958d9d89) puede marcar T11 [x] y seguir con la suite completa, el build y la review.
+
+Sigue en pie la observación de la ronda 1 sobre los subtítulos y las etiquetas de nodos de Sistema y Galaxia. Es para el reviewer y queda fuera de T11.
 
 - Solo se regeneró `menu/key_art.webp` (1 llamada web, `gen_art_web.js --only key_art --force`, mismo aspect 9:16 y misma ref). `marca` y `reinos` no cambian (re-procesados: bytes idénticos, `git status` sin cambios en ellos). La versión anterior queda en `D:/Proyectos/_ops/art-raw/pantallas_b_menu/key_art_v1.png` (fuera del repo).
 - Prompt: el que dejó p-kh arriba, tal cual, ya en `art-b/menu/manifest.json` (id `key_art`).
