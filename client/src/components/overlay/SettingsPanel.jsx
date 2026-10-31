@@ -190,7 +190,7 @@ function VolumeRow({ value, disabled, onChange }) {
           disabled={disabled}
           onChange={(e) => onChange(Number(e.target.value) / 100)}
           className="w-full mt-1 cursor-pointer disabled:cursor-default"
-          style={{ height: '18px', accentColor: KH['brass-light'] }}
+          style={{ height: '44px', accentColor: KH['brass-light'] }}
           aria-label="Volumen maestro"
         />
       </div>

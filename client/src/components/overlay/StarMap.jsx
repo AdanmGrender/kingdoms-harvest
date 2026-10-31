@@ -100,7 +100,7 @@ export default function StarMap({ nodes, selectedId, onSelect, ship, shipIcon = 
             onClick={() => nd.state !== 'locked' && onSelect(nd.id)}
             disabled={nd.state === 'locked'}
             className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center transition-transform active:scale-90"
-            style={{ left: `${p.x}%`, top: `${p.y}%` }}
+            style={{ left: `${p.x}%`, top: `${p.y}%`, minWidth: 44, minHeight: 44 }}
             title={nd.name}
           >
             <span

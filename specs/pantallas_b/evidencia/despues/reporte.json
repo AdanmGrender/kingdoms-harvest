@@ -1,0 +1,681 @@
+{
+  "url": "http://localhost:5173",
+  "nota": "medir_pantallas_b.mjs (D:/Proyectos/_ops/capturas), una corrida por dispositivo (rate-limit 60 s del server)",
+  "dispositivos": {
+    "galaxy-a-360x740": {
+      "w": 360,
+      "h": 740,
+      "dpr": 3,
+      "pantallas": {
+        "menu": {
+          "file": "galaxy-a-360x740__menu.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 2,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "heroes": {
+          "file": "galaxy-a-360x740__heroes.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                452,
+                352,
+                732
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 8,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "operations": {
+          "file": "galaxy-a-360x740__operations.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 25,
+          "botonesBajo44": [
+            {
+              "tag": "BUTTON",
+              "role": "",
+              "txt": "✕",
+              "w": 35.6,
+              "h": 32
+            }
+          ],
+          "tabArteDeLaGuerra": null
+        },
+        "missions": {
+          "file": "galaxy-a-360x740__missions.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                503,
+                352,
+                732
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 7,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "tech": {
+          "file": "galaxy-a-360x740__tech.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2",
+              "rect": [
+                8,
+                11.8,
+                352,
+                732
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": {
+            "h": 73.2,
+            "w": 92,
+            "scrollHeight": 69,
+            "clientHeight": 69,
+            "lineasDeTexto": 2,
+            "fontPx": 13
+          }
+        },
+        "settings": {
+          "file": "galaxy-a-360x740__settings.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                177,
+                352,
+                732
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 19,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "system": {
+          "file": "galaxy-a-360x740__system.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                301.1,
+                352,
+                732
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 12,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "galaxy": {
+          "file": "galaxy-a-360x740__galaxy.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                225.1,
+                352,
+                732
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        }
+      },
+      "errores": []
+    },
+    "android-360x800": {
+      "w": 360,
+      "h": 800,
+      "dpr": 3,
+      "pantallas": {
+        "menu": {
+          "file": "android-360x800__menu.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 2,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "heroes": {
+          "file": "android-360x800__heroes.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                490,
+                352,
+                770
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 8,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "operations": {
+          "file": "android-360x800__operations.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 25,
+          "botonesBajo44": [
+            {
+              "tag": "BUTTON",
+              "role": "",
+              "txt": "✕",
+              "w": 35.6,
+              "h": 32
+            }
+          ],
+          "tabArteDeLaGuerra": null
+        },
+        "missions": {
+          "file": "android-360x800__missions.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                541,
+                352,
+                770
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 7,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "tech": {
+          "file": "android-360x800__tech.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2",
+              "rect": [
+                8,
+                49.8,
+                352,
+                770
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": {
+            "h": 73.2,
+            "w": 92,
+            "scrollHeight": 69,
+            "clientHeight": 69,
+            "lineasDeTexto": 2,
+            "fontPx": 13
+          }
+        },
+        "settings": {
+          "file": "android-360x800__settings.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                203,
+                352,
+                770
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 19,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "system": {
+          "file": "android-360x800__system.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                339.1,
+                352,
+                770
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 12,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "galaxy": {
+          "file": "android-360x800__galaxy.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                263.1,
+                352,
+                770
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        }
+      },
+      "errores": []
+    },
+    "pixel7-412x915": {
+      "w": 412,
+      "h": 915,
+      "dpr": 2.625,
+      "pantallas": {
+        "menu": {
+          "file": "pixel7-412x915__menu.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 2,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "heroes": {
+          "file": "pixel7-412x915__heroes.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                602.1,
+                404,
+                882.1
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 8,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "operations": {
+          "file": "pixel7-412x915__operations.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 25,
+          "botonesBajo44": [
+            {
+              "tag": "BUTTON",
+              "role": "",
+              "txt": "✕",
+              "w": 35.6,
+              "h": 32
+            }
+          ],
+          "tabArteDeLaGuerra": null
+        },
+        "missions": {
+          "file": "pixel7-412x915__missions.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                653.1,
+                404,
+                882.1
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 7,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "tech": {
+          "file": "pixel7-412x915__tech.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2",
+              "rect": [
+                8,
+                258.9,
+                404,
+                882.1
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": {
+            "h": 73.2,
+            "w": 109.3,
+            "scrollHeight": 69,
+            "clientHeight": 69,
+            "lineasDeTexto": 2,
+            "fontPx": 13
+          }
+        },
+        "settings": {
+          "file": "pixel7-412x915__settings.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                233.2,
+                404,
+                882.1
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 19,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "system": {
+          "file": "pixel7-412x915__system.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                418.7,
+                404,
+                882.1
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 12,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "galaxy": {
+          "file": "pixel7-412x915__galaxy.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                342.7,
+                404,
+                882.1
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        }
+      },
+      "errores": []
+    }
+  }
+}
