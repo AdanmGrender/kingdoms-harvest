@@ -62,3 +62,10 @@ fluidez en el combate B **sin animación cuadro a cuadro**. Decide el owner si s
 - Evidencia r2: `contact_poses.webp` (v2 idle/attack/hit a la izquierda de las poses nuevas + las 2 hojas crudas) y `despues.webm` regrabado (mismo guion, 13,4 s, **59 fps**, 0 errores de consola/textura). `antes.webm` no cambia (usa solo arte commiteado).
 - Dudoso: no pude inspeccionar las imágenes con visión; verifiqué por geometría (bordes/alfa/ASCII). Revisar a ojo que el KO del warrior (cortado entre la espada clavada y el cuerpo) no arrastre fragmentos del vecino y que el diseño v2 se mantenga en las 6 poses.
 - Arte **sin commitear** hasta el veredicto de p-kh.
+
+## r2 — veredicto p-kh (t_386bd6e2)
+- **APROBADAS (5)**: `warrior_hit`, `warrior_skill`, `warrior_ko`, `warrior_victory`, `bruto_attack` — mismo personaje v2; KO del warrior limpio (sin restos del vecino). Detalle menor: en `warrior_hit` la espada cambia de mano (no se nota en un destello de 80 ms).
+- **REGENERAR**: `bruto_ko` — sigue de pie (misma silueta que idle, cuchilla en la mano) y lleva chorros rojo oscuro en boca/cuello (sangre: viola *no blood*).
+- Regla para r3 (literal): "bruto KO pose: the same goat-man collapsing, dropped to both knees or slumped forward onto one hand, head hanging low with the ram horns tilted toward the ground, the cleaver fallen from his open hand and lying on the ground beside him, silhouette clearly lower and wider than the standing idle; eyes rolled back, mouth slack with only clear or greenish drool; no blood, no red liquid, no wounds, no gore."
+- Video: el warrior se lee por silueta; el bruto KO no se distingue del idle.
+- Se commitean las 5 aprobadas + `warrior_poses.png` crudo + `bruto_poses.png` (r2, fuente de `bruto_attack`). `bruto_ko.webp` (r2) NO se commitea; r3 en curso. Generaciones usadas hasta aquí: 4 de 8; tope r3: 2.

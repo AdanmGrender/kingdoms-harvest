@@ -1,0 +1,5 @@
+{"item":"warrior_poses","via":"web","ok":true,"aspect":"16:9","ref":"art-b/poses_piloto/refs/warrior_ref.png","w":1376,"h":768,"bytes":1000833,"ms":32890,"ts":"2026-10-31T15:01:16.982Z"}
+{"item":"bruto_poses","via":"web","ok":true,"aspect":"16:9","ref":"art-b/poses_piloto/refs/bruto_ref.png","w":1376,"h":768,"bytes":1015476,"ms":31091,"ts":"2026-10-31T15:03:19.145Z"}
+{"item":"warrior_poses","via":"web","ok":false,"why":"timeout (120s) esperando la imagen generada","ts":"2026-10-31T19:57:49.581Z"}
+{"item":"warrior_poses","via":"web","ok":true,"aspect":"16:9","ref":"art-b/poses_piloto/refs/warrior_ref.png","w":1376,"h":768,"bytes":1346339,"ms":31320,"ts":"2026-10-31T19:58:33.259Z"}
+{"item":"bruto_poses","via":"web","ok":true,"aspect":"16:9","ref":"art-b/poses_piloto/refs/bruto_ref.png","w":1376,"h":768,"bytes":1673697,"ms":32724,"ts":"2026-10-31T19:59:12.419Z"}
