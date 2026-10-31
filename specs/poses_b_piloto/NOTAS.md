@@ -51,3 +51,14 @@ fluidez en el combate B **sin animación cuadro a cuadro**. Decide el owner si s
 
 ## Pendiente
 - Veredicto de p-kh/owner sobre el arte. Al reanudar: aplicar veredicto, commitear los webp aprobados, suites + build, review.
+
+## r2 — regeneración con refs v2 (veredicto p-kh, t_ccc081fa)
+- Causa del rechazo: `make_refs.js` leía `D:/Proyectos/kingdoms-harvest/art-b/raw` (arte **v1**: `anchor_warrior_v1.png`, `bruto_idle.png`), de ahí el caballero gris con farol y el ogro de maza.
+- Fix: `art-b/poses_piloto/make_refs.js` lee **solo** los webp v2 commiteados (`heroes/warrior_idle+attack.webp`, `enemies/bruto_idle+hit.webp`, con alfa), los escala a 768 de alto y los monta sobre `#d0d0d0` con sharp (nunca `art-b/raw`). Refs: `refs/warrior_ref.png` 1379×768, `refs/bruto_ref.png` 1370×768.
+- Prompts (`manifest.json`) con el diseño v2 literal (landsknecht barbudo, sombrero con plumas, pipa, jubón acuchillado rojo-ocre, peto abollado, hoja ondulada, vela, calavera y rollos lacrados; hombre-cabra con cuernos de carnero, piel gris con pústulas amarillo-verdosas, cadenas, hombrera/brazal oxidados, taparrabos de calaveras, cuchilla de carnicero). En KO: "no blood, no gore". Fondo `#d0d0d0`, sin piso ni sombra.
+- **Generaciones: 4 de 8** en total (2 de r1 + 2 de r2, una por hoja). En r2 hubo además 1 intento del warrior que dio *timeout (120 s)* sin imagen (no lo cuento como generación; se repitió y salió a la siguiente). Perfil Edge: ocupado por F7 ~4 min, esperé hasta `0` y lo verifiqué antes de cada llamada.
+- Tamaño: ~340 px por pose alcanza (veredicto): hoja única por personaje, sin partir. Cortes ampliados (hit 0–445, skill 375–760, ko 650–1070, victory 1000–1376) porque las poses se entrelazan (espada clavada del KO vs hoja alzada del skill); `process_art_b.js` se queda con el componente mayor y descarta los restos del vecino. `--scale 0.935` (héroe: victory ≈ 640 px como `warrior_idle`) y `0.93` (bruto ≈ 714/674 px de 720).
+- Alfa (`verify_alpha_b.js`): 6/6 OK — esquinas alfa 0, borde 100 % transparente, 1 componente; sin tira de piso.
+- Evidencia r2: `contact_poses.webp` (v2 idle/attack/hit a la izquierda de las poses nuevas + las 2 hojas crudas) y `despues.webm` regrabado (mismo guion, 13,4 s, **59 fps**, 0 errores de consola/textura). `antes.webm` no cambia (usa solo arte commiteado).
+- Dudoso: no pude inspeccionar las imágenes con visión; verifiqué por geometría (bordes/alfa/ASCII). Revisar a ojo que el KO del warrior (cortado entre la espada clavada y el cuerpo) no arrastre fragmentos del vecino y que el diseño v2 se mantenga en las 6 poses.
+- Arte **sin commitear** hasta el veredicto de p-kh.
