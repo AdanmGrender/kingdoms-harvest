@@ -77,3 +77,16 @@ fluidez en el combate B **sin animación cuadro a cuadro**. Decide el owner si s
 - Escala: la web dibuja el KO ocupando todo el cuadro (área opaca 1,55× la del idle ⇒ cuerpo ≈1,24× más grande). Se procesó con `--scale 0.72` (área ≈ 200k px ≈ idle 216k; 744×553 vs idle 620×720, ~77 % de alto y 1,2× de ancho) para que quede más bajo y más ancho que el idle al mismo tamaño de cuerpo. **Dudoso**: criterio por área, no por cabeza; si p-kh lo ve chico/grande se reprocesa sin gastar generación.
 - Verificación: esquinas alfa 0 y borde 100 % transparente; 2 componentes (cuerpo 192k + cuchilla caída en el suelo 11,8k, a propósito); sin tira de piso (las últimas filas se afinan 187→0 px); rojizos 0,48 % (idle 1,35 %), repartidos por la hombrera/hatching como el idle, sin manchas en boca/cuello por el mapa de color. **No pude mirar la imagen con visión**: revisión por geometría.
 - Evidencia: `contact_poses.webp` (idle | attack | hit | ko r3 + crudo r3; `art-b/poses_piloto/contact.js`) y `despues.webm` regrabado (13,5 s, 58 fps, 0 errores).
+
+## r3 — veredicto p-kh (t_e75d1b5b) y reproceso de escala del warrior
+- **APROBADO**: `bruto_ko` r3 (rodillas, apoyado en una mano, cuchilla en el suelo, más bajo y ancho que el idle, babas claras, sin sangre). Commit 050db26. Sin regenerar: **generaciones finales 6 de 8** (quedan 2 de reserva).
+- Aceptado por p-kh: cuernos espirales (se lee colapso con la cabeza caída), ojos claros con pupila mínima, boca rosado apagado (0 px rojo saturado), escala 744×553 sin ajuste.
+- **Reproceso gratis del warrior** (hit/skill/victory se veían ~25 % más chicos que idle/attack): mismos crudos (`raw/warrior_poses.png`), solo `--scale 0.935 → 1.267` (×1,355) en `process.sh`. Misma escala en toda la hoja ⇒ el KO arrodillado iguala la cabeza del resto (no la altura total). Medido con `art-b/poses_piloto/measure.js` (máscara alfa abierta r=16, altura sombrero→pies, ignora hoja/plumas finas): idle 584 · hit 588 · skill 609 · victory 593 (antes, con r=8: idle 612 vs 460/452/443); ancho de torso (mediana 30–55 % de la altura) idle 378 · hit 313 · skill 303 (attack 281 ya era más angosto que idle: es de la pose). Ancho de cabeza (22 % superior) idle 247 · hit 138 · ko 149. **Dudoso**: sin visión; la cabeza se aproxima por altura y escala común de hoja, no se segmenta. Las poses se amplían ×1,27 desde el crudo (algo más blandas).
+- Alfa: `verify_alpha_b.js` 4/4 OK (esquinas 0, borde 100 % transparente, 1 componente). Evidencia regrabada: `contact_poses.webp` y `despues.webm` (13,5 s, 58 fps, 0 errores). Suites cliente 34 archivos / 625 tests OK; `npm run build` OK.
+
+## Lecciones p-kh para extender al elenco
+- Orden: 1) héroes jugables restantes (paladin, rogue, mage…, siempre en pantalla); 2) enemigos comunes por frecuencia de aparición; 3) jefes/élites al final.
+- **Ref = solo el idle v2** (nunca v1 ni `art-b/raw`); con idle+hit como ref la web dibujó dos figuras.
+- **KO** con «no blood, no red liquid, no gore» explícito y silueta más baja/ancha que el idle (arrodillado / apoyado en una mano), arma caída en el suelo.
+- **Normalizar escala por cabeza** al procesar (misma escala por hoja; ajustar con `measure.js`), no por bbox.
+- Presupuesto: ~1 regeneración cada 6 poses.
