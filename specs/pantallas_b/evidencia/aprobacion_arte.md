@@ -7,9 +7,43 @@
 - Manifest y reprocesado: `art-b/menu/manifest.json`, `art-b/menu/process.js` (crudos PNG fuera del repo, en `D:/Proyectos/_ops/art-raw/pantallas_b_menu/`).
 - Referencia de estilo enviada: `client/public/assets/b/bg/combat_crypt.webp` (la web solo admite una ref).
 
-## Veredicto: `PENDIENTE` (esperando p-kh)
+## Veredicto p-kh (2026-10-31): `REGENERAR key_art` · `marca` y `reinos` APROBADOS
 
-El implementer no emite el veredicto. La puerta de arte de p-kh es obligatoria aunque el arte venga del modelo web (el estilo puede variar respecto a la API). Criterios para p-kh: `docs/art-direction-b.md` (grimdark renacentista, paleta tierra, sin verde), zonas calmas en el menú para título y botones, mapas de baja intensidad para que el texto lea.
+Revisión a ojo de la hoja de contacto, los tres webp a tamaño completo y las 9 capturas de `despues_arte/`, comparando con `hub/base.webp`. Además medí el verde por píxel (sharp): 0 % de píxeles con G > R+5 y 0 % con tono 75–165° saturado en los tres archivos, igual que `hub/base.webp`.
+
+| Pieza | Texto/letras | Verde | Estilo | Composición | Veredicto |
+|---|---|---|---|---|---|
+| `map/marca.webp` | Ninguno. Hay anillos, radios, estrellas sueltas y un disco solar. Sin rosa de vientos con letras ni números. | No | Carta grabada en tinta sobre pergamino umber, con viñeta de rayado cruzado. Es coherente con B. | Tranquila y de bajo contraste. Bajo la capa 0,78 queda como textura sutil (6–7 % de píxeles distintos) y no compite con los nodos. | **APROBADO** |
+| `map/reinos.webp` | Ninguno. Hay estrellas, trayectos punteados y niebla. | No (el gris de la niebla es neutro/umber; medido) | Grabado con rayado en la niebla y en la viñeta. Es coherente con B. | Lo más cargado (la niebla) está en la mitad inferior, que en el panel cae detrás de los nodos, pero bajo la capa 0,78 queda muy apagado y no se nota. Lee bien. | **APROBADO** |
+| `menu/key_art.webp` | Ninguno | No | Tinta con aguada plana. Tiene menos rayado que el hub, pero es de la misma familia. Por sí solo pasaría. | **No cumple.** Ver abajo. | **REGENERAR** |
+
+### Por qué se regenera el key_art
+
+El prompt dejó calmos el tercio superior y el inferior, pero `MainMenu.jsx` centra el bloque en vertical (`flex … justify-center`). En las tres capturas el bloque de título y botones ocupa la franja central:
+
+| Captura | Tagline | Línea «Comandante…/vdev» |
+|---|---|---|
+| 412×915 | ≈ 29 % | ≈ 71 % |
+| 360×800 | ≈ 26 % | ≈ 74 % |
+| 360×740 | ≈ 25 % | ≈ 75 % |
+
+El torreón ocupa casi exactamente esa franja: el brasero empieza en ≈ 22 % y la base de los muros llega a ≈ 71 % de la imagen. Con `cover`, en esos tres aspectos la imagen se ajusta por altura, así que esos porcentajes valen tal cual. El resultado:
+
+- el título y los botones tapan el castillo, que queda como un ruido de almenas y cadenas detrás del texto;
+- la llama del brasero cae justo detrás de «…SOLO LA COSECHA»;
+- las zonas calmas (cielo arriba, escombro abajo) quedan vacías, sin nada encima.
+
+La legibilidad pasa por la capa `ink` 0,7 (R22 medido), pero el key art no se ve: es justo lo contrario de lo pedido. Además, el torreón sale casi intacto, cuando el prompt pedía uno en ruinas.
+
+**Qué cambiar en el prompt** (`art-b/menu/manifest.json`, id `key_art`, mismo aspect 9:16 y ref). El sujeto baja al cuarto inferior y la franja del 22 % al 76 % queda calma:
+
+> title-screen key art for a dark-fantasy kingdom-builder, portrait composition, woodcut engraving with dense ink cross-hatching and muted earthy wash: a ruined gothic bastion keep with broken towers, a collapsed curtain wall and a tall brazier burning on its roof, small and distant, standing on a low rocky ridge along the VERY BOTTOM of the frame — the whole keep, brazier included, fits inside the lowest quarter of the image (nothing of it above 76 % of the height from the top). Everything between 22 % and 76 % of the height is open, calm, dark overcast sky of sepia and umber with only faint smoke and very low contrast, no towers, no birds, no embers there. The top fifth may hold heavier dark clouds. A thin rust-orange glow on the horizon right behind the keep, a few drifting embers only near the brazier. No green anywhere. No text, no letters, no logo, no frame, no border, no figures
+
+Si al regenerar el modelo vuelve a subir el castillo hasta la franja central, hay otra salida, que decide el leader porque toca T9 ya cerrada: mover el bloque del menú (por ejemplo `justify-end` con margen inferior) en vez de regenerar. La recomendación sigue siendo regenerar.
+
+### Observación fuera del alcance de T11 (para el reviewer)
+
+En Sistema y Galaxia, el subtítulo del panel («Extendé tu dominio plaza a plaza», «Cruzá el Velo por los Caminos Velados») cae sobre el marco de latón y la ventana con rejas del fondo del overlay, y casi no se lee. Pasa igual en `despues/` (sin arte), así que no lo causan `marca`/`reinos`. En Galaxia, además, las etiquetas de los nodos muestran solo la primera palabra del nombre («Abismo», «Fragua»), así que el último nodo queda como «El», que no dice nada.
 
 ## Archivos
 
