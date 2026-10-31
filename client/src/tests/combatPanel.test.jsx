@@ -177,7 +177,7 @@ describe('R40/R42: fila de héroes', () => {
     stageMode = 'unavailable';
     const { container, onClose } = setup(async () => ({}));
     expect(screen.getByText(/Cripta · ronda 1\/10/)).toBeTruthy();
-    expect(screen.getByLabelText('Vida del enemigo')).toBeTruthy();
+    expect(screen.getByLabelText('Vida de Enemigo 1')).toBeTruthy();
     const close = container.querySelector('.kh-close');
     expect(close.style.minWidth).toBe('44px');
     expect(close.style.minHeight).toBe('44px');
@@ -193,5 +193,61 @@ describe('cierre con ronda en curso', () => {
     unmount();
     expect(EventBridge.listenerCount('combat:round-done')).toBe(0);
     await expect(advance(5000)).resolves.not.toThrow();
+  });
+});
+
+describe('R54: una barra de vida por enemigo', () => {
+  const en = (id, hp, extra = {}) => ({ id, hp, maxHp: 100, dps: 5, ...extra });
+  const runWith = (st) => {
+    useGameStore.setState({
+      activeRun: { runId: 1, node: NODE, state: { round: 1, maxRounds: 10, heroes: [hero(1)], ...st } },
+      stepInstance: vi.fn(async () => ({})), clearActiveRun: vi.fn(), addNotification: vi.fn(),
+    });
+    return render(<CombatInstancePanel onClose={vi.fn()} />);
+  };
+  const bars = (c) => Array.from(c.querySelectorAll('[role="progressbar"][aria-label^="Vida de "]'));
+
+  it('1 enemigo (v2): una barra, nombre «Enemigo 1» y valor hp/maxHp', () => {
+    const { container } = runWith({ enemies: [en('e0', 40)], enemy: en('e0', 40) });
+    const b = bars(container);
+    expect(b).toHaveLength(1);
+    expect(b[0].getAttribute('aria-label')).toBe('Vida de Enemigo 1');
+    expect(b[0].getAttribute('aria-valuenow')).toBe('40');
+  });
+
+  it('3 enemigos: tres barras en orden, con nombre propio o «Enemigo N»', () => {
+    const { container } = runWith({ enemies: [en('e0', 100, { name: 'Bruto' }), en('e1', 25), en('e2', 60, { name: 'Voz del Velo' })] });
+    const b = bars(container);
+    expect(b.map((x) => x.getAttribute('aria-label'))).toEqual(['Vida de Bruto', 'Vida de Enemigo 2', 'Vida de Voz del Velo']);
+    expect(b.map((x) => x.getAttribute('aria-valuenow'))).toEqual(['100', '25', '60']);
+  });
+
+  it('4 enemigos: cuatro barras; el muerto queda atenuado, en 0 y sin desaparecer', () => {
+    const { container } = runWith({ enemies: [en('e0', 10), en('e1', 0), en('e2', -30), en('e3', 100)] });
+    const b = bars(container);
+    expect(b).toHaveLength(4);
+    expect(b.map((x) => x.getAttribute('aria-valuenow'))).toEqual(['10', '0', '0', '100']);
+    const rows = Array.from(container.querySelectorAll('[data-enemy-bar]'));
+    expect(rows.map((r) => r.getAttribute('data-dead'))).toEqual(['false', 'true', 'true', 'false']);
+    expect(rows[1].style.opacity).toBe('0.45');
+    expect(rows[0].style.opacity).toBe('1');
+  });
+
+  it('4 enemigos no sacan del DOM a los héroes ni «Avanzar ronda» (el no-tapar se mide en la captura de T11)', () => {
+    runWith({ enemies: [en('e0', 10), en('e1', 20), en('e2', 30), en('e3', 40)] });
+    expect(screen.getByRole('button', { name: 'Avanzar ronda' }).disabled).toBe(false);
+    expect(screen.getByText('Guarnición')).toBeTruthy();
+  });
+
+  it('fallback v1: solo state.enemy → una barra', () => {
+    const { container } = runWith({ enemy: en(undefined, 70) });
+    const b = bars(container);
+    expect(b).toHaveLength(1);
+    expect(b[0].getAttribute('aria-valuenow')).toBe('70');
+  });
+
+  it('enemies vacío cae a state.enemy', () => {
+    const { container } = runWith({ enemies: [], enemy: en('e0', 55) });
+    expect(bars(container)).toHaveLength(1);
   });
 });

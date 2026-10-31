@@ -18,6 +18,17 @@ const ADVANCE_PAUSE_MS = 300;   // R17: pausa tras `combat:round-done`
 const IDLE_ADVANCE_MS = 2000;   // auto-avance sin escena (o antes de la primera ronda)
 const SCENE_FALLBACK_MS = 4000; // R19b: la escena no responde
 
+// R54: filas de vida desde `state.enemies` (v2) o `[state.enemy]` (v1), en el orden recibido.
+export function enemyBars(state) {
+  const list = Array.isArray(state?.enemies) && state.enemies.length ? state.enemies : [state?.enemy].filter(Boolean);
+  return list.map((e, i) => {
+    const hp = Math.max(0, Number(e.hp) || 0);
+    const max = Number(e.maxHp) > 0 ? Number(e.maxHp) : 0;
+    const name = typeof e.name === 'string' && e.name.trim() ? e.name.trim() : `Enemigo ${i + 1}`;
+    return { key: typeof e.id === 'string' ? e.id : `e${i}`, name, dead: hp <= 0, pct: max ? Math.min(100, Math.round((hp / max) * 100)) : 0 };
+  });
+}
+
 export default function CombatInstancePanel({ onClose }) {
   const activeRun = useGameStore((s) => s.activeRun);
   const stepInstance = useGameStore((s) => s.stepInstance);
@@ -115,7 +126,7 @@ export default function CombatInstancePanel({ onClose }) {
   const { node, state } = activeRun;
 
   const close = () => { clearActiveRun(); onClose(); };
-  const enemyPct = Math.max(0, Math.round((state.enemy.hp / state.enemy.maxHp) * 100));
+  const enemyRows = enemyBars(state);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col p-4 pb-28 overflow-hidden" style={{ background: KH.ink }}>
@@ -131,10 +142,15 @@ export default function CombatInstancePanel({ onClose }) {
           <button type="button" aria-label="Cerrar" onClick={close} className="kh-close pointer-events-auto" style={{ minWidth: 44, minHeight: 44 }} />
         </div>
 
-        {/* Enemigo — barra de vida */}
-        <div className="mb-2">
-          <div className="text-kh-bone-dim text-xs mb-1">Enemigo</div>
-          <Bar value={enemyPct} tone="seal" label="Vida del enemigo" />
+        {/* Enemigos — una barra de vida por enemigo (R54); con 3+ se reparten en dos columnas para no crecer. */}
+        <div data-enemy-bars className="mb-2 grid gap-x-3 gap-y-1"
+          style={{ gridTemplateColumns: enemyRows.length > 2 ? 'repeat(2, minmax(0, 1fr))' : '1fr' }}>
+          {enemyRows.map((e) => (
+            <div key={e.key} data-enemy-bar data-dead={e.dead ? 'true' : 'false'} style={{ opacity: e.dead ? 0.45 : 1 }}>
+              <div className="text-kh-bone-dim text-xs mb-0.5 truncate leading-tight">{e.name}</div>
+              <Bar value={e.pct} tone="seal" label={`Vida de ${e.name}`} />
+            </div>
+          ))}
         </div>
 
         <div className="flex-1" />
