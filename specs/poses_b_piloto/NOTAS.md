@@ -136,3 +136,29 @@ Esta sección **sustituye** las cifras de «ronda 2» (648/694/589, «≈150», 
 - Intentadas y descartadas (no versionadas): correlación de plantilla de la cabeza del idle (NCC 0,31–0,45, sin pico) y segmentación por color de piel (paleta ocre ≈ sepia; ruido).
 - Alfa/evidencia: sin cambio de arte → `contact_poses.webp` y `despues.webm` siguen vigentes; vitest y build se repiten antes del commit.
 - Higiene: vite huérfano pid 20060 (:5174) sigue vivo; no se puede matar en esta sesión (forzado bloqueado). **Frenarlo a mano.**
+
+## r3 — ronda 4: conflicto cabeza / torso / altura → decisión de p-kh (arte SIN cambios; 6 de 8)
+El reviewer (ronda 3) pide: si cabeza y torso no se igualan a la vez con una escala uniforme por pose, **no justificar** sino abrir `needs_input` con opciones y dejar el arte como está. Se comprobó reprocesando desde `raw/warrior_poses.png` (sin generar) tres variantes por pose (`art-b/poses_piloto/opciones.sh`, hoja `evidencia/piloto/opciones_escala.webp` = `opciones_sheet.js`): **A** igualar cabeza (`head`), **B** igualar torso, **C** actual (commiteado; igualar altura `h`). Medido con `R=14 node measure_body.js` (ratio pose/idle):
+
+| pose | opción | `--scale` | h | head | legs | torso | waist |
+|---|---|---|---|---|---|---|---|
+| hit | A cabeza | 1,478 | 1,20 | 1,00 | 1,37 | 0,97 | 1,41 |
+| hit | **C actual** | 1,419 | 1,15 | 0,96 | 1,32 | 0,93 | 1,38 |
+| hit | B torso | 1,526 | 1,23 | 1,03 | 1,41 | 1,00 | 1,45 |
+| skill | A cabeza | 1,111 | 0,88 | 1,00 | 0,87 | 0,71 | 0,73 |
+| skill | **C actual** | 1,267 | 1,00 | 1,14 | 0,99 | 0,81 | 0,83 |
+| skill | B torso | 1,564 | 1,24 | 1,42 | 1,22 | 1,00 | 1,02 |
+| victory | A cabeza | 1,473 | 1,15 | 1,22 | 1,19 | 0,83 | 0,99 |
+| victory | **C actual** | 1,267 | 0,99 | 0,86 | 1,02 | 0,72 | 0,85 |
+| victory | B torso | 1,760 | 1,46 | 0,73 | 1,43 | 1,00 | 1,18 |
+| ko | A cabeza | 1,620 | 1,05 | 0,81 | 0,75 | 0,99 | 0,82 |
+| ko | **C actual** | 1,267 | 0,82 | 0,66 | 0,56 | 0,77 | 0,69 |
+| ko | B torso | 1,670 | 1,08 | 0,83 | 0,77 | 1,02 | 0,84 |
+
+Hallazgos que impiden resolverlo solo con una escala por pose:
+- **La métrica `head` no es monótona con la escala** en victory/ko/skill (victory: ×1,267 → 142; ×1,473 → 202; ×1,76 → 122), o sea que «coronilla→hombros» depende de dónde cae la línea de hombros con el brazo alzado/cabeza gacha, no del tamaño real de la cabeza. «Igualar la cabeza» con esta métrica en victory lleva a ×1,473 (pose 1,15× más alta que el idle, torso aún 0,83×), y A/B de victory dan figuras 15–46 % más altas que idle/attack.
+- **Torso**: igualarlo (B) en skill/victory exige ×1,56/×1,76 → altura 1,24×/1,46× (más grande que el héroe de pie). El torso de skill/victory es de tres cuartos con brazo alzado; attack (aprobada) también está en 0,75×.
+- **KO**: igualar cabeza (A, ×1,62) deja el arrodillado en h 1,05× (tan alto como el idle: pierde lectura de «caído»); el ×1,28 que propone el reviewer da h ≈ 0,9×. 
+- Hit: A/B cierran cabeza/torso a ≤3 % pero la altura sube a 1,20–1,23× (retroceso con piernas abiertas).
+
+**Pendiente de p-kh** (decisión; sin tocar el arte hasta entonces), por pose elegir A / C / B (o un término medio con la escala entre dos filas de la tabla). Recomendación del implementer: **C** para skill y victory (igualan altura, piernas y bota; cabeza ±14 % es ruido de hombros), **A** para hit (cabeza 1,00×, torso 0,97×, +4 % de escala; altura 1,20×) y **A** para el KO (cabeza/torso ≈ idle) solo si p-kh acepta que se lea casi de pie; si no, C.
