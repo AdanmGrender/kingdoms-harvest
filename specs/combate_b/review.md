@@ -41,3 +41,42 @@ La feature **sigue `in_progress`**: T10.5, T11 y T12 (Etapa C) están pendientes
 - `enemies/voz_del_velo_hit` fue aprobado por p-kh en P3 sin cumplir la regla literal de P2 (`evidencia/aprobacion_arte.md`). Es decisión de p-kh; este review no la revierte.
 - Etapa C (T12): verificar en captura que el portal de `bg/combat_veil_gate` no tape los efectos verdes; si los tapa, oscurecer por código, sin regenerar.
 - Nota de proceso: `process.sh` depende de los crudos de `art-b/gr/raw/` (ignorados por git). Sin ellos, el script se corta en `sheet_warrior.png` por `set -e`; el bloque de combate_b se puede correr aislado.
+
+---
+
+# Review — Etapa C (T10.5 → T11 → T12, cierre de F7) · ronda 1 · t_4639fe2d
+
+**ESCALADO — no aprobado.** Motivo: dos verificaciones exigidas no se pueden cerrar con evidencia desde este revisor. Se escala a humano / modelo con visión y dispositivo. No se tocan `feature_list.json` ni `CHANGELOG.md` (siguen `in_progress`). Sin cambios de código solicitados.
+
+## Trazabilidad (R-por-R)
+- R54 (barra por enemigo) — T10.5 `87d1fb8`. `CombatInstancePanel.jsx:21-29` (`enemyBars`: `state.enemies ?? [state.enemy]`, piso 0, muerto `dead`), `:145-152` (filas `data-enemy-bar`, opacidad 0.45 en muerto, 2 columnas con 3+). Tests `combatPanel.test.jsx` (+58 líneas, 1/3/4 enemigos, muerto, fallback v1, `enemies: []`). **Reproducido**: `vitest run combatPanel + pantallasB` → 2 files, 69 passed.
+- R40 — el test de R40 cambió solo la etiqueta a «Vida de Enemigo 1» (`combatPanel.test.jsx:180`). Aserción de texto, no de comportamiento; aceptable, se anota.
+- R43, R28, R49, R50 — evidencia en `evidencia/despues/reporte_v{1,2}.json` y `red_v{1,2}.json`: `botonesBajo44: []` en 4 viewports, 6 peticiones a `/assets/` con `bajoAssetsGame: 0`, sin `error`/`pageerror`. Verificado por lectura de los JSON; no re-ejecutado (Playwright/servidor no levantados en esta sesión).
+- R51, R52, R1, R2 — `git diff 46d156d..HEAD -- server shared` vacío; `shared/gameConfig.js:1155` `engineVersion: 1`; sin cambios en `package*.json`; sin borrados en `assets/game|sprites`. **Verificado.**
+- R53 — CHANGELOG sin tocar; `feature_list.json` solo cambió en `3e11566` (spec, `pending→in_progress`, asignación `spec-author`), no en Etapa C. Aceptable; el cierre lo hace el reviewer al aprobar.
+- R48 — **NO CUMPLIDO todavía**: `fps.json` mide solo en escritorio (Chromium headless, RTX 5060). Q9 (`design.md:180`) exige `kh_pixel7` + escritorio; la excepción «sin GPU» no aplica porque el host tiene GPU. El AVD existe (`D:/Android/avd/kh_pixel7.avd`) pero no hay binario `emulator`/`adb` en PATH; el implementador no lo intentó ni documentó el bloqueo. Además el `aviso` del propio JSON reconoce el hueco.
+- R48 (medio ≥ 50 avg, p5 ≥ 40) en escritorio sí cumple (60/60 medio, 60/58 bajo) pero no es el dispositivo pedido.
+
+## Tasks
+- T8–T10 `[x]` con evidencia (ya aprobadas en `fdcee68`).
+- T10.5 `[x]`, T11 `[x]`, T12 `[x]` con `Evidencia:` inline (`tasks.md:35-40`). Evidencia de T11 incompleta frente a su propio texto: `kh_pixel7` pendiente y la inspección visual pedida por el must-do de la Etapa B **no hecha** (el propio implementador lo declara, `tasks.md:38`). Marcar `[x]` sobre un punto que la misma entrada declara pendiente es inconsistente.
+- `## Bloqueado`: vacío.
+
+## Verificación ejecutada por el revisor
+- `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run src/tests/combatPanel.test.jsx src/tests/pantallasB.test.jsx </dev/null` → `Tests 69 passed (69)`.
+- `git status` limpio antes de escribir este archivo; ningún dev server en :5173/:5174 escuchando; :5180/:3101 del owner intactos.
+- No se ejecutó suite completa ni build (el implementador reporta `server 545`, `client 610`, `build ok`; no lo re-verifiqué por coste de tiempo; son verificables en la próxima ronda).
+
+## Inspección visual (NO completada por el revisor)
+- Este entorno no puede ver imágenes (sin herramienta de visión). **No afirmo** que `combat_veil_gate` no tape ni se confunda con sprites/HUD, ni que las barras no solapen la caja del enemigo.
+- Datos disponibles (`veil_stats.mjs`, implementador): el tercio medio de `veil_gate` es el más claro y con más contraste (76.5 / 58.0) justo donde van los enemigos; riesgo de confusión real, pero sin veredicto visual.
+- Solape barras/caja enemigo: `barrasSolapanZonaEnemigos=true` (barras hasta y≈101–138 px; caja desde y≈50 px). Requiere mirar `v2_r00_inicio.webp` y `v2_veil_gate_a2n10_4enemigos.webp`.
+- Must-do Etapa B (`specs/combate_b/review.md` ronda 2, observación «verificar en captura que el portal de `combat_veil_gate` no tape los efectos verdes») → **sin cerrar**.
+
+## Cambios requeridos
+No se piden cambios de código. Para aprobar hace falta, a elección del owner:
+1. **Inspección visual** de `v2_r00_inicio.webp`, `v1/v2_veil_gate_a2n10_*` (veil_gate vs sprites/HUD) y del solape barras/caja; anotar el resultado en `tasks.md` T11.
+2. **fps en `kh_pixel7`** (medio y bajo, n, avg, p5) según Q9, o declaración explícita de que el emulador no es viable con la razón concreta.
+3. Si el owner acepta escritorio para R48, debe decirlo por escrito y se registra en `Bloqueado`.
+
+Al completar 1 y 2 (o la decisión del owner), re-revisar con lente de contrato (ronda 2+).
