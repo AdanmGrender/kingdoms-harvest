@@ -81,7 +81,7 @@ fluidez en el combate B **sin animación cuadro a cuadro**. Decide el owner si s
 ## r3 — veredicto p-kh (t_e75d1b5b) y reproceso de escala del warrior
 - **APROBADO**: `bruto_ko` r3 (rodillas, apoyado en una mano, cuchilla en el suelo, más bajo y ancho que el idle, babas claras, sin sangre). Commit 050db26. Sin regenerar: **generaciones finales 6 de 8** (quedan 2 de reserva).
 - Aceptado por p-kh: cuernos espirales (se lee colapso con la cabeza caída), ojos claros con pupila mínima, boca rosado apagado (0 px rojo saturado), escala 744×553 sin ajuste.
-- **Reproceso gratis del warrior** (hit/skill/victory se veían ~25 % más chicos que idle/attack): mismos crudos (`raw/warrior_poses.png`), solo `--scale 0.935 → 1.267` (×1,355) en `process.sh`. Misma escala en toda la hoja ⇒ el KO arrodillado iguala la cabeza del resto (no la altura total). Medido con `art-b/poses_piloto/measure.js` (máscara alfa abierta r=16, altura sombrero→pies, ignora hoja/plumas finas): idle 584 · hit 588 · skill 609 · victory 593 (antes, con r=8: idle 612 vs 460/452/443); ancho de torso (mediana 30–55 % de la altura) idle 378 · hit 313 · skill 303 (attack 281 ya era más angosto que idle: es de la pose). Ancho de cabeza (22 % superior) idle 247 · hit 138 · ko 149. **Dudoso**: sin visión; la cabeza se aproxima por altura y escala común de hoja, no se segmenta. Las poses se amplían ×1,27 desde el crudo (algo más blandas).
+- **Reproceso gratis del warrior** (hit/skill/victory se veían ~25 % más chicos que idle/attack): mismos crudos (`raw/warrior_poses.png`), sin generar. Primera pasada (b734f80): `--scale 0.935 → 1.267` (×1,355) igualando la altura bbox; el reviewer la rechazó (p-kh pidió **cabeza**, no bbox). Corrección en «r3 — ronda 2 de review» (más abajo), que sustituye las cifras de bbox de esta viñeta.
 - Alfa: `verify_alpha_b.js` 4/4 OK (esquinas 0, borde 100 % transparente, 1 componente). Evidencia regrabada: `contact_poses.webp` y `despues.webm` (13,5 s, 58 fps, 0 errores). Suites cliente 34 archivos / 625 tests OK; `npm run build` OK.
 
 ## Lecciones p-kh para extender al elenco
@@ -90,3 +90,24 @@ fluidez en el combate B **sin animación cuadro a cuadro**. Decide el owner si s
 - **KO** con «no blood, no red liquid, no gore» explícito y silueta más baja/ancha que el idle (arrodillado / apoyado en una mano), arma caída en el suelo.
 - **Normalizar escala por cabeza** al procesar (misma escala por hoja; ajustar con `measure.js`), no por bbox.
 - Presupuesto: ~1 regeneración cada 6 poses.
+
+## r3 — ronda 2 de review: escala por cabeza (reproceso gratis, sin generar; 6 de 8)
+- Herramienta nueva: `art-b/poses_piloto/measure_head.js` (máscara alfa abierta con R=26: quita hoja, plumas y cuchillas finas). Cabeza = coronilla del sombrero → línea de hombros (1ª fila con ancho ≥ 0,75 × mediana del torso). Altura = coronilla (R=26) → pies (R=16). Sin visión: es geometría, no segmentación semántica.
+- Mediciones (px; idle = referencia: cabeza 146, altura 578, torso 376):
+
+| pose | cabeza→hombros | altura coronilla→pies | torso (mediana 30–55 %) |
+|---|---|---|---|
+| idle | 146 | 578 | 376 |
+| attack (aprobada) | 132 | ≈ 570 | 255 |
+| hit (b734f80, ×1,267) | 130 (0,89×) | 579 | 298 (0,79×) |
+| **hit (ahora, ×1,419 = +12 %)** | **153 (1,05×)** | ≈ 648 | 333 (0,89×) |
+| skill (×1,267) | **no separable** | 599 (1,04×) | 272 (0,72×) |
+| victory (×1,267) | **no separable** | 565 (0,98×) | 259 (0,69×) |
+| ko (×1,267, arrodillado) | ≈ 150 por perfil de filas (≈ 1,0×); el detector automático no fija el cuello (cabeza gacha) | 429 (a propósito más bajo) | 287 |
+
+- **hit**: era el único con cabeza y torso claramente chicos (0,89× / 0,79×) pese a igualar altura → escala +12 % (`process.sh`: `--scale 1.419`); tras el cambio cabeza 1,05× y torso 0,89×, altura ≈ 648 (el retroceso inclina la figura; más escala la haría más alta que el idle sin ganar cabeza).
+- **skill / victory**: la cabeza **no se puede aislar por geometría** (el brazo alzado y la empuñadura se funden con el sombrero en la máscara; el detector cae en 67–68 px, que no es una cabeza). Se mantienen en ×1,267: altura 1,04× / 0,98× del idle (±5 %). El torso 0,72× / 0,69× **es de la pose** (brazo alzado y cuerpo de tres cuartos; attack, ya aprobada, tiene torso 0,68×), no de la escala: igualarlo exigiría ×1,4 y agigantaría la cabeza. **Pendiente de ojo humano** (p-kh) en skill/victory.
+- **ko**: cabeza ≈ idle (±3 %, perfil de filas: coronilla→hombros ≈ 148–152 px vs 152) con el mismo ×1,267 de la hoja; la altura total es menor a propósito (428 vs 578). Sin cambio.
+- Alfa (`verify_alpha_b.js`): hit/skill/ko/victory OK (esquinas 0, borde 100 % transparente, 1 componente); bruto_ko: esquinas 0, 2 componentes (cuchilla caída a propósito).
+- Evidencia regenerada: `contact_poses.webp`, `despues.webm` (13,5 s, 58 fps, 0 errores). Suites cliente 34 archivos / 625 tests OK; `npm run build` OK.
+- Higiene: el vite huérfano pid 20060 sigue escuchando en [::1]:5174; el cierre sin forzar falla («solo se puede terminar de forma forzada») y el kill forzado está bloqueado en esta sesión → frenarlo a mano. No se lanzó ningún vite nuevo (la grabación usó ese mismo servidor, que sirve este worktree).
