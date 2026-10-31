@@ -1,0 +1,26 @@
+[
+  {
+    "id": "key_art",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": ["client/public/assets/b/bg/combat_crypt.webp"],
+    "out": "D:/Proyectos/_ops/art-raw/pantallas_b_menu/key_art.png",
+    "prompt": "title-screen key art for a dark-fantasy kingdom-builder, portrait composition: a ruined gothic bastion keep with a tall brazier burning on its roof, seen from below on a rocky rise at dusk, broken towers and a leaning curtain wall around it, a low cold sky of sepia and umber clouds with a thin rust-orange glow on the horizon, drifting embers. The upper third and the lower third are calm, dark and low-contrast (empty sky and dark rubble) so menu buttons and title text can sit on them; the keep is centered in the middle third. No green anywhere. No text, no letters, no logo, no frame, no border, no figures"
+  },
+  {
+    "id": "marca",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": ["client/public/assets/b/bg/combat_crypt.webp"],
+    "out": "D:/Proyectos/_ops/art-raw/pantallas_b_menu/marca.png",
+    "prompt": "background texture for a star-system map screen, portrait: an aged dark umber parchment chart engraved in ink, faint concentric orbit rings and thin compass lines, tiny hand-drawn stars and a dim sun disc off-centre, cross-hatched vignette darkening the edges, very low contrast and quiet in the middle so icons and text can be placed over it. Earthy umber, sepia, bone and rust palette, no green. No text, no letters, no numbers, no labels, no frame, no border, no figures, no creatures"
+  },
+  {
+    "id": "reinos",
+    "kind": "scene",
+    "aspect": "9:16",
+    "refs": ["client/public/assets/b/bg/combat_crypt.webp"],
+    "out": "D:/Proyectos/_ops/art-raw/pantallas_b_menu/reinos.png",
+    "prompt": "background texture for a map of fallen kingdoms across a dark void, portrait: an aged engraved ink chart of the night sky, scattered tiny stars and faint dotted travel paths, a torn veil of dark smoke-like fog drifting across the lower half, cross-hatched vignette darkening the edges, very low contrast and quiet in the middle so icons and text can be placed over it. Earthy umber, sepia, charcoal, bone and rust palette, no green. No text, no letters, no numbers, no labels, no frame, no border, no figures, no creatures"
+  }
+]

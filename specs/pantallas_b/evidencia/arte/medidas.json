@@ -1,0 +1,44 @@
+[
+ {
+  "id": "key_art",
+  "out": "menu/key_art.webp",
+  "w": 768,
+  "h": 1376,
+  "kb": 111.8,
+  "quality": 82,
+  "lumMedia": 61,
+  "lumTercios": [
+   58,
+   63,
+   30
+  ]
+ },
+ {
+  "id": "marca",
+  "out": "map/marca.webp",
+  "w": 768,
+  "h": 1376,
+  "kb": 105.3,
+  "quality": 82,
+  "lumMedia": 67,
+  "lumTercios": [
+   49,
+   66,
+   49
+  ]
+ },
+ {
+  "id": "reinos",
+  "out": "map/reinos.webp",
+  "w": 768,
+  "h": 1376,
+  "kb": 159.5,
+  "quality": 82,
+  "lumMedia": 70,
+  "lumTercios": [
+   70,
+   74,
+   41
+  ]
+ }
+]

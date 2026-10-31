@@ -1,0 +1,248 @@
+{
+  "url": "http://localhost:5173",
+  "dispositivos": {
+    "galaxy-a-360x740": {
+      "w": 360,
+      "h": 740,
+      "dpr": 3,
+      "pantallas": {
+        "menu": {
+          "file": "galaxy-a-360x740__menu.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 2,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "system": {
+          "file": "galaxy-a-360x740__system.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                301.1,
+                352,
+                732
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 12,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "galaxy": {
+          "file": "galaxy-a-360x740__galaxy.webp",
+          "frame": [
+            0,
+            0,
+            360,
+            740
+          ],
+          "vh": 740,
+          "banda": 0,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                225.1,
+                352,
+                732
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        }
+      },
+      "errores": []
+    },
+    "android-360x800": {
+      "w": 360,
+      "h": 800,
+      "dpr": 3,
+      "pantallas": {
+        "menu": {
+          "file": "android-360x800__menu.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 2,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "system": {
+          "file": "android-360x800__system.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                339.1,
+                352,
+                770
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 12,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "galaxy": {
+          "file": "android-360x800__galaxy.webp",
+          "frame": [
+            0,
+            22,
+            360,
+            778
+          ],
+          "vh": 800,
+          "banda": 22,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                263.1,
+                352,
+                770
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        }
+      },
+      "errores": []
+    },
+    "pixel7-412x915": {
+      "w": 412,
+      "h": 915,
+      "dpr": 2.625,
+      "pantallas": {
+        "menu": {
+          "file": "pixel7-412x915__menu.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 2,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "system": {
+          "file": "pixel7-412x915__system.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                418.7,
+                404,
+                882.1
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 12,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        },
+        "galaxy": {
+          "file": "pixel7-412x915__galaxy.webp",
+          "frame": [
+            0,
+            24.9,
+            412,
+            890.1
+          ],
+          "vh": 915,
+          "banda": 24.9,
+          "raices": [
+            {
+              "cls": "kh-panel kh-panel--oak mx-2 mb-2 overflo",
+              "rect": [
+                8,
+                342.7,
+                404,
+                882.1
+              ],
+              "dentroDelFrame": true
+            }
+          ],
+          "nFueraDelFrame": 0,
+          "fueraDelFrame": [],
+          "nBotones": 13,
+          "botonesBajo44": [],
+          "tabArteDeLaGuerra": null
+        }
+      },
+      "errores": []
+    }
+  }
+}

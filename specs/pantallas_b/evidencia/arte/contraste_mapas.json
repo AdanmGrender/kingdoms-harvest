@@ -1,0 +1,26 @@
+[
+ {
+  "img": "map/marca.webp",
+  "peorPixel": [
+   51,
+   44,
+   36
+  ],
+  "boneSobrePeor": 10.08,
+  "boneDimSobrePeor": 5.08,
+  "lumP99": 0.0167,
+  "boneDimSobreP99": 5.82
+ },
+ {
+  "img": "map/reinos.webp",
+  "peorPixel": [
+   50,
+   45,
+   41
+  ],
+  "boneSobrePeor": 9.97,
+  "boneDimSobrePeor": 5.02,
+  "lumP99": 0.0193,
+  "boneDimSobreP99": 5.59
+ }
+]

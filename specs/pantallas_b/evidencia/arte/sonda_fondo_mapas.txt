@@ -1,0 +1,5 @@
+system [{"cls":"kh-panel kh-panel--oak mx-2 mb-2 overflo","bi":"linear-gradient(rgba(20, 17, 13, 0.78), rgba(20, 17, 13, 0.78)), url(\"http://localhost:5173/assets/b/map/marca.webp\")","bc":"rgb(42, 33, 25)"}]
+galaxy [{"cls":"kh-panel kh-panel--oak mx-2 mb-2 overflo","bi":"linear-gradient(rgba(20, 17, 13, 0.78), rgba(20, 17, 13, 0.78)), url(\"http://localhost:5173/assets/b/map/reinos.webp\")","bc":"rgb(42, 33, 25)"}]
+200 http://localhost:5173/assets/b/menu/key_art.webp
+200 http://localhost:5173/assets/b/map/marca.webp
+200 http://localhost:5173/assets/b/map/reinos.webp
