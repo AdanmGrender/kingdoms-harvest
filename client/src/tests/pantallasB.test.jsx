@@ -78,8 +78,6 @@ describe('pantallasB — R2 topes por --kh-frame-h', () => {
     ['components/overlay/SettingsPanel.jsx', '0.75'],
     ['components/overlay/WarPanel.jsx', '0.65'],
     ['components/ui/NotificationPrefsPanel.jsx', '0.8'],
-    ['components/campaign/CombatInstancePanel.jsx', '0.36'],
-    ['components/campaign/CombatInstancePanel.jsx', '0.29'],
   ];
   it.each(CAPS)('%s usa calc(var(--kh-frame-h) * %s)', (file, k) => {
     const re = new RegExp(`calc\\(var\\(--kh-frame-h\\)\\s*\\*\\s*${k.replace('.', '\\.')}\\)`);
@@ -541,5 +539,50 @@ describe('pantallasB T9 — MainMenu', () => {
     fireEvent.click(cfg);
     expect(enterGame).toHaveBeenCalledTimes(2);
     expect(setOverlay).toHaveBeenCalledWith('settings', {});
+  });
+});
+
+describe('combate_b — HUD y escena (R27, R37, R41, R42, R45)', () => {
+  const COMBAT_FILES = ['components/campaign/CombatStage.jsx', 'components/campaign/CombatInstancePanel.jsx'];
+  const combatDir = path.join(SRC, 'game', 'combat');
+  const SCENE_FILES = fs.readdirSync(combatDir).filter((f) => f.endsWith('.js')).map((f) => `game/combat/${f}`);
+  const ALL = [...COMBAT_FILES, ...SCENE_FILES];
+  const RE_INNER = new RegExp(`window\\.inner(Height|Width)|\\binner(Height|Width)\\b`);
+
+  it('R27: topes del enemigo = 0.29 / 0.36 del alto (sustituyen las dos filas CAPS del panel)', async () => {
+    const { ENEMY_HEIGHT_FRAC, computeFormation } = await import('../game/combat/formation');
+    expect(ENEMY_HEIGHT_FRAC).toEqual({ normal: 0.29, boss: 0.36 });
+    const heroes = [{ slot: 1, class: 'warrior', heroId: null }];
+    const enemies = [{ id: 'e0' }];
+    expect(computeFormation(heroes, enemies).enemies[0].h).toBe(Math.round(0.29 * 1720));
+    expect(computeFormation(heroes, enemies, { boss: true }).enemies[0].h).toBe(Math.round(0.36 * 1720));
+  });
+
+  it('R37: sin vh/dvh/svh/vw, h-screen/w-screen ni innerHeight/innerWidth en los archivos de combate', () => {
+    const hits = ALL.flatMap((f) => read(f).split(/\r?\n/)
+      .map((line, i) => ({ line, i }))
+      .filter(({ line }) => RE_VIEWPORT.test(line) || RE_INNER.test(line))
+      .map(({ line, i }) => `${f}:${i + 1}: ${line.trim().slice(0, 90)}`));
+    expect(hits).toEqual([]);
+  });
+
+  it('R41/R28: el panel y la escena no usan dioramas, enemies/ ni heroes/<id>.png del arte viejo', () => {
+    const panel = read('components/campaign/CombatInstancePanel.jsx');
+    expect(panel).not.toMatch(/dioramas|assets\/game|\/enemies\/|heroes\/\$\{/);
+    for (const f of ALL) expect(read(f), f).not.toMatch(/assets\/game\//);
+  });
+
+  it('R4: ni el stage ni la escena hablan con el servidor (sin api./axios)', () => {
+    for (const f of ['components/campaign/CombatStage.jsx', ...SCENE_FILES]) expect(read(f), f).not.toMatch(/\bapi\.|axios/);
+  });
+
+  it('R45: el HUD no tiene emojis, ✕/✓ ni los colores prohibidos de F9', () => {
+    for (const f of COMBAT_FILES) {
+      const src = read(f);
+      expect(RE_GLYPH.test(src), f).toBe(false);
+      expect(RE_HEX.test(src), f).toBe(false);
+      expect(RE_TW_COLOR.test(src), f).toBe(false);
+      expect(/\p{Extended_Pictographic}/u.test(src), f).toBe(false);
+    }
   });
 });

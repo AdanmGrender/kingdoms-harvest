@@ -83,6 +83,11 @@ export default function PhaserGame({ entry = 'preview' }) {
 
     gameRef.current = game;
 
+    // combate_b R39: mientras el combate (otro Phaser.Game) está abierto el hub no renderiza.
+    const sleepHub = () => game.loop.sleep();
+    const wakeHub = () => game.loop.wake();
+    EventBridge.on('combat:open', sleepHub);
+    EventBridge.on('combat:close', wakeHub);
     // DEV-only handle for tooling/screenshots (Vite lo elimina en build prod,
     // igual que window.__gameStore). Permite forzar escenas/entidades en tests.
     if (import.meta.env.DEV) window.__phaserGame = game;
@@ -129,6 +134,8 @@ export default function PhaserGame({ entry = 'preview' }) {
     }
 
     return () => {
+      EventBridge.off('combat:open', sleepHub);
+      EventBridge.off('combat:close', wakeHub);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleOrientation);
       if (resizeObserver) resizeObserver.disconnect();

@@ -6,12 +6,17 @@ import Button from '../ui/Button';
 import ResultBanner from '../ui/ResultBanner';
 import { KH } from '../ui/kitPieces';
 import EmberField from '../fx/EmberField';
+import EventBridge from '../../game/EventBridge';
+import CombatStage from './CombatStage';
 
-// T1 coordinación visual: diorama iso grimdark de fondo según el tipo de nodo.
-const BG_BY_TYPE = { combat: 'battle_ruins', wave: 'battle_tide', boss: 'boss_arena' };
-// T3: sprite del enemigo (anclado, transparente) — bosses por id, resto por tipo.
-const ENEMY_BY_NODE = { a1n5: 'heraldo', a1n9: 'devorador', a2n5: 'coloso', a2n10: 'heraldo' };
-const ENEMY_BY_TYPE = { combat: 'bruto', wave: 'coloso', boss: 'devorador' };
+// combate_b: la escena (Phaser, CombatStage) dibuja fondo, enemigos y héroes; este panel es solo el HUD.
+// Retratos (Q6): ícono de clase del kit B, sin arte del set viejo (R42).
+const CLASS_ICON = { warrior: 'sword', mage: 'star', ranger: 'bow', paladin: 'shield', rogue: 'sword' };
+export const classIcon = (h) => CLASS_ICON[h?.class] || h?.skill?.icon || 'sword';
+
+const ADVANCE_PAUSE_MS = 300;   // R17: pausa tras `combat:round-done`
+const IDLE_ADVANCE_MS = 2000;   // auto-avance sin escena (o antes de la primera ronda)
+const SCENE_FALLBACK_MS = 4000; // R19b: la escena no responde
 
 export default function CombatInstancePanel({ onClose }) {
   const activeRun = useGameStore((s) => s.activeRun);
@@ -20,155 +25,110 @@ export default function CombatInstancePanel({ onClose }) {
   const addNotification = useGameStore((s) => s.addNotification);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
+  const [playing, setPlaying] = useState(false);       // la escena está reproduciendo una ronda
+  const [step, setStep] = useState(null);              // última ronda resuelta → CombatStage
+  const [stageMode, setStageMode] = useState('loading');
+  const modeRef = useRef('loading');
+  const mounted = useRef(true);
+  const stepSeq = useRef(0);
+  const pendingResult = useRef(null);                  // resultado recibido, a la espera de round-done
+  const pendingSkill = useRef(null);                   // habilidad pedida durante la reproducción (R17)
+  const fallbackTimer = useRef(null);
+  const initialState = useRef(activeRun?.state);
 
-  // ── Fase B: escenario de combate — unidades que se mueven (embate/retroceso/
-  //    muerte), disparado de deltas REALES del estado por ronda. ──
-  const [floaters, setFloaters] = useState([]);   // números de daño al enemigo
-  const [flashKey, setFlashKey] = useState(0);     // remonta el sprite → replay hitFlash
-  const [shaking, setShaking] = useState(false);   // screen-shake defensivo
-  const [heroFx, setHeroFx] = useState({});        // { slot: { type, key } }
-  const [motion, setMotion] = useState({ type: null, key: 0 }); // enemigo: attack|recoil
-  const prevEnemyHp = useRef(null);
-  const prevHeroHp = useRef({});
-  const floatId = useRef(0);
-  const shakeTimer = useRef(null);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; clearTimeout(fallbackTimer.current); };
+  }, []);
 
-  const spawnFloater = (text, color) => {
-    const id = ++floatId.current;
-    const left = 42 + Math.random() * 16;
-    setFloaters((f) => [...f, { id, text, color, left }]);
-    setTimeout(() => setFloaters((f) => f.filter((x) => x.id !== id)), 1000);
+  const onMode = (m) => { modeRef.current = m; setStageMode(m); };
+
+  // La escena terminó de reproducir la ronda (o venció el plazo): libera el bloqueo / muestra el resultado.
+  const release = () => {
+    clearTimeout(fallbackTimer.current);
+    if (!mounted.current) return;
+    if (pendingResult.current) {
+      const r = pendingResult.current;
+      pendingResult.current = null;
+      setResult(r);
+    }
+    setPlaying(false);
   };
+  const releaseRef = useRef(release);
+  releaseRef.current = release;
+
+  useEffect(() => {
+    const h = (info) => releaseRef.current(info);
+    EventBridge.on('combat:round-done', h);
+    return () => EventBridge.off('combat:round-done', h);
+  }, []);
 
   const doStep = async (action) => {
-    if (busy || result) return;
-    if (action.type === 'skill') {
-      // Conjuro: el héroe se abalanza (lunge grande) + chispa.
-      setHeroFx((p) => ({ ...p, [action.slot]: { type: 'cast', key: Date.now() } }));
-    }
+    if (result) return;
+    if (playing && action.type === 'skill') { pendingSkill.current = action; return; }
+    if (busy || playing) return;
     setBusy(true);
     try {
       const r = await stepInstance(action);
-      if (r?.result) setResult(r.result);
+      if (!mounted.current) return;
+      const unavailable = modeRef.current === 'unavailable';
+      if (!unavailable) {
+        const st = r?.state ?? useGameStore.getState().activeRun?.state;
+        if (st) {
+          stepSeq.current += 1;
+          setStep({ id: stepSeq.current, state: st, roundLog: r?.roundLog, action, result: r?.result ?? null });
+        }
+      }
+      if (r?.result) {
+        if (unavailable) setResult(r.result);          // R19c: sin escena, banner en el mismo tick
+        else {
+          pendingResult.current = r.result;            // R5: el resultado sale de data.result
+          setPlaying(true);                            // no se avanza más: solo falta mostrar el desenlace
+          clearTimeout(fallbackTimer.current);
+          fallbackTimer.current = setTimeout(() => releaseRef.current(), SCENE_FALLBACK_MS);
+        }
+      } else if (!unavailable) {
+        setPlaying(true);
+        clearTimeout(fallbackTimer.current);
+        fallbackTimer.current = setTimeout(() => releaseRef.current(), SCENE_FALLBACK_MS);
+      }
     } catch (e) {
       addNotification(e.response?.data?.error || 'No se pudo resolver la ronda', 'error');
-    } finally { setBusy(false); }
+    } finally { if (mounted.current) setBusy(false); }
   };
 
-  // Auto-avance (~2s): combate idle-friendly.
+  // Auto-avance: ~2 s sin escena; con escena, 300 ms después de que termina la ronda (R17).
+  // Una habilidad en cola sale aquí, una sola vez.
   useEffect(() => {
-    if (!activeRun || result || busy) return;
-    const t = setTimeout(() => { doStep({ type: 'advance' }); }, 2000);
+    if (!activeRun || result || busy || playing) return undefined;
+    const delay = step && stageMode === 'ready' ? ADVANCE_PAUSE_MS : IDLE_ADVANCE_MS;
+    const t = setTimeout(() => {
+      const queued = pendingSkill.current;
+      pendingSkill.current = null;
+      doStep(queued || { type: 'advance' });
+    }, delay);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRun?.state?.round, result, busy]);
-
-  // Coreografía por ronda: deltas del server → animaciones de unidades.
-  const stateObj = activeRun?.state;
-  useEffect(() => {
-    if (!stateObj) return;
-    // Daño al enemigo → retrocede + número flotante; los héroes vivos embisten.
-    if (prevEnemyHp.current != null) {
-      const d = prevEnemyHp.current - stateObj.enemy.hp;
-      if (d > 0) {
-        spawnFloater(`-${d}`, '#ff5a4d');
-        setFlashKey((k) => k + 1);
-        setMotion({ type: 'recoil', key: Date.now() });
-        const k = Date.now();
-        setHeroFx((prev) => {
-          const next = { ...prev };
-          stateObj.heroes.forEach((h) => { if (h.alive) next[h.slot] = { type: 'lunge', key: k + h.slot }; });
-          return next;
-        });
-      }
-    }
-    prevEnemyHp.current = stateObj.enemy.hp;
-    // Daño a héroes → flash rojo + shake + el enemigo embiste.
-    let hurt = false;
-    const fxu = {};
-    stateObj.heroes.forEach((h) => {
-      const prev = prevHeroHp.current[h.slot];
-      if (prev != null && prev - h.hp > 0) { hurt = true; fxu[h.slot] = { type: 'hit', key: Date.now() + h.slot }; }
-      prevHeroHp.current[h.slot] = h.hp;
-    });
-    if (Object.keys(fxu).length) setHeroFx((prev) => ({ ...prev, ...fxu }));
-    if (hurt) {
-      setShaking(true);
-      clearTimeout(shakeTimer.current);
-      shakeTimer.current = setTimeout(() => setShaking(false), 480);
-      setMotion({ type: 'attack', key: Date.now() + 1 });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateObj]);
-
-  useEffect(() => () => clearTimeout(shakeTimer.current), []);
+  }, [activeRun?.state?.round, result, busy, playing, stageMode]);
 
   if (!activeRun) { onClose(); return null; }
   const { node, state } = activeRun;
 
   const close = () => { clearActiveRun(); onClose(); };
   const enemyPct = Math.max(0, Math.round((state.enemy.hp / state.enemy.maxHp) * 100));
-  const dead = enemyPct <= 0;
-  const bgFile = BG_BY_TYPE[node.type] || 'battle_ruins';
-  const enemyFile = ENEMY_BY_NODE[node.id] || ENEMY_BY_TYPE[node.type] || 'bruto';
-
-  const motionClass = motion.type === 'attack' ? 'fx-enemy-lunge'
-    : motion.type === 'recoil' ? 'fx-enemy-recoil' : '';
 
   return (
-    <div className={`fixed inset-0 z-50 flex flex-col p-4 pb-28 overflow-hidden ${shaking ? 'animate-shake' : ''}`}
-      style={{ background: '#0c090c' }}>
-      {/* Diorama de fondo con ken-burns lento. */}
-      <div className="absolute inset-0 fx-driftzoom" style={{
-        zIndex: 0,
-        backgroundImage: `url(/assets/game/dioramas/${bgFile}.png)`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }} />
-      <div className="absolute inset-0" style={{
-        zIndex: 1,
-        background: 'linear-gradient(rgba(12,9,12,0.62), rgba(12,9,12,0.88))',
-      }} />
-      <EmberField count={18} color="#e8933a" maxOpacity={0.7} className="z-[2]" />
-      <div className="fx-torch-vignette fx-flicker" style={{ zIndex: 2 }} />
+    <div className="fixed inset-0 z-50 flex flex-col p-4 pb-28 overflow-hidden" style={{ background: KH.ink }}>
+      <CombatStage state={initialState.current} node={node} step={step} onMode={onMode} />
 
-      {/* Enemigo: unidad centrada por flex — respira, embiste, retrocede, se
-          vuelca al morir. Anidamos motion(wrapper) × idle(img) para componer
-          transforms sin pisarse. */}
-      <div className="absolute left-0 right-0 flex justify-center pointer-events-none" style={{ top: '15%', zIndex: 3 }}>
-        <div key={motion.key} className={motionClass}>
-          <img
-            key={flashKey}
-            src={`/assets/game/enemies/${enemyFile}.png`}
-            alt=""
-            className={dead ? 'fx-enemy-topple' : ''}
-            style={{
-              height: node.type === 'boss' ? 'calc(var(--kh-frame-h) * 0.36)' : 'calc(var(--kh-frame-h) * 0.29)',
-              filter: 'drop-shadow(0 10px 16px rgba(0,0,0,0.7))',
-              animation: dead ? undefined : `breathe 3.2s ease-in-out infinite${flashKey ? ', hitFlash 0.32s ease-out' : ''}`,
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Números de daño flotantes sobre el enemigo. */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 4 }}>
-        {floaters.map((f) => (
-          <span key={f.id} className="fx-floatup absolute font-bold font-display" style={{
-            left: `${f.left}%`, top: '26%', color: f.color, fontSize: '22px',
-            textShadow: '0 2px 4px rgba(0,0,0,0.9)',
-          }}>{f.text}</span>
-        ))}
-      </div>
-
-      {/* ── Contenido (por encima de la escena) ── */}
-      <div className="relative flex flex-col flex-1 min-h-0" style={{ zIndex: 10 }}>
+      {/* ── HUD (por encima de la escena; solo lo interactivo captura toques, el resto deja pasar el salto) ── */}
+      <div className="relative flex flex-col flex-1 min-h-0 pointer-events-none" style={{ zIndex: 10 }}>
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-kh-bone font-bold flex items-center gap-2 font-display">
             <SpriteIcon name={node.type === 'boss' ? 'skull' : 'sword'} size={28} />
             {node.name} · ronda {state.round}/{state.maxRounds}
           </h2>
-          <button type="button" aria-label="Cerrar" onClick={close} className="kh-close" style={{ minWidth: 44, minHeight: 44 }} />
+          <button type="button" aria-label="Cerrar" onClick={close} className="kh-close pointer-events-auto" style={{ minWidth: 44, minHeight: 44 }} />
         </div>
 
         {/* Enemigo — barra de vida */}
@@ -179,50 +139,29 @@ export default function CombatInstancePanel({ onClose }) {
 
         <div className="flex-1" />
 
-        {/* Fila de UNIDADES de héroe (retratos painterly): embisten al golpear,
-            destellan al recibir, caen al morir. Tap = disparar habilidad. */}
+        {/* Fila de héroes: ícono de clase, energía y toque = habilidad. */}
         <div className="flex justify-center items-end gap-2 flex-wrap mb-2">
           {state.heroes.map((h) => {
             const ready = h.alive && h.energy >= h.energyMax;
-            const fx = heroFx[h.slot];
-            const portrait = h.heroId ? `/assets/game/heroes/${h.heroId}.png` : null;
-            const lunging = h.alive && (fx?.type === 'cast' || fx?.type === 'lunge');
-            const animClass = !h.alive ? 'fx-hero-down' : (lunging ? 'fx-hero-lunge' : '');
             return (
               <button key={h.slot} onClick={() => doStep({ type: 'skill', slot: h.slot })}
                 disabled={!ready || busy || !!result}
-                className="relative flex flex-col items-center" style={{ width: 60 }}>
+                className="relative flex flex-col items-center pointer-events-auto" style={{ width: 60, minHeight: 44 }}>
                 {ready && (
                   <span className="absolute -top-2 z-10 text-xs font-bold text-kh-brass-light px-1 rounded"
                     style={{ left: '50%', transform: 'translateX(-50%)', backgroundColor: KH.ink }}>¡TAP!</span>
                 )}
-                <div key={!h.alive ? 'dead' : (fx?.key || 'idle')} className={animClass}>
-                  <div className={`relative rounded-lg overflow-hidden ${ready ? 'fx-ring-ready' : ''}`}
-                    style={{
-                      width: 52, height: 52,
-                      border: `2px solid ${ready ? KH['brass-light'] : KH.iron}`,
-                      backgroundImage: portrait ? `url(${portrait})` : 'none',
-                      backgroundColor: portrait ? KH.ink : KH.oak,
-                      backgroundSize: 'cover', backgroundPosition: 'center top',
-                    }}>
-                    {!portrait && (
-                      <span className="absolute inset-0 flex items-center justify-center text-xl"><SpriteIcon name={h.skill.icon || 'sword'} size={28} /></span>
-                    )}
-                    {fx?.type === 'hit' && (
-                      <span key={fx.key} className="fx-rowhit absolute inset-0" style={{ background: '#b32821' }} />
-                    )}
-                    {fx?.type === 'cast' && (
-                      <span key={fx.key} className="fx-castspark absolute" style={{
-                        left: '50%', top: '50%', width: 34, height: 34, marginLeft: -17, marginTop: -17,
-                        borderRadius: '9999px', background: 'radial-gradient(circle, #ffe9a8 0%, #ffb020 55%, transparent 72%)',
-                      }} />
-                    )}
-                    {!h.alive && (
-                      <span className="absolute inset-0 flex items-center justify-center text-lg"><SpriteIcon name="skull" size={28} /></span>
-                    )}
-                  </div>
+                <div className={`relative rounded-lg overflow-hidden ${ready ? 'fx-ring-ready' : ''}`}
+                  style={{
+                    width: 52, height: 52,
+                    border: `2px solid ${ready ? KH['brass-light'] : KH.iron}`,
+                    backgroundColor: KH.oak,
+                    opacity: h.alive ? 1 : 0.55,
+                  }}>
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <SpriteIcon name={h.alive ? classIcon(h) : 'skull'} size={28} />
+                  </span>
                 </div>
-                {/* Energía */}
                 <div className="mt-1 w-full">
                   <Bar value={h.energy} tone={ready ? 'ember' : 'macula'} label={`Energía de ${h.name}`} />
                 </div>
@@ -233,18 +172,20 @@ export default function CombatInstancePanel({ onClose }) {
         </div>
 
         {/* Avanzar / resultado */}
-        {result ? (
-          <ResultBanner
-            outcome={result === 'victory' ? 'victory' : 'defeat'}
-            title={result === 'victory' ? '¡Victoria!' : 'Derrota'}
-            onClose={close}
-            closeLabel="Volver"
-          />
-        ) : (
-          <Button variant="primary" onClick={() => doStep({ type: 'advance' })} disabled={busy} className="w-full">
-            {busy ? '...' : 'Avanzar ronda'}
-          </Button>
-        )}
+        <div className="pointer-events-auto">
+          {result ? (
+            <ResultBanner
+              outcome={result === 'victory' ? 'victory' : 'defeat'}
+              title={result === 'victory' ? '¡Victoria!' : 'Derrota'}
+              onClose={close}
+              closeLabel="Volver"
+            />
+          ) : (
+            <Button variant="primary" onClick={() => doStep({ type: 'advance' })} disabled={busy || playing} className="w-full">
+              {busy ? '...' : 'Avanzar ronda'}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Fanfarria de resultado. */}
