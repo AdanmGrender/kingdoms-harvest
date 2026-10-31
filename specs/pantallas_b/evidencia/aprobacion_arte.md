@@ -79,3 +79,31 @@ Editar el prompt en `art-b/menu/manifest.json` y correr (el perfil ya tiene sesi
 `NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules node scripts/gen_art_web.js --manifest art-b/menu/manifest.json --only <id> --force`, luego `node art-b/menu/process.js`. No hay que tocar código: `MainMenu` y `useMapBackground` pintan lo que haya en esas rutas.
 
 Nota de entorno: `msedge` no está en la ruta estándar de Playwright en esta máquina; se lanzó con un wrapper local (fuera del repo) que fuerza `executablePath` de EdgeCore 156. No se modificó `gen_art_web.js`.
+
+## Ronda 2 (2026-10-31) — `key_art` regenerado, pendiente de veredicto de p-kh
+
+- Solo se regeneró `menu/key_art.webp` (1 llamada web, `gen_art_web.js --only key_art --force`, mismo aspect 9:16 y misma ref). `marca` y `reinos` no cambian (re-procesados: bytes idénticos, `git status` sin cambios en ellos). La versión anterior queda en `D:/Proyectos/_ops/art-raw/pantallas_b_menu/key_art_v1.png` (fuera del repo).
+- Prompt: el que dejó p-kh arriba, tal cual, ya en `art-b/menu/manifest.json` (id `key_art`).
+- Nota de entorno: `msedge` no está en la ruta de Playwright; se lanzó con un wrapper local (fuera del repo) que fuerza `executablePath` de EdgeCore 156. `gen_art_web.js` no se tocó.
+- Archivo: `client/public/assets/b/menu/key_art.webp`, 768×1376, **60,6 KB** (≤ 250 KB).
+- Hojas para mirar: `evidencia/arte/contacto_arte.webp` (key_art | marca | reinos) y `evidencia/arte/contacto_menu_con_arte.webp` (menú con arte en 360×740 | 360×800 | 412×915). Capturas: `evidencia/despues_arte/*__menu.webp` (reemplazadas; Sistema y Galaxia no cambian).
+- **El implementer no tiene visión de imagen**: lo de abajo son mediciones, no sustituyen la mirada de p-kh. Hay que confirmar a ojo: sin texto horneado, sin verde, castillo en ruinas en el cuarto inferior, cielo calmo detrás de título y botones, estilo coherente con B.
+
+### Mediciones (`art-b/menu/perfil_vertical.js` → `evidencia/arte/perfil_vertical_key_art.json`)
+
+Energía de borde (gradiente medio de luminancia) y luminancia por banda del 5 % de alto:
+
+| Franja | v1 (anterior) | v2 (nueva) |
+|---|---|---|
+| 25–75 % (detrás del bloque del menú): bordes / lum | 15,6 / 60,7 | **0,6 / 86,4** |
+| fuera (0–20 % y 80–100 %): bordes / lum | 3,4 / 35,0 | 11,5 / 58,4 |
+
+- Todo el detalle está ahora en 75–100 % (bordes 7–23 por banda); la banda 25–75 % queda lisa (bordes ≤ 2,1 salvo 70–75 %). Píxeles cálidos brillantes (llama, R>180 y R>G+40): 0 % por encima del 75 %, 1,05 % en 75–80 % (la llama arranca en el borde del cuarto inferior, no en la franja del menú).
+- Riesgo a mirar: la franja calma es **lisa y algo más clara** (lum 80–104) que la v1 (cielo plano de aguada, casi sin rayado), por lo que puede leerse «vacía»; si p-kh la quiere con rayado denso, hay que pedirlo en otra vuelta.
+- **R22** (contraste de texto con la capa `ink` 0,7, por tercio; `contraste_menu.json`): `bone` p95 9,7–11,3; `brass-light` p95 6,9–8,1; `bone-dim` p95 4,9–5,7 y p99 4,6–5,3 → todo ≥ 4,5 incluso en el 1 % más claro.
+- Capturas: 3 dispositivos, `errores: []`, `nBotones` 2 (igual que antes), `botonesBajo44` vacío. Media de luminancia de la captura del menú con arte: 44–46 (con v1: ver `comparacion_capturas.json` de bfd37cd).
+- Servicios de captura (Vite :5173 y server :3001 propios, con `SKIP_AUTH`) bajados al terminar; no se tocaron :3101 ni :5180.
+
+### Si p-kh dice `REGENERAR` otra vez
+
+Alternativa ya propuesta arriba: mover el bloque del menú (`justify-end` con margen inferior en `MainMenu.jsx`), decisión del leader porque toca T9.

@@ -1,0 +1,157 @@
+{
+ "archivo": "key_art.webp",
+ "w": 768,
+ "h": 1376,
+ "bandas": [
+  {
+   "desdePct": 0,
+   "hastaPct": 5,
+   "lumMedia": 32.8,
+   "bordes": 2.4,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 5,
+   "hastaPct": 10,
+   "lumMedia": 43,
+   "bordes": 3.9,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 10,
+   "hastaPct": 15,
+   "lumMedia": 60.3,
+   "bordes": 3.8,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 15,
+   "hastaPct": 20,
+   "lumMedia": 67.3,
+   "bordes": 3.1,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 20,
+   "hastaPct": 25,
+   "lumMedia": 69,
+   "bordes": 1.2,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 25,
+   "hastaPct": 30,
+   "lumMedia": 76.5,
+   "bordes": 0.7,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 30,
+   "hastaPct": 35,
+   "lumMedia": 80.2,
+   "bordes": 0.1,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 35,
+   "hastaPct": 40,
+   "lumMedia": 80.3,
+   "bordes": 0,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 40,
+   "hastaPct": 45,
+   "lumMedia": 80.4,
+   "bordes": 0,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 45,
+   "hastaPct": 50,
+   "lumMedia": 82,
+   "bordes": 0.3,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 50,
+   "hastaPct": 55,
+   "lumMedia": 89.6,
+   "bordes": 0.5,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 55,
+   "hastaPct": 60,
+   "lumMedia": 98.5,
+   "bordes": 0.7,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 60,
+   "hastaPct": 65,
+   "lumMedia": 87.1,
+   "bordes": 0.5,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 65,
+   "hastaPct": 70,
+   "lumMedia": 91.3,
+   "bordes": 1,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 70,
+   "hastaPct": 75,
+   "lumMedia": 98.5,
+   "bordes": 2.1,
+   "calidoBrillantePct": 0.03
+  },
+  {
+   "desdePct": 75,
+   "hastaPct": 80,
+   "lumMedia": 104.3,
+   "bordes": 7.2,
+   "calidoBrillantePct": 1.05
+  },
+  {
+   "desdePct": 80,
+   "hastaPct": 85,
+   "lumMedia": 88.1,
+   "bordes": 14.6,
+   "calidoBrillantePct": 0.04
+  },
+  {
+   "desdePct": 85,
+   "hastaPct": 90,
+   "lumMedia": 79.3,
+   "bordes": 18.6,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 90,
+   "hastaPct": 95,
+   "lumMedia": 51.5,
+   "bordes": 22.7,
+   "calidoBrillantePct": 0
+  },
+  {
+   "desdePct": 95,
+   "hastaPct": 100,
+   "lumMedia": 44.5,
+   "bordes": 22.8,
+   "calidoBrillantePct": 0
+  }
+ ],
+ "resumen": {
+  "franja25_75": {
+   "lum": 86.4,
+   "bordes": 0.6
+  },
+  "fuera": {
+   "lum": 58.4,
+   "bordes": 11.5
+  }
+ }
+}
