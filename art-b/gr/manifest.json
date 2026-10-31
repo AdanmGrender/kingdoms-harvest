@@ -79,5 +79,14 @@
       "art-b/gr/refs/mage_idle.webp"
     ],
     "prompt": "a game character POSE SHEET: exactly TWO full-body figures of the SAME character side by side with a wide empty gap between them, both in three-quarter view facing right, same scale, both standing on the same baseline, feet fully visible, no third figure, no extra limbs, no inset panels, no item callouts. The character is EXACTLY the reference wizard (towering crooked bell-hung hat with bird skulls, patched ochre and faded blue robes with fur collar, absurdly long braided beard with iron rings, wild eyes, gnarled staff topped with an iron cage holding a sickly-green spark, chained books). Do NOT draw any sword. LEFT figure: idle, leaning on the staff, one oversized hand crackling green. RIGHT figure: casting, staff thrust forward to the right with both hands, robes and beard whipping back, a burst of crackling sickly-green lightning from the staff head"
+  },
+  {
+    "id": "sheet_paladin",
+    "kind": "ui",
+    "aspect": "16:9",
+    "refs": [
+      "art-b/gr/refs/mage_idle.webp"
+    ],
+    "prompt": "a game character POSE SHEET: exactly TWO full-body figures of the SAME character side by side with a wide empty gap between them, both in three-quarter view facing right, same scale, both standing on the same baseline, feet fully visible, no third figure, no extra limbs, no inset panels, no item callouts. Use the reference ONLY for art style (do not draw the wizard). The character: a battered zealot paladin of a plague-ridden Renaissance world, heroic oversized head, hands and shoulder pauldrons, dented bell-shaped great helm with a cracked visor and a tattered ox-blood plume, heavy rusted plate armour patched with leather and bandages, a huge kite shield nailed with prayer scrolls and wax seals and a painted bleeding sun, a spiked flanged mace, a small hanging censer chained to the belt trailing incense smoke, tabard in bone and dried-blood red. LEFT figure: stoic idle, shield planted before him, mace resting on the shoulder. RIGHT figure: furious attack, one big step forward, body leaning right, mace swung in a heavy overhead arc smashing toward the right, shield held forward, mouth open in a battle prayer"
   }
 ]
