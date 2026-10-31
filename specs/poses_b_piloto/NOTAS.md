@@ -88,10 +88,10 @@ fluidez en el combate B **sin animación cuadro a cuadro**. Decide el owner si s
 - Orden: 1) héroes jugables restantes (paladin, rogue, mage…, siempre en pantalla); 2) enemigos comunes por frecuencia de aparición; 3) jefes/élites al final.
 - **Ref = solo el idle v2** (nunca v1 ni `art-b/raw`); con idle+hit como ref la web dibujó dos figuras.
 - **KO** con «no blood, no red liquid, no gore» explícito y silueta más baja/ancha que el idle (arrodillado / apoyado en una mano), arma caída en el suelo.
-- **Normalizar escala por cabeza** al procesar (misma escala por hoja; ajustar con `measure.js`), no por bbox.
+- **Normalizar escala por cabeza** al procesar (misma escala por hoja; ajustar con `measure_body.js`), no por bbox.
 - Presupuesto: ~1 regeneración cada 6 poses.
 
-## r3 — ronda 2 de review: escala por cabeza (reproceso gratis, sin generar; 6 de 8)
+## r3 — ronda 2 de review: escala por cabeza (SUSTITUIDA por la ronda 3, más abajo)
 - Herramienta nueva: `art-b/poses_piloto/measure_head.js` (máscara alfa abierta con R=26: quita hoja, plumas y cuchillas finas). Cabeza = coronilla del sombrero → línea de hombros (1ª fila con ancho ≥ 0,75 × mediana del torso). Altura = coronilla (R=26) → pies (R=16). Sin visión: es geometría, no segmentación semántica.
 - Mediciones (px; idle = referencia: cabeza 146, altura 578, torso 376):
 
@@ -111,3 +111,28 @@ fluidez en el combate B **sin animación cuadro a cuadro**. Decide el owner si s
 - Alfa (`verify_alpha_b.js`): hit/skill/ko/victory OK (esquinas 0, borde 100 % transparente, 1 componente); bruto_ko: esquinas 0, 2 componentes (cuchilla caída a propósito).
 - Evidencia regenerada: `contact_poses.webp`, `despues.webm` (13,5 s, 58 fps, 0 errores). Suites cliente 34 archivos / 625 tests OK; `npm run build` OK.
 - Higiene: el vite huérfano pid 20060 sigue escuchando en [::1]:5174; el cierre sin forzar falla («solo se puede terminar de forma forzada») y el kill forzado está bloqueado en esta sesión → frenarlo a mano. No se lanzó ningún vite nuevo (la grabación usó ese mismo servidor, que sirve este worktree).
+
+## r3 — ronda 3 de review: método único de medida (sin generar; 6 de 8; arte sin cambios)
+Esta sección **sustituye** las cifras de «ronda 2» (648/694/589, «≈150», «no separable»): esas mezclaban radios de máscara y a mano.
+
+- **Herramienta única**: `art-b/poses_piloto/measure_body.js` (`R=14 node measure_body.js warrior_idle.webp <pose>…`, máscara alfa abierta R=14: quita hoja, plumas y cuchillas). Toda cifra de abajo sale de ahí; `measure.js`/`measure_head.js` quedan solo como histórico. Medidas (px, desde la coronilla):
+  - `h` = coronilla→suela; `head` = coronilla→hombros (cuello = fila de ancho mínimo entre y=100 y 40 % del alto; hombros = 1ª fila bajo el cuello con ancho ≥ 1,2× el del cuello);
+  - `legs` = entrepierna→suela; `boot` = ancho máx. de bota (último 6 %); `torso` = mediana de ancho entre 30–55 % del alto; `waist` = ancho mínimo entre hombros+30 y entrepierna−30.
+  - `legs`, `boot` y `h` **no dependen de los brazos ni de la hoja alzada**: sirven de control de escala cuando la cabeza se funde con el brazo (skill/victory).
+- Resultados (ratio pose/idle):
+
+| pose | h | head | legs | boot | torso | waist |
+|---|---|---|---|---|---|---|
+| idle | 607 | 166 | 165 | 95 | 369 | 202 |
+| attack (aprobada) | 604 (1,00) | 156 (0,94) | 168 (1,02) | 94 (0,99) | 277 (0,75) | 183 (0,91) |
+| hit (×1,419) | 697 (1,15) | 159 (0,96) | 217 (1,32) | 67 (0,71) | 344 (0,93) | 279 (1,38) |
+| skill (×1,267) | 610 (1,00) | 189 (1,14) | 164 (0,99) | 89 (0,94) | 298 (0,81) | 168 (0,83) |
+| victory (×1,267) | 599 (0,99) | 142 (0,86) | 169 (1,02) | 85 (0,89) | 265 (0,72) | 172 (0,85) |
+
+- **Altura de hit (una sola cifra: 697 px = 1,15×)**; las 648/694/589 anteriores eran la misma pose medida con R, referencia y zona distintas, y se retiran. 1,15× viene del retroceso (piernas abiertas `legs` 1,32×, bota de perfil 0,71×), no de la cabeza (0,96×) ni del torso (0,93×).
+- **Cabeza de skill/victory (medida, ya no «no separable»)**: 189 px (1,14×) y 142 px (0,86×). Con R=14 el cuello sí se separa del brazo. Ambas están en la hoja con el mismo ×1,267 y su media es 1,00×; el ±14 % entre ellas es ruido de la línea de hombros (brazo alzado), no de escala: lo confirman `legs` (0,99/1,02), `boot` (0,94/0,89) y `h` (1,00/0,99), que no dependen del brazo. Sin reescalar.
+- **Torso de hit/skill/victory**: hit 0,93× (dentro de ±10 %: sin cambio). Skill 0,81× y victory 0,72× son **de la pose**, medido en la propia pose: la cintura (`waist`, sin brazos) da 0,83× / 0,85×, y la proporción cintura/cabeza de victory es 172/142 = 1,21 (idle 202/166 = 1,22): el cuerpo guarda la proporción del idle, solo se ve de tres cuartos con el brazo alzado. Igualar el ancho de torso exigiría ×1,2–1,4 y llevaría `legs`/`h` a 1,2–1,4× (más alto que idle). Se prioriza cabeza/altura; ancho de torso **fuera de tolerancia en skill/victory por la pose, sin reescalar** → ojo de p-kh.
+- **KO (reproducible)**: `measure_head.js` (R=26): coronilla→hombros 114 vs 146 = **0,78×** (reproduce lo del reviewer); `measure_body.js`: 110 vs 166 = 0,66×. La cifra «≈150 por perfil de filas» **se retira**: no la produce ningún script. Con la cabeza gacha la «línea de hombros» sube y la distancia coronilla→hombros se acorta por escorzo, así que 0,66–0,78× es un **mínimo**, no una cabeza más chica de verdad. Justificación: el KO sale de la misma hoja y del mismo ×1,267 que skill/victory, cuya cabeza promedia 1,00×. Se deja sin cambio. **No cumple a la letra** «igualar la cabeza»: si p-kh la ve chica, ×1,28 (114→146) se reprocesa gratis, pero llevaría el KO a ≈ 550 px de alto (casi de pie).
+- Intentadas y descartadas (no versionadas): correlación de plantilla de la cabeza del idle (NCC 0,31–0,45, sin pico) y segmentación por color de piel (paleta ocre ≈ sepia; ruido).
+- Alfa/evidencia: sin cambio de arte → `contact_poses.webp` y `despues.webm` siguen vigentes; vitest y build se repiten antes del commit.
+- Higiene: vite huérfano pid 20060 (:5174) sigue vivo; no se puede matar en esta sesión (forzado bloqueado). **Frenarlo a mano.**
