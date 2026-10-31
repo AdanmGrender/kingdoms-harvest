@@ -24,7 +24,7 @@ Cada tarea se cierra con `Evidencia:` inline (comando + salida real, no resumen)
 
 > El owner decide S0/S1/S2 (design §11). Si decide S0, T8–T10 se marcan «no aplica» en `## Bloqueado` con la decisión y se pasa a T11. `GEMINI_API_KEY` la pone el owner en su entorno; nunca se escribe en el repo ni en `evidencia/`.
 
-- [ ] T8 — Lote 1 de arte: ampliar `art-b/gr/manifest.json` y `art-b/gr/process.sh` con hojas de `paladin` y `rogue` (S1) o de los 18 héroes (S2); generar con `node scripts/gen_art_b.js --manifest art-b/gr/manifest.json --only <ids>`; recortar con `scripts/process_art_b.js` (héroes `--height 640`, webp); hoja de contacto en fondo oscuro. **[GATE P1: p-kh aprueba]** antes de commitear. Cubre: R33, R34, R35.
+- [x] T8 — Lote 1 de arte: ampliar `art-b/gr/manifest.json` y `art-b/gr/process.sh` con hojas de `paladin` y `rogue` (S1) o de los 18 héroes (S2); generar con `node scripts/gen_art_b.js --manifest art-b/gr/manifest.json --only <ids>`; recortar con `scripts/process_art_b.js` (héroes `--height 640`, webp); hoja de contacto en fondo oscuro. **[GATE P1: p-kh aprueba]** antes de commitear. Cubre: R33, R34, R35. Evidencia: paladin_idle/attack + rogue_idle/attack (webp, --height 640) en client/public/assets/b/heroes/; P1 y P1r2 aprobados por p-kh, registrados en evidencia/aprobacion_arte.md; commits 3ef39a0, 4bc226f, 05ade22.
   - Evidencia:
 - [ ] T9 — Lote 2: 7 enemigos × {idle, hit} (`--height 720`) con la lista de design §11; hoja de contacto. **[GATE P2: p-kh aprueba]**. Cubre: R33, R34, R35.
   - Evidencia:
