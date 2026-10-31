@@ -202,15 +202,15 @@
       "id": 14,
       "name": "combate_pasivas_estados",
       "title": "Pasivas ejecutables y estados con duración",
-      "description": "Las 18 pasivas de HERO_CATALOG pasan a datos (passiveFx) y funcionan en v2; estados aturdido/quemadura/veneno/DEF↓/ATK↓/escudo/inmune. Ver docs/ROADMAP_combate_y_ciudad.md",
+      "description": "Las 18 pasivas de HEROES pasan a datos (passiveFx) y funcionan en v2; estados aturdido/quemadura/veneno/DEF↓/ATK↓/escudo/inmune. Ver docs/ROADMAP_combate_y_ciudad.md",
       "acceptance": [
         "Un test por pasiva verifica su texto actual",
         "El texto passive no cambia",
         "Reglas R-ND1..ND10 del roadmap cumplidas; suite servidor+cliente verde sin tocar tests existentes"
       ],
       "sdd": true,
-      "status": "pending",
-      "assignee": null
+      "status": "done",
+      "assignee": "spec-author"
     },
     {
       "id": 15,
