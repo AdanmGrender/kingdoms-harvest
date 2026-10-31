@@ -1,0 +1,43 @@
+# Tasks — `combate_b` (feature 7, B2)
+
+Orden estricto. Cada etapa cabe en ~1 h de worker. Rama `feature/combate_b` @`46d156d`. NO ejecutar `npm install`/`npm ci`. Puertos :5180 y :3101 son del owner (el preview lo levanta `bash D:/Proyectos/_ops/preview/arrancar.sh`).
+Cada tarea se cierra con `Evidencia:` inline (comando + salida real, no resumen). Tests de cliente: `cd client && npx vitest run <archivo>`.
+
+## Etapa A — Escena funcional con arte existente (0 USD)
+
+- [ ] T1 — Línea base y andamiaje: correr y registrar `Tests: N passed` de `cd server && npx jest --runInBand --forceExit` y `cd client && npx vitest run`; `ls client/public/assets/b/{heroes,enemies,bg,ui}`; crear `client/src/game/combat/` con `combatQuality.js` (`QUALITY`, `resolveQuality()`). Cubre: R46, R47, R53.
+  - Evidencia:
+- [ ] T2 — `eventPlanner.js` (`planRound`, `ROUND_BUDGET_MS`, `skip`, `lastT`, `reconcile`) + `client/src/tests/combatPlanner.test.js` con fixtures de los 8 kinds, malformados, dodge, shield, 4/12/40 eventos. Sin Phaser, sin `shared/`. Cubre: R3, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R18.
+  - Evidencia:
+- [ ] T3 — `v1Adapter.js` + `eventSource.js` + `client/src/tests/combatAdapter.test.js` (estados v1 de dos rondas, `eventsVersion:2`, v2 normal, sin status/passive en v1). Cubre: R20, R21, R22, R23.
+  - Evidencia:
+- [ ] T4 — `formation.js` + `artMap.js` + `client/src/tests/combatLayout.test.js` (n héroes 1–5 × m enemigos 1–4, `heroId:null`, 18 héroes, 13 nodos, ids desconocidos, `collectAssetKeys`, sin rutas `/assets/game/`, `ENEMY_HEIGHT_FRAC`). Cubre: R24, R25, R26, R27, R28, R29, R30, R32.
+  - Evidencia:
+- [ ] T5 — `CombatScene.js` + `createCombatGame.js` (portar del spike `spikes/001-combat-b/main.js`: fondo con deriva, respiración, hitStop, flash, embestida, partículas, vignette guardado con `if (cam.postFX)`; sin `rnd()` de daño ni `window.dispatchEvent`); placeholder de textura caída; `prefers-reduced-motion`. Test con Phaser simulado de los puntos de R31 y R47. Cubre: R3, R31, R46, R47.
+  - Evidencia:
+- [ ] T6 — `CombatStage.jsx` (contenedor `height: var(--kh-frame-h)`, FIT 824×1720, modo `unavailable`, `destroy(true)`, `combat:open/close/round-done`) + enganche de ≤ 15 líneas en `PhaserGame.jsx` (`game.loop.sleep()`/`wake()`). Test `client/src/tests/combatStage.test.jsx`. Cubre: R36, R37, R38, R39.
+  - Evidencia:
+- [ ] T7 — Adaptar `CombatInstancePanel.jsx`: quitar diorama/enemigo/retratos viejos y `prevEnemyHp/lunge/recoil`; montar `<CombatStage/>`; cola con `combat:round-done` (pausa 300 ms, skill diferida, fallback 4000 ms, `unavailable` inmediato); retratos con ícono de clase del kit (Q6). Sustituir solo las dos entradas `CAPS` de `pantallasB.test.jsx:81-82` por la comprobación de R27 y agregar `describe` de combate; ampliar `RE_VIEWPORT` a los archivos nuevos. Cubre: R4, R5, R17, R19, R40, R41, R42, R44, R45.
+  - Evidencia:
+
+## Etapa B — Arte nuevo (**solo con aprobación del owner del gasto**, Q3)
+
+> El owner decide S0/S1/S2 (design §11). Si decide S0, T8–T10 se marcan «no aplica» en `## Bloqueado` con la decisión y se pasa a T11. `GEMINI_API_KEY` la pone el owner en su entorno; nunca se escribe en el repo ni en `evidencia/`.
+
+- [ ] T8 — Lote 1 de arte: ampliar `art-b/gr/manifest.json` y `art-b/gr/process.sh` con hojas de `paladin` y `rogue` (S1) o de los 18 héroes (S2); generar con `node scripts/gen_art_b.js --manifest art-b/gr/manifest.json --only <ids>`; recortar con `scripts/process_art_b.js` (héroes `--height 640`, webp); hoja de contacto en fondo oscuro. **[GATE P1: p-kh aprueba]** antes de commitear. Cubre: R33, R34, R35.
+  - Evidencia:
+- [ ] T9 — Lote 2: 7 enemigos × {idle, hit} (`--height 720`) con la lista de design §11; hoja de contacto. **[GATE P2: p-kh aprueba]**. Cubre: R33, R34, R35.
+  - Evidencia:
+- [ ] T10 — Lote 3: 5 fondos 9:16 (`--scene --width 1080`); hoja de contacto. **[GATE P3: p-kh aprueba]**. Actualizar `ART_B` y los mapas de `artMap.js` (Q4) y sus tests. Cubre: R30, R33, R34, R35.
+  - Evidencia:
+
+## Etapa C — Verificación, rendimiento y cierre
+
+- [ ] T11 — Medición y capturas: levantar el preview del owner (`bash D:/Proyectos/_ops/preview/arrancar.sh`), jugar un combate `a1n3` entero con v1 (valor actual) y con v2 (solo en entorno local, sin commitear `engineVersion`); capturas con `node D:/Proyectos/_ops/capturas/capturar.mjs --tag combate_b --pantallas hub` (línea base del hub, que debe verse igual) y, como `PANTALLAS_DEF` (`capturar.mjs:26`) no incluye el combate, un script Playwright propio en `specs/combate_b/evidencia/` que entra a `a1n3` y captura cada ronda (412×860 @2x, webp en `evidencia/despues/`) o, si el owner lo prefiere, una pantalla `combat` agregada a `capturar.mjs` (fuera del repo); captura de red (0 peticiones a `/assets/game/`), consola limpia, `botonesBajo44: []`, fps medio y p5 en `evidencia/fps.json` (medio y bajo; emulador `kh_pixel7` si hay GPU, Q9). Cubre: R28, R43, R48, R49, R50.
+  - Evidencia:
+- [ ] T12 — Cierre: suites completas `cd server && npx jest --runInBand --forceExit` y `cd client && npx vitest run` (citar `Tests: N passed`, comparar con T1), `cd client && npm run build`; verificar R1, R2, R51, R52 con los `git diff` del requirements; `CHANGELOG.md` bajo `## [Unreleased]` solo cuando el reviewer apruebe. Cubre: R1, R2, R51, R52, R53.
+  - Evidencia:
+
+## Bloqueado
+
+(vacío)
