@@ -7,6 +7,9 @@ La historia anterior al harness (2026-10-20) está en `git log` y en
 
 ## [Unreleased]
 
+### Changed
+- Resto de pantallas en estilo B (B4) (`pantallas_b`)
+
 ### Fixed
 - Textos duplicados y en inglés en menú, operaciones e investigación (`fix_textos_ui`)
 
