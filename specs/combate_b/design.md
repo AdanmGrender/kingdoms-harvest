@@ -184,3 +184,7 @@ Recomendación: **S0 en Etapa A, S1 en Etapa B, S2 solo si el owner lo pide** (Q
 
 ### Respuestas del owner (2026-10-31, "apruebo todo")
 Todas según la recomendación de la tabla: Q1 Phaser.Game aparte + `loop.sleep()` del hub · Q2 `engineVersion` sigue en 1; el paso a 2 va después de F7, en commit propio · Q3 S0 en Etapa A, S1 en Etapa B (≈27 llamadas, ≈3,5 USD), S2 no · Q4 lista y mapeo de §11 · Q5 oleadas fuera de F7 · Q6 ícono de clase del kit · Q7 calidad solo en `localStorage` · Q8 2500+300 ms, un toque salta · Q9 emulador `kh_pixel7` + escritorio · Q10 `prefers-reduced-motion` sin shake/zoom · Q11 no se borra `assets/game/` en F7 · Q12 queda `in_progress`.
+
+### Enmienda del owner (2026-10-31)
+- HUD: una barra de vida por enemigo (R54, T10.5 al inicio de la Etapa C, antes de las capturas de T11). Cierra la observación 1 de review.md.
+- Etapa B: escenario S1 confirmado (no S2). Generación SOLO por la web (`scripts/gen_art_web.js`); la API key de Gemini ya no se usa. Las menciones a `GEMINI_API_KEY`/`gen_art_b.js` de este documento y de tasks.md quedan reemplazadas por eso.

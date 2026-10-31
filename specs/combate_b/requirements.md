@@ -175,7 +175,7 @@ El hub (`HubSceneB`) NO DEBE renderizar mientras el combate está abierto y DEBE
 - Verificación: test de `PhaserGame`: al recibir `combat:open` se llama `game.loop.sleep()` y al recibir `combat:close` `game.loop.wake()`; medición en `evidencia/fps.json` de fps del combate con el hub abierto detrás.
 
 ## R40
-El HUD React DEBE conservar: título con nodo y ronda, barra de vida del enemigo, fila de héroes con barra de energía y toque para habilidad (solo con `energy >= energyMax` y vivo), botón «Avanzar ronda», cierre `.kh-close` y `ResultBanner` con los textos «¡Victoria!», «Derrota» y «Volver».
+El HUD React DEBE conservar: título con nodo y ronda, barra de vida de cada enemigo (R54), fila de héroes con barra de energía y toque para habilidad (solo con `energy >= energyMax` y vivo), botón «Avanzar ronda», cierre `.kh-close` y `ResultBanner` con los textos «¡Victoria!», «Derrota» y «Volver».
 - Verificación: los tests T8 de `pantallasB.test.jsx` (`describe('pantallasB T8 — resultados')`) siguen en verde sin cambios de aserción; test nuevo del botón de habilidad.
 
 ## R41
@@ -233,3 +233,7 @@ El sistema NO DEBE borrar ningún archivo de `client/public/assets/game/` (`Hero
 ## R53
 Las suites completas del servidor y del cliente DEBEN pasar y el build del cliente DEBE completar sin errores.
 - Verificación: `cd server && npx jest --runInBand --forceExit` y `cd client && npx vitest run`, citando `Tests: N passed` de cada una; el N de la línea base se mide al inicio de T1 (se registra en `tasks.md`) y el N final no puede tener fallos nuevos; `cd client && npm run build` sin errores.
+
+## R54 [owner 2026-10-31]
+El HUD DEBE mostrar una barra de vida por cada enemigo del combate, no solo la del principal. Fuente: `state.enemies[]` (v2) o, si no existe, `[state.enemy]` (v1), en el orden en que llegan. Cada fila lleva el nombre del enemigo (o «Enemigo N» si no trae nombre) y su barra (`hp/maxHp`, piso 0); un enemigo con `hp <= 0` se ve atenuado y su barra en 0, sin desaparecer. Con 1 enemigo el HUD se ve como hoy. Con 4 enemigos el bloque no tapa la fila de héroes ni el botón «Avanzar ronda» en 412×860 y en aspecto > 2.1.
+- Verificación: test nuevo en `combatPanel` con estado de 1, 3 y 4 enemigos (cuenta de barras con `aria-label` «Vida de <nombre>», valores, atenuado del muerto); fallback v1 con solo `state.enemy`; los tests de R40 siguen verdes; capturas de T11 con 3+ enemigos.
