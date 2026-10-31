@@ -1,0 +1,18 @@
+[
+  {
+    "id": "warrior_poses",
+    "kind": "sheet",
+    "aspect": "16:9",
+    "out": "art-b/poses_piloto/raw/warrior_poses.png",
+    "refs": ["art-b/poses_piloto/refs/warrior_ref.png"],
+    "prompt": "A character pose sheet. The attached image shows the same armored warrior twice (idle stance on the left, attack on the right): keep his design IDENTICAL (rusted plate armor, open-face helmet, grey beard, dark red tabard, teal lantern on the belt, notched cleaver-sword). Draw that SAME warrior FOUR times in one horizontal row, left to right, each full body fully visible head to feet, same size, same ink style, evenly spaced with clear empty gaps so nothing touches or overlaps, all on ONE perfectly flat uniform light grey (#d0d0d0) background with no ground line, no floor, no cast shadow, no labels, no text. Pose 1 HIT: recoiling from a blow, torso thrown back, head snapped to the side, one foot sliding back, sword arm flung out, grimacing, facing right. Pose 2 SKILL: a battle-cry power move, sword raised high with both hands over the head, one knee bent, tabard flaring, teal lantern glowing brighter, facing right. Pose 3 KO: defeated, collapsed on both knees and falling forward, head bowed, the sword dropped and planted in the ground, facing right. Pose 4 VICTORY: triumphant, standing tall, the cleaver-sword thrust upward in one raised fist, other fist clenched, chest out, facing right"
+  },
+  {
+    "id": "bruto_poses",
+    "kind": "sheet",
+    "aspect": "16:9",
+    "out": "art-b/poses_piloto/raw/bruto_poses.png",
+    "refs": ["art-b/poses_piloto/refs/bruto_ref.png"],
+    "prompt": "A creature pose sheet. The attached image shows the same hulking warp-mutated brute twice (idle on the left, knocked back on the right): keep its design IDENTICAL (grey diseased skin, glowing teal veins, bolted rusted iron plates, stone-and-iron maul arm, small burning orange eyes). Draw that SAME brute TWICE in one horizontal row, each full body fully visible, same size, same ink style, with a wide clear empty gap between them so nothing touches or overlaps, all on ONE perfectly flat uniform light grey (#d0d0d0) background with no ground line, no floor, no cast shadow, no labels, no text. Pose 1 ATTACK: a brutal overhead smash, the stone-and-iron maul arm raised high behind the head and starting to slam down to the left, torso twisted, mouth open roaring, one heavy step forward, facing LEFT. Pose 2 KO: defeated, collapsing, falling onto its back with knees buckling, the maul arm dropping limp to the ground, head lolling, eyes dim, facing LEFT"
+  }
+]

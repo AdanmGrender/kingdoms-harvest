@@ -29,6 +29,7 @@ function parseArgs(argv) {
     if (t === '--tol') a.tol = Number(argv[++i]);
     else if (t === '--height') a.height = Number(argv[++i]);
     else if (t === '--width') a.width = Number(argv[++i]);
+    else if (t === '--scale') a.scale = Number(argv[++i]); // factor sobre el recorte (en vez de --height): conserva la proporción entre poses de una hoja
     else if (t === '--flip') a.flip = true;
     else if (t === '--scene') a.scene = true;
     else if (t === '--keep-ratio') a.keepRatio = Number(argv[++i]);
@@ -201,7 +202,8 @@ async function main() {
   }
   let nw = img.width, nh = img.height;
   const m = a.margin;
-  if (a.height) { nh = a.height - (m ? m + 1 : 0); nw = Math.round(img.width * (nh / img.height)); }
+  if (a.scale) { nh = Math.round(img.height * a.scale); nw = Math.round(img.width * a.scale); } // misma escala para todas las poses de una hoja (un KO más bajo queda más bajo)
+  else if (a.height) { nh = a.height - (m ? m + 1 : 0); nw = Math.round(img.width * (nh / img.height)); }
   else if (a.width) { nw = a.width; nh = Math.round(img.height * (a.width / img.width)); }
   if (nw !== img.width || nh !== img.height) img = resize(img, nw, nh);
   if (m) { // marco transparente: m px a los lados y arriba, 1 px abajo (el pie queda en la última fila útil)

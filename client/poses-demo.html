@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!-- SOLO DEV (piloto poses_b_piloto): `vite` lo sirve en /poses-demo.html; `vite build` solo empaqueta index.html, así que no entra al build de prod. -->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>poses_b — demo de combate (dev)</title>
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #0d0a08; overflow: hidden; }
+    #stage { width: 100vw; height: 100vh; }
+    #hud { position: fixed; left: 6px; top: 4px; font: 11px monospace; color: #c9b88a; z-index: 5; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="hud"></div>
+  <script type="module" src="/src/dev/posesDemo.js"></script>
+</body>
+</html>

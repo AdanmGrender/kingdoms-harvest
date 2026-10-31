@@ -107,7 +107,8 @@ async function openContext() {
   const { chromium } = require('playwright');
   fs.mkdirSync(PROFILE_DIR, { recursive: true });
   const ctx = await chromium.launchPersistentContext(PROFILE_DIR, {
-    channel: 'msedge',
+    // Edge ≥ 156 vive en ...\EdgeCore\<ver>\msedge.exe y Playwright no lo encuentra por canal: GEMINI_WEB_EDGE_EXE lo fija.
+    ...(process.env.GEMINI_WEB_EDGE_EXE ? { executablePath: process.env.GEMINI_WEB_EDGE_EXE } : { channel: 'msedge' }),
     headless: false,
     ignoreDefaultArgs: ['--enable-automation'],
     args: ['--disable-blink-features=AutomationControlled'],
