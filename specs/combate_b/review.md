@@ -1,49 +1,43 @@
-# Review — combate_b · Etapa B (T8–T10), S1 (rama `feature/combate_b`, commit revisado ccf3114)
+# Review — combate_b · Etapa B (T8–T10), S1 (rama `feature/combate_b`, commit revisado e43b3a1)
 
 ## Veredicto
-**CHANGES_REQUESTED — Etapa B (T8–T10), ronda 1** (lente artefacto + verificación de ejecución).
+**APPROVED — Etapa B (T8–T10), ronda 2** (lente de ejecución: se reprodujo lo reportado).
 
-Cambio requerido: `art-b/gr/process.sh` no incluye los recortes de paladin, rogue, los 14 enemigos ni los 5 fondos (T8 lo exige explícitamente). Ver «Cambios requeridos».
+Cierra los cambios requeridos de la ronda 1 (commit 9c39ef5): `art-b/gr/process.sh` ya contiene los recortes que faltaban y `tasks.md` cita el commit en T8.
 
-La feature **sigue `in_progress`** (T11–T12 pendientes). No se toca `feature_list.json` ni `CHANGELOG.md`. El review de la Etapa A (APPROVED, ronda 1) queda en el historial, commit e153a93.
+La feature **sigue `in_progress`**: T10.5, T11 y T12 (Etapa C) están pendientes. Por eso no se toca `feature_list.json` ni `CHANGELOG.md`, igual que en la aprobación de la Etapa A (e153a93). Central debe decidir si el cierre de la feature (`done` + CHANGELOG) se hace al terminar la Etapa C.
 
 ## Trazabilidad
-- R30 — `Cubre:` de T10. Evidencia: `client/src/tests/combatLayout.test.js` (mapa Q4, fondos por acto+tipo, cada url existe en `public/`). Pasa en la ejecución de abajo.
+- R30 — `Cubre:` de T10. `client/src/tests/combatLayout.test.js` (mapa Q4, fondos por acto+tipo, cada url existe en `public/`). Pasa en la ejecución de abajo.
 - R33 / R34 / R35 — `Cubre:` de T8, T9 y T10.
-  - R34 (puertas): `evidencia/aprobacion_arte.md` registra P1, P1r2+P2 y P3 con el veredicto de p-kh. Las hojas `evidencia/contacto_T8_heroes.webp`, `contacto_T8r2_T9_P2.webp` y `contacto_T10_P3.webp` existen.
-  - R33 (generación): `art-b/gr/manifest.json` con `sheet_paladin`, `sheet_rogue`, 14 enemigos y los 5 fondos. Generación solo por web (`gen_art_web.js`). Ningún `gen_art_b.js` ni `server/.env` en el diff.
-  - R35 (nombres originales): evidenciado solo por la lista de design §11. No bloquea.
+  - R34 (puertas): `evidencia/aprobacion_arte.md` registra P1, P1r2+P2 y P3 con el veredicto de p-kh (vía Central). Hojas `evidencia/contacto_T8_heroes.webp`, `contacto_T8r2_T9_P2.webp` y `contacto_T10_P3.webp` presentes.
+  - R33 (generación): `art-b/gr/manifest.json` con 30 entradas (JSON válido, verificado). Generación solo por web (`gen_art_web.js`). Ningún cambio en `server/.env` ni en `package-lock.json` dentro de la rama.
+  - R35 (nombres originales): evidenciado por la lista de design §11. No bloquea.
 - R1–R4, R28, R43, R48–R52: fuera de esta etapa (T11–T12).
 
 ## Tasks
-- T8, T9, T10 `[x]`, cada una con `Evidencia:` inline. Los commits 3ef39a0, 4bc226f, 05ade22, 2c6eeb8 y ccf3114 existen en `git log`.
-- T8 pide «ampliar `art-b/gr/manifest.json` **y** `art-b/gr/process.sh`». `process.sh` no aparece en `git diff e153a93...feature/combate_b` → **incumplido** (ver Cambios requeridos).
-- T10 cubre el mapeo a fondos; `artMap.js` y su test se revisaron (ver «Revisión de código»).
+- T8, T9, T10 `[x]`, cada una con `Evidencia:` inline. T8 cita `da5063d` (process.sh) y `e43b3a1`. La línea `Evidencia:` vacía bajo T8 ya no existe (`specs/combate_b/tasks.md:27-28`).
 - `## Bloqueado`: vacío.
+- T10.5, T11 y T12 `[ ]` sin evidencia: son de la Etapa C, fuera de alcance de esta revisión.
 
-## Verificación reproducida (reviewer)
-- `cd client && npx vitest run`: `Test Files 1 failed | 32 passed (33)`, `Tests 589 passed (589)`. El único fallo es `iconSheet.test.js` (`Cannot find module 'sharp'`), preexistente.
-- `NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run src/tests/iconSheet.test.js` (desde `client/`): `Tests 15 passed (15)`.
-- `vite build` (outDir a scratch, sin tocar el repo): `✓ built in 6.89s`.
-- `art-b/gr/manifest.json` tiene 30 entradas `"id"`. `git status` limpio.
-- `server/.env` no existe en el worktree.
-- Puertos: `:5180` y `:3101` son del owner (no tocados). `:5173` no escucha.
-- No se pudieron ver las imágenes `.webp` (sin herramienta de visión). Los dudosos de arte son decisión de p-kh y quedan registrados en `aprobacion_arte.md`.
+## Verificación reproducida (reviewer, ronda 2)
+- **Reproducibilidad de arte:** corrí el bloque `combate_b` de `art-b/gr/process.sh` (líneas 16–41) con `NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules`, con salida a un directorio scratch, y comparé con `client/public/assets/b`: **23 webp comparados, 0 diferencias byte a byte** (paladin ×2, rogue ×2, 14 enemigos, 5 fondos). Ningún archivo del repo tocado.
+- `cd client && npx vitest run`: `Test Files 1 failed | 32 passed (33)`, `Tests 589 passed (589)`. El único fallo es `iconSheet.test.js` (`Cannot find module 'sharp'`), preexistente en el junction.
+- `NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run src/tests/iconSheet.test.js`: `Tests 15 passed (15)`.
+- `node node_modules/vite/bin/vite.js build --outDir <scratch>`: `✓ built in 7.53s`, exit 0.
+- Sin `.only` en los tests de combate. El único `s.skip()` (`combatScene.test.js:127`) es un método de la escena, no un test saltado.
+- `shared/gameConfig.js:1155`: `engineVersion: 1` (sin cambio). `:5173` no escucha. `:5180`/`:3101` no tocados.
+- `git status` limpio tras las reproducciones.
 
 ## Revisión de código (archivo:línea, diff contra e153a93)
-Comprobado sin hallazgos bloqueantes:
-- `client/src/game/combat/artMap.js:18-44` — `HERO_ART` incluye paladin y rogue. `ENEMY_BY_NODE` coincide con design §11 / Q4 contra `shared/gameConfig.js:1028-1081`: a1n3 `combat` → bruto; a1n7 «Carroñeros» → carroneros; a1n4/a1n8 `wave` → aullador; a1n5 «El Heraldo Putrefacto» → boss_heraldo; a1n9 «Devorador de Almas» → boss_devorador; a2n5 «Coloso de Ceniza» → coloso; a2n7 «Los Sin Rostro» → sin_rostro; a2n10 «La Voz del Velo» → voz_del_velo.
-- `artMap.js:47-51` — `ENEMY_BY_TYPE.wave` pasó de `coloso` a `bruto`. Consistente con design Q4 («el resto cae a bruto»); los `wave` de acto 2 (a2n4, a2n8) quedan en bruto.
-- `artMap.js:54-62, 82-96` — `BG_BY_ACT_TYPE` y `actOf()`: el acto sale de `n.act` o del id; sin acto cae al tipo. Coincide con design:107 («por type/acto en Etapa B»).
-- `client/src/tests/combatLayout.test.js:91-113` — se cambiaron las expectativas `paladin/rogue → warrior` por el propio arte. Justificado: design.md:105 y T8. Sin `.skip` ni `.only`.
-- `scripts/gen_art_web.js:110` — `GEMINI_WEB_EXE` solo cambia el ejecutable de Edge; no lee `server/.env`. Correcto.
-- `scripts/process_art_b.js:25,41,215` — flag `--quality` (default 88, sin cambio de comportamiento) y `--margin` ya existente. Sin regresión.
-
-## Cambios requeridos
-1. `art-b/gr/process.sh` (T8, «ampliar… y `art-b/gr/process.sh`»): agregar las líneas de recorte de `paladin_idle/attack` y `rogue_idle/attack` (`--height 640`, con las coordenadas medidas que usó el implementador), de los 14 enemigos (`--height 720`; `boss_devorador_hit` con `--margin 8 --quality 77`, tal como consta en `evidencia/aprobacion_arte.md`), de `voz_del_velo_hit` (976x1095 → 642x720) y de los 5 fondos (`--scene --width 1080`). El archivo usa CRLF; mantenerlo. Si el script no reproduce los `.webp` del commit, corregirlo hasta que sí.
-2. `tasks.md` T8: citar en la evidencia inline el commit de `process.sh`. Quitar la línea `  - Evidencia:` vacía residual bajo T8.
+- `client/src/game/combat/artMap.js` — `HERO_ART` incluye paladin y rogue; `ENEMY_BY_NODE` (Q4 + a2n7 sin_rostro + a2n10 voz_del_velo) coincide con design §11. Sin hallazgos.
+- `artMap.js` — `ENEMY_BY_TYPE.wave` pasa a `bruto`; los `wave` de acto 2 (a2n4, a2n8) quedan en bruto, consistente con design Q4. Sin hallazgos.
+- `client/src/tests/combatLayout.test.js:91-113` — expectativas `paladin/rogue → warrior` reemplazadas por el arte propio; justificado en design.md:105 y T8. Sin `.skip`/`.only`.
+- `scripts/gen_art_web.js:110` — `GEMINI_WEB_EXE` solo cambia el ejecutable de Edge; no lee `server/.env`.
+- `scripts/process_art_b.js` — `--quality` con default 88; sin regresión.
+- `art-b/gr/process.sh:16-41` — bloque nuevo; CRLF mantenido; `--margin 8 --quality 77` en `boss_devorador_hit`, como consta en `evidencia/aprobacion_arte.md`.
 
 ## Observaciones no bloqueantes
-- `enemies/voz_del_velo_hit` fue aprobado por p-kh en P3 sin cumplir la regla literal de P2 (ver `evidencia/aprobacion_arte.md`). Es decisión de p-kh y queda registrada. Este review no la revierte.
-- Para Etapa C: verificar en captura que el portal de `bg/combat_veil_gate` no tape los efectos verdes (ya anotado en `aprobacion_arte.md`).
-- Si cambia `design.md:175`, sincronizar `artMap.js` y `combatLayout.test.js:99-107`.
+- `enemies/voz_del_velo_hit` fue aprobado por p-kh en P3 sin cumplir la regla literal de P2 (`evidencia/aprobacion_arte.md`). Es decisión de p-kh; este review no la revierte.
+- Etapa C (T12): verificar en captura que el portal de `bg/combat_veil_gate` no tape los efectos verdes; si los tapa, oscurecer por código, sin regenerar.
+- Nota de proceso: `process.sh` depende de los crudos de `art-b/gr/raw/` (ignorados por git). Sin ellos, el script se corta en `sheet_warrior.png` por `set -e`; el bloque de combate_b se puede correr aislado.
