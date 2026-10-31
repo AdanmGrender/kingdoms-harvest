@@ -88,5 +88,141 @@
       "art-b/gr/refs/mage_idle.webp"
     ],
     "prompt": "a game character POSE SHEET: exactly TWO full-body figures of the SAME character side by side with a wide empty gap between them, both in three-quarter view facing right, same scale, both standing on the same baseline, feet fully visible, no third figure, no extra limbs, no inset panels, no item callouts. Use the reference ONLY for art style (do not draw the wizard). The character: a battered zealot paladin of a plague-ridden Renaissance world, heroic oversized head, hands and shoulder pauldrons, dented bell-shaped great helm with a cracked visor and a tattered ox-blood plume, heavy rusted plate armour patched with leather and bandages, a huge kite shield nailed with prayer scrolls and wax seals and a painted bleeding sun, a spiked flanged mace, a small hanging censer chained to the belt trailing incense smoke, tabard in bone and dried-blood red. LEFT figure: stoic idle, shield planted before him, mace resting on the shoulder. RIGHT figure: furious attack, one big step forward, body leaning right, mace swung in a heavy overhead arc smashing toward the right, shield held forward, mouth open in a battle prayer"
+  },
+  {
+    "id": "sheet_rogue",
+    "kind": "ui",
+    "aspect": "16:9",
+    "refs": [
+      "art-b/gr/refs/mage_idle.webp",
+      "client/public/assets/b/heroes/warrior_idle.webp"
+    ],
+    "prompt": "a game character POSE SHEET: exactly TWO full-body figures of the SAME character side by side with a very wide empty gap between them (at least a third of the image width of clear empty background separating the two figures), both in three-quarter view facing right, same scale, both standing on the same baseline, feet fully visible, no third figure, no extra limbs, no inset panels, no item callouts. Use the reference ONLY for art style (do not draw the wizard). The character: a sneering lanky cutpurse-assassin of a plague-ridden Renaissance world, heroic oversized head, hands and boots. hooded cutpurse, face half-covered by a cloth scarf or a plain leather half-mask, NO beak, NO plague-doctor mask, NO goggles, no green vials; character stands on nothing — no ground, no floor line, no cast shadow, no hatching under the feet; facing right; keep the grinning caricature face, two curved daggers, patched brown cloak. Ragged patched cloak in sepia and faded mustard, bandolier of lock-picks and throwing knives, a crooked grin with missing teeth, a purse of stolen coins and a dangling rat skull charm. LEFT figure: crouched sly idle, daggers held low behind the body. RIGHT figure: lunging attack, one long step forward, body stretched leaning right, both daggers slashing forward in a crossed strike toward the right, cloak whipping back"
+  },
+  {
+    "id": "carroneros_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/brute_idle.webp"
+    ],
+    "prompt": "Use the reference ONLY for art style and level of detail (do not draw the brute from the reference). Exactly ONE creature, full body, centered, feet or base fully visible, nothing on the ground under it. a gaunt carrion-scavenger of the plague-ridden Renaissance wilds (a NEW creature): a hunched rat-headed ghoul in a scrap-patched plague shroud, long yellow incisors, bald scabby skin, bulging milky eyes, oversized clawed hands clutching a stolen sack of bones and rusty spoons, a lantern-jar of wriggling maggots on a stick, a dead crow tied to the belt as a trophy, darkly comic and menacing, three-quarter view facing LEFT, hunched sneaking idle stance"
+  },
+  {
+    "id": "carroneros_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "client/public/assets/b/enemies/carroneros_idle.webp"
+    ],
+    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature, nothing on the ground under it. New pose clearly different: the scavenger flung backwards by a heavy blow, body bent far back, sack spilling bones and spoons, clawed hands thrown up, yellow teeth bared in a shriek, one foot off the ground, three-quarter view facing LEFT"
+  },
+  {
+    "id": "aullador_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/brute_idle.webp"
+    ],
+    "prompt": "Use the reference ONLY for art style and level of detail (do not draw the brute from the reference). Exactly ONE creature, full body, centered, feet or base fully visible, nothing on the ground under it. a tall emaciated howling horror of the void (a NEW creature): stretched grey skin over a ribcage like a cage, a gigantic hinged jaw gaping in an endless scream with a long black tongue, three mismatched staring eyes on a bald skull, long spidery fingers dragging chains with cracked church bells tied to them, tattered funeral shroud, a rusted crown of nails, three-quarter view facing LEFT, towering hunched idle stance, mouth open howling"
+  },
+  {
+    "id": "aullador_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "client/public/assets/b/enemies/aullador_idle.webp"
+    ],
+    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature, nothing on the ground under it. New pose clearly different: the horror staggered by a heavy blow, torso arched backwards, head thrown back with the jaw wrenched wide, chains and bells swinging wildly, fingers splayed, one foot lifted, three-quarter view facing LEFT"
+  },
+  {
+    "id": "coloso_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/brute_idle.webp"
+    ],
+    "prompt": "Use the reference ONLY for art style and level of detail (do not draw the brute from the reference). Exactly ONE creature, full body, centered, feet or base fully visible, nothing on the ground under it. a colossal ash golem (a NEW creature): a lumbering giant assembled from cracked grey stone slabs, charred timber beams and iron bands, glowing orange embers leaking from the cracks and from a hollow chest furnace, a small helmet-shaped head with two ember eyes, huge mismatched fists of rubble, a toppled church-bell hanging from a chain as a trophy, soot and ash falling from its shoulders, three-quarter view facing LEFT, heavy looming idle stance"
+  },
+  {
+    "id": "coloso_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "client/public/assets/b/enemies/coloso_idle.webp"
+    ],
+    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature, nothing on the ground under it. New pose clearly different: the golem struck hard, one shoulder cracking apart and shedding stone shards and embers, torso leaning far backwards, one huge fist flung up, a foot lifted, sparks and ash flying, three-quarter view facing LEFT"
+  },
+  {
+    "id": "boss_devorador_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/brute_idle.webp"
+    ],
+    "prompt": "Use the reference ONLY for art style and level of detail (do not draw the brute from the reference). Exactly ONE creature, full body, centered, feet or base fully visible, nothing on the ground under it. a monstrous devourer of beacons and lighthouses, a boss (a NEW creature): a vast hunched sea-beast with slick black hide and barnacle crusts, a huge lantern-fish style lure hanging from its brow glowing sickly yellow, a wide maw of crooked ship-nail teeth with a snapped lighthouse lens and rope stuck between them, ragged fins like torn sails, drowned sailors' lanterns and anchors chained to its flanks, dripping brine, three-quarter view facing LEFT, imposing coiled idle stance"
+  },
+  {
+    "id": "boss_devorador_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "client/public/assets/b/enemies/boss_devorador_idle.webp"
+    ],
+    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature, nothing on the ground under it. New pose clearly different: the beast recoiling from a heavy blow, head and lure thrown back, maw wide in a roar, ship-nail teeth bared, brine and black blood spraying, body leaning far backwards, three-quarter view facing LEFT"
+  },
+  {
+    "id": "boss_heraldo_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/brute_idle.webp"
+    ],
+    "prompt": "Use the reference ONLY for art style and level of detail (do not draw the brute from the reference). Exactly ONE creature, full body, centered, feet or base fully visible, nothing on the ground under it. a rotting storm herald, a boss (a NEW creature): a tall decayed herald in a ragged moth-eaten tabard of faded crimson and bone, a cracked bronze trumpet fused to its hand, a bell-shaped hat dripping with black rain, exposed ribs wrapped in rusted chains, a wreath of crows' feet and lightning rods, green-white lightning crawling over its skeletal arms, hollow glowing eyes, ragged banner pole in the other hand, three-quarter view facing LEFT, imposing idle stance with the trumpet raised"
+  },
+  {
+    "id": "boss_heraldo_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "client/public/assets/b/enemies/boss_heraldo_idle.webp"
+    ],
+    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature, nothing on the ground under it. New pose clearly different: the herald violently knocked back, whole body arched backwards, trumpet flying loose from its hand, banner pole splintering, lightning flaring around it, rotten tabard whipping, head thrown back, three-quarter view facing LEFT"
+  },
+  {
+    "id": "sin_rostro_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/brute_idle.webp"
+    ],
+    "prompt": "Use the reference ONLY for art style and level of detail (do not draw the brute from the reference). Exactly ONE creature, full body, centered, feet or base fully visible, nothing on the ground under it. a faceless cultist of the Veil (a NEW creature): a tall thin figure in a long dripping burial robe of dirty cream and ox-blood, the head a smooth blank mask of pale wax with no eyes or mouth, only melted candle wax running down the face, many thin pale arms folded in front like praying mantis arms, a hanging censer chain and a rosary of small teeth, three-quarter view facing LEFT, eerie still idle stance"
+  },
+  {
+    "id": "sin_rostro_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "client/public/assets/b/enemies/sin_rostro_idle.webp"
+    ],
+    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature, nothing on the ground under it. New pose clearly different: the faceless cultist knocked back by a heavy blow, body bent far backwards, wax mask cracking with a long split, many arms flung wide, robe whipping, censer swinging off its chain, three-quarter view facing LEFT"
+  },
+  {
+    "id": "voz_del_velo_idle",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "art-b/gr/refs/brute_idle.webp"
+    ],
+    "prompt": "Use the reference ONLY for art style and level of detail (do not draw the brute from the reference). Exactly ONE creature, full body, centered, feet or base fully visible, nothing on the ground under it. the Voice of the Veil, an act-2 boss (a NEW creature): a towering veiled apparition draped in layers of torn funeral curtains and black lace, a cage-like ribcage of bent iron hoops holding a swinging bell and a cluster of sickly-green candles, five slender hands with too many knuckles holding the veil open to reveal a ring of tiny mouths and a pale mask with stitched-shut eyes, rusted chains and censers hanging from its sleeves, three-quarter view facing LEFT, floating looming idle stance"
+  },
+  {
+    "id": "voz_del_velo_hit",
+    "kind": "actor",
+    "aspect": "1:1",
+    "refs": [
+      "client/public/assets/b/enemies/voz_del_velo_idle.webp"
+    ],
+    "prompt": "Redraw the reference creature in a NEW POSE, keeping its design identical (same body, same costume, same props, same colours). Exactly ONE creature, nothing on the ground under it. New pose clearly different: the apparition recoiling from a heavy blow, veil torn open and flaring, ring of mouths gaping in a scream, bell swinging, candles guttering, body leaning far backwards, hands splayed, three-quarter view facing LEFT"
   }
 ]
