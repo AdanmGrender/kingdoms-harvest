@@ -162,3 +162,25 @@ Hallazgos que impiden resolverlo solo con una escala por pose:
 - Hit: A/B cierran cabeza/torso a ≤3 % pero la altura sube a 1,20–1,23× (retroceso con piernas abiertas).
 
 **Pendiente de p-kh** (decisión; sin tocar el arte hasta entonces), por pose elegir A / C / B (o un término medio con la escala entre dos filas de la tabla). Recomendación del implementer: **C** para skill y victory (igualan altura, piernas y bota; cabeza ±14 % es ruido de hombros), **A** para hit (cabeza 1,00×, torso 0,97×, +4 % de escala; altura 1,20×) y **A** para el KO (cabeza/torso ≈ idle) solo si p-kh acepta que se lea casi de pie; si no, C.
+
+## r4 — veredicto p-kh (t_207c5474) aplicado (sin generar; siguen 6 de 8 generaciones, 2 sin usar)
+**Decisión de arte de p-kh** (escala por pose, a ojo por ancho de sombrero/hombros; «la regla es que coincidan las partes del cuerpo, no la altura de la silueta»): **hit A ×1,478**, **skill C ×1,267**, **victory C ×1,267**, **ko ×1,45** (ni A ni C: A queda tan alto como el idle de pie; C encoge al personaje ~⅓ en cabeza/sombrero). General: aprobado, la hoja no tiene halos ni fondo. Las cifras de cabeza/torso que no igualan al idle quedan **justificadas por esa decisión**, no se corrigen (la métrica `head` de `measure_body.js` no es fiable en victory/ko/skill: no es monótona con la escala).
+
+Aplicado: `process.sh` (hit 1.478, ko 1.45) y reproceso de **solo hit y ko** desde `raw/warrior_poses.png`; skill y victory no se tocaron (siguen ×1,267, blobs idénticos). Medido con `R=14 node measure_body.js` (ratio pose/idle):
+
+| pose | `--scale` | h | head | legs | boot | torso | waist |
+|---|---|---|---|---|---|---|---|
+| hit | 1,478 | 1,20 | 1,00 | 1,37 | 0,75 | 0,97 | 1,41 |
+| skill | 1,267 | 1,00 | 1,14 | 0,99 | 0,94 | 0,81 | 0,83 |
+| victory | 1,267 | 0,99 | 0,86 | 1,02 | 0,89 | 0,72 | 0,85 |
+| ko | 1,45 | 0,94 | 0,74 | 0,66 | 1,47 | 0,88 | 0,75 |
+
+ko coincide con lo previsto por p-kh (h 0,94, torso 0,88; head 0,74 = la métrica poco fiable, ~0,9 a ojo). Hit: la altura 1,20 viene de la pose (retroceso con piernas abiertas), cabeza 1,00 y torso 0,97.
+
+Verificación geométrica (sharp; no pude mirar las imágenes con visión): hit 619×760 y ko 502×605, **alfa 0 en las 4 esquinas, 0 píxeles no transparentes en el borde de la imagen**, filas inferiores del recorte vacías (margen de 13–15 px; sin tira de suelo: la fila opaca más baja mide 63–71 px de ancho = pies/espada, no una franja), semitransparentes 4,6 % (borde suave igual que el idle 4,2 %). **Línea de suelo**: última fila con alfa>128 a 13/15/12 px del borde inferior en idle/hit/ko (pie en el mismo sitio dentro de 3 px; cada sprite se ancla por el borde inferior).
+
+Hoja final: `evidencia/piloto/hoja_final.webp` (idle | hit | skill | victory | ko a escala real, misma línea de suelo; `art-b/poses_piloto/final_sheet.js`). `contact_poses.webp` rehecha con el arte final.
+
+Video: `antes.webm`/`despues.webm` **no se regrabaron**: el puerto :5174 lo ocupa el vite huérfano pid 20060 (no se usa otro puerto ni se mata). Los videos de r3 quedan viejos (anteriores a la escala por pose de r4) y **no se commitean** (además `.webm` no va al repo, AGENTS §5); la evidencia vigente es la hoja final + las suites.
+
+Suites: `npx vitest run` cliente 34 archivos / 625 tests OK; `npm run build` OK. No se levantó ningún vite.
