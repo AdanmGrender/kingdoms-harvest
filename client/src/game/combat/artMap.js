@@ -38,6 +38,16 @@ export const BG_ART = {
   veil_gate: 'combat_veil_gate',
 };
 
+// Línea de suelo (pies de los enemigos) como fracción del alto 1720 (B1). Estimada de la luma por fila de cada fondo; afinar por fondo aquí.
+export const BG_GROUND_Y_FRAC = {
+  crypt: 0.53,
+  moor: 0.53,
+  cathedral: 0.53,
+  ashfield: 0.53,
+  veil_marsh: 0.53,
+  veil_gate: 0.53,
+};
+
 // Intención por heroId (vacío en S0; S2 = un arte por héroe).
 export const HERO_BY_ID = {};
 // Intención por clase (S1 agrega paladin y rogue).

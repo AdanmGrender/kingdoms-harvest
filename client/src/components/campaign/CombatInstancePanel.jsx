@@ -129,7 +129,7 @@ export default function CombatInstancePanel({ onClose }) {
   const enemyRows = enemyBars(state);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col p-4 pb-28 overflow-hidden" style={{ background: KH.ink }}>
+    <div className="fixed inset-0 z-50 flex flex-col p-4 pb-6 overflow-hidden" style={{ background: KH.ink }}>
       <CombatStage state={initialState.current} node={node} step={step} onMode={onMode} />
 
       {/* ── HUD (por encima de la escena; solo lo interactivo captura toques, el resto deja pasar el salto) ── */}
@@ -156,13 +156,13 @@ export default function CombatInstancePanel({ onClose }) {
         <div className="flex-1" />
 
         {/* Fila de héroes: ícono de clase, energía y toque = habilidad. */}
-        <div className="flex justify-center items-end gap-2 flex-wrap mb-2">
+        <div className="flex justify-center items-end gap-1 mb-2">
           {state.heroes.map((h) => {
             const ready = h.alive && h.energy >= h.energyMax;
             return (
               <button key={h.slot} onClick={() => doStep({ type: 'skill', slot: h.slot })}
                 disabled={!ready || busy || !!result}
-                className="relative flex flex-col items-center pointer-events-auto" style={{ width: 60, minHeight: 44 }}>
+                className="relative flex flex-col items-center pointer-events-auto" style={{ width: 56, minHeight: 44 }}>
                 {ready && (
                   <span className="absolute -top-2 z-10 text-xs font-bold text-kh-brass-light px-1 rounded"
                     style={{ left: '50%', transform: 'translateX(-50%)', backgroundColor: KH.ink }}>¡TAP!</span>
@@ -181,7 +181,8 @@ export default function CombatInstancePanel({ onClose }) {
                 <div className="mt-1 w-full">
                   <Bar value={h.energy} tone={ready ? 'ember' : 'macula'} label={`Energía de ${h.name}`} />
                 </div>
-                <span className="text-xs text-kh-bone-dim truncate w-full text-center leading-tight">{h.name}</span>
+                <span className="text-xs text-kh-bone font-bold truncate w-full text-center leading-tight"
+                  style={{ textShadow: '1px 1px 2px #000, -1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000' }}>{h.name}</span>
               </button>
             );
           })}

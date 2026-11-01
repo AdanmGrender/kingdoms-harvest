@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  computeFormation, enemyList, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP,
+  computeFormation, enemyList, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP,
 } from '../game/combat/formation';
 import {
   heroArt, enemyArt, bgArt, collectAssetKeys, textureUrl, FALLBACK, HERO_ART, ENEMY_ART, BG_ART,
@@ -174,5 +174,35 @@ describe('R28/R29: nada de /assets/game/', () => {
     expect(textureUrl('hero', 'zzz', 'idle')).toBe('/assets/b/heroes/warrior_idle.webp');
     expect(textureUrl('enemy', 'zzz', 'hit')).toBe('/assets/b/enemies/bruto_hit.webp');
     expect(textureUrl('bg', 'zzz')).toBe('/assets/b/bg/combat_crypt.webp');
+  });
+});
+
+describe('T10.6: fix visual (B1 pies en el suelo, B2/M8 hueco con el HUD, B4 cabezas bajo las barras)', () => {
+  const GROUND = Math.round(0.53 * 1720);
+  it('B1: 1 enemigo (normal y jefe) apoya el pie en la línea de suelo del fondo y la caja coincide con el sprite', () => {
+    for (const boss of [false, true]) {
+      const e = computeFormation(heroes(1), enemies(1), { boss, node: { act: 1, type: boss ? 'boss' : 'combat' } }).enemies[0];
+      expect(e.anchor.y).toBe(GROUND);
+      expect(e.y + e.h).toBe(e.anchor.y);
+    }
+  });
+  it('B1: con 2–4 enemigos el pie del último nivel pisa el suelo y ninguno queda por debajo', () => {
+    for (let m = 2; m <= 4; m++) {
+      const es = computeFormation(heroes(1), enemies(m)).enemies;
+      expect(Math.max(...es.map((b) => b.anchor.y))).toBe(GROUND);
+      for (const b of es) expect(b.y + b.h).toBe(b.anchor.y);
+    }
+  });
+  it('B4: con 2–4 enemigos ninguna cabeza queda por encima de ENEMY_TOP (bajo el bloque de barras)', () => {
+    for (let m = 2; m <= 4; m++) for (const b of computeFormation(heroes(3), enemies(m)).enemies) expect(b.y).toBeGreaterThanOrEqual(ENEMY_TOP);
+  });
+  it('B4: 1 enemigo (incluido el jefe) queda por debajo de la fila única de barras (≈ 250 de mundo)', () => {
+    for (const boss of [false, true]) expect(computeFormation(heroes(1), enemies(1), { boss }).enemies[0].y).toBeGreaterThanOrEqual(250);
+  });
+  it('M8/B2: los pies de los héroes dejan ≥ 80 de mundo antes de HUD_TOP y la fila trasera no pisa la frontal', () => {
+    const f = computeFormation(heroes(5), enemies(1));
+    for (const b of f.heroes) expect(HUD_TOP - (b.y + b.h)).toBeGreaterThanOrEqual(80);
+    const back = f.heroes.filter((b) => b.row === 'back'); const front = f.heroes.filter((b) => b.row === 'front');
+    expect(Math.max(...back.map((b) => b.y + b.h))).toBeLessThanOrEqual(Math.min(...front.map((b) => b.y)));
   });
 });

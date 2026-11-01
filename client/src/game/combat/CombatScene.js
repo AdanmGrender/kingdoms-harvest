@@ -129,7 +129,7 @@ export default class CombatScene extends Phaser.Scene {
   buildActors() {
     const enemies = enemyList(this.state0);
     const boss = !!(this.node && (this.node.isBoss || this.node.type === 'boss'));
-    const f = computeFormation(this.state0.heroes || [], enemies, { boss });
+    const f = computeFormation(this.state0.heroes || [], enemies, { boss, node: this.node });
     this.formation = f;
     const mk = (b, kind, art) => {
       const key = this.texFor(kind, art, 'idle');
@@ -147,6 +147,21 @@ export default class CombatScene extends Phaser.Scene {
     for (const b of f.heroes) mk(b, 'hero', b.art);
     const enemyArtKey = (this.assets.find((a) => a.key.startsWith('enemy:')) || { key: 'enemy:bruto:idle' }).key.split(':')[1];
     for (const b of f.enemies) mk(b, 'enemy', enemyArtKey);
+
+    // Aplicar la vista del estado inicial para que las unidades muertas inicien caídas (B6/M3)
+    const view0 = {};
+    if (this.state0.heroes) {
+      for (const h of this.state0.heroes) {
+        view0[`h${h.slot}`] = { alive: h.alive !== false };
+      }
+    }
+    for (let i = 0; i < enemies.length; i++) {
+      const e = enemies[i];
+      const id = e.id ?? `e${i}`;
+      const hp = e.hp !== undefined ? Number(e.hp) : 1;
+      view0[id] = { alive: hp > 0 };
+    }
+    this.applyView(view0);
   }
 
   // ── API pública ──────────────────────────────────────────────────────────

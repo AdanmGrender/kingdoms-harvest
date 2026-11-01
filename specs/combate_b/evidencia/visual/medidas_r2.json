@@ -1,0 +1,610 @@
+{
+ "412x860_1enemigos": {
+  "lienzo": {
+   "w": 412,
+   "h": 860,
+   "top": 0
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0
+  ],
+  "barras": {
+   "t": 68,
+   "b": 101
+  },
+  "enemigosTopMin": 207,
+  "botonesTopMin": 693,
+  "heroesBottomMax": 663,
+  "pieEnemigos": [
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "412x860_2enemigos": {
+  "lienzo": {
+   "w": 412,
+   "h": 860,
+   "top": 0
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0
+  ],
+  "barras": {
+   "t": 68,
+   "b": 138
+  },
+  "enemigosTopMin": 172,
+  "botonesTopMin": 693,
+  "heroesBottomMax": 663,
+  "pieEnemigos": [
+   722,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "412x860_3enemigos": {
+  "lienzo": {
+   "w": 412,
+   "h": 860,
+   "top": 0
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0,
+   0
+  ],
+  "barras": {
+   "t": 68,
+   "b": 138
+  },
+  "enemigosTopMin": 172,
+  "botonesTopMin": 693,
+  "heroesBottomMax": 663,
+  "pieEnemigos": [
+   623,
+   763,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "412x860_4enemigos": {
+  "lienzo": {
+   "w": 412,
+   "h": 860,
+   "top": 0
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "barras": {
+   "t": 68,
+   "b": 138
+  },
+  "enemigosTopMin": 174,
+  "botonesTopMin": 693,
+  "heroesBottomMax": 663,
+  "pieEnemigos": [
+   569,
+   680,
+   801,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "360x740_1enemigos": {
+  "lienzo": {
+   "w": 355,
+   "h": 740,
+   "top": 0
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0
+  ],
+  "barras": {
+   "t": 68,
+   "b": 101
+  },
+  "enemigosTopMin": 178,
+  "botonesTopMin": 573,
+  "heroesBottomMax": 570,
+  "pieEnemigos": [
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "360x740_2enemigos": {
+  "lienzo": {
+   "w": 355,
+   "h": 740,
+   "top": 0
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0
+  ],
+  "barras": {
+   "t": 68,
+   "b": 138
+  },
+  "enemigosTopMin": 148,
+  "botonesTopMin": 573,
+  "heroesBottomMax": 570,
+  "pieEnemigos": [
+   722,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "360x740_3enemigos": {
+  "lienzo": {
+   "w": 355,
+   "h": 740,
+   "top": 0
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0,
+   0
+  ],
+  "barras": {
+   "t": 68,
+   "b": 138
+  },
+  "enemigosTopMin": 148,
+  "botonesTopMin": 573,
+  "heroesBottomMax": 570,
+  "pieEnemigos": [
+   623,
+   763,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "360x740_4enemigos": {
+  "lienzo": {
+   "w": 355,
+   "h": 740,
+   "top": 0
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "barras": {
+   "t": 68,
+   "b": 138
+  },
+  "enemigosTopMin": 149,
+  "botonesTopMin": 573,
+  "heroesBottomMax": 570,
+  "pieEnemigos": [
+   569,
+   680,
+   801,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "360x800_1enemigos": {
+  "lienzo": {
+   "w": 360,
+   "h": 751,
+   "top": 24
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0
+  ],
+  "barras": {
+   "t": 90,
+   "b": 123
+  },
+  "enemigosTopMin": 204,
+  "botonesTopMin": 611,
+  "heroesBottomMax": 603,
+  "pieEnemigos": [
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "360x800_2enemigos": {
+  "lienzo": {
+   "w": 360,
+   "h": 751,
+   "top": 24
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0
+  ],
+  "barras": {
+   "t": 90,
+   "b": 160
+  },
+  "enemigosTopMin": 174,
+  "botonesTopMin": 611,
+  "heroesBottomMax": 603,
+  "pieEnemigos": [
+   722,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "360x800_3enemigos": {
+  "lienzo": {
+   "w": 360,
+   "h": 751,
+   "top": 24
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0,
+   0
+  ],
+  "barras": {
+   "t": 90,
+   "b": 160
+  },
+  "enemigosTopMin": 174,
+  "botonesTopMin": 611,
+  "heroesBottomMax": 603,
+  "pieEnemigos": [
+   623,
+   763,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "360x800_4enemigos": {
+  "lienzo": {
+   "w": 360,
+   "h": 751,
+   "top": 24
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "barras": {
+   "t": 90,
+   "b": 160
+  },
+  "enemigosTopMin": 176,
+  "botonesTopMin": 611,
+  "heroesBottomMax": 603,
+  "pieEnemigos": [
+   569,
+   680,
+   801,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "412x915_1enemigos": {
+  "lienzo": {
+   "w": 412,
+   "h": 860,
+   "top": 27
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0
+  ],
+  "barras": {
+   "t": 93,
+   "b": 126
+  },
+  "enemigosTopMin": 233,
+  "botonesTopMin": 723,
+  "heroesBottomMax": 689,
+  "pieEnemigos": [
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "412x915_2enemigos": {
+  "lienzo": {
+   "w": 412,
+   "h": 860,
+   "top": 27
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0
+  ],
+  "barras": {
+   "t": 93,
+   "b": 163
+  },
+  "enemigosTopMin": 198,
+  "botonesTopMin": 723,
+  "heroesBottomMax": 689,
+  "pieEnemigos": [
+   722,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "412x915_3enemigos": {
+  "lienzo": {
+   "w": 412,
+   "h": 860,
+   "top": 27
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0,
+   0
+  ],
+  "barras": {
+   "t": 93,
+   "b": 163
+  },
+  "enemigosTopMin": 199,
+  "botonesTopMin": 723,
+  "heroesBottomMax": 689,
+  "pieEnemigos": [
+   623,
+   763,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ },
+ "412x915_4enemigos": {
+  "lienzo": {
+   "w": 412,
+   "h": 860,
+   "top": 27
+  },
+  "nHeroBtns": 5,
+  "pctHeroeTapadoPorBotones": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "pctEnemigoTapadoPorBarras": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "barras": {
+   "t": 93,
+   "b": 163
+  },
+  "enemigosTopMin": 200,
+  "botonesTopMin": 723,
+  "heroesBottomMax": 689,
+  "pieEnemigos": [
+   569,
+   680,
+   801,
+   912
+  ],
+  "pieHeroes": [
+   1325,
+   1325,
+   1325,
+   1075,
+   1075
+  ]
+ }
+}
