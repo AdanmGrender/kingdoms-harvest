@@ -80,3 +80,36 @@ No se piden cambios de código. Para aprobar hace falta, a elección del owner:
 3. Si el owner acepta escritorio para R48, debe decirlo por escrito y se registra en `Bloqueado`.
 
 Al completar 1 y 2 (o la decisión del owner), re-revisar con lente de contrato (ronda 2+).
+
+---
+
+# Review — Etapa C (T10.6 fix visual, commit 91b2090) · ronda 1 · t_d2a6de3d
+
+## Veredicto
+**CHANGES_REQUESTED.** No se aprueba: R48 no se cumple con la medición entregada y la calibración de la línea de suelo no está hecha por fondo como dice el código. Lo demás (tests de layout y panel) reproduce.
+
+## Trazabilidad
+- **R48 (fps medium ≥ 50 avg, p5 ≥ 40, en kh_pixel7):** NO CUMPLIDO. `evidencia/despues/fps_emulador_medium.json`: `avg` 55.1 ✓, pero `p5` 20 y `min` 20 con `n` 19 (con n<21 el p5 es el mínimo). El umbral de R48 es p5 ≥ 40 (`requirements.md:212`), no 30. La explicación «ventana de carga de texturas» no excluye la muestra: el criterio no admite exclusiones ad hoc.
+- **R48 (low):** `fps_emulador_low.json` avg 58.2, p5 52. Cumple, pero R48 pide medium; design Q9 (`design.md:180`) exige declarar y medir low sólo si medium no alcanza ≥50 avg, que sí alcanza.
+- **R54 (barra por enemigo):** `combatPanel` + `combatLayout` verdes (ver abajo). Sin objeción de código.
+- **R43/R28/R49/R50:** evidencia de Playwright (`red_v*.json`, `reporte_v*.json`) citada en tasks.md T11. No reproducida en esta ronda (lente artefacto). No es el bloqueante.
+- **Hallazgos visuales del visual-reviewer (B1 bruto flota, B2 botones, B4 cabezas bajo barras):** la geometría está cubierta por tests; la confirmación a ojo corresponde al visual-reviewer ronda 2, como declara el propio implementador.
+
+## Tasks
+- T10.5 `[x]` con Evidencia concreta. OK.
+- T10.6 `[x]` con Evidencia. OK en lo que cubre (tests). **Pero el criterio de fps de T11 (R48) queda incumplido**, y T11 no puede darse por cerrado.
+
+## Verificación ejecutada por el revisor
+1. `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run src/tests/combatLayout.test.js src/tests/combatPanel.test.jsx` → `Tests 64 passed (64)`.
+2. Medición de luma por fila sobre `client/public/assets/b/bg/combat_*.webp` (1080×1935, heurística: fila con mayor caída de luma entre 40 % y 70 % de la altura; script en scratch del revisor): crypt 0.674, moor 0.443, cathedral 0.609, ashfield 0.545, veil_marsh 0.622, veil_gate 0.534. Todos los fondos usan 0.53 (ver hallazgo 2).
+
+## Hallazgos (lente artefacto, ronda 1)
+1. **R48 incumplido** — `specs/combate_b/evidencia/despues/fps_emulador_medium.json` (`p5: 20`, `muestras[0]: 20`). Acción: volver a medir medium en kh_pixel7 con el mismo protocolo, sin excluir muestras. Si el arranque baja de verdad (carga de texturas), atacar la causa (precarga/warm-up de texturas antes de `combat:open`, `CombatScene.js`) y volver a medir. Si el criterio de R48 no es alcanzable en emulador, **no** cambiarlo por cuenta propia: dejarlo en `## Bloqueado` de `tasks.md` para decisión del owner, con los datos.
+2. **Línea de suelo no calibrada por fondo** — `client/src/game/combat/artMap.js:42-49`: los seis `BG_GROUND_Y_FRAC` valen 0.53, pese al comentario de la línea 41 («Estimada de la luma por fila de cada fondo; afinar por fondo aquí»). La heurística de luma sugiere otra fila en crypt (0.674, el fondo de a1n3, el único capturado), no 0.53. Acción: calcular la línea de suelo de cada fondo sobre la imagen real, ajustar los valores y añadir la captura de un enemigo sobre cada fondo con la línea superpuesta. Si la heurística no basta, medirlo a ojo con la captura y dejarlo escrito. La prueba `combatLayout.test.js` (pie = 0.53×1720) sólo verifica la constante, no el suelo real.
+3. **Higiene** — el server del worktree (`:3001`, pid 8424) sigue vivo según la nota de `review_requested`. Detenerlo o declararlo en `## Bloqueado`.
+
+## Nota de proceso
+Antes de esta revisión había cambios sin commitear en `CHANGELOG.md`, `feature_list.json` y `specs/combate_b/review.md` (intento previo del revisor, interrumpido por rate limit). Contenían un APPROVED con «R48 CUMPLIDO» y umbral p5 ≥ 30, incorrecto. Se descartaron (copia en el scratch del revisor). Nada de esto queda en la rama.
+
+## Cambios requeridos
+Ver hallazgos 1–3. Tras los cambios: nueva review (ronda 2, lente de contrato) con la medición medium corregida y la línea de suelo por fondo verificada.
