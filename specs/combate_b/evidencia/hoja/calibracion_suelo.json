@@ -1,0 +1,38 @@
+{
+ "crypt": {
+  "imagenFrac": 0.48,
+  "groundY": 825,
+  "frac": 0.4797,
+  "nota": "calle embarrada; arriba de 0,47 escombros y fachadas; carro (x<17 %) y altar (x>75 %) fuera de la franja"
+ },
+ "moor": {
+  "imagenFrac": 0.5,
+  "groundY": 860,
+  "frac": 0.5,
+  "nota": "tierra del páramo; carro y charco de brea apoyados en 0,50–0,56; por encima, túmulo y lápidas"
+ },
+ "cathedral": {
+  "imagenFrac": 0.61,
+  "groundY": 1062,
+  "frac": 0.6174,
+  "nota": "losas de la nave delante del estrado; 0,55–0,60 es el altar y su escalón (no es piso)"
+ },
+ "ashfield": {
+  "imagenFrac": 0.42,
+  "groundY": 717,
+  "frac": 0.4169,
+  "nota": "llanura de ceniza; por encima de 0,41 las ruinas del pueblo en el horizonte"
+ },
+ "veil_marsh": {
+  "imagenFrac": 0.51,
+  "groundY": 879,
+  "frac": 0.511,
+  "nota": "barro de la orilla; por encima de 0,50 agua y muelle"
+ },
+ "veil_gate": {
+  "imagenFrac": 0.575,
+  "groundY": 998,
+  "frac": 0.5802,
+  "nota": "pie de la escalera del portal; 0,50–0,57 son escalones (no se cuentan)"
+ }
+}

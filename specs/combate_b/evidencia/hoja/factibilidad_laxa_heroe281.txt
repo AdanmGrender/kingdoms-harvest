@@ -1,0 +1,39 @@
+Modelo: B (tope inferior de carriles) = 1440, T (tope de cabezas) = 0 con 1 enemigo / 0 con 2+; héroe 281.4 / trasero 225.1 / grupo 253.3 / solo 499 / jefe 619 (alto de textura).
+
+Escuadra ranger: 274/280 combinaciones factibles; 6 SIN solución:
+  a1n5       cathedral  boss_heraldo        n=4 m=4  G=1062  carril HF mínimo=1523 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1306/1523/1523 lado a lado EF|HF HB|HF)
+  a1n5       cathedral  boss_heraldo        n=5 m=4  G=1062  carril HF mínimo=1523 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1306/1523/1523 lado a lado EF|HF HB|HF)
+  a1n9       cathedral  boss_devorador      n=4 m=4  G=1062  carril HF mínimo=1522 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1305/1522/1522 lado a lado EF|HF HB|HF)
+  a1n9       cathedral  boss_devorador      n=5 m=4  G=1062  carril HF mínimo=1522 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1305/1522/1522 lado a lado EF|HF HB|HF)
+  a2n10      veil_gate  voz_del_velo        n=4 m=4  G=998  carril HF mínimo=1459 > B=1440  (mejor: filas EB/EF/HB/HF carriles 998/1242/1459/1459 lado a lado EF|HF HB|HF)
+  a2n10      veil_gate  voz_del_velo        n=5 m=4  G=998  carril HF mínimo=1459 > B=1440  (mejor: filas EB/EF/HB/HF carriles 998/1242/1459/1459 lado a lado EF|HF HB|HF)
+
+Escuadra rogue: 267/280 combinaciones factibles; 13 SIN solución:
+  a1n5       cathedral  boss_heraldo        n=4 m=4  G=1062  carril HF mínimo=1523 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1306/1523/1523 lado a lado EF|HF HB|HF)
+  a1n5       cathedral  boss_heraldo        n=5 m=3  G=1062  carril HF mínimo=1550 > B=1440  (mejor: filas EF/HB/HF carriles 1062/1279/1550)
+  a1n5       cathedral  boss_heraldo        n=5 m=4  G=1062  carril HF mínimo=1577 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1306/1306/1577 lado a lado EF|HB)
+  a1n9       cathedral  boss_devorador      n=4 m=4  G=1062  carril HF mínimo=1522 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1305/1522/1522 lado a lado EF|HF HB|HF)
+  a1n9       cathedral  boss_devorador jefe n=5 m=1  G=1062  carril HF mínimo=1550 > B=1440  (mejor: filas EF/HB/HF carriles 1062/1279/1550)
+  a1n9       cathedral  boss_devorador      n=5 m=3  G=1062  carril HF mínimo=1550 > B=1440  (mejor: filas EF/HB/HF carriles 1062/1279/1550)
+  a1n9       cathedral  boss_devorador      n=5 m=4  G=1062  carril HF mínimo=1576 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1305/1305/1576 lado a lado EF|HB)
+  a2n5       veil_gate  coloso              n=5 m=3  G=998  carril HF mínimo=1486 > B=1440  (mejor: filas EF/HB/HF carriles 998/1215/1486)
+  a2n5       veil_gate  coloso              n=5 m=4  G=998  carril HF mínimo=1486 > B=1440  (mejor: filas EF/HB/HF carriles 998/1215/1486)
+  a2n10      veil_gate  voz_del_velo        n=4 m=4  G=998  carril HF mínimo=1459 > B=1440  (mejor: filas EB/EF/HB/HF carriles 998/1242/1459/1459 lado a lado EF|HF HB|HF)
+  a2n10      veil_gate  voz_del_velo   jefe n=5 m=1  G=998  carril HF mínimo=1486 > B=1440  (mejor: filas EF/HB/HF carriles 998/1215/1486)
+  a2n10      veil_gate  voz_del_velo        n=5 m=3  G=998  carril HF mínimo=1486 > B=1440  (mejor: filas EF/HB/HF carriles 998/1215/1486)
+  a2n10      veil_gate  voz_del_velo        n=5 m=4  G=998  carril HF mínimo=1513 > B=1440  (mejor: filas EB/EF/HB/HF carriles 998/1242/1242/1513 lado a lado EF|HB)
+
+Escuadra mixto: 267/280 combinaciones factibles; 13 SIN solución:
+  a1n5       cathedral  boss_heraldo        n=4 m=4  G=1062  carril HF mínimo=1523 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1306/1523/1523 lado a lado EF|HF HB|HF)
+  a1n5       cathedral  boss_heraldo        n=5 m=3  G=1062  carril HF mínimo=1550 > B=1440  (mejor: filas EF/HB/HF carriles 1062/1279/1550)
+  a1n5       cathedral  boss_heraldo        n=5 m=4  G=1062  carril HF mínimo=1577 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1306/1306/1577 lado a lado EF|HB)
+  a1n9       cathedral  boss_devorador      n=4 m=4  G=1062  carril HF mínimo=1523 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1305/1523/1523 lado a lado EF|HF HB|HF)
+  a1n9       cathedral  boss_devorador jefe n=5 m=1  G=1062  carril HF mínimo=1550 > B=1440  (mejor: filas EF/HB/HF carriles 1062/1279/1550)
+  a1n9       cathedral  boss_devorador      n=5 m=3  G=1062  carril HF mínimo=1550 > B=1440  (mejor: filas EF/HB/HF carriles 1062/1279/1550)
+  a1n9       cathedral  boss_devorador      n=5 m=4  G=1062  carril HF mínimo=1576 > B=1440  (mejor: filas EB/EF/HB/HF carriles 1062/1305/1305/1576 lado a lado EF|HB)
+  a2n5       veil_gate  coloso              n=5 m=3  G=998  carril HF mínimo=1486 > B=1440  (mejor: filas EF/HB/HF carriles 998/1215/1486)
+  a2n5       veil_gate  coloso              n=5 m=4  G=998  carril HF mínimo=1486 > B=1440  (mejor: filas EF/HB/HF carriles 998/1215/1486)
+  a2n10      veil_gate  voz_del_velo        n=4 m=4  G=998  carril HF mínimo=1459 > B=1440  (mejor: filas EB/EF/HB/HF carriles 998/1242/1459/1459 lado a lado EF|HF HB|HF)
+  a2n10      veil_gate  voz_del_velo   jefe n=5 m=1  G=998  carril HF mínimo=1486 > B=1440  (mejor: filas EF/HB/HF carriles 998/1215/1486)
+  a2n10      veil_gate  voz_del_velo        n=5 m=3  G=998  carril HF mínimo=1486 > B=1440  (mejor: filas EF/HB/HF carriles 998/1215/1486)
+  a2n10      veil_gate  voz_del_velo        n=5 m=4  G=998  carril HF mínimo=1513 > B=1440  (mejor: filas EB/EF/HB/HF carriles 998/1242/1242/1513 lado a lado EF|HB)

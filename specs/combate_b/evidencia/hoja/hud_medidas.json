@@ -1,0 +1,195 @@
+{
+ "resumen": {
+  "Tmax_1enemigo": 226.6,
+  "Tmax_2omas": 311.3,
+  "Bmin": 1328.1
+ },
+ "porViewport": {
+  "412x860": {
+   "1": {
+    "lienzo": {
+     "x": 0,
+     "y": 0,
+     "w": 412,
+     "h": 860,
+     "escala": 0.5
+    },
+    "barrasBottomCss": 101,
+    "botonesTopCss": 686,
+    "avanzarTopCss": 788,
+    "T": 202,
+    "B": 1372.5,
+    "nBotonesHeroe": 5
+   },
+   "2": {
+    "lienzo": {
+     "x": 0,
+     "y": 0,
+     "w": 412,
+     "h": 860,
+     "escala": 0.5
+    },
+    "barrasBottomCss": 138,
+    "botonesTopCss": 686,
+    "avanzarTopCss": 788,
+    "T": 276,
+    "B": 1372.5,
+    "nBotonesHeroe": 5
+   },
+   "3": {
+    "lienzo": {
+     "x": 0,
+     "y": 0,
+     "w": 412,
+     "h": 860,
+     "escala": 0.5
+    },
+    "barrasBottomCss": 138,
+    "botonesTopCss": 686,
+    "avanzarTopCss": 788,
+    "T": 276,
+    "B": 1372.5,
+    "nBotonesHeroe": 5
+   },
+   "4": {
+    "lienzo": {
+     "x": 0,
+     "y": 0,
+     "w": 412,
+     "h": 860,
+     "escala": 0.5
+    },
+    "barrasBottomCss": 138,
+    "botonesTopCss": 686,
+    "avanzarTopCss": 788,
+    "T": 276,
+    "B": 1372.5,
+    "nBotonesHeroe": 5
+   }
+  },
+  "360x800": {
+   "1": {
+    "lienzo": {
+     "x": 0,
+     "y": 24,
+     "w": 360,
+     "h": 751,
+     "escala": 0.4369
+    },
+    "barrasBottomCss": 123,
+    "botonesTopCss": 604,
+    "avanzarTopCss": 706,
+    "T": 226.6,
+    "B": 1328.1,
+    "nBotonesHeroe": 5
+   },
+   "2": {
+    "lienzo": {
+     "x": 0,
+     "y": 24,
+     "w": 360,
+     "h": 751,
+     "escala": 0.4369
+    },
+    "barrasBottomCss": 160,
+    "botonesTopCss": 604,
+    "avanzarTopCss": 706,
+    "T": 311.3,
+    "B": 1328.1,
+    "nBotonesHeroe": 5
+   },
+   "3": {
+    "lienzo": {
+     "x": 0,
+     "y": 24,
+     "w": 360,
+     "h": 751,
+     "escala": 0.4369
+    },
+    "barrasBottomCss": 160,
+    "botonesTopCss": 604,
+    "avanzarTopCss": 706,
+    "T": 311.3,
+    "B": 1328.1,
+    "nBotonesHeroe": 5
+   },
+   "4": {
+    "lienzo": {
+     "x": 0,
+     "y": 24,
+     "w": 360,
+     "h": 751,
+     "escala": 0.4369
+    },
+    "barrasBottomCss": 160,
+    "botonesTopCss": 604,
+    "avanzarTopCss": 706,
+    "T": 311.3,
+    "B": 1328.1,
+    "nBotonesHeroe": 5
+   }
+  },
+  "1280x800": {
+   "1": {
+    "lienzo": {
+     "x": 448,
+     "y": 0,
+     "w": 383,
+     "h": 800,
+     "escala": 0.4651
+    },
+    "barrasBottomCss": 101,
+    "botonesTopCss": 626,
+    "avanzarTopCss": 728,
+    "T": 217.2,
+    "B": 1346.5,
+    "nBotonesHeroe": 5
+   },
+   "2": {
+    "lienzo": {
+     "x": 448,
+     "y": 0,
+     "w": 383,
+     "h": 800,
+     "escala": 0.4651
+    },
+    "barrasBottomCss": 138,
+    "botonesTopCss": 626,
+    "avanzarTopCss": 728,
+    "T": 296.7,
+    "B": 1346.5,
+    "nBotonesHeroe": 5
+   },
+   "3": {
+    "lienzo": {
+     "x": 448,
+     "y": 0,
+     "w": 383,
+     "h": 800,
+     "escala": 0.4651
+    },
+    "barrasBottomCss": 138,
+    "botonesTopCss": 626,
+    "avanzarTopCss": 728,
+    "T": 296.7,
+    "B": 1346.5,
+    "nBotonesHeroe": 5
+   },
+   "4": {
+    "lienzo": {
+     "x": 448,
+     "y": 0,
+     "w": 383,
+     "h": 800,
+     "escala": 0.4651
+    },
+    "barrasBottomCss": 138,
+    "botonesTopCss": 626,
+    "avanzarTopCss": 728,
+    "T": 296.7,
+    "B": 1346.5,
+    "nBotonesHeroe": 5
+   }
+  }
+ }
+}

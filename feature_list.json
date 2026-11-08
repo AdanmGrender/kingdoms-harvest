@@ -115,8 +115,8 @@
         "Server-authoritative intacto; >= 50 fps"
       ],
       "sdd": true,
-      "status": "in_progress",
-      "assignee": "spec-author"
+      "status": "blocked",
+      "assignee": "implementer"
     },
     {
       "id": 8,
