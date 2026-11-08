@@ -53,3 +53,12 @@ Resuelve el bloqueo de `tasks.md` (choque V1/V2 vs R24: con una sola línea de s
 - R24: cero intersección de cajas para n = 1…5 héroes × m = 1…4 enemigos, dentro de 824×1720. No se relaja.
 - V1 (escalas), R27 (topes 0,29 / 0,36), formación 3+2 de héroes, V3 (HUD, botones y barras no tapan sprites).
 - Si con carriles por profundidad y escalas V1 sigue sin existir solución con cero intersección, el implementer NO relaja nada: lo deja en `## Bloqueado` de `tasks.md` con las cuentas, para nueva decisión del owner.
+
+## Decisión del owner (2026-11-08) — solape permitido ENTRE filas (2,5D)
+
+Resuelve el segundo bloqueo de `tasks.md` (con carriles y cero intersección también entre filas, 52/280 casos sin solución con el HUD real: el alto entre el piso del fondo y los botones de héroe no alcanza; ver `evidencia/hoja/factibilidad_hud_real.txt`). El owner eligió la opción (i) del bloqueo:
+
+- **R24 enmendado**: cero intersección de cajas **dentro de cada fila** (héroes delanteros entre sí, héroes traseros entre sí, cada fila de enemigos entre sí). Entre filas distintas se permite solape parcial; la fila de carril más bajo en pantalla se dibuja delante (2,5D, como Last Asylum). Factibilidad medida: 280/280 en las tres escuadras con el HUD real (`evidencia/hoja/factibilidad_opcion_entre_filas.txt`).
+- **Tope inferior real (V3)**: los carriles y los pies quedan por encima del borde superior REAL de los botones de héroe, contando «¡TAP!», en cada viewport (peor caso 360×800: 1328 de mundo; `evidencia/hoja/hud_medidas.json`). `HUD_TOP = 1440` está por debajo de los botones: corregirlo. Las cabezas siguen por debajo de las barras de vida (T).
+- **Legibilidad**: el objetivo es que ninguna cara (35 % superior del sprite) quede tapada por un personaje de otra fila. No bloquea al implementer: elige la colocación que minimice la cara tapada y reporta el % de cabeza tapada por vista en `hoja_medidas.json`. El visual_reviewer decide si algún caso es bloqueante.
+- **Sin cambios**: V1, V2 enmendada (carriles por profundidad sobre el piso calibrado por fondo, `calibracion_suelo.json`), R27, 3+2, V4–V9.

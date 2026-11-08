@@ -109,6 +109,7 @@ Con engine v1 la escena NO DEBE mostrar marcadores de estado ni señales de pasi
 ## R24
 La escena DEBE dibujar de 1 a 5 héroes en dos filas (slots 1–3 al frente, 4–5 atrás) sin que se solapen las cajas de las unidades, y un héroe con `heroId: null` (Guarnición) DEBE usar el arte de la clase `warrior`.
 - Verificación: test de `computeFormation(heroes, enemies)`: para n = 1…5 héroes y m = 1…4 enemigos, ningún par de cajas se intersecta y todas caen dentro de 824×1720; `heroId:null` → clave de arte `warrior`.
+- **Enmienda del owner (2026-11-08):** la cero intersección se exige DENTRO de cada fila de profundidad; entre filas distintas se permite solape parcial (la fila de carril más bajo se dibuja delante). Ver `hoja_visual.md` § «Decisión del owner (2026-11-08)».
 
 ## R25
 La escena DEBE dibujar de 1 a 4 enemigos en grupo escalonado cuando `state.enemies` tenga más de uno, y uno solo (de `state.enemies[0]` o `state.enemy`) en caso contrario.

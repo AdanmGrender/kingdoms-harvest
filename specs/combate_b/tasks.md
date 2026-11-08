@@ -133,3 +133,4 @@ Los casos con m = 2 (solo en la catedral) suponen comunes de 0,9 × héroe, pero
 - `test_phaser.js` (scratch) borrado.
 - Pendiente cuando se desbloquee: carriles en `formation.js`, `BG_GROUND_Y_FRAC` calibrado, el test de «compañeros 0 px», las vistas, la hoja de contacto, el script V1–V4 y la tabla V1–V9.
 
+**Resuelto por el owner (2026-11-08):** opción (i), solape permitido ENTRE filas y cero intersección dentro de cada fila, más el tope inferior real de los botones. Ver `hoja_visual.md` § «Decisión del owner (2026-11-08)» y la enmienda de R24 en `requirements.md`. T10.6 se reanuda.
