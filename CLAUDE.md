@@ -26,9 +26,13 @@ implementar.
 ### Protocolo de arranque
 
 1. Lee `AGENTS.md`.
-2. Lee `feature_list.json`; la feature objetivo es la que nombre el owner o la
+2. Lee `D:\Proyectos\_ops\ESTADO.md` § «KH en Claude Code»: pendientes,
+   decisiones del owner y qué está corriendo.
+3. Lee `feature_list.json`; la feature objetivo es la que nombre el owner o la
    de `assignee`.
-3. Aplica el flujo SDD y la tabla de escalado de `.claude/agents/leader.md`.
+4. Aplica el flujo SDD, la tabla de escalado y la sección «Operación» de
+   `.claude/agents/leader.md` (roster de subagentes, revisión visual, puertas
+   de arte, worktrees, puertos y merges).
 
 ### Regla anti-teléfono-descompuesto
 
