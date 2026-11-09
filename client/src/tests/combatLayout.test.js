@@ -129,6 +129,22 @@ describe('R24 (por fila) + V2 (carriles) + V3: 14 configuraciones × n = 1…5 �
     expect(boss.enemies[0].row).toBe('EF');
     expect(Object.keys(boss.lanes).sort()).toEqual(['EF', 'HB', 'HF']);
   });
+  it('escuadras con huecos (solo slots 4–5, o 1 + 4–5) también caen en carriles válidos', () => {
+    for (const slots of [[4, 5], [5], [1, 4, 5], [2, 5], [3, 4]]) {
+      const hs = slots.map((slot) => hero(slot));
+      for (const node of [null, NODES.find((x) => x.id === 'a1n9')]) {
+        const f = computeFormation(hs, enemies(2), { node, boss: !!node && isBossNode(node) });
+        for (const b of f.heroes) {
+          expect(Number.isFinite(b.lane), `${slots}`).toBe(true);
+          expect(b.lane).toBeLessThanOrEqual(LANE_MAX);
+          expect(b.lane).toBeGreaterThanOrEqual(CALIB[bgArt(node)].groundY + FLOOR_MARGIN);
+          expect(b.x).toBeGreaterThanOrEqual(0);
+          expect(b.x + b.w).toBeLessThanOrEqual(WORLD.w);
+        }
+        for (const e of f.enemies) expect(e.lane).toBeLessThan(Math.min(...f.heroes.map((b) => b.lane)));
+      }
+    }
+  });
   it('más de 4 enemigos se recortan a 4', () => {
     expect(computeFormation(heroes(1), enemies(7)).enemies).toHaveLength(4);
   });

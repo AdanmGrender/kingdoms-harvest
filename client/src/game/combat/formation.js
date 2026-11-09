@@ -191,9 +191,13 @@ export function computeFormation(heroes, enemies, opts = {}) {
     out.HF = H.HF.map((u, i) => place(u, H.xF[i], lanes.HF));
   }
   if (H.HB.length) {
-    const topF = Math.min(...out.HF.map((b) => b.alpha.y));
-    const ahB = Math.min(...H.HB.map((u) => u.ah));
-    lanes.HB = Math.max(floor, Math.min(lanes.HF - LANE_GAP, Math.floor(topF + (1 - FACE_FRAC) * ahB)));
+    if (out.HF.length) {
+      const topF = Math.min(...out.HF.map((b) => b.alpha.y));
+      const ahB = Math.min(...H.HB.map((u) => u.ah));
+      lanes.HB = Math.max(floor, Math.min(lanes.HF - LANE_GAP, Math.floor(topF + (1 - FACE_FRAC) * ahB)));
+    } else {
+      lanes.HB = LANE_MAX; // sin nadie en los slots 1–3, la fila trasera es la de más adelante
+    }
     out.HB = H.HB.map((u, i) => place(u, H.xB[i], lanes.HB));
   }
 
