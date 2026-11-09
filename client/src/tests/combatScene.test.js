@@ -11,7 +11,7 @@ vi.mock('phaser', () => {
 });
 
 import CombatScene, {
-  FLOAT_NORMAL, FLOAT_CRIT, FLOAT_STACK, FLOAT_RISE, FLOAT_MS, FLOAT_POP_MS, FLOAT_POP_FROM, FLOAT_HEAD_GAP,
+  FLOAT_NORMAL, FLOAT_CRIT, FLOAT_STACK_GAP, FLOAT_RISE, FLOAT_MS, FLOAT_POP_MS, FLOAT_POP_FROM, FLOAT_HEAD_GAP,
   DEAD_ALPHA, FALL_MS, AIM_MAX_DEG,
 } from '../game/combat/CombatScene';
 import { createCombatGame, buildCombatConfig } from '../game/combat/createCombatGame';
@@ -61,7 +61,7 @@ function mkObj(log, kind, x = 0, y = 0, texture = null) {
 
 const TWEEN_KEYS = ['targets', 'duration', 'delay', 'ease', 'yoyo', 'repeat', 'onComplete', 'hold'];
 
-function fakeScene({ quality = 'medium', postFX = true, failTextures = [], reduced = false, state, node } = {}) {
+function fakeScene({ quality = 'medium', postFX = true, failTextures = [], reduced = false, state, node, cssW = 412 } = {}) {
   const s = new CombatScene();
   const log = {
     pointlights: 0, vignette: 0, bloom: 0, shake: 0, tweens: 0, tweenList: [], objects: [], warns: [],
@@ -74,7 +74,12 @@ function fakeScene({ quality = 'medium', postFX = true, failTextures = [], reduc
   s.add = {
     image: (x, y, key) => mkObj(log, 'image', x, y, key),
     rectangle: (x, y) => mkObj(log, 'rect', x, y),
-    text: (x, y, text, style) => Object.assign(mkObj(log, 'text', x, y), { text, style }),
+    text: (x, y, text, style) => {
+      const o = Object.assign(mkObj(log, 'text', x, y), { text, style });
+      Object.defineProperty(o, 'height', { get: () => parseFloat(style.fontSize) * 1.25 }); // alto de línea del texto
+      Object.defineProperty(o, 'width', { get: () => parseFloat(style.fontSize) * 0.6 * String(text).length });
+      return o;
+    },
     particles: () => mkObj(log, 'particles'),
     container: (x, y) => mkObj(log, 'container', x, y),
     pointlight: () => { log.pointlights += 1; return mkObj(log, 'light'); },
@@ -97,6 +102,7 @@ function fakeScene({ quality = 'medium', postFX = true, failTextures = [], reduc
   const cam = { shake: () => { log.shake += 1; } };
   if (postFX) cam.postFX = { addVignette: () => { log.vignette += 1; }, addBloom: () => { log.bloom += 1; return {}; } };
   s.cameras = { main: cam };
+  s.scale = { displaySize: { width: cssW, height: cssW * (1720 / 824) } };
   s.input = { on: vi.fn() };
   const done = vi.fn();
   s.init({ quality: QUALITY[quality], reducedMotion: reduced, state, node, onRoundDone: done });
@@ -327,33 +333,64 @@ describe('Movimiento (regla del owner): cada personaje anima solo su contenedor'
   }
 });
 
-describe('V4: números de daño sobre la cabeza', () => {
-  it('normal 40 px / crítico 60 px; arrancan encima de la cabeza; pop 1,4→1 en 120 ms; suben 60 px en 800 ms; se apilan 28 px', () => {
-    expect(FLOAT_NORMAL).toBeGreaterThanOrEqual(36); expect(FLOAT_NORMAL).toBeLessThanOrEqual(44);
-    expect(FLOAT_CRIT).toBeGreaterThanOrEqual(56); expect(FLOAT_CRIT).toBeLessThanOrEqual(64);
+describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alto real + 4)', () => {
+  it('a cualquier escala: normal 36–44 y crítico 56–64 px CSS; arrancan sobre la cabeza; pop 1,4→1 en 120 ms; suben 60 px CSS en 800 ms', () => {
+    expect([FLOAT_NORMAL, FLOAT_CRIT, FLOAT_RISE, FLOAT_POP_FROM, FLOAT_POP_MS]).toEqual([40, 60, 60, 1.4, 120]);
+    for (const cssW of [412, 383, 360, 354.5, 319.5]) {
+      const k = cssW / 824;
+      const { s, log } = fakeScene({ state: FULL, node: FULL_NODE, cssW });
+      s.preload();
+      s.create();
+      const a = s.actors.e0;
+      const from = log.tweenList.length;
+      const t1 = s.floatAt(a, 20, '#fff');
+      const t2 = s.floatAt(s.actors.e1, 40, '#fff', true);
+      const css = (t) => parseFloat(t.style.fontSize) * k;
+      expect(css(t1), `${cssW}`).toBeGreaterThanOrEqual(36);
+      expect(css(t1), `${cssW}`).toBeLessThanOrEqual(44);
+      expect(css(t2), `${cssW}`).toBeGreaterThanOrEqual(56);
+      expect(css(t2), `${cssW}`).toBeLessThanOrEqual(64);
+      expect(t1.originY).toBe(1);                                         // se coloca el borde inferior
+      expect(t1.y0).toBeCloseTo(a.base.headY - FLOAT_HEAD_GAP / k, 6);     // sobre la cabeza, nunca sobre la cara
+      expect(t1.y0).toBeLessThan(a.base.headY);
+      expect(t1.scaleX).toBe(1.4);
+      const tw = log.tweenList.slice(from).filter((t) => t.targets[0] === t1);
+      const pop = tw.find((t) => t.props.includes('scale'));
+      const rise = tw.find((t) => t.props.includes('y'));
+      const fade = tw.find((t) => t.props.includes('alpha'));
+      expect([pop.cfg.scale, pop.cfg.duration]).toEqual([1, 120]);
+      expect((t1.y0 - rise.cfg.y) * k).toBeCloseTo(60, 6);
+      expect(rise.cfg.duration).toBe(800);
+      expect((fade.cfg.delay || 0) + fade.cfg.duration).toBeLessThanOrEqual(800);
+    }
+  });
+  it('apilado: cada número arranca 4 px CSS sobre el borde superior real del anterior (normal o crítico) y nunca se pisan', () => {
+    const k = 412 / 824;
     const { s, log } = fakeScene({ state: FULL, node: FULL_NODE });
     s.preload();
     s.create();
+    log.tweenList.length = 0;
+    s.tweens.add = (cfg) => { log.tweenList.push({ targets: [cfg.targets], cfg }); return { stop() {} }; }; // sin aplicar: todos a la vez
     const a = s.actors.e0;
-    const from = log.tweenList.length;
-    const t1 = s.floatAt(a, 20, '#fff');
-    const t2 = s.floatAt(a, 40, '#fff', true);
-    expect(t1.style.fontSize).toBe(`${FLOAT_NORMAL}px`);
-    expect(t2.style.fontSize).toBe(`${FLOAT_CRIT}px`);
-    expect(t1.originY).toBe(1);                                   // el borde inferior es el que se coloca
-    expect(t1.y0).toBe(a.base.headY - FLOAT_HEAD_GAP);            // sobre la cabeza, nunca sobre la cara
-    expect(t1.y0).toBeLessThan(a.base.headY);
-    expect(t2.y0).toBe(t1.y0 - FLOAT_STACK);
-    const tw = log.tweenList.slice(from).filter((t) => t.targets[0] === t1);
-    const pop = tw.find((t) => t.props.includes('scale'));
-    const rise = tw.find((t) => t.props.includes('y'));
-    const fade = tw.find((t) => t.props.includes('alpha'));
-    expect(FLOAT_POP_FROM).toBe(1.4);
-    expect([pop.cfg.scale, pop.cfg.duration]).toEqual([1, FLOAT_POP_MS]);
-    expect(FLOAT_POP_MS).toBe(120);
-    expect([t1.y0 - rise.cfg.y, rise.cfg.duration]).toEqual([FLOAT_RISE, FLOAT_MS]);
-    expect(FLOAT_RISE).toBe(60);
-    expect((fade.cfg.delay || 0) + fade.cfg.duration).toBeLessThanOrEqual(800);
+    const ts = [s.floatAt(a, 12, '#fff'), s.floatAt(a, 96, '#fff', true), s.floatAt(a, 7, '#fff'), s.floatAt(a, 55, '#fff', true), s.floatAt(a, 81, '#fff')];
+    const rect = (t) => ({ x0: t.x - (t.width * t.scaleX) / 2, x1: t.x + (t.width * t.scaleX) / 2, y0: t.y0 - t.height * t.scaleY, y1: t.y0 });
+    // mientras haya sitio arriba, cada uno arranca 4 px CSS sobre el borde superior real (con el pop 1,4) del anterior
+    expect(ts[1].y0).toBeCloseTo(rect(ts[0]).y0 - FLOAT_STACK_GAP / k, 6);
+    expect(ts[2].y0).toBeCloseTo(rect(ts[1]).y0 - FLOAT_STACK_GAP / k, 6);
+    // nunca se pisan (si no queda sitio arriba, columna nueva al lado)
+    for (let i = 0; i < ts.length; i++) {
+      for (let j = i + 1; j < ts.length; j++) {
+        const [p, q] = [rect(ts[i]), rect(ts[j])];
+        const overlap = p.x0 < q.x1 && q.x0 < p.x1 && p.y0 < q.y1 && q.y0 < p.y1;
+        expect(overlap, `${i}×${j}`).toBe(false);
+      }
+      expect(rect(ts[i]).y0).toBeGreaterThanOrEqual(0);
+      expect(rect(ts[i]).x1).toBeLessThanOrEqual(824);
+    }
+    // un número que ya se fue no empuja al siguiente: vuelve a arrancar sobre la cabeza
+    for (const t of ts) t.destroy();
+    const t5 = s.floatAt(a, 3, '#fff');
+    expect(t5.y0).toBeCloseTo(a.base.headY - FLOAT_HEAD_GAP / k, 6);
   });
   it('el daño de un golpe sale con floatAt sobre el objetivo', () => {
     const { s, log } = fakeScene({ state: FULL, node: FULL_NODE });
@@ -361,7 +398,7 @@ describe('V4: números de daño sobre la cabeza', () => {
     s.create();
     s.playBeat(BEAT({ kind: 'hit', actorId: 'h1', targetId: 'e1', num: 33 }));
     const txt = log.objects.find((o) => o.kind === 'text' && String(o.text) === '33');
-    expect(txt.y0).toBe(s.actors.e1.base.headY - FLOAT_HEAD_GAP);
+    expect(txt.y0).toBeCloseTo(s.actors.e1.base.headY - FLOAT_HEAD_GAP / (412 / 824), 6);
   });
 });
 

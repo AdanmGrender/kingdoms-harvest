@@ -16,14 +16,15 @@ import { QUALITY, DEFAULT_QUALITY } from './combatQuality';
 const { w: W, h: H } = WORLD;
 const FONT = "'IM Fell English SC', 'IM Fell English', serif";
 const toInt = (hex) => parseInt(String(hex || '#ffffff').replace('#', ''), 16) || 0xffffff;
-export const FLOAT_NORMAL = 40;   // V4 (enmienda): 36–44 px de mundo en daño normal…
-export const FLOAT_CRIT = 60;     // …56–64 px en crítico
-export const FLOAT_STACK = 28;    // apilado: offset vertical entre números simultáneos
-export const FLOAT_RISE = 60;     // sube 60 px…
+// V4 (enmienda Last Asylum + decisión del owner del 2026-11-09): tamaños en px de PANTALLA (CSS), no de mundo.
+export const FLOAT_NORMAL = 40;   // 36–44 px CSS en daño normal…
+export const FLOAT_CRIT = 60;     // …56–64 px CSS en crítico
+export const FLOAT_STACK_GAP = 4; // apilado: cada número nuevo arranca 4 px CSS por encima del alto real del anterior
+export const FLOAT_RISE = 60;     // sube 60 px CSS…
 export const FLOAT_MS = 800;      // …en ≤800 ms
 export const FLOAT_POP_MS = 120;  // pop 1,4 → 1 en 120 ms
 export const FLOAT_POP_FROM = 1.4;
-export const FLOAT_HEAD_GAP = 12; // el número arranca 12 px por encima de la cabeza (tope de la silueta)
+export const FLOAT_HEAD_GAP = 6;  // el número arranca 6 px CSS por encima de la cabeza (tope de la silueta)
 export const DEAD_ALPHA = 0.85;   // V6: tendido, nunca fantasma
 const DEAD_TINT = 0x9a9a9a;       // V6: apagado (con WebGL además se desatura con una matriz de color)
 export const FALL_MS = 450;       // V6: caída ≤600 ms
@@ -327,31 +328,56 @@ export default class CombatScene extends Phaser.Scene {
     return facingRight ? -deg : deg;
   }
 
-  /** Daño/texto flotante (V4 enmendada): pop 1,4→1 en 120 ms, sube 60 px y se desvanece en ≤800 ms. */
-  float(x, y, text, color, size = FLOAT_NORMAL) {
+  /** px CSS por unidad del mundo (el lienzo 824×1720 se escala FIT en la pantalla). Sin escala conocida: 412 px de ancho. */
+  cssPerWorld() {
+    const d = this.scale && this.scale.displaySize;
+    return d && d.width > 0 ? d.width / W : 0.5;
+  }
+
+  /**
+   * Daño/texto flotante (V4): `css` = tamaño en px de pantalla. Pop 1,4→1 en 120 ms; sube 60 px CSS; se desvanece y
+   * desaparece a los 800 ms. (x, y) es el borde inferior central del texto, en el mundo.
+   */
+  float(x, y, text, color, css = FLOAT_NORMAL) {
+    const k = this.cssPerWorld();
+    const size = Math.round(css / k);
     const t = this.add.text(x, y, String(text), {
       fontFamily: FONT, fontSize: `${size}px`, color: color || '#e6dcc3', stroke: '#120a07', strokeThickness: Math.max(4, Math.round(size / 8)),
     }).setOrigin(0.5, 1).setDepth(2700).setScale(FLOAT_POP_FROM);
+    t.cssSize = css;
     this.tweens.add({ targets: t, scale: 1, duration: FLOAT_POP_MS, ease: 'Quad.easeOut' });
-    this.tweens.add({ targets: t, y: y - FLOAT_RISE, duration: FLOAT_MS, ease: 'Cubic.easeOut' });
+    this.tweens.add({ targets: t, y: y - FLOAT_RISE / k, duration: FLOAT_MS, ease: 'Cubic.easeOut' });
     this.tweens.add({ targets: t, alpha: 0, duration: FLOAT_MS * 0.4, delay: FLOAT_MS * 0.6, onComplete: () => t.destroy() });
     return t;
   }
 
   /**
    * Flotante SOBRE LA CABEZA del actor (nunca sobre la cara = 35 % superior de la silueta): su borde inferior arranca
-   * FLOAT_HEAD_GAP px por encima del tope de la silueta. `crit` → 56–64 px. Los simultáneos se apilan 28 px.
+   * FLOAT_HEAD_GAP px CSS por encima del tope de la silueta. Si el actor ya tiene un número a la vista, el nuevo arranca
+   * 4 px CSS por encima del borde superior REAL de ese número (su alto con la escala del momento): nunca se pisan.
    */
-  floatAt(a, text, color, crit = false, lane = 0) {
-    const size = crit ? FLOAT_CRIT : FLOAT_NORMAL;
-    const now = this.time ? this.time.now : 0;
-    if (a.floatAt === undefined || now - a.floatAt > FLOAT_POP_MS * 4) a.floatLane = -1;   // solo se apilan los simultáneos
-    a.floatAt = now;
-    const lanes = a.floatLane = (a.floatLane ?? -1) + 1;
-    const n = lane || Math.min(lanes, 3);
-    const x = Math.min(W - 70, Math.max(70, a.base.x));
-    const y = a.base.headY - FLOAT_HEAD_GAP - n * FLOAT_STACK;
-    return this.float(x, Math.max(size + 8, y), text, color, size);
+  floatAt(a, text, color, crit = false) {
+    const css = crit ? FLOAT_CRIT : FLOAT_NORMAL;
+    const k = this.cssPerWorld();
+    const gap = FLOAT_STACK_GAP / k;
+    a.floats = (a.floats || []).filter((t) => t.active !== false && t.alpha > 0.02);
+    const prev = a.floats[a.floats.length - 1];
+    if (!prev) a.floatLeft = -Infinity;                   // pila nueva: primera columna, sobre la cabeza
+    const head = a.base.headY - FLOAT_HEAD_GAP / k;
+    const top = (t) => t.y - t.height * Math.abs(t.scaleY || 1);
+    const halfW = (t) => (t.width * Math.max(1, Math.abs(t.scaleX || 1))) / 2;
+    let y = prev ? top(prev) - gap : head;
+    let x = prev ? prev.x : Math.min(W - 70, Math.max(70, a.base.x));
+    if (prev && y - (css / k) * 1.25 * FLOAT_POP_FROM < 8 / k) {
+      // sin sitio arriba: columna nueva a la derecha de todo lo que sigue a la vista, otra vez desde la cabeza
+      a.floatLeft = Math.max(...a.floats.map((o) => o.x + halfW(o))) + gap;
+      y = head;
+    }
+    const t = this.float(x, y, text, color, css);
+    x = Math.max(t.x, a.floatLeft + (t.width * FLOAT_POP_FROM) / 2);
+    t.x = Math.min(W - 8 - (t.width * FLOAT_POP_FROM) / 2, x);
+    a.floats.push(t);
+    return t;
   }
 
   flash(a, color = 0xffffff, ms = 70) {
