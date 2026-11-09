@@ -6,6 +6,7 @@
 // Uso: KH_PREVIEW_URL=http://localhost:5175 node capturar_ronda2.mjs <modo>
 //   fondos    412×860: moor (a1n4), ashfield (a2n7), veil_marsh (a2n4) × 1/3/4 enemigos; y lo mismo con los héroes ocultos
 //   ocultos   412×860: jefe (a1n9), 3 enemigos (a1n7) y 4 (a2n10) con la formación real y los héroes ocultos (pies y piso)
+//   extra     412×860: crypt (a1n7) con 2 (sin héroes) y 4 carroñeros (con y sin héroes)
 //   resultado 412×860: victoria y derrota con 3 enemigos (a1n7), 4 (a2n10) y jefe (a1n9)
 //   anim      412×860: screencast CDP (cuadros reales con su hora) de V4, V6 y V7 + muestreo por requestAnimationFrame
 //   bajos     360×740 y 375×667: 5 héroes + 3 enemigos (a1n7); botones y «¡TAP!» frente a los pies de la fila delantera
@@ -253,6 +254,15 @@ async function ocultos(browser) {
   ], 'ocultos');
 }
 
+async function extra(browser) {
+  // crypt con 2 y 4 carroñeros: las filas que van a los bordes (¿pies sobre el altar o el carro?)
+  await modoVistas(browser, [
+    { key: 'dos_a1n7_sinheroes', esc: { node: NODES.a1n7, enemies: ens(2) }, ocultar: true },
+    { key: 'cuatro_a1n7', esc: { node: NODES.a1n7, enemies: ens(4) } },
+    { key: 'cuatro_a1n7_sinheroes', esc: { node: NODES.a1n7, enemies: ens(4) }, ocultar: true },
+  ], 'extra');
+}
+
 async function resultado(browser) {
   await modoVistas(browser, [
     { key: 'victoria_a1n7_3en', esc: { node: NODES.a1n7, enemies: ens(3, 60), result: 'victory' } },
@@ -390,7 +400,7 @@ async function anim(browser) {
   console.log('cuadros crudos en', RAW, '· errores de consola/página:', errores.length ? errores : 'ninguno');
 }
 
-const MODOS = { fondos, ocultos, resultado, bajos, anim };
+const MODOS = { fondos, ocultos, extra, resultado, bajos, anim };
 const modo = process.argv[2];
 if (!MODOS[modo]) { console.error(`modo: ${Object.keys(MODOS).join(' | ')}`); process.exit(2); }
 const browser = await chromium.launch({ headless: true, args: ['--ignore-gpu-blocklist', '--use-angle=d3d11'] });
