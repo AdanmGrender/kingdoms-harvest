@@ -50,7 +50,7 @@ Resuelve el bloqueo de `tasks.md` (choque V1/V2 vs R24: con una sola línea de s
 - El orden de dibujo (profundidad) sigue al carril: el carril más bajo en pantalla se dibuja delante.
 
 ### Lo que NO cambia
-- R24: cero intersección de cajas para n = 1…5 héroes × m = 1…4 enemigos, dentro de 824×1720. No se relaja.
+- ~~R24: cero intersección de cajas para n = 1…5 héroes × m = 1…4 enemigos, dentro de 824×1720. No se relaja.~~ **Superado el 2026-11-08:** R24 se exige solo dentro de cada fila (ver la decisión de abajo).
 - V1 (escalas), R27 (topes 0,29 / 0,36), formación 3+2 de héroes, V3 (HUD, botones y barras no tapan sprites).
 - Si con carriles por profundidad y escalas V1 sigue sin existir solución con cero intersección, el implementer NO relaja nada: lo deja en `## Bloqueado` de `tasks.md` con las cuentas, para nueva decisión del owner.
 

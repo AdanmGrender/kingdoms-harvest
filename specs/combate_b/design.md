@@ -191,4 +191,5 @@ Todas según la recomendación de la tabla: Q1 Phaser.Game aparte + `loop.sleep(
 
 ### Enmienda del owner (2026-11-02)
 - R48 (p5 de fps en `kh_pixel7`) sale de F7 y pasa a la feature #27 `combate_rendimiento`. No se persigue en la ronda visual.
+- Quedan superados por `hoja_visual.md` y las decisiones del 2026-11-07/08: la fila `death` de la tabla de beats (§2: ahora toda unidad cae y queda tendida, V6) y §8 Formación (cajas de 190×250, paso 230, tope en y 1440). La geometría vigente está en `formation.js` y en `hoja_visual.md`.
 - La hoja visual `hoja_visual.md` (V1–V9, V4 según la enmienda Last Asylum) es la última ronda visual de F7: el visual_reviewer juzga solo contra ella; lo que encuentre fuera de la hoja va al backlog. Las decisiones del 2026-11-07 (carriles por profundidad) y del 2026-11-08 (R24 por fila, tope real de los botones) están en la misma hoja.

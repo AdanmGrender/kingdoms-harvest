@@ -59,7 +59,7 @@ Cada tarea se cierra con `Evidencia:` inline (comando + salida real, no resumen)
         - Contenedor en (cx, carril), `depth` = carril, origen del sprite en el pie.
         - El fondo usa la misma transformación que la calibración. Al cambiar de pose o voltear, el pie no se mueve.
         - **«Compañeros 0 px»**: en idle, attack, hit, skill y KO ningún tween toca a otro personaje y los compañeros conservan x, y y ángulo. El contenedor del que actúa vuelve a su sitio.
-        - V4, V6 y V7. Los 13 tests anteriores siguen con sus asserts.
+        - V4, V6 y V7. Los 11 tests anteriores siguen con sus asserts (corregido por el leader según H5 de la review ronda 2).
       - combatPanel: V5, V6, V8 y V9.
     - **Vistas** (preview aislado: server del worktree en :3003 con `BOT_TOKEN` ficticio, `BOT_POLLING=false` y su `server/data/kingdoms.db`; vite en :5175 `--strictPort`; los dos detenidos y los puertos comprobados libres al terminar).
       - Comando: `KH_PREVIEW_URL=http://localhost:5175 node specs/combate_b/evidencia/hoja/generar_evidencia_hoja.mjs`.

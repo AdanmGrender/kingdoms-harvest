@@ -53,6 +53,7 @@ Un `skill` de tipo `shield` DEBE dibujarse como efecto de escuadra completa sin 
 ## R11
 Un `death` DEBE hacer que la unidad caiga y quede fuera de la formación activa (héroe: queda caído y atenuado; enemigo: se desvanece), y la victoria NO DEBE anunciarse antes del evento `end`.
 - Verificación: test del planificador: el beat de `end` es siempre el último de la ronda y posterior a todo `death`; test de panel: el `ResultBanner` no existe hasta que la escena emite `combat:round-done` (R19).
+- **Enmienda del owner (hoja visual V6, 2026-11-02):** toda unidad que muere, héroe o enemigo, cae (rotación + bajada, ≤ 600 ms) y queda tendida sobre su carril a α ≥ 0,8, desaturada. El enemigo ya no se desvanece.
 
 ## R12
 Un `status` DEBE mostrar un marcador por tipo (`stun`, `burn`, `poison`, `defDown`, `atkDown`, `shield`, `immune`) al aplicarse o refrescarse, retirarlo con `op:'expire'`, mostrar «Inmune» con `op:'blocked'` y «Aturdido» con `op:'skip'`.
@@ -239,3 +240,4 @@ Las suites completas del servidor y del cliente DEBEN pasar y el build del clien
 ## R54 [owner 2026-10-31]
 El HUD DEBE mostrar una barra de vida por cada enemigo del combate, no solo la del principal. Fuente: `state.enemies[]` (v2) o, si no existe, `[state.enemy]` (v1), en el orden en que llegan. Cada fila lleva el nombre del enemigo (o «Enemigo N» si no trae nombre) y su barra (`hp/maxHp`, piso 0); un enemigo con `hp <= 0` se ve atenuado y su barra en 0, sin desaparecer. Con 1 enemigo el HUD se ve como hoy. Con 4 enemigos el bloque no tapa la fila de héroes ni el botón «Avanzar ronda» en 412×860 y en aspecto > 2.1.
 - Verificación: test nuevo en `combatPanel` con estado de 1, 3 y 4 enemigos (cuenta de barras con `aria-label` «Vida de <nombre>», valores, atenuado del muerto); fallback v1 con solo `state.enemy`; los tests de R40 siguen verdes; capturas de T11 con 3+ enemigos.
+- Nota (V9, 2026-11-08): «Enemigo N» solo aplica cuando el combate no trae nodo. Con nodo, cada barra lleva el nombre del arte dibujado (`enemyDisplayName`), por ejemplo «Voz del Velo».
