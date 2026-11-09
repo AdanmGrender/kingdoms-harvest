@@ -7,7 +7,8 @@ import {
 } from '../game/combat/formation';
 import {
   heroArt, enemyArt, bgArt, isBossNode, collectAssetKeys, textureUrl, spriteGeom, bgImageRowToWorldY, bgCoverScale,
-  FALLBACK, HERO_ART, ENEMY_ART, BG_ART, BG_GROUND_Y_FRAC, BG_FLOOR_IMAGE_FRAC, SPRITE_GEOM, BG_IMAGE,
+  bgImageColToWorldX, FALLBACK, HERO_ART, ENEMY_ART, BG_ART, BG_GROUND_Y_FRAC, BG_FLOOR_IMAGE_FRAC, BG_FLOOR_OBSTACLES,
+  SPRITE_GEOM, BG_IMAGE,
 } from '../game/combat/artMap';
 
 // shared/ es CommonJS fuera de la raíz de Vite: se lee solo en el test.
@@ -409,6 +410,65 @@ describe('B3: tendidos (V6) — largo ×0,9, todos hacia el mismo lado, solape �
           }
         }
       }
+    }
+  });
+});
+
+describe('B4: los pies de cada fila de enemigos caen sobre piso real (obstáculos del fondo por columnas)', () => {
+  it('crypt: el altar (x > 71 %) y el carro (x < 16,5 %) están calibrados con su piso real', () => {
+    expect(BG_FLOOR_OBSTACLES.crypt.map((o) => [o.x0, o.x1, o.floor])).toEqual([[0, 0.165, 0.6], [0.71, 1, 0.585]]);
+    for (const o of BG_FLOOR_OBSTACLES.crypt) expect(bgImageRowToWorldY(o.floor)).toBeGreaterThan(CALIB.crypt.groundY);
+  });
+  it('en las 14 configuraciones con 1, 2, 3 y 4 enemigos y las tres escuadras, ningún pie pisa un obstáculo por encima de su piso', () => {
+    let revisados = 0;
+    for (const cls of Object.values(SQUADS)) {
+      for (const node of CONFIGS) {
+        const obs = BG_FLOOR_OBSTACLES[bgArt(node)] || [];
+        for (let n = 1; n <= 5; n++) {
+          for (let m = 1; m <= 4; m++) {
+            for (const e of form(node, n, m, cls).enemies) {
+              // los pies son las columnas con alfa del 6 % inferior de la silueta (hoja_alfa.json), centrados en la caja
+              const g = spriteGeom('enemy', e.art, 'idle');
+              const s = e.h / g.H;
+              expect(e.feet.x0).toBeCloseTo(e.cx + (g.pl - g.W / 2) * s, 6);
+              expect(e.feet.x1).toBeCloseTo(e.cx + (g.pr + 1 - g.W / 2) * s, 6);
+              for (const o of obs) {
+                const x0 = bgImageColToWorldX(o.x0).min;
+                const x1 = bgImageColToWorldX(o.x1).max;
+                const encima = e.feet.x1 > x0 && e.feet.x0 < x1;
+                if (encima) expect(e.lane, `${label(node)} n${n} m${m} ${e.id} sobre «${o.que}»`).toBeGreaterThanOrEqual(bgImageRowToWorldY(o.floor));
+                revisados += 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    expect(revisados).toBeGreaterThan(0);
+  });
+  it('crypt con 2, 3 y 4 enemigos: el de la derecha ya no pisa el altar y todos quedan sobre la calle', () => {
+    const crypt = NODES.find((x) => x.id === 'a1n7');
+    const altar = bgImageColToWorldX(0.71).min;
+    const carro = bgImageColToWorldX(0.165).max;
+    for (const m of [2, 3, 4]) {
+      const f = form(crypt, 5, m);
+      for (const e of f.enemies) {
+        expect(e.feet.x1, `m${m} ${e.id}`).toBeLessThanOrEqual(altar);
+        expect(e.feet.x0, `m${m} ${e.id}`).toBeGreaterThanOrEqual(carro);
+        expect(e.lane).toBeGreaterThanOrEqual(CALIB.crypt.groundY);
+      }
+    }
+  });
+});
+
+describe('H1: los datos de geometría están atados a sus mediciones', () => {
+  const ALFA = JSON.parse(fs.readFileSync(path.join(HOJA, 'hoja_alfa.json'), 'utf8'));
+  it('SPRITE_GEOM (l, r, t, b y pies) = hoja_alfa.json, medido sobre los webp', () => {
+    for (const key of Object.keys(SPRITE_GEOM)) {
+      const [kind, art, pose] = key.split(':');
+      const m = ALFA[`${kind === 'hero' ? 'heroes' : 'enemies'}/${art}_${pose}`];
+      const g = spriteGeom(kind, art, pose);
+      expect([g.W, g.H, g.l, g.r, g.t, g.b, g.pl, g.pr], key).toEqual([m.W, m.H, m.l, m.r, m.t, m.b, m.pl, m.pr]);
     }
   });
 });

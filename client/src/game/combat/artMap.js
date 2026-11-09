@@ -64,42 +64,61 @@ export function bgImageRowToWorldY(f) {
   return Math.ceil(LIENZO.h / 2 + (f - 0.5) * BG_IMAGE.h * s * (f > 0.5 ? BG_DRIFT : 1));
 }
 
+// Obstáculos del piso por columnas (B4 de la revisión visual ronda 2): donde el fondo tiene algo apoyado en el suelo
+// por delante de la línea de suelo, el piso real de esas columnas empieza más abajo. En fracciones de la IMAGEN:
+// columnas x0..x1 y fila `floor` donde vuelve a haber piso. Leídos con regla sobre la imagen (calibrar_suelo.cjs).
+export const BG_FLOOR_OBSTACLES = {
+  crypt: [
+    { x0: 0, x1: 0.165, floor: 0.6, que: 'carro y rueda, poste de la horca' },
+    { x0: 0.71, x1: 1, floor: 0.585, que: 'altar con velas y calaveras, tablas apoyadas' },
+  ],
+};
+
+/** Columna de la imagen del fondo → x del mundo, en los dos extremos de la deriva: { min, max }. */
+export function bgImageColToWorldX(f) {
+  const s = bgCoverScale();
+  const a = LIENZO.w / 2 + (f - 0.5) * BG_IMAGE.w * s;
+  const b = LIENZO.w / 2 - 8 + (f - 0.5) * BG_IMAGE.w * s * BG_DRIFT;
+  return { min: Math.min(a, b), max: Math.max(a, b) };
+}
+
 // Línea de suelo de cada fondo como fracción del alto 1720 (= `calibracion_suelo.json`): los carriles van por debajo.
 export const BG_GROUND_Y_FRAC = Object.fromEntries(
   Object.entries(BG_FLOOR_IMAGE_FRAC).map(([k, f]) => [k, Number((bgImageRowToWorldY(f) / LIENZO.h).toFixed(4))]),
 );
 
-// Geometría de cada textura, medida sobre los webp reales: [W, H, l, r, t, b, ox].
-// l..r y t..b = caja de los píxeles con alfa > 0 (`specs/combate_b/evidencia/hoja/medir_alfa.cjs`); el pie es la fila b.
+// Geometría de cada textura, medida sobre los webp reales: [W, H, l, r, t, b, ox, pl, pr].
+// l..r y t..b = caja de los píxeles con alfa > 0 (`specs/combate_b/evidencia/hoja/medir_alfa.cjs` → `hoja_alfa.json`);
+// el pie es la fila b. pl..pr = columnas de los pies (alfa > 128 en el 6 % inferior de la silueta; B4).
 // ox = origen X que deja el cuerpo donde está en la pose idle (idle = 0,5); se alinea por el perfil de las piernas
 // (`specs/combate_b/evidencia/hoja/medir_poses.cjs`). Así el pie no se mueve al cambiar de pose.
 export const SPRITE_GEOM = {
-  'hero:warrior:idle': [444, 640, 12, 439, 12, 627, 0.5],
-  'hero:warrior:attack': [705, 640, 13, 700, 13, 626, 0.321],
-  'hero:mage:idle': [438, 640, 12, 425, 12, 627, 0.5],
-  'hero:mage:attack': [735, 640, 14, 734, 14, 625, 0.39],
-  'hero:ranger:idle': [413, 640, 12, 409, 12, 627, 0.5],
-  'hero:ranger:attack': [791, 640, 0, 788, 15, 624, 0.329],
-  'hero:paladin:idle': [445, 640, 12, 432, 11, 628, 0.5],
-  'hero:paladin:attack': [517, 640, 12, 504, 12, 627, 0.44],
-  'hero:rogue:idle': [464, 640, 12, 451, 12, 627, 0.5],
-  'hero:rogue:attack': [803, 640, 15, 787, 15, 624, 0.631],
-  'enemy:bruto:idle': [620, 720, 13, 606, 13, 707, 0.5],
-  'enemy:bruto:hit': [665, 720, 13, 651, 13, 707, 0.466],
-  'enemy:carroneros:idle': [674, 720, 14, 659, 14, 711, 0.5],
-  'enemy:carroneros:hit': [701, 720, 13, 687, 13, 706, 0.494],
-  'enemy:aullador:idle': [522, 720, 14, 507, 14, 705, 0.5],
-  'enemy:aullador:hit': [622, 720, 13, 608, 13, 706, 0.423],
-  'enemy:coloso:idle': [601, 720, 14, 586, 14, 705, 0.5],
-  'enemy:coloso:hit': [651, 720, 13, 637, 13, 706, 0.466],
-  'enemy:boss_devorador:idle': [688, 720, 14, 673, 14, 705, 0.5],
-  'enemy:boss_devorador:hit': [687, 720, 21, 665, 14, 712, 0.479],
-  'enemy:boss_heraldo:idle': [618, 720, 13, 604, 13, 706, 0.5],
-  'enemy:boss_heraldo:hit': [727, 720, 13, 713, 13, 706, 0.536],
-  'enemy:sin_rostro:idle': [488, 720, 13, 474, 13, 706, 0.5],
-  'enemy:sin_rostro:hit': [632, 720, 13, 618, 13, 706, 0.554],
-  'enemy:voz_del_velo:idle': [642, 720, 13, 628, 13, 706, 0.5],
-  'enemy:voz_del_velo:hit': [693, 720, 14, 678, 14, 709, 0.541],
+  'hero:warrior:idle': [444, 640, 12, 439, 12, 627, 0.5, 81, 382],
+  'hero:warrior:attack': [705, 640, 13, 700, 13, 626, 0.321, 48, 412],
+  'hero:mage:idle': [438, 640, 12, 425, 12, 627, 0.5, 40, 344],
+  'hero:mage:attack': [735, 640, 14, 734, 14, 625, 0.39, 68, 479],
+  'hero:ranger:idle': [413, 640, 12, 409, 12, 627, 0.5, 27, 304],
+  'hero:ranger:attack': [791, 640, 0, 788, 15, 624, 0.329, 0, 362],
+  'hero:paladin:idle': [445, 640, 12, 432, 11, 628, 0.5, 89, 396],
+  'hero:paladin:attack': [517, 640, 12, 504, 12, 627, 0.44, 37, 433],
+  'hero:rogue:idle': [464, 640, 12, 451, 12, 627, 0.5, 84, 450],
+  'hero:rogue:attack': [803, 640, 15, 787, 15, 624, 0.631, 95, 769],
+  'enemy:bruto:idle': [620, 720, 13, 606, 13, 707, 0.5, 201, 551],
+  'enemy:bruto:hit': [665, 720, 13, 651, 13, 707, 0.466, 208, 552],
+  'enemy:carroneros:idle': [674, 720, 14, 659, 14, 711, 0.5, 196, 572],
+  'enemy:carroneros:hit': [701, 720, 13, 687, 13, 706, 0.494, 204, 582],
+  'enemy:aullador:idle': [522, 720, 14, 507, 14, 705, 0.5, 110, 454],
+  'enemy:aullador:hit': [622, 720, 13, 608, 13, 706, 0.423, 109, 461],
+  'enemy:coloso:idle': [601, 720, 14, 586, 14, 705, 0.5, 121, 475],
+  'enemy:coloso:hit': [651, 720, 13, 637, 13, 706, 0.466, 128, 478],
+  'enemy:boss_devorador:idle': [688, 720, 14, 673, 14, 705, 0.5, 127, 626],
+  'enemy:boss_devorador:hit': [687, 720, 21, 665, 14, 712, 0.479, 110, 615],
+  'enemy:boss_heraldo:idle': [618, 720, 13, 604, 13, 706, 0.5, 137, 471],
+  'enemy:boss_heraldo:hit': [727, 720, 13, 713, 13, 706, 0.536, 232, 530],
+  'enemy:sin_rostro:idle': [488, 720, 13, 474, 13, 706, 0.5, 88, 473],
+  'enemy:sin_rostro:hit': [632, 720, 13, 618, 13, 706, 0.554, 129, 399],
+  'enemy:voz_del_velo:idle': [642, 720, 13, 628, 13, 706, 0.5, 14, 592],
+  'enemy:voz_del_velo:hit': [693, 720, 14, 678, 14, 709, 0.541, 166, 489],
 };
 
 // Disparo (V7, B5 de la revisión visual ronda 2): en la pose de ataque del tirador el fogonazo y el humo vienen
@@ -116,8 +135,8 @@ export const ATTACK_FX = {
 export function spriteGeom(kind, art, pose = 'idle') {
   const fb = kind === 'enemy' ? FALLBACK.enemy : FALLBACK.hero;
   const g = SPRITE_GEOM[`${kind}:${art}:${pose}`] || SPRITE_GEOM[`${kind}:${art}:idle`] || SPRITE_GEOM[`${kind}:${fb}:idle`];
-  const [W, H, l, r, t, b, ox] = g;
-  return { W, H, l, r, t, b, ox, oy: (b + 1) / H };
+  const [W, H, l, r, t, b, ox, pl, pr] = g;
+  return { W, H, l, r, t, b, ox, oy: (b + 1) / H, pl, pr };
 }
 
 // Nombre visible de cada arte de enemigo (V9: la barra de vida dice lo que se ve en pantalla).

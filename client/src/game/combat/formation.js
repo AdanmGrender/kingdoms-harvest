@@ -14,7 +14,7 @@
  * Cada caja: {x, y, w, h} = rectángulo de la textura dibujada (h = alto de V1/R27); `anchor` = pie centrado sobre el
  * carril (la fila inferior con alfa > 0 cae en `lane`); `alpha` = caja de la silueta visible; `face` = su 35 % superior.
  */
-import { heroArt, enemyArt, isBossNode, bgArt, BG_GROUND_Y_FRAC, spriteGeom } from './artMap';
+import { heroArt, enemyArt, isBossNode, bgArt, BG_GROUND_Y_FRAC, BG_FLOOR_OBSTACLES, bgImageColToWorldX, spriteGeom } from './artMap';
 
 export const WORLD = { w: 824, h: 1720 };
 export const ENEMY_HEIGHT_FRAC = { normal: 0.29, boss: 0.36 };   // R27: topes de F9 (× 1720)
@@ -57,7 +57,8 @@ export function enemyList(state) {
 function unit(id, kind, art, h, extra) {
   const g = spriteGeom(kind, art, 'idle');
   const s = h / g.H;
-  return { id, kind, art, h, s, g, w: g.W * s, ah: (g.b - g.t + 1) * s, ...extra };
+  // pies (columnas que apoyan en el piso) respecto del centro de la caja: la pose idle tiene el origen X al centro
+  return { id, kind, art, h, s, g, w: g.W * s, ah: (g.b - g.t + 1) * s, fl: (g.pl - g.W / 2) * s, fr: (g.pr + 1 - g.W / 2) * s, ...extra };
 }
 
 /** Caja de una unidad con el pie en `lane` y centro `cx`. */
@@ -66,8 +67,9 @@ function place(u, cx, lane) {
   const y = lane - (g.b + 1) * s;
   const alpha = { x: cx - w / 2 + g.l * s, y: y + g.t * s, w: (g.r - g.l + 1) * s, h: u.ah };
   const face = { x: alpha.x, y: alpha.y, w: alpha.w, h: alpha.h * FACE_FRAC };
+  const feet = { x0: cx + u.fl, x1: cx + u.fr };
   const box = {
-    id: u.id, x: cx - w / 2, y, w, h, cx, lane, depth: lane, anchor: { x: cx, y: lane }, alpha, face, row: u.row, art: u.art,
+    id: u.id, x: cx - w / 2, y, w, h, cx, lane, depth: lane, anchor: { x: cx, y: lane }, alpha, face, feet, row: u.row, art: u.art,
   };
   for (const k of ['side', 'slot', 'index', 'heroId', 'scale']) if (u[k] !== undefined) box[k] = u[k];
   return box;
@@ -163,6 +165,44 @@ function enemyRows(enemies, boss, node) {
   };
 }
 
+/**
+ * Banda de x (mundo) donde pueden apoyar los pies de los enemigos (B4): fuera de las columnas con obstáculos del fondo
+ * (`BG_FLOOR_OBSTACLES`), en el peor caso de la deriva y con 4 de margen.
+ */
+export function enemyFootBand(node) {
+  let aL = EDGE;
+  let aR = WORLD.w - EDGE;
+  for (const o of BG_FLOOR_OBSTACLES[bgArt(node)] || []) {
+    if (o.x0 <= 0) aL = Math.max(aL, bgImageColToWorldX(o.x1).max + 4);
+    else if (o.x1 >= 1) aR = Math.min(aR, bgImageColToWorldX(o.x0).min - 4);
+  }
+  return [aL, aR];
+}
+
+/**
+ * Corre lo justo los centros de una fila para que los pies de cada unidad queden dentro de la banda [aL, aR], sin que
+ * las cajas de la fila se toquen ni salgan del lienzo. Devuelve los centros nuevos (o los pedidos si no hay forma).
+ */
+function fitFeet(units, xs, [aL, aR]) {
+  if (!units.length) return xs;
+  const order = units.map((u, i) => i).sort((i, j) => xs[i] - xs[j]);
+  const lo = (i) => Math.max(EDGE + units[i].w / 2, aL - units[i].fl);
+  const hi = (i) => Math.min(WORLD.w - EDGE - units[i].w / 2, aR - units[i].fr);
+  const sep = (i, j) => (units[i].w + units[j].w) / 2 + ROW_GAP;
+  const out = xs.slice();
+  for (const i of order) out[i] = Math.min(hi(i), Math.max(lo(i), out[i]));
+  // empujar a la derecha lo que se pisa, y después traer de vuelta desde el borde derecho de la banda
+  for (let k = 1; k < order.length; k++) out[order[k]] = Math.max(out[order[k]], out[order[k - 1]] + sep(order[k - 1], order[k]));
+  const last = order[order.length - 1];
+  out[last] = Math.min(out[last], hi(last));
+  for (let k = order.length - 2; k >= 0; k--) {
+    out[order[k]] = Math.min(out[order[k]], hi(order[k]), out[order[k + 1]] - sep(order[k], order[k + 1]));
+  }
+  const ok = order.every((i, k) => out[i] >= lo(i) - 1e-6 && out[i] <= hi(i) + 1e-6
+    && (k === 0 || out[i] - out[order[k - 1]] >= sep(order[k - 1], i) - 1e-6));
+  return ok ? out : xs;
+}
+
 /** Carril más bajo (pie más arriba) que admite una fila de enemigos: piso del fondo y cabezas bajo las barras. */
 function enemyLo(units, floor, topLimit) {
   let lo = floor;
@@ -182,6 +222,9 @@ export function computeFormation(heroes, enemies, opts = {}) {
   const floor = ground + FLOOR_MARGIN;
   const H = heroRows(heroes);
   const E = enemyRows(enemies, boss, node);
+  const band = enemyFootBand(node);
+  E.xB = fitFeet(E.EB, E.xB, band);
+  E.xF = fitFeet(E.EF, E.xF, band);
   const lanes = {};
 
   // héroes: delanteros sobre los botones; traseros lo más adelante posible sin que la fila delantera les tape la cara
