@@ -9,7 +9,7 @@
  */
 import Phaser from 'phaser';
 import { collectAssetKeys, textureKey, spriteGeom, bgCoverScale, BG_DRIFT, HERO_ART, ENEMY_ART, ATTACK_FX } from './artMap';
-import { computeFormation, enemyList, lyingBoxes, WORLD, DEAD_FLAT, DEAD_LEN, fallDir } from './formation';
+import { computeFormation, enemyList, lyingBoxes, WORLD, DEAD_FLAT, DEAD_LEN, fallDir, BREATH } from './formation';
 import { createRoundQueue } from './eventPlanner';
 import { QUALITY, DEFAULT_QUALITY } from './combatQuality';
 
@@ -172,7 +172,7 @@ export default class CombatScene extends Phaser.Scene {
       this.setPose(a, 'idle', false);
       sh.setScale((b.alpha.w / 256) * 1.1, 1.1);
       if (!this.reduced) {
-        a.breath = this.tweens.add({ targets: sp, scaleY: sc * 1.014, scaleX: sc * 0.996, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: (Math.round(b.cx) % 7) * 90 });
+        a.breath = this.tweens.add({ targets: sp, scaleY: sc * BREATH.y, scaleX: sc * BREATH.x, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: (Math.round(b.cx) % 7) * 90 });
       }
       this.actors[b.id] = a;
     };

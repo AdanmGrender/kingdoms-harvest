@@ -21,6 +21,9 @@ const ADVANCE_PAUSE_MS = 300;   // R17: pausa tras `combat:round-done`
 const IDLE_ADVANCE_MS = 2000;   // auto-avance sin escena (o antes de la primera ronda)
 const SCENE_FALLBACK_MS = 4000; // R19b: la escena no responde
 const TAP_LIFT_PX = 8;          // «¡TAP!» asoma 8 px sobre su botón (`-top-2`): se cuenta siempre, se vea o no
+const BANNER_SHADOW_PX = 4;      // sombra dura del Panel (`0 4px 0` kh-ink) bajo el cartel: también tapa
+// Rectángulo de la ventana → marco del panel (left/top desde su esquina superior izquierda).
+const inFrame = (r, fr) => ({ left: r.left - fr.left, top: r.top - fr.top, width: r.width, height: r.height });
 
 // R54: filas de vida desde `state.enemies` (v2) o `[state.enemy]` (v1), en el orden recibido.
 // V9: con `node`, el nombre de cada barra es el del enemigo que la escena dibuja (todos usan el mismo arte), no el del servidor.
@@ -145,11 +148,13 @@ export default function CombatInstancePanel({ onClose }) {
       const stage = root && root.querySelector('[data-combat-stage]');
       const btns = heroRowRef.current ? Array.from(heroRowRef.current.querySelectorAll('button')) : [];
       if (!stage || !btns.length) return;
+      // en el marco del panel: con el tope de aspecto (360×800) el marco no arranca en el borde de la ventana
+      const fr = root.getBoundingClientRect();
       const h = hudToWorld({
-        stage: stage.getBoundingClientRect(),
-        buttonsTop: Math.min(...btns.map((b) => b.getBoundingClientRect().top)) - TAP_LIFT_PX,
-        barsBottom: barsRef.current ? barsRef.current.getBoundingClientRect().bottom : undefined,
-        viewH: root.getBoundingClientRect().height,
+        stage: inFrame(stage.getBoundingClientRect(), fr),
+        buttonsTop: Math.min(...btns.map((b) => b.getBoundingClientRect().top)) - TAP_LIFT_PX - fr.top,
+        barsBottom: barsRef.current ? barsRef.current.getBoundingClientRect().bottom - fr.top : undefined,
+        viewH: fr.height,
       });
       if (!h) return;
       setHud((p) => (p && ['bottom', 'top', 'zoneBottom'].every((k) => Math.abs((p[k] ?? 0) - (h[k] ?? 0)) < 0.5) ? p : h));
@@ -166,30 +171,39 @@ export default function CombatInstancePanel({ onClose }) {
   const bannerRef = useRef(null);
   const [bannerPos, setBannerPos] = useState(null);
   useLayoutEffect(() => {
-    if (!result || !activeRun) { setBannerPos(null); return; }
-    const root = rootRef.current;
-    const stage = root && root.querySelector('[data-combat-stage]');
-    const el = bannerRef.current && bannerRef.current.querySelector('[data-outcome]');
-    if (!stage || !el) return;
-    const sr = stage.getBoundingClientRect();
-    const br = el.getBoundingClientRect();
-    const vh = root.getBoundingClientRect().height;
-    if (!(sr.width > 0) || !(br.height > 0) || !(vh > 0)) return;
-    const st = activeRun.state;
-    const n = activeRun.node;
-    const f = computeFormation(st.heroes || [], enemyList(st), { node: n, boss: !!(n && (n.isBoss || n.type === 'boss')), hud });
-    const alive = {};
-    for (const h of st.heroes || []) alive[`h${h.slot}`] = h.alive !== false;
-    for (const e of enemyList(st)) alive[e.id] = !(Number(e.hp) <= 0);
-    const avoid = [heroRowRef.current, barsRef.current].filter(Boolean).map((e) => {
-      const r = e.getBoundingClientRect();
-      return { x: r.left, y: r.top - (e === heroRowRef.current ? TAP_LIFT_PX : 0), w: r.width, h: r.height + (e === heroRowRef.current ? TAP_LIFT_PX : 0) };
-    });
-    const p = placeResultBanner({
-      outcome: result, avoid, viewH: vh, banner: { x0: br.left, x1: br.right, h: br.height },
-      sil: silhouettesCss(f, alive, worldToCss(sr)),
-    });
-    setBannerPos((q) => (q && q.cy === p.cy ? q : p));
+    if (!result || !activeRun) { setBannerPos(null); return undefined; }
+    const place = () => {
+      const root = rootRef.current;
+      const stage = root && root.querySelector('[data-combat-stage]');
+      const wrap = bannerRef.current;
+      const el = wrap && wrap.querySelector('[data-outcome]');
+      if (!stage || !el) return;
+      // Todo en el marco del panel (el `top` del cartel se cuenta desde ahí) y con la caja de MAQUETACIÓN del cartel:
+      // su entrada (`animate-grow`, escala 0,8 → 1) achica getBoundingClientRect al montar y no debe contar.
+      const fr = root.getBoundingClientRect();
+      const sr = inFrame(stage.getBoundingClientRect(), fr);
+      const x0 = wrap.getBoundingClientRect().left - fr.left + el.offsetLeft;
+      const banner = { x0, x1: x0 + el.offsetWidth, h: el.offsetHeight, shadow: BANNER_SHADOW_PX };
+      if (!(sr.width > 0) || !(banner.h > 0) || !(fr.height > 0)) return;
+      const st = activeRun.state;
+      const n = activeRun.node;
+      const f = computeFormation(st.heroes || [], enemyList(st), { node: n, boss: !!(n && (n.isBoss || n.type === 'boss')), hud });
+      const alive = {};
+      for (const h of st.heroes || []) alive[`h${h.slot}`] = h.alive !== false;
+      for (const e of enemyList(st)) alive[e.id] = !(Number(e.hp) <= 0);
+      const avoid = [heroRowRef.current, barsRef.current].filter(Boolean).map((e) => {
+        const r = inFrame(e.getBoundingClientRect(), fr);
+        const lift = e === heroRowRef.current ? TAP_LIFT_PX : 0;
+        return { x: r.left, y: r.top - lift, w: r.width, h: r.height + lift };
+      });
+      const p = placeResultBanner({ outcome: result, avoid, viewH: fr.height, banner, sil: silhouettesCss(f, alive, worldToCss(sr)) });
+      setBannerPos((q) => (q && q.cy === p.cy && q.ok === p.ok ? q : p));
+    };
+    place();
+    // si el cartel cambia de tamaño (fuentes que llegan tarde), se recoloca
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(place) : null;
+    if (ro && bannerRef.current) ro.observe(bannerRef.current);
+    return () => { if (ro) ro.disconnect(); };
   }, [result, hud, activeRun]);
 
   if (!activeRun) { onClose(); return null; }
@@ -200,7 +214,7 @@ export default function CombatInstancePanel({ onClose }) {
   const enemyRows = enemyBars(state, node);
 
   return (
-    <div ref={rootRef} className="fixed inset-0 z-50 flex flex-col p-4 pb-6 overflow-hidden" style={{ background: KH.ink }}>
+    <div ref={rootRef} data-combat-panel className="fixed inset-0 z-50 flex flex-col p-4 pb-6 overflow-hidden" style={{ background: KH.ink }}>
       <CombatStage state={initialState.current} node={node} step={step} onMode={onMode} hud={hud} />
 
       {/* ── HUD (por encima de la escena; solo lo interactivo captura toques, el resto deja pasar el salto).

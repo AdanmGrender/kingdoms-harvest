@@ -30,10 +30,14 @@ export const ENEMY_TOP = 320;         // cabezas bajo las dos filas de barras co
 export const LANE_GAP = 24;           // separación mínima entre carriles consecutivos
 // B1 (decisión del owner del 2026-11-09): el cartel de victoria va centrado al 34 % del alto (±35 px CSS, ≤ 70 px).
 // Ningún enemigo caído puede quedar tendido en esa franja: su carril baja lo necesario. Sin medida de la pantalla vale
-// el borde inferior de la franja en el peor caso de las 3 vistas de la hoja (412×860: 654, 360×800: 648, 1280×800: 660).
+// el borde inferior de la franja en el peor caso de las 3 vistas de la hoja, medido en el MARCO del panel (con el tope
+// de aspecto 2,1, en 360×800 el marco mide 756 y arranca en y 22): 412×860: 655, 360×800: 663,3, 1280×800: 660.
 export const BANNER_ZONE = { center: 0.34, half: 35 };
-export const BANNER_ZONE_BOTTOM = 661;
+export const BANNER_ZONE_BOTTOM = 664;
 export const FACE_FRAC = 0.35;        // «cara» = 35 % superior de la silueta
+// Respiración de los que siguen de pie (CombatScene): escala y hasta ×1,014 y x hasta ×0,996 desde el pie. La caja
+// alfa crece hacia arriba hasta un 1,4 % de su alto; quien no deba tocar una silueta o una cara cuenta con eso.
+export const BREATH = { y: 1.014, x: 0.996 };
 export const EDGE = 8;                // margen lateral de las cajas
 export const ROW_GAP = 6;             // hueco mínimo entre cajas de una misma fila
 export const MAX_ENEMIES = 4;
@@ -223,22 +227,27 @@ function enemyLo(units, floor, topLimit, zoneBottom) {
 /**
  * Límites de los carriles con el HUD REAL medido en tiempo de ejecución (H2, decisión del owner del 2026-11-09):
  * `hud.bottom` = borde superior de la fila de botones de héroe (con «¡TAP!»), `hud.top` = borde inferior de las barras
- * de vida y `hud.zoneBottom` = borde inferior de la franja del cartel de victoria (B1), en y del mundo. Sin medida valen las constantes del peor caso de la hoja (HUD_TOP, ENEMY_TOP*). Una pantalla
- * más alta nunca baja a los héroes: el tope inferior es el menor de los dos, así 412×860, 360×800 y 1280×800 no cambian.
+ * de vida y `hud.zoneBottom` = borde inferior de la franja del cartel de victoria (B1), en y del mundo. Sin medida
+ * valen las constantes del peor caso de la hoja (HUD_TOP, ENEMY_TOP*, BANNER_ZONE_BOTTOM). Una pantalla más alta nunca
+ * baja a los héroes: el tope inferior es el menor de los dos, así 412×860, 360×800 y 1280×800 no cambian.
+ * El carril va al px de mundo más cercano: la medida tiene ruido de subpíxel según la densidad de la pantalla (360×800
+ * da 1327,5 con DPR 2 y 1328,1 con DPR 3) y los dos dan el mismo 1320; el margen sobre los botones queda ≥ 7,5.
  */
 export function laneLimits(hud) {
   const bottom = hud && Number.isFinite(hud.bottom) ? Math.min(HUD_TOP, hud.bottom) : HUD_TOP;
   const top = hud && Number.isFinite(hud.top) ? hud.top + 8 : -Infinity;
   const zone = hud && Number.isFinite(hud.zoneBottom) ? hud.zoneBottom : -Infinity;
   return {
-    laneMax: Math.floor(bottom - FOOT_MARGIN), top1: Math.max(ENEMY_TOP_SOLO, top), topN: Math.max(ENEMY_TOP, top),
+    laneMax: Math.round(bottom - FOOT_MARGIN), top1: Math.max(ENEMY_TOP_SOLO, top), topN: Math.max(ENEMY_TOP, top),
     zoneBottom: Math.max(BANNER_ZONE_BOTTOM, zone),
   };
 }
 
 /**
  * Bordes del HUD en px de pantalla → y del mundo. El lienzo 824×1720 va en FIT y centrado dentro del escenario
- * (`stage` = su rectángulo). `buttonsTop` y `barsBottom` en px CSS de la ventana. Devuelve { bottom?, top? } o null.
+ * (`stage` = su rectángulo). Todo en px CSS en el MARCO del panel (0 = su borde superior; con el tope de aspecto el
+ * marco puede no arrancar en el borde de la ventana): `buttonsTop`, `barsBottom` y `viewH` (alto del marco).
+ * Devuelve { bottom?, top?, zoneBottom? } o null.
  */
 export function hudToWorld({ stage, buttonsTop, barsBottom, viewH } = {}) {
   if (!stage || !(stage.width > 0) || !(stage.height > 0)) return null;
