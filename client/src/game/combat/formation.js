@@ -28,6 +28,11 @@ export const FLOOR_MARGIN = 8;        // los carriles van al menos 8 px por deba
 export const ENEMY_TOP_SOLO = 236;    // cabezas bajo la barra única (borde inferior real ≤ 227, hud_medidas.json)
 export const ENEMY_TOP = 320;         // cabezas bajo las dos filas de barras con 2+ enemigos (≤ 312)
 export const LANE_GAP = 24;           // separación mínima entre carriles consecutivos
+// B1 (decisión del owner del 2026-11-09): el cartel de victoria va centrado al 34 % del alto (±35 px CSS, ≤ 70 px).
+// Ningún enemigo caído puede quedar tendido en esa franja: su carril baja lo necesario. Sin medida de la pantalla vale
+// el borde inferior de la franja en el peor caso de las 3 vistas de la hoja (412×860: 654, 360×800: 648, 1280×800: 660).
+export const BANNER_ZONE = { center: 0.34, half: 35 };
+export const BANNER_ZONE_BOTTOM = 661;
 export const FACE_FRAC = 0.35;        // «cara» = 35 % superior de la silueta
 export const EDGE = 8;                // margen lateral de las cajas
 export const ROW_GAP = 6;             // hueco mínimo entre cajas de una misma fila
@@ -204,35 +209,45 @@ function fitFeet(units, xs, [aL, aR]) {
 }
 
 /** Carril más bajo (pie más arriba) que admite una fila de enemigos: piso del fondo y cabezas bajo las barras. */
-function enemyLo(units, floor, topLimit) {
+function enemyLo(units, floor, topLimit, zoneBottom) {
   let lo = floor;
-  for (const u of units) lo = Math.max(lo, topLimit + (u.g.b + 1) * u.s);
+  for (const u of units) {
+    lo = Math.max(lo, topLimit + (u.g.b + 1) * u.s);
+    // B1: tendido en su carril, el enemigo caído no puede subir a la franja del cartel de victoria
+    const gh = spriteGeom('enemy', u.art, 'hit');
+    lo = Math.max(lo, zoneBottom + (gh.r - gh.l + 1) * (u.h / gh.H) * DEAD_FLAT);
+  }
   return Math.ceil(lo);
 }
 
 /**
  * Límites de los carriles con el HUD REAL medido en tiempo de ejecución (H2, decisión del owner del 2026-11-09):
- * `hud.bottom` = borde superior de la fila de botones de héroe (con «¡TAP!») y `hud.top` = borde inferior de las barras
- * de vida, en y del mundo. Sin medida valen las constantes del peor caso de la hoja (HUD_TOP, ENEMY_TOP*). Una pantalla
+ * `hud.bottom` = borde superior de la fila de botones de héroe (con «¡TAP!»), `hud.top` = borde inferior de las barras
+ * de vida y `hud.zoneBottom` = borde inferior de la franja del cartel de victoria (B1), en y del mundo. Sin medida valen las constantes del peor caso de la hoja (HUD_TOP, ENEMY_TOP*). Una pantalla
  * más alta nunca baja a los héroes: el tope inferior es el menor de los dos, así 412×860, 360×800 y 1280×800 no cambian.
  */
 export function laneLimits(hud) {
   const bottom = hud && Number.isFinite(hud.bottom) ? Math.min(HUD_TOP, hud.bottom) : HUD_TOP;
   const top = hud && Number.isFinite(hud.top) ? hud.top + 8 : -Infinity;
-  return { laneMax: Math.floor(bottom - FOOT_MARGIN), top1: Math.max(ENEMY_TOP_SOLO, top), topN: Math.max(ENEMY_TOP, top) };
+  const zone = hud && Number.isFinite(hud.zoneBottom) ? hud.zoneBottom : -Infinity;
+  return {
+    laneMax: Math.floor(bottom - FOOT_MARGIN), top1: Math.max(ENEMY_TOP_SOLO, top), topN: Math.max(ENEMY_TOP, top),
+    zoneBottom: Math.max(BANNER_ZONE_BOTTOM, zone),
+  };
 }
 
 /**
  * Bordes del HUD en px de pantalla → y del mundo. El lienzo 824×1720 va en FIT y centrado dentro del escenario
  * (`stage` = su rectángulo). `buttonsTop` y `barsBottom` en px CSS de la ventana. Devuelve { bottom?, top? } o null.
  */
-export function hudToWorld({ stage, buttonsTop, barsBottom } = {}) {
+export function hudToWorld({ stage, buttonsTop, barsBottom, viewH } = {}) {
   if (!stage || !(stage.width > 0) || !(stage.height > 0)) return null;
   const k = Math.min(stage.width / WORLD.w, stage.height / WORLD.h);
   const canvasTop = stage.top + (stage.height - WORLD.h * k) / 2;
   const out = {};
   if (Number.isFinite(buttonsTop)) out.bottom = (buttonsTop - canvasTop) / k;
   if (Number.isFinite(barsBottom)) out.top = (barsBottom - canvasTop) / k;
+  if (viewH > 0) out.zoneBottom = (BANNER_ZONE.center * viewH + BANNER_ZONE.half - canvasTop) / k;
   return Object.keys(out).length ? out : null;
 }
 
@@ -277,8 +292,8 @@ export function computeFormation(heroes, enemies, opts = {}) {
     const below = H.HB.length ? lanes.HB : H.HF.length ? lanes.HF : lim.laneMax + LANE_GAP;
     const topLimit = E.EB.length || E.EF.length > 1 ? lim.topN : lim.top1;
     const hiF = below - LANE_GAP;
-    const loB = E.EB.length ? enemyLo(E.EB, floor, topLimit) : null;
-    const loF = Math.max(enemyLo(E.EF, floor, topLimit), loB !== null ? loB + LANE_GAP : -Infinity);
+    const loB = E.EB.length ? enemyLo(E.EB, floor, topLimit, lim.zoneBottom) : null;
+    const loF = Math.max(enemyLo(E.EF, floor, topLimit, lim.zoneBottom), loB !== null ? loB + LANE_GAP : -Infinity);
     let best = null;
     for (let LF = hiF; LF >= loF; LF -= STEP) {
       let total = rowScore(E.EF, E.xF, LF, heroBoxes);

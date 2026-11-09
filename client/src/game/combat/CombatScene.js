@@ -209,7 +209,7 @@ export default class CombatScene extends Phaser.Scene {
    */
   setHud(hud) {
     if (!hud) return;
-    const same = this.hud && ['bottom', 'top'].every((k) => Math.abs((this.hud[k] ?? 0) - (hud[k] ?? 0)) < 0.5);
+    const same = this.hud && ['bottom', 'top', 'zoneBottom'].every((k) => Math.abs((this.hud[k] ?? 0) - (hud[k] ?? 0)) < 0.5);
     this.hud = hud;
     if (same || !this.ready) return;
     this.relayout();

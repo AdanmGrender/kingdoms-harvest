@@ -9,7 +9,8 @@ import EmberField from '../fx/EmberField';
 import EventBridge from '../../game/EventBridge';
 import CombatStage from './CombatStage';
 import { enemyDisplayName } from '../../game/combat/artMap';
-import { hudToWorld } from '../../game/combat/formation';
+import { hudToWorld, computeFormation, enemyList } from '../../game/combat/formation';
+import { placeResultBanner, silhouettesCss, worldToCss, BANNER_CENTER } from '../../game/combat/resultLayout';
 
 // combate_b: la escena (Phaser, CombatStage) dibuja fondo, enemigos y héroes; este panel es solo el HUD.
 // Retratos (Q6): ícono de clase del kit B, sin arte del set viejo (R42).
@@ -148,9 +149,10 @@ export default function CombatInstancePanel({ onClose }) {
         stage: stage.getBoundingClientRect(),
         buttonsTop: Math.min(...btns.map((b) => b.getBoundingClientRect().top)) - TAP_LIFT_PX,
         barsBottom: barsRef.current ? barsRef.current.getBoundingClientRect().bottom : undefined,
+        viewH: root.getBoundingClientRect().height,
       });
       if (!h) return;
-      setHud((p) => (p && ['bottom', 'top'].every((k) => Math.abs((p[k] ?? 0) - (h[k] ?? 0)) < 0.5) ? p : h));
+      setHud((p) => (p && ['bottom', 'top', 'zoneBottom'].every((k) => Math.abs((p[k] ?? 0) - (h[k] ?? 0)) < 0.5) ? p : h));
     };
     measure();
     const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
@@ -158,6 +160,37 @@ export default function CombatInstancePanel({ onClose }) {
     window.addEventListener('resize', measure);
     return () => { if (ro) ro.disconnect(); window.removeEventListener('resize', measure); };
   }, [nEnemies, nHeroes]);
+
+  // V8 + B1/B2: con el resultado, el cartel compacto va en el tercio medio, lo más cerca del 34 % que no tape siluetas
+  // (victoria) o héroes y caras (derrota). Se calcula con la formación real y cómo cae el lienzo en esta pantalla.
+  const bannerRef = useRef(null);
+  const [bannerPos, setBannerPos] = useState(null);
+  useLayoutEffect(() => {
+    if (!result || !activeRun) { setBannerPos(null); return; }
+    const root = rootRef.current;
+    const stage = root && root.querySelector('[data-combat-stage]');
+    const el = bannerRef.current && bannerRef.current.querySelector('[data-outcome]');
+    if (!stage || !el) return;
+    const sr = stage.getBoundingClientRect();
+    const br = el.getBoundingClientRect();
+    const vh = root.getBoundingClientRect().height;
+    if (!(sr.width > 0) || !(br.height > 0) || !(vh > 0)) return;
+    const st = activeRun.state;
+    const n = activeRun.node;
+    const f = computeFormation(st.heroes || [], enemyList(st), { node: n, boss: !!(n && (n.isBoss || n.type === 'boss')), hud });
+    const alive = {};
+    for (const h of st.heroes || []) alive[`h${h.slot}`] = h.alive !== false;
+    for (const e of enemyList(st)) alive[e.id] = !(Number(e.hp) <= 0);
+    const avoid = [heroRowRef.current, barsRef.current].filter(Boolean).map((e) => {
+      const r = e.getBoundingClientRect();
+      return { x: r.left, y: r.top - (e === heroRowRef.current ? TAP_LIFT_PX : 0), w: r.width, h: r.height + (e === heroRowRef.current ? TAP_LIFT_PX : 0) };
+    });
+    const p = placeResultBanner({
+      outcome: result, avoid, viewH: vh, banner: { x0: br.left, x1: br.right, h: br.height },
+      sil: silhouettesCss(f, alive, worldToCss(sr)),
+    });
+    setBannerPos((q) => (q && q.cy === p.cy ? q : p));
+  }, [result, hud, activeRun]);
 
   if (!activeRun) { onClose(); return null; }
   const { node, state } = activeRun;
@@ -243,12 +276,15 @@ export default function CombatInstancePanel({ onClose }) {
           style={{ zIndex: 20, background: 'radial-gradient(circle at 50% 45%, rgba(179,40,33,0.35), transparent 70%)' }} />
       )}
 
-      {/* V8: el cartel va centrado en el tercio medio (≤ 40 % del alto), sin tapar la fila de héroes ni los botones */}
+      {/* V8 + B1/B2: cartel compacto (≤ 70 px) en el tercio medio, cerca del 34 % del alto, sin tapar siluetas (victoria)
+          ni héroes, caras ni botones (derrota). Sin medida (antes del primer cálculo) arranca al 34 %. */}
       {result && (
-        <div data-result-layer className="absolute inset-x-0 flex items-center justify-center px-6 pointer-events-none"
-          style={{ top: '33.333%', height: '33.334%', zIndex: 30 }}>
-          <div className="w-full pointer-events-auto" style={{ maxWidth: 360, maxHeight: '100%' }}>
+        <div data-result-layer className="absolute inset-0 pointer-events-none" style={{ zIndex: 30 }}>
+          <div ref={bannerRef} data-result-banner data-ok={bannerPos ? String(bannerPos.ok) : undefined}
+            className="absolute left-0 right-0 mx-auto px-6 pointer-events-auto"
+            style={{ maxWidth: 408, top: bannerPos ? `${bannerPos.cy}px` : `${BANNER_CENTER * 100}%`, transform: 'translateY(-50%)' }}>
             <ResultBanner
+              compact
               outcome={result === 'victory' ? 'victory' : 'defeat'}
               title={result === 'victory' ? '¡Victoria!' : 'Derrota'}
               onClose={close}

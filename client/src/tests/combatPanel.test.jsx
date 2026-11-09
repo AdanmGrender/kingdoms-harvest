@@ -290,15 +290,21 @@ describe('T10.6 (hoja_visual V5, V6, V8)', () => {
     expect(rows[1].style.opacity).toBe('0.45');
   });
 
-  it('V8: el cartel va en el tercio medio y la fila de héroes y su hueco de «Avanzar» siguen en su sitio', async () => {
+  it('V8 (B1/B2): cartel compacto en una fila, arranca al 34 % y la fila de héroes y su hueco de «Avanzar» siguen en su sitio', async () => {
     stageMode = 'unavailable';
     const { container } = setup(async () => ({ result: 'victory' }));
     await click('Avanzar ronda');
     const layer = container.querySelector('[data-result-layer]');
     expect(layer).not.toBeNull();
-    expect(layer.style.top).toBe('33.333%');
-    expect(layer.style.height).toBe('33.334%');
-    expect(layer.querySelector('[data-outcome="victory"]')).not.toBeNull();
+    const wrap = layer.querySelector('[data-result-banner]');
+    expect(wrap.style.top).toBe('34%');                                  // sin medida (jsdom): el centro preferido
+    expect(wrap.style.transform).toBe('translateY(-50%)');
+    const banner = wrap.querySelector('[data-outcome="victory"]');
+    expect(banner.getAttribute('data-compact')).toBe('true');
+    const fila = banner.firstElementChild;                               // título y «Volver» en una sola fila
+    expect(fila.className).toMatch(/flex/);
+    expect(fila.querySelector('[data-banner-band]').textContent).toBe('¡Victoria!');
+    expect(fila.querySelector('button').textContent).toBe('Volver');
     expect(screen.getByRole('button', { name: 'Volver' })).toBeTruthy();
     // el botón «Avanzar» deja su hueco invisible (la fila de héroes no salta) y no se puede pulsar
     expect(screen.queryByRole('button', { name: 'Avanzar ronda' })).toBeNull();
