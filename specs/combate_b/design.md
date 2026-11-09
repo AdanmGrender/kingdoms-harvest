@@ -188,3 +188,7 @@ Todas según la recomendación de la tabla: Q1 Phaser.Game aparte + `loop.sleep(
 ### Enmienda del owner (2026-10-31)
 - HUD: una barra de vida por enemigo (R54, T10.5 al inicio de la Etapa C, antes de las capturas de T11). Cierra la observación 1 de review.md.
 - Etapa B: escenario S1 confirmado (no S2). Generación SOLO por la web (`scripts/gen_art_web.js`); la API key de Gemini ya no se usa. Las menciones a `GEMINI_API_KEY`/`gen_art_b.js` de este documento y de tasks.md quedan reemplazadas por eso.
+
+### Enmienda del owner (2026-11-02)
+- R48 (p5 de fps en `kh_pixel7`) sale de F7 y pasa a la feature #27 `combate_rendimiento`. No se persigue en la ronda visual.
+- La hoja visual `hoja_visual.md` (V1–V9, V4 según la enmienda Last Asylum) es la última ronda visual de F7: el visual_reviewer juzga solo contra ella; lo que encuentre fuera de la hoja va al backlog. Las decisiones del 2026-11-07 (carriles por profundidad) y del 2026-11-08 (R24 por fila, tope real de los botones) están en la misma hoja.

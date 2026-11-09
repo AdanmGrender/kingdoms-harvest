@@ -381,6 +381,20 @@
       "sdd": true,
       "status": "done",
       "assignee": "implementer"
+    },
+    {
+      "id": 27,
+      "name": "combate_rendimiento",
+      "title": "Rendimiento del combate B en móvil (R48 de combate_b)",
+      "description": "Sale de F7 por decisión del owner (2026-11-02): el combate con calidad medium sostiene >= 50 fps de promedio con p5 >= 40 en kh_pixel7. Línea base de F7: medium avg 55,1 / p5 20 (n=19; la ventana mala es la carga de texturas al abrir el combate); low avg 58,2 / p5 52. Ver specs/combate_b/requirements.md R48 y specs/combate_b/evidencia/despues/fps_emulador_{medium,low}.json.",
+      "acceptance": [
+        "Combate a1n3 completo en kh_pixel7, calidad medium: promedio >= 50 fps y p5 >= 40, sin excluir muestras",
+        "Medición registrada (dispositivo, calidad, n, promedio, p5) con protocolo reproducible",
+        "Sin cambios visuales respecto de la hoja visual de combate_b; suites servidor+cliente y build en verde"
+      ],
+      "sdd": true,
+      "status": "pending",
+      "assignee": null
     }
   ]
 }

@@ -212,6 +212,7 @@ El nivel por defecto DEBE ser `medium`, persistido en `localStorage['kh_combat_q
 ## R48
 Un combate completo con calidad `medium` DEBE sostener ≥ 50 fps (promedio de `game.loop.actualFps` muestreado cada 500 ms) con p5 ≥ 40, y la medición DEBE quedar registrada.
 - Verificación: `evidencia/fps.json` con dispositivo, calidad, n de muestras, promedio y p5 de un combate `a1n3` completo; Q9 define el dispositivo (emulador `kh_pixel7` y escritorio).
+- **Enmienda del owner (2026-11-02):** R48 sale de F7 y pasa a la feature #27 `combate_rendimiento` (tarea de rendimiento aparte). F7 se revisa y se cierra sin R48; la medición registrada en `evidencia/despues/fps_emulador_{medium,low}.json` queda como línea base.
 
 ## R49
 Un combate completo NO DEBE producir errores de consola ni `pageerror`.
