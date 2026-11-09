@@ -25,6 +25,7 @@ export const FLOAT_POP_MS = 120;  // pop 1,4 → 1 en 120 ms
 export const FLOAT_POP_FROM = 1.4;
 export const FLOAT_HEAD_GAP = 12; // el número arranca 12 px por encima de la cabeza (tope de la silueta)
 export const DEAD_ALPHA = 0.85;   // V6: tendido, nunca fantasma
+export const DEAD_FLAT = 0.55;    // V6: tendido en el suelo visto en 2,5D: el grosor del cuerpo se aplana al 55 %
 const DEAD_TINT = 0x9a9a9a;       // V6: apagado (con WebGL además se desatura con una matriz de color)
 export const FALL_MS = 450;       // V6: caída ≤600 ms
 const LUNGE_PX = 40;
@@ -248,12 +249,13 @@ export default class CombatScene extends Phaser.Scene {
     const g = spriteGeom(a.kind, a.art, a.kind === 'enemy' ? 'hit' : 'idle');
     const s = a.base.h / g.H;
     const dir = a.base.x >= W / 2 ? -1 : 1;     // +1 = gira a la derecha (la cabeza queda a la derecha)
-    // con el pie como pivote, el grosor del cuerpo queda en vertical: se sube lo que sobresale por debajo del carril
-    const below = dir > 0 ? (g.r + 1 - g.ox * g.W) * s : (g.ox * g.W - g.l) * s;
+    // con el pie como pivote, el eje X local (el ancho del cuerpo) queda en vertical: se aplana (DEAD_FLAT) y se sube
+    // lo que sobresale por debajo del carril
+    const below = (dir > 0 ? (g.r + 1 - g.ox * g.W) : (g.ox * g.W - g.l)) * s * DEAD_FLAT;
     // tendido, el cuerpo ocupa alphaH a lo ancho: se centra en su x, sin salirse del lienzo
     const half = a.base.alphaH / 2;
     const cx = Math.min(W - half - 4, Math.max(half + 4, a.base.x));
-    return { angle: dir * 90, x: cx - a.base.x - dir * half, y: -below };
+    return { angle: dir * 90, x: cx - a.base.x - dir * half, y: -below, scaleX: s * DEAD_FLAT, scaleY: s };
   }
 
   desaturate(a) {
@@ -270,7 +272,7 @@ export default class CombatScene extends Phaser.Scene {
     a.c.setPosition(a.base.x, a.base.y);
     this.setPose(a, a.kind === 'enemy' ? 'hit' : 'idle', false);
     const p = this.deadPose(a);
-    a.sp.setAngle(p.angle).setPosition(p.x, p.y).setAlpha(DEAD_ALPHA);
+    a.sp.setAngle(p.angle).setPosition(p.x, p.y).setScale(p.scaleX, p.scaleY).setAlpha(DEAD_ALPHA);
     this.desaturate(a);
     a.sh.setAlpha(0.5);
     for (const k of Object.keys(a.markers)) this.clearMarker(a, k);
@@ -288,7 +290,7 @@ export default class CombatScene extends Phaser.Scene {
     this.desaturate(a);
     for (const k of Object.keys(a.markers)) this.clearMarker(a, k);
     const p = this.deadPose(a);
-    this.tweens.add({ targets: a.sp, angle: p.angle, x: p.x, y: p.y, alpha: DEAD_ALPHA, duration: FALL_MS, ease: 'Cubic.easeIn' });
+    this.tweens.add({ targets: a.sp, angle: p.angle, x: p.x, y: p.y, scaleX: p.scaleX, scaleY: p.scaleY, alpha: DEAD_ALPHA, duration: FALL_MS, ease: 'Cubic.easeIn' });
     this.tweens.add({ targets: a.sh, alpha: 0.5, duration: FALL_MS });
   }
 

@@ -139,8 +139,10 @@ export default function CombatInstancePanel({ onClose }) {
     <div className="fixed inset-0 z-50 flex flex-col p-4 pb-6 overflow-hidden" style={{ background: KH.ink }}>
       <CombatStage state={initialState.current} node={node} step={step} onMode={onMode} />
 
-      {/* ── HUD (por encima de la escena; solo lo interactivo captura toques, el resto deja pasar el salto) ── */}
-      <div className="relative flex flex-col flex-1 min-h-0 pointer-events-none" style={{ zIndex: 10 }}>
+      {/* ── HUD (por encima de la escena; solo lo interactivo captura toques, el resto deja pasar el salto).
+          Columna del ancho de la escena: en escritorio no se estira fuera del lienzo. ── */}
+      <div className="relative flex flex-col flex-1 min-h-0 pointer-events-none w-full mx-auto"
+        style={{ zIndex: 10, maxWidth: 'calc(var(--kh-frame-h) * 824 / 1720 - 32px)' }}>
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-kh-bone font-bold flex items-center gap-2 font-display">
             <SpriteIcon name={safeNode.type === 'boss' ? 'skull' : 'sword'} size={28} />
