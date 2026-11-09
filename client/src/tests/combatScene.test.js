@@ -16,7 +16,7 @@ import CombatScene, {
 } from '../game/combat/CombatScene';
 import { createCombatGame, buildCombatConfig } from '../game/combat/createCombatGame';
 import { QUALITY } from '../game/combat/combatQuality';
-import { spriteGeom, bgCoverScale, BG_DRIFT } from '../game/combat/artMap';
+import { spriteGeom, bgCoverScale, BG_DRIFT, ATTACK_FX_FRAME } from '../game/combat/artMap';
 import { computeFormation, enemyList, lyingBoxes, DEAD_LEN, DEAD_FLAT } from '../game/combat/formation';
 
 // Objetos de juego falsos con transformación (x, y, ángulo, escala, origen…) para poder medir quién se mueve.
@@ -29,12 +29,17 @@ const DIMS = (key) => {
   return { w: 100, h: 100 };
 };
 function mkObj(log, kind, x = 0, y = 0, texture = null) {
+  // un cuadro con nombre (`setTexture(key, frame)`) mide lo suyo; sin cuadro, la textura entera
+  const dims = () => {
+    const fr = o.frameName && log.frames && log.frames[o.texture] && log.frames[o.texture][o.frameName];
+    return fr ? { w: fr.w, h: fr.h } : DIMS(o.texture);
+  };
   const o = {
     kind, x, y, x0: x, y0: y, angle: 0, scaleX: 1, scaleY: 1, alpha: 1, flipX: false, originX: 0.5, originY: 0.5, depth: 0,
-    texture, tint: null, list: [], active: true, preFX: null,
-    get width() { return DIMS(o.texture).w; },
-    get height() { return DIMS(o.texture).h; },
-    get displayWidth() { return DIMS(o.texture).w * o.scaleX; },
+    texture, frameName: undefined, tint: null, list: [], active: true, preFX: null,
+    get width() { return dims().w; },
+    get height() { return dims().h; },
+    get displayWidth() { return dims().w * o.scaleX; },
   };
   const self = (fn) => (...args) => { fn(...args); return o; };
   Object.assign(o, {
@@ -45,7 +50,7 @@ function mkObj(log, kind, x = 0, y = 0, texture = null) {
     setTint: self((t) => { o.tint = t; }),
     setTintFill: self((t) => { o.tint = t; }),
     clearTint: self(() => { o.tint = null; }),
-    setTexture: self((k) => { o.texture = k; }),
+    setTexture: self((k, f) => { o.texture = k; o.frameName = f; }),
     setBlendMode: self(() => {}),
     setFlipX: self((f) => { o.flipX = f; }),
     setAngle: self((a) => { o.angle = a; }),
@@ -67,11 +72,17 @@ function fakeScene({ quality = 'medium', postFX = true, failTextures = [], reduc
   const s = new CombatScene();
   const log = {
     pointlights: 0, vignette: 0, bloom: 0, shake: 0, tweens: 0, tweenList: [], objects: [], warns: [],
-    textures: new Set(['spark', 'shadow', 'fog']), placeholders: [],
+    textures: new Set(['spark', 'shadow', 'fog']), placeholders: [], frames: {},
   };
   const loaders = {};
   s.load = { on: (ev, fn) => { loaders[ev] = fn; }, image: (key) => { if (failTextures.includes(key)) setTimeout(() => {}, 0); else log.textures.add(key); } };
-  s.textures = { exists: (k) => log.textures.has(k) };
+  s.textures = {
+    exists: (k) => log.textures.has(k),
+    get: (k) => ({
+      has: (n) => !!(log.frames[k] && log.frames[k][n]),
+      add: (n, src, x, y, w, h) => { (log.frames[k] = log.frames[k] || {})[n] = { src, x, y, w, h }; },
+    }),
+  };
   s.make = { graphics: () => ({ fillStyle() {}, fillCircle() {}, fillEllipse() {}, fillRect() {}, fillRoundedRect() {}, generateTexture: (k) => { log.textures.add(k); log.placeholders.push(k); }, clear() {}, destroy() {} }) };
   s.add = {
     image: (x, y, key) => mkObj(log, 'image', x, y, key),
@@ -279,9 +290,12 @@ describe('Carriles en la escena: un contenedor por personaje, pie sobre su carri
     s.setPose(a, 'attack', false);
     const g = spriteGeom('hero', 'ranger', 'attack');
     expect(a.sp.texture).toBe('hero:ranger:attack');
-    expect([a.sp.originX, a.sp.originY]).toEqual([g.ox, g.oy]);
+    // el tirador dibuja el cuadro hasta la boca del arma (B5): el origen se cuenta sobre ese ancho y el pie sigue en su
+    // columna de la textura (g.ox · g.W), sin voltear y volteado
+    expect(a.sp.originX * a.sp.width).toBeCloseTo(g.ox * g.W, 10);
+    expect(a.sp.originY).toBe(g.oy);
     s.setPose(a, 'attack', true);
-    expect(a.sp.originX).toBeCloseTo(1 - g.ox, 10);
+    expect((1 - a.sp.originX) * a.sp.width).toBeCloseTo(g.ox * g.W, 10);
     expect([a.c.x, a.c.y]).toEqual([a.base.x, a.base.y]);
   });
 });
@@ -485,6 +499,32 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
       }
     }
   });
+  it('a la vista: si apilado quedaría bajo las barras de vida del HUD, va en una columna al lado desde la cabeza', () => {
+    const k = 412 / 824;
+    const mk = (hud) => {
+      const s = escenario(412, SOLO, { id: 'a1n3', type: 'combat', act: 1 });
+      s.hud = hud;
+      return s;
+    };
+    // con las barras medidas (412×860, 1 enemigo: borde inferior en 202 del mundo) el crítico no sube bajo ellas
+    const s = mk({ bottom: 1372.5, top: 202, zoneBottom: 654.8 });
+    const a = s.actors.e0;
+    const head = a.base.headY - FLOAT_HEAD_GAP / k;
+    const t1 = s.floatAt(a, 37, '#fff');
+    const t2 = s.floatAt(a, '96!', '#fff', true);
+    const [b1, b2] = [box(t1), box(t2)];
+    expect(t1.spawnY).toBeCloseTo(head, 6);
+    expect(b1.y0 - FLOAT_STACK_GAP / k - (t2.height * 1.4)).toBeLessThan(202);   // apilado habría quedado bajo las barras
+    expect(t2.spawnY).toBeCloseTo(head, 6);                                      // columna al lado, desde la cabeza
+    expect(b2.x0 >= b1.x1 + FLOAT_STACK_GAP / k - 1e-6 || b2.x1 <= b1.x0 - FLOAT_STACK_GAP / k + 1e-6).toBe(true);
+    expect(b2.y0).toBeGreaterThanOrEqual(202);
+    // sin medida del HUD vale el borde del lienzo: el mismo crítico se apila 4 px CSS sobre el alto real del primero
+    const s2 = mk(null);
+    const a2 = s2.actors.e0;
+    const u1 = s2.floatAt(a2, 37, '#fff');
+    const u2 = s2.floatAt(a2, '96!', '#fff', true);
+    expect(u2.spawnY).toBeCloseTo(box(u1).y0 - FLOAT_STACK_GAP / k, 6);
+  });
   it('el daño de un golpe sale con floatAt sobre el objetivo', () => {
     const { s, log } = fakeScene({ state: FULL, node: FULL_NODE });
     s.preload();
@@ -584,7 +624,7 @@ describe('B5: el tirador dispara al enemigo, sin fogonazo sobre compañeros', ()
     [{ ...FULL, enemies: [0, 1, 2, 3].map((i) => ({ id: `e${i}`, hp: 100, maxHp: 100 })) }, { id: 'a2n10', type: 'boss', act: 2, isBoss: true }],
     [{ ...FULL, enemies: [{ id: 'e0', hp: 100, maxHp: 100 }] }, { id: 'a1n3', type: 'combat', act: 1 }],
   ];
-  it('recorta el fogonazo pintado, dispara de la boca del arma al pecho del objetivo y la boca no cae sobre nadie de su bando', () => {
+  it('quita el fogonazo pintado (cuadro hasta la boca), dispara de la boca del arma al pecho del objetivo y la boca no cae sobre nadie de su bando', () => {
     for (const [state, node] of FORMS) {
       const { s, log } = fakeScene({ state, node });
       s.preload();
@@ -597,7 +637,11 @@ describe('B5: el tirador dispara al enemigo, sin fogonazo sobre compañeros', ()
         const from = log.objects.length;
         s.playBeat(BEAT({ kind: 'hit', actorId: 'h3', targetId: e.id, num: 5 }));
         expect(r.sp.texture).toBe('hero:ranger:attack');
-        expect(r.sp.crop, `${node.id} ${e.id}`).toEqual([0, 0, 533, 640]);       // sin el fogonazo de la textura
+        // sin el fogonazo de la textura: cuadro de las columnas 0–532 (cuerpo y arma hasta la boca), nunca un recorte
+        expect(r.sp.frameName, `${node.id} ${e.id}`).toBe(ATTACK_FX_FRAME);
+        expect(log.frames['hero:ranger:attack'][ATTACK_FX_FRAME]).toEqual({ src: 0, x: 0, y: 0, w: 533, h: 640 });
+        expect(r.sp.isCropped, `${node.id} ${e.id}`).toBeFalsy();
+        expect(r.sp.width).toBe(533);
         const shot = s.lastShot;
         const tgt = s.actors[e.id];
         expect(shot.to).toEqual({ x: tgt.base.x, y: tgt.base.y - tgt.base.alphaH * 0.55 });
@@ -614,7 +658,8 @@ describe('B5: el tirador dispara al enemigo, sin fogonazo sobre compañeros', ()
           expect(inside, `${node.id} → ${e.id}: boca sobre ${h.id}`).toBe(false);
         }
         for (const fn of pending.splice(0)) fn();
-        expect(r.sp.isCropped).toBe(false);                     // de vuelta a idle, sin recorte
+        expect(r.sp.texture).toBe('hero:ranger:idle');          // de vuelta a idle, con la textura entera
+        expect(r.sp.frameName).toBeUndefined();
         expect(r.sp.angle).toBe(0);
       }
     }
@@ -634,6 +679,26 @@ describe('B5: el tirador dispara al enemigo, sin fogonazo sobre compañeros', ()
     s.setPose(r, 'attack', true);
     const mf = s.muzzleWorld(r);
     expect(mf.x).toBeCloseTo(r.base.x - (533 - g.ox * g.W) * sc, 6);      // volteado: espejo alrededor del pie
+  });
+  it('volteado o no, el cuadro corto deja el pie en su columna de la textura y el cuerpo a la vista (Phaser espeja un setCrop al voltear)', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.preload();
+    s.create();
+    const r = s.actors.h3;
+    const g = spriteGeom('hero', 'ranger', 'attack');
+    const feet = g.ox * g.W;                       // columna del pie en la textura entera
+    for (const flip of [false, true]) {
+      s.setPose(r, 'attack', flip);
+      expect(r.sp.isCropped, `flip ${flip}`).toBeFalsy();
+      const w = r.sp.width;
+      expect(w).toBe(533);
+      // columna de la textura que cae en el origen (el pie): sin voltear, originX·w; volteado, w − originX·w
+      const atOrigin = flip ? w - r.sp.originX * w : r.sp.originX * w;
+      expect(atOrigin, `flip ${flip}`).toBeCloseTo(feet, 6);
+      // el cuerpo (columnas l…pie) queda dentro del cuadro: lo que se ve es cuerpo y arma, no el fogonazo
+      expect(g.l).toBeLessThan(feet);
+      expect(feet).toBeLessThan(w);
+    }
   });
 });
 

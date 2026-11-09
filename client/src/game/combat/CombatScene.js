@@ -8,7 +8,7 @@
  * retroceso, pose, giro, caída) toca solo SU contenedor o sus hijos; los compañeros no se mueven (regla del owner).
  */
 import Phaser from 'phaser';
-import { collectAssetKeys, textureKey, spriteGeom, bgCoverScale, BG_DRIFT, HERO_ART, ENEMY_ART, ATTACK_FX } from './artMap';
+import { collectAssetKeys, textureKey, spriteGeom, bgCoverScale, BG_DRIFT, HERO_ART, ENEMY_ART, ATTACK_FX, ATTACK_FX_FRAME } from './artMap';
 import { computeFormation, enemyList, lyingBoxes, WORLD, DEAD_FLAT, DEAD_LEN, fallDir, BREATH } from './formation';
 import { createRoundQueue } from './eventPlanner';
 import { QUALITY, DEFAULT_QUALITY } from './combatQuality';
@@ -265,24 +265,35 @@ export default class CombatScene extends Phaser.Scene {
   setPose(a, pose, flip = false) {
     const p = this.poseFor(a, pose);
     const key = this.texFor(a.kind, a.art, p);
-    a.sp.setTexture(key);
     const g = key.startsWith('ph:') ? null : spriteGeom(a.kind, a.art, p);
-    const ox = g ? g.ox : 0.5;
+    // El tirador dispara sin el fogonazo pintado en la textura: usa un cuadro que termina en la boca del arma (el disparo
+    // lo dibuja shoot). Es un cuadro, no un recorte: volteado, Phaser espeja el recorte y mostraba el fogonazo sin cuerpo.
+    const fx = g && a.kind === 'hero' && p === 'attack' ? ATTACK_FX[a.art] : null;
+    const frame = fx ? this.fxFrame(key, fx) : undefined;
+    a.sp.setTexture(key, frame);
+    // el pie queda en la misma columna de la textura: en el cuadro corto el origen se cuenta sobre su ancho
+    const fw = frame ? fx.crop[2] : g ? g.W : 1;
+    const ox = g ? (g.ox * g.W) / fw : 0.5;
     const oy = g ? g.oy : 1;
     a.sp.setFlipX(!!flip).setOrigin(flip ? 1 - ox : ox, oy);
     a.sp.setScale(a.base.h / (a.sp.height || a.base.h));
-    // el tirador dispara sin el fogonazo pintado en la textura: se recorta en la boca del arma (el disparo lo dibuja shoot)
-    const fx = g && a.kind === 'hero' && p === 'attack' ? ATTACK_FX[a.art] : null;
-    if (fx && a.sp.setCrop) a.sp.setCrop(...fx.crop);
-    else if (a.sp.isCropped && a.sp.setCrop) a.sp.setCrop();
+  }
+
+  /** Cuadro `ATTACK_FX_FRAME` de la textura (se crea una vez): la pose de ataque hasta la boca del arma. */
+  fxFrame(key, fx) {
+    const tex = this.textures.get ? this.textures.get(key) : null;
+    if (!tex || !tex.add) return undefined;
+    if (!(tex.has && tex.has(ATTACK_FX_FRAME))) tex.add(ATTACK_FX_FRAME, 0, ...fx.crop);
+    return ATTACK_FX_FRAME;
   }
 
   /** Boca del arma del tirador en el mundo, con su volteo, escala, giro y la posición del contenedor. */
   muzzleWorld(a) {
     const fx = ATTACK_FX[a.art];
     const g = spriteGeom(a.kind, a.art, 'attack');
-    const mx = a.sp.flipX ? g.W - fx.muzzle[0] : fx.muzzle[0];
-    const lx = (mx - a.sp.originX * g.W) * a.sp.scaleX;
+    const fw = a.sp.width || g.W;   // ancho del cuadro que se dibuja (el de la pose hasta la boca, o la textura entera)
+    const mx = a.sp.flipX ? fw - fx.muzzle[0] : fx.muzzle[0];
+    const lx = (mx - a.sp.originX * fw) * a.sp.scaleX;
     const ly = (fx.muzzle[1] - a.sp.originY * g.H) * a.sp.scaleY;
     const r = (a.sp.angle * Math.PI) / 180;
     return {
@@ -449,14 +460,16 @@ export default class CombatScene extends Phaser.Scene {
    * FLOAT_HEAD_GAP px CSS por encima del tope de la silueta. Si el actor ya tiene números a la vista, el nuevo se apila
    * 4 px CSS por encima del borde superior REAL (con la escala del momento) de todos los que tiene debajo: nunca se
    * pisan, ni al nacer ni después (todos suben lo mismo con una curva que frena, así que el más nuevo, que va arriba,
-   * es el más rápido y se aleja). Si apilado ya no cabe en el lienzo, va en una columna al lado, desde la cabeza y sin
-   * cruzarse con ninguna otra; si tampoco cabe al lado, se queda en la pila aunque asome por arriba, nunca encima de otro.
+   * es el más rápido y se aleja). Si apilado ya no queda a la vista (por debajo de las barras de vida del HUD, o del borde
+   * del lienzo si no hay medida), va en una columna al lado, desde la cabeza y sin cruzarse con ninguna otra; si tampoco
+   * cabe al lado, se queda en la pila aunque quede bajo las barras: nunca encima de otro.
    */
   floatAt(a, text, color, crit = false) {
     const css = crit ? FLOAT_CRIT : FLOAT_NORMAL;
     const k = this.cssPerWorld();
     const gap = FLOAT_STACK_GAP / k;
     const edge = FLOAT_EDGE / k;
+    const seen = Math.max(edge, this.hud && Number.isFinite(this.hud.top) ? this.hud.top + gap : -Infinity);
     a.floats = (a.floats || []).filter((o) => o.active !== false && o.alpha > 0.02);
     const live = a.floats.map(floatBox);
     const prev = a.floats[a.floats.length - 1];
@@ -468,7 +481,7 @@ export default class CombatScene extends Phaser.Scene {
       const crosses = (x, b) => x - hw - gap < b.x1 && b.x0 < x + hw + gap;
       const x1 = clampX(prev ? prev.x : a.base.x);
       const y1 = Math.min(head, ...live.filter((b) => crosses(x1, b)).map((b) => b.y0 - gap));
-      if (!live.length || y1 - h >= edge) return { x: x1, y: y1 };
+      if (!live.length || y1 - h >= seen) return { x: x1, y: y1 };
       const side = [clampX(Math.max(...live.map((b) => b.x1)) + gap + hw), clampX(Math.min(...live.map((b) => b.x0)) - gap - hw)]
         .filter((x) => !live.some((b) => crosses(x, b)))
         .sort((p, q) => Math.abs(p - a.base.x) - Math.abs(q - a.base.x));

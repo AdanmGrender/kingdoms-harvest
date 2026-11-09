@@ -122,8 +122,10 @@ export const SPRITE_GEOM = {
 };
 
 // Disparo (V7, B5 de la revisión visual ronda 2): en la pose de ataque del tirador el fogonazo y el humo vienen
-// pintados a la derecha de la boca del arma. Se recorta la textura en la boca (`crop`, px de la textura) y la escena
-// dibuja su propio disparo desde `muzzle` (px de la textura, sin voltear) hasta el objetivo.
+// pintados a la derecha de la boca del arma. La escena usa un cuadro de la textura que termina en la boca (`crop`:
+// x, y, ancho, alto en px de la textura; NO un setCrop, que Phaser espeja al voltear y deja ver el lado del fogonazo
+// en lugar del cuerpo) y dibuja su propio disparo desde `muzzle` (px de la textura, sin voltear) hasta el objetivo.
+export const ATTACK_FX_FRAME = 'sin_fogonazo';
 export const ATTACK_FX = {
   ranger: { crop: [0, 0, 533, 640], muzzle: [533, 184] },
 };
