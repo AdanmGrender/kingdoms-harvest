@@ -1,0 +1,8598 @@
+{
+ "412x860_1enemigo": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1372.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 202
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "v4": {
+   "normalPx": 40,
+   "criticoPx": 60,
+   "escalaInicial": 1.4,
+   "baseNumero": 439.3263888888889,
+   "cabeza": 451.3263888888889,
+   "caraBajo": 619.9121527777778,
+   "sobreLaCabeza": true,
+   "apilado": 28,
+   "escala140ms": 1,
+   "subida840ms": 60,
+   "vivoA840ms": false
+  },
+  "v7": {
+   "flipDurante": true,
+   "anguloDurante": 15,
+   "texturaDurante": "hero:ranger:attack",
+   "objetivoALaIzquierda": true,
+   "flipDespues": false,
+   "anguloDespues": 0,
+   "texturaDespues": "hero:ranger:idle",
+   "h1FlipDurante": false,
+   "h1ObjetivoALaDerecha": true
+  },
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 0,
+    "w": 412,
+    "h": 860,
+    "escala": 0.5
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1372.5,
+   "barrasBottomMundo": 202,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 32,
+     "y": 136,
+     "w": 760,
+     "h": 66
+    },
+    {
+     "id": "titulo",
+     "x": 32,
+     "y": 48,
+     "w": 555.21875,
+     "h": 56
+    },
+    {
+     "id": "cerrar",
+     "x": 704,
+     "y": 32,
+     "w": 88,
+     "h": 88
+    },
+    {
+     "id": "boton1",
+     "x": 106,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton2",
+     "x": 230,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton3",
+     "x": 354,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton4",
+     "x": 478,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton5",
+     "x": 602,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "avanzar",
+     "x": 32,
+     "y": 1576,
+     "w": 760,
+     "h": 96
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4796449612752425,
+      "scaleY": 0.4868676355366514,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.5952867434569,
+      "ancho": 212.96236280620766
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.274558132199076,
+      "y": 1020.0895365094227,
+      "w": 205.28804342580378,
+      "h": 299.9104634905773
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4796449612752425,
+      "scaleY": 0.4868676355366514,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.5952867434569,
+      "ancho": 210.08449303855622
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.71349301602476,
+      "y": 1020.0895365094227,
+      "w": 198.57301396795037,
+      "h": 299.9104634905773
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4796449612752425,
+      "scaleY": 0.4868676355366514,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.5952867434569,
+      "ancho": 198.09336900667515
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.7090550319654,
+      "y": 1020.0895365094227,
+      "w": 190.89869458754652,
+      "h": 299.9104634905773
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.3939940753332349,
+      "scaleY": 0.3999269863336779,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.95327125355385,
+      "ancho": 175.32736352328953
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 189.06424714235405,
+      "y": 933.8451224457871,
+      "w": 165.87150571529187,
+      "h": 247.15487755421293
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.3939940753332349,
+      "scaleY": 0.3999269863336779,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.95327125355385,
+      "ancho": 182.813250954621
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.3213034266883,
+      "y": 934.6449764184545,
+      "w": 173.35739314662334,
+      "h": 246.3550235815456
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:idle",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 933
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.690744114506049,
+      "scaleY": 0.7011455992288285,
+      "W": 620,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 504.8248314447565,
+      "ancho": 428.2613509937504
+     },
+     "pie": 933,
+     "alphaBox": {
+      "x": 206.84899799170344,
+      "y": 445.7038085359642,
+      "w": 410.3020040165931,
+      "h": 487.29619146403576
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "412x860_3enemigos": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 937,
+    "EB": 833
+   },
+   "piso": 825,
+   "carrilMinimo": 833,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1372.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 276
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0,
+   "e1": 0,
+   "e2": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 0,
+    "w": 412,
+    "h": 860,
+    "escala": 0.5
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 937,
+    "EB": 833
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1372.5,
+   "barrasBottomMundo": 276,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 32,
+     "y": 136,
+     "w": 760,
+     "h": 140
+    },
+    {
+     "id": "titulo",
+     "x": 32,
+     "y": 48,
+     "w": 371.90625,
+     "h": 56
+    },
+    {
+     "id": "cerrar",
+     "x": 704,
+     "y": 32,
+     "w": 88,
+     "h": 88
+    },
+    {
+     "id": "boton1",
+     "x": 106,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton2",
+     "x": 230,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton3",
+     "x": 354,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton4",
+     "x": 478,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton5",
+     "x": 602,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "avanzar",
+     "x": 32,
+     "y": 1576,
+     "w": 760,
+     "h": 96
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4800247837620646,
+      "scaleY": 0.485538256832774,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.74448437297536,
+      "ancho": 213.13100399035667
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.19479540996644,
+      "y": 1020.9084337910112,
+      "w": 205.45060745016363,
+      "h": 299.0915662089888
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4800247837620646,
+      "scaleY": 0.485538256832774,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.74448437297536,
+      "ancho": 210.25085528778428
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.6348697612527,
+      "y": 1020.9084337910112,
+      "w": 198.73026047749474,
+      "h": 299.0915662089888
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4800247837620646,
+      "scaleY": 0.485538256832774,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.74448437297536,
+      "ancho": 198.25023569373266
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6351795582784,
+      "y": 1020.9084337910112,
+      "w": 191.0498639373017,
+      "h": 299.0915662089888
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.39430607237598164,
+      "scaleY": 0.39883499668406436,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.25439787780118,
+      "ancho": 175.46620220731182
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.99857176485585,
+      "y": 934.5199720492483,
+      "w": 166.00285647028826,
+      "h": 246.48002795075178
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.39430607237598164,
+      "scaleY": 0.39883499668406436,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.25439787780118,
+      "ancho": 182.95801758245548
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.25266407728407,
+      "y": 935.3176420426164,
+      "w": 173.49467184543192,
+      "h": 245.68235795738366
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EB",
+     "key": "enemy:carroneros:idle",
+     "depth": 833,
+     "lane": 833,
+     "cx": 147.94861111111112,
+     "cont": {
+      "x": 147.94861111111112,
+      "y": 833
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.4136675516015597,
+      "scaleY": 0.4209135693945411,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 303.0577699640696,
+      "ancho": 278.81192977945125
+     },
+     "pie": 833,
+     "alphaBox": {
+      "x": 14.333991943807332,
+      "y": 539.2023285626103,
+      "w": 267.2292383346076,
+      "h": 293.7976714373897
+     },
+     "muerto": false
+    },
+    {
+     "id": "e1",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EB",
+     "key": "enemy:carroneros:idle",
+     "depth": 833,
+     "lane": 833,
+     "cx": 676.0513888888888,
+     "cont": {
+      "x": 676.0513888888888,
+      "y": 833
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.41395903391545713,
+      "scaleY": 0.41989338129590026,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.3232345330482,
+      "ancho": 279.0083888590181
+     },
+     "pie": 833,
+     "alphaBox": {
+      "x": 542.3426209341961,
+      "y": 539.9144198554617,
+      "w": 267.4175359093853,
+      "h": 293.08558014453837
+     },
+     "muerto": false
+    },
+    {
+     "id": "e2",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EF",
+     "key": "enemy:carroneros:idle",
+     "depth": 937,
+     "lane": 937,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 937
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.4142205204757787,
+      "scaleY": 0.4189781783347747,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 301.66428840103777,
+      "ancho": 279.1846308006748
+     },
+     "pie": 937,
+     "alphaBox": {
+      "x": 278.2067718863235,
+      "y": 644.5532315223273,
+      "w": 267.58645622735304,
+      "h": 292.4467684776727
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "412x860_4enemigos_veil": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1109,
+    "EB": 1006
+   },
+   "piso": 998,
+   "carrilMinimo": 1006,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1372.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 276
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0,
+   "e1": 0,
+   "e2": 0,
+   "e3": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 0,
+    "w": 412,
+    "h": 860,
+    "escala": 0.5
+   },
+   "bg": "veil_gate",
+   "ground": 998,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1109,
+    "EB": 1006
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1372.5,
+   "barrasBottomMundo": 276,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 32,
+     "y": 136,
+     "w": 760,
+     "h": 140
+    },
+    {
+     "id": "titulo",
+     "x": 32,
+     "y": 48,
+     "w": 426.0625,
+     "h": 56
+    },
+    {
+     "id": "cerrar",
+     "x": 704,
+     "y": 32,
+     "w": 88,
+     "h": 88
+    },
+    {
+     "id": "boton1",
+     "x": 106,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton2",
+     "x": 230,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton3",
+     "x": 354,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton4",
+     "x": 478,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton5",
+     "x": 602,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "avanzar",
+     "x": 32,
+     "y": 1576,
+     "w": 760,
+     "h": 96
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4798380085723697,
+      "scaleY": 0.48619196999670605,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.1628607978919,
+      "ancho": 213.04807580613215
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.234018199802364,
+      "y": 1020.505746482029,
+      "w": 205.37066766897422,
+      "h": 299.49425351797095
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4798380085723697,
+      "scaleY": 0.48619196999670605,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.1628607978919,
+      "ancho": 210.1690477546979
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.67353222551947,
+      "y": 1020.505746482029,
+      "w": 198.65293554896104,
+      "h": 299.49425351797095
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4798380085723697,
+      "scaleY": 0.48619196999670605,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.1628607978919,
+      "ancho": 198.17309754038868
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6715073326741,
+      "y": 1020.505746482029,
+      "w": 190.97552741180314,
+      "h": 299.49425351797095
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.3941526498987323,
+      "scaleY": 0.3993719753544371,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.59806422683974,
+      "ancho": 175.39792920493585
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 189.03086719631688,
+      "y": 934.1881192309578,
+      "w": 165.93826560736628,
+      "h": 246.81188076904212
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.3941526498987323,
+      "scaleY": 0.3993719753544371,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.59806422683974,
+      "ancho": 182.88682955301178
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.2864170222789,
+      "y": 934.9868631816668,
+      "w": 173.4271659554422,
+      "h": 246.01313681833324
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EB",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1006,
+     "lane": 1006,
+     "cx": 275.6958333333333,
+     "cont": {
+      "x": 275.6958333333333,
+      "y": 1006
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.4137279400118568,
+      "scaleY": 0.42070220995850116,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.90559117012083,
+      "ancho": 265.61333748761206
+     },
+     "pie": 1006,
+     "alphaBox": {
+      "x": 148.26762780968144,
+      "y": 714.0326662888002,
+      "w": 254.8564110473038,
+      "h": 291.9673337111998
+     },
+     "muerto": false
+    },
+    {
+     "id": "e1",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EB",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1006,
+     "lane": 1006,
+     "cx": 548.3041666666667,
+     "cont": {
+      "x": 548.3041666666667,
+      "y": 1006
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.413657316948966,
+      "scaleY": 0.42094939067861914,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 303.0835612886058,
+      "ancho": 265.5679974812362
+     },
+     "pie": 1006,
+     "alphaBox": {
+      "x": 420.8977130463851,
+      "y": 713.8611228690384,
+      "w": 254.81290724056308,
+      "h": 292.1388771309617
+     },
+     "muerto": false
+    },
+    {
+     "id": "e2",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EF",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1109,
+     "lane": 1109,
+     "cx": 141.30416666666667,
+     "cont": {
+      "x": 141.30416666666667,
+      "y": 1109
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.413657316948966,
+      "scaleY": 0.42094939067861914,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 303.0835612886058,
+      "ancho": 265.5679974812362
+     },
+     "pie": 1109,
+     "alphaBox": {
+      "x": 13.89771304638513,
+      "y": 816.8611228690384,
+      "w": 254.81290724056308,
+      "h": 292.1388771309617
+     },
+     "muerto": false
+    },
+    {
+     "id": "e3",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EF",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1109,
+     "lane": 1109,
+     "cx": 682.6958333333333,
+     "cont": {
+      "x": 682.6958333333333,
+      "y": 1109
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.41381060719712226,
+      "scaleY": 0.4204128748100722,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.697269863252,
+      "ancho": 265.6664098205525
+     },
+     "pie": 1109,
+     "alphaBox": {
+      "x": 555.2421663166197,
+      "y": 817.2334648818099,
+      "w": 254.9073340334273,
+      "h": 291.7665351181901
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "412x860_jefe": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1073
+   },
+   "piso": 1062,
+   "carrilMinimo": 1073,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1372.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 202
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 0,
+    "w": 412,
+    "h": 860,
+    "escala": 0.5
+   },
+   "bg": "cathedral",
+   "ground": 1062,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1073
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1372.5,
+   "barrasBottomMundo": 202,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 32,
+     "y": 136,
+     "w": 760,
+     "h": 66
+    },
+    {
+     "id": "titulo",
+     "x": 32,
+     "y": 48,
+     "w": 481.5,
+     "h": 56
+    },
+    {
+     "id": "cerrar",
+     "x": 704,
+     "y": 32,
+     "w": 88,
+     "h": 88
+    },
+    {
+     "id": "boton1",
+     "x": 106,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton2",
+     "x": 230,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton3",
+     "x": 354,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton4",
+     "x": 478,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton5",
+     "x": 602,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "avanzar",
+     "x": 32,
+     "y": 1576,
+     "w": 760,
+     "h": 96
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48002284503111625,
+      "scaleY": 0.48554504239109314,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.7488271302996,
+      "ancho": 213.13014319381563
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.195202543465584,
+      "y": 1020.9042538870867,
+      "w": 205.44977767331775,
+      "h": 299.0957461129134
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48002284503111625,
+      "scaleY": 0.48554504239109314,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.7488271302996,
+      "ancho": 210.2500061236289
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.6352710785589,
+      "y": 1020.9042538870867,
+      "w": 198.72945784288214,
+      "h": 299.0957461129134
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48002284503111625,
+      "scaleY": 0.48554504239109314,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.7488271302996,
+      "ancho": 198.249434997851
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6355566414479,
+      "y": 1020.9042538870867,
+      "w": 191.04909232238427,
+      "h": 299.0957461129134
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.39430447984698835,
+      "scaleY": 0.3988405705355408,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.25796514274612,
+      "ancho": 175.46549353190983
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.99890699220896,
+      "y": 934.5165274090357,
+      "w": 166.00218601558208,
+      "h": 246.4834725909642
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.39430447984698835,
+      "scaleY": 0.3988405705355408,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.25796514274612,
+      "ancho": 182.9572786490026
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.2530144336626,
+      "y": 935.314208550107,
+      "w": 173.4939711326749,
+      "h": 245.68579144989312
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "boss_devorador",
+     "row": "EF",
+     "key": "enemy:boss_devorador:idle",
+     "depth": 1073,
+     "lane": 1073,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1073
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9805555555555555,
+      "scaleX": 0.8575299886703058,
+      "scaleY": 0.8673950396539298,
+      "W": 688,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 624.5244285508295,
+      "ancho": 589.9806322051704
+     },
+     "pie": 1073,
+     "alphaBox": {
+      "x": 129.01510373879907,
+      "y": 472.76263255948055,
+      "w": 565.9697925224018,
+      "h": 600.2373674405194
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Devorador",
+     "aria": "Vida de Devorador",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "412x860_victoria": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1372.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 202
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 0,
+    "w": 412,
+    "h": 860,
+    "escala": 0.5
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1372.5,
+   "barrasBottomMundo": 202,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 32,
+     "y": 136,
+     "w": 760,
+     "h": 66
+    },
+    {
+     "id": "titulo",
+     "x": 32,
+     "y": 48,
+     "w": 558.25,
+     "h": 56
+    },
+    {
+     "id": "cerrar",
+     "x": 704,
+     "y": 32,
+     "w": 88,
+     "h": 88
+    },
+    {
+     "id": "boton1",
+     "x": 106,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton2",
+     "x": 230,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton3",
+     "x": 354,
+     "y": 1372.5,
+     "w": 116,
+     "h": 187.5
+    },
+    {
+     "id": "boton4",
+     "x": 478,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton5",
+     "x": 602,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4800209074610741,
+      "scaleY": 0.4855518238862407,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.75316728719406,
+      "ancho": 213.12928291271692
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.195609433174432,
+      "y": 1020.9000764860757,
+      "w": 205.44894839333972,
+      "h": 299.09992351392424
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4800209074610741,
+      "scaleY": 0.4855518238862407,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.75316728719406,
+      "ancho": 210.24915746795045
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.63567215555764,
+      "y": 1020.9000764860757,
+      "w": 198.7286556888847,
+      "h": 299.09992351392424
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4800209074610741,
+      "scaleY": 0.4855518238862407,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.75316728719406,
+      "ancho": 198.24863478142362
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6359334988211,
+      "y": 1020.9000764860757,
+      "w": 191.0483211695075,
+      "h": 299.09992351392424
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.3943028882715966,
+      "scaleY": 0.39884614104941196,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.26153027162366,
+      "ancho": 175.4647852808605
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.9992420188289,
+      "y": 934.5130848314635,
+      "w": 166.00151596234215,
+      "h": 246.4869151685366
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.3943028882715966,
+      "scaleY": 0.39884614104941196,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.26153027162366,
+      "ancho": 182.95654015802083
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.25336458024873,
+      "y": 935.3107771135623,
+      "w": 173.49327083950251,
+      "h": 245.68922288643776
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:hit",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 933
+     },
+     "sp": {
+      "x": 240.83680555555554,
+      "y": -113.16869513888892,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.466,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.3811805555555556,
+      "scaleY": 0.6930555555555555,
+      "W": 665,
+      "H": 720,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 499,
+      "ancho": 253.48506944444446
+     },
+     "pie": 819.8313048611111,
+     "alphaBox": {
+      "x": 539.6681104166667,
+      "y": 338.15769375,
+      "w": 243.574375,
+      "h": 481.6736111111111
+     },
+     "muerto": true
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": true,
+     "opacidad": "0.45",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": {
+    "resultado": "victory",
+    "top": 362.234375,
+    "bottom": 497.734375,
+    "alto": 135.5,
+    "vh": 860,
+    "fraccionAlto": 0.15755813953488373,
+    "centro": 0.49998183139534885,
+    "tapaFilaHeroes": false,
+    "volverVisible": true
+   }
+  }
+ },
+ "412x860_derrota": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1388.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 202
+  },
+  "caraTapadaPct": {
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 0,
+    "w": 412,
+    "h": 860,
+    "escala": 0.5
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1388.5,
+   "barrasBottomMundo": 202,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 32,
+     "y": 136,
+     "w": 760,
+     "h": 66
+    },
+    {
+     "id": "titulo",
+     "x": 32,
+     "y": 48,
+     "w": 558.25,
+     "h": 56
+    },
+    {
+     "id": "cerrar",
+     "x": 704,
+     "y": 32,
+     "w": 88,
+     "h": 88
+    },
+    {
+     "id": "boton1",
+     "x": 106,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton2",
+     "x": 230,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton3",
+     "x": 354,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton4",
+     "x": 478,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    },
+    {
+     "id": "boton5",
+     "x": 602,
+     "y": 1388.5,
+     "w": 116,
+     "h": 171.5
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": -128,
+      "y": -57.70187500000001,
+      "angle": 90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 444,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 117.52125000000001
+     },
+     "pie": 1262.298125,
+     "alphaBox": {
+      "x": -51.584375,
+      "y": 965.848125,
+      "w": 113.28625000000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 148.225,
+      "y": -54.790312500000006,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 438,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 115.933125
+     },
+     "pie": 1265.2096875,
+     "alphaBox": {
+      "x": 505.4346875,
+      "y": 968.7596874999999,
+      "w": 109.58062500000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 127.99999999999997,
+      "y": -51.481718750000006,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 413,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 109.3159375
+     },
+     "pie": 1268.51828125,
+     "alphaBox": {
+      "x": 768.51828125,
+      "y": 972.0682812499999,
+      "w": 105.34562500000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": -122.1515625,
+      "y": -45.76730468750001,
+      "angle": 90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.21742187500000001,
+      "scaleY": 0.3953125,
+      "W": 445,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 253,
+      "ancho": 96.752734375
+     },
+     "pie": 1135.2326953125,
+     "alphaBox": {
+      "x": 104.08113281249999,
+      "y": 890.9295703125001,
+      "w": 91.534609375,
+      "h": 244.303125
+     },
+     "muerto": true
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 121.75625000000001,
+      "y": -47.8328125,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.21742187500000001,
+      "scaleY": 0.3953125,
+      "W": 464,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 253,
+      "ancho": 100.88375
+     },
+     "pie": 1133.1671875,
+     "alphaBox": {
+      "x": 625.9234375000001,
+      "y": 889.6546874999999,
+      "w": 95.665625,
+      "h": 243.51250000000002
+     },
+     "muerto": true
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:idle",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 408.4841570930947,
+      "y": 933
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.6918143325088071,
+      "scaleY": 0.6973998362191751,
+      "W": 620,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 502.1278820778061,
+      "ancho": 428.9248861554604
+     },
+     "pie": 933,
+     "alphaBox": {
+      "x": 203.01530033797903,
+      "y": 448.30711382767333,
+      "w": 410.9377135102314,
+      "h": 484.6928861723267
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    }
+   ],
+   "cartel": {
+    "resultado": "defeat",
+    "top": 364.734375,
+    "bottom": 495.234375,
+    "alto": 130.5,
+    "vh": 860,
+    "fraccionAlto": 0.15174418604651163,
+    "centro": 0.49998183139534885,
+    "tapaFilaHeroes": false,
+    "volverVisible": true
+   }
+  }
+ },
+ "360x800_1enemigo": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1328.1
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 226.6
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "v4": {
+   "normalPx": 40,
+   "criticoPx": 60,
+   "escalaInicial": 1.4,
+   "baseNumero": 439.3263888888889,
+   "cabeza": 451.3263888888889,
+   "caraBajo": 619.9121527777778,
+   "sobreLaCabeza": true,
+   "apilado": 28,
+   "escala140ms": 1,
+   "subida840ms": 60,
+   "vivoA840ms": false
+  },
+  "v7": {
+   "flipDurante": true,
+   "anguloDurante": 15,
+   "texturaDurante": "hero:ranger:attack",
+   "objetivoALaIzquierda": true,
+   "flipDespues": false,
+   "anguloDespues": 0,
+   "texturaDespues": "hero:ranger:idle",
+   "h1FlipDurante": false,
+   "h1ObjetivoALaDerecha": true
+  },
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 24,
+    "w": 360,
+    "h": 751.453125,
+    "escala": 0.4368932038834951
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1328.127777777778,
+   "barrasBottomMundo": 226.60000000000002,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 36.62222222222223,
+     "y": 151.06666666666666,
+     "w": 750.7555555555556,
+     "h": 75.53333333333333
+    },
+    {
+     "id": "titulo",
+     "x": 36.62222222222223,
+     "y": 50.35555555555556,
+     "w": 635.417013888889,
+     "h": 64.08888888888889
+    },
+    {
+     "id": "cerrar",
+     "x": 686.6666666666667,
+     "y": 32.044444444444444,
+     "w": 100.71111111111112,
+     "h": 100.71111111111112
+    },
+    {
+     "id": "boton1",
+     "x": 61.800000000000004,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton2",
+     "x": 203.71111111111114,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton3",
+     "x": 345.62222222222226,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton4",
+     "x": 487.53333333333336,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton5",
+     "x": 629.4444444444445,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "avanzar",
+     "x": 36.62222222222223,
+     "y": 1561.0222222222224,
+     "w": 750.7555555555556,
+     "h": 109.86666666666667
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4799919889861524,
+      "scaleY": 0.4856530385484665,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.81794467101855,
+      "ancho": 213.11644310985167
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.20168231290799,
+      "y": 1020.8377282541446,
+      "w": 205.43657128607325,
+      "h": 299.1622717458553
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4799919889861524,
+      "scaleY": 0.4856530385484665,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.81794467101855,
+      "ancho": 210.23649117593476
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.6416582798664,
+      "y": 1020.8377282541446,
+      "w": 198.7166834402671,
+      "h": 299.1622717458553
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4799919889861524,
+      "scaleY": 0.4856530385484665,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.81794467101855,
+      "ancho": 198.23669145128096
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6415581421934,
+      "y": 1020.8377282541446,
+      "w": 191.03681161648865,
+      "h": 299.1622717458553
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.3942791338100538,
+      "scaleY": 0.39892928166481173,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.31474026547951,
+      "ancho": 175.45421454547395
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 189.00424233298367,
+      "y": 934.4617039311463,
+      "w": 165.99151533403264,
+      "h": 246.53829606885364
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.3942791338100538,
+      "scaleY": 0.39892928166481173,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.31474026547951,
+      "ancho": 182.94551808786497
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.2585905617882,
+      "y": 935.2595624944761,
+      "w": 173.48281887642366,
+      "h": 245.74043750552403
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:idle",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 933
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.6912438744706784,
+      "scaleY": 0.6993964393526256,
+      "W": 620,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 503.56543633389043,
+      "ancho": 428.5712021718206
+     },
+     "pie": 933,
+     "alphaBox": {
+      "x": 206.70056928220853,
+      "y": 446.91947464992523,
+      "w": 410.59886143558293,
+      "h": 486.0805253500748
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "360x800_3enemigos": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 937,
+    "EB": 833
+   },
+   "piso": 825,
+   "carrilMinimo": 833,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1328.1
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 311.3
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0,
+   "e1": 0,
+   "e2": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 24,
+    "w": 360,
+    "h": 751.453125,
+    "escala": 0.4368932038834951
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 937,
+    "EB": 833
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1328.127777777778,
+   "barrasBottomMundo": 311.2888888888889,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 36.62222222222223,
+     "y": 151.06666666666666,
+     "w": 750.7555555555556,
+     "h": 160.22222222222223
+    },
+    {
+     "id": "titulo",
+     "x": 36.62222222222223,
+     "y": 50.35555555555556,
+     "w": 425.6260416666667,
+     "h": 64.08888888888889
+    },
+    {
+     "id": "cerrar",
+     "x": 686.6666666666667,
+     "y": 32.044444444444444,
+     "w": 100.71111111111112,
+     "h": 100.71111111111112
+    },
+    {
+     "id": "boton1",
+     "x": 61.800000000000004,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton2",
+     "x": 203.71111111111114,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton3",
+     "x": 345.62222222222226,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton4",
+     "x": 487.53333333333336,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton5",
+     "x": 629.4444444444445,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "avanzar",
+     "x": 36.62222222222223,
+     "y": 1561.0222222222224,
+     "w": 750.7555555555556,
+     "h": 109.86666666666667
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802230409120096,
+      "scaleY": 0.4848443568079664,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3003883570985,
+      "ancho": 213.21903016493226
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.153161408477985,
+      "y": 1021.3358762062927,
+      "w": 205.53546151034013,
+      "h": 298.6641237937073
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802230409120096,
+      "scaleY": 0.4848443568079664,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3003883570985,
+      "ancho": 210.3376919194602
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.593830531214,
+      "y": 1021.3358762062927,
+      "w": 198.81233893757198,
+      "h": 298.6641237937073
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802230409120096,
+      "scaleY": 0.4848443568079664,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3003883570985,
+      "ancho": 198.33211589665999
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.5966185426141,
+      "y": 1021.3358762062927,
+      "w": 191.12877028297984,
+      "h": 298.6641237937073
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.39446892646343645,
+      "scaleY": 0.3982650073779724,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.88960472190232,
+      "ancho": 175.53867227622922
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.96429097944662,
+      "y": 934.8722254404131,
+      "w": 166.07141804110674,
+      "h": 246.12777455958692
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.39446892646343645,
+      "scaleY": 0.3982650073779724,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.88960472190232,
+      "ancho": 183.0335818790345
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.216836178044,
+      "y": 935.668755455169,
+      "w": 173.56632764391205,
+      "h": 245.33124454483098
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EB",
+     "key": "enemy:carroneros:idle",
+     "depth": 833,
+     "lane": 833,
+     "cx": 147.94861111111112,
+     "cont": {
+      "x": 147.94861111111112,
+      "y": 833
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.41375930961320784,
+      "scaleY": 0.42059241635377265,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.8265397747163,
+      "ancho": 278.8737746793021
+     },
+     "pie": 833,
+     "alphaBox": {
+      "x": 14.304354106044993,
+      "y": 539.4264933850666,
+      "w": 267.28851401013225,
+      "h": 293.5735066149333
+     },
+     "muerto": false
+    },
+    {
+     "id": "e1",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EB",
+     "key": "enemy:carroneros:idle",
+     "depth": 833,
+     "lane": 833,
+     "cx": 676.0513888888888,
+     "cont": {
+      "x": 676.0513888888888,
+      "y": 833
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.4141094048436676,
+      "scaleY": 0.4193670830471634,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 301.94429979395767,
+      "ancho": 279.10973886463194
+     },
+     "pie": 833,
+     "alphaBox": {
+      "x": 542.2940511243842,
+      "y": 540.28177603308,
+      "w": 267.51467552900925,
+      "h": 292.71822396692005
+     },
+     "muerto": false
+    },
+    {
+     "id": "e2",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EF",
+     "key": "enemy:carroneros:idle",
+     "depth": 937,
+     "lane": 937,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 937
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.4143915995171454,
+      "scaleY": 0.4183794016899912,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 301.23316921679367,
+      "ancho": 279.299938074556
+     },
+     "pie": 937,
+     "alphaBox": {
+      "x": 278.15151335596204,
+      "y": 644.971177620386,
+      "w": 267.6969732880759,
+      "h": 292.02882237961387
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "360x800_4enemigos_veil": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1109,
+    "EB": 1006
+   },
+   "piso": 998,
+   "carrilMinimo": 1006,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1328.1
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 311.3
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0,
+   "e1": 0,
+   "e2": 0,
+   "e3": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 24,
+    "w": 360,
+    "h": 751.453125,
+    "escala": 0.4368932038834951
+   },
+   "bg": "veil_gate",
+   "ground": 998,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1109,
+    "EB": 1006
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1328.127777777778,
+   "barrasBottomMundo": 311.2888888888889,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 36.62222222222223,
+     "y": 151.06666666666666,
+     "w": 750.7555555555556,
+     "h": 160.22222222222223
+    },
+    {
+     "id": "titulo",
+     "x": 36.62222222222223,
+     "y": 50.35555555555556,
+     "w": 487.6048611111111,
+     "h": 64.08888888888889
+    },
+    {
+     "id": "cerrar",
+     "x": 686.6666666666667,
+     "y": 32.044444444444444,
+     "w": 100.71111111111112,
+     "h": 100.71111111111112
+    },
+    {
+     "id": "boton1",
+     "x": 61.800000000000004,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton2",
+     "x": 203.71111111111114,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton3",
+     "x": 345.62222222222226,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton4",
+     "x": 487.53333333333336,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton5",
+     "x": 629.4444444444445,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "avanzar",
+     "x": 36.62222222222223,
+     "y": 1561.0222222222224,
+     "w": 750.7555555555556,
+     "h": 109.86666666666667
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802230409120096,
+      "scaleY": 0.4848443568079664,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3003883570985,
+      "ancho": 213.21903016493226
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.153161408477985,
+      "y": 1021.3358762062927,
+      "w": 205.53546151034013,
+      "h": 298.6641237937073
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802230409120096,
+      "scaleY": 0.4848443568079664,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3003883570985,
+      "ancho": 210.3376919194602
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.593830531214,
+      "y": 1021.3358762062927,
+      "w": 198.81233893757198,
+      "h": 298.6641237937073
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802230409120096,
+      "scaleY": 0.4848443568079664,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3003883570985,
+      "ancho": 198.33211589665999
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.5966185426141,
+      "y": 1021.3358762062927,
+      "w": 191.12877028297984,
+      "h": 298.6641237937073
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.3944689264634365,
+      "scaleY": 0.3982650073779724,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.88960472190232,
+      "ancho": 175.53867227622925
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.96429097944662,
+      "y": 934.8722254404131,
+      "w": 166.07141804110677,
+      "h": 246.12777455958692
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.3944689264634365,
+      "scaleY": 0.3982650073779724,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.88960472190232,
+      "ancho": 183.03358187903453
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.216836178044,
+      "y": 935.668755455169,
+      "w": 173.56632764391208,
+      "h": 245.33124454483098
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EB",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1006,
+     "lane": 1006,
+     "cx": 275.6958333333333,
+     "cont": {
+      "x": 275.6958333333333,
+      "y": 1006
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.4139604422795002,
+      "scaleY": 0.4198884520217494,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.31968545565957,
+      "ancho": 265.7626039434391
+     },
+     "pie": 1006,
+     "alphaBox": {
+      "x": 148.19601711124727,
+      "y": 714.5974142969059,
+      "w": 254.9996324441721,
+      "h": 291.4025857030941
+     },
+     "muerto": false
+    },
+    {
+     "id": "e1",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EB",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1006,
+     "lane": 1006,
+     "cx": 548.3041666666667,
+     "cont": {
+      "x": 548.3041666666667,
+      "y": 1006
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.41383116447208645,
+      "scaleY": 0.4203409243476975,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.64546553034216,
+      "ancho": 265.6796075910795
+     },
+     "pie": 1006,
+     "alphaBox": {
+      "x": 420.844168009264,
+      "y": 714.283398502698,
+      "w": 254.91999731480524,
+      "h": 291.71660149730207
+     },
+     "muerto": false
+    },
+    {
+     "id": "e2",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EF",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1109,
+     "lane": 1109,
+     "cx": 141.30416666666667,
+     "cont": {
+      "x": 141.30416666666667,
+      "y": 1109
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.4137431786030849,
+      "scaleY": 0.42064887488920294,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.8671899202261,
+      "ancho": 265.6231206631805
+     },
+     "pie": 1109,
+     "alphaBox": {
+      "x": 13.871267656916535,
+      "y": 817.0696808268932,
+      "w": 254.8657980195003,
+      "h": 291.93031917310685
+     },
+     "muerto": false
+    },
+    {
+     "id": "e3",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EF",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1109,
+     "lane": 1109,
+     "cx": 682.6958333333333,
+     "cont": {
+      "x": 682.6958333333333,
+      "y": 1109
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.414085738614688,
+      "scaleY": 0.41944991484859206,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.0039386909863,
+      "ancho": 265.8430441906297
+     },
+     "pie": 1109,
+     "alphaBox": {
+      "x": 555.1574258400095,
+      "y": 817.9017590950772,
+      "w": 255.0768149866478,
+      "h": 291.0982409049229
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "360x800_jefe": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1073
+   },
+   "piso": 1062,
+   "carrilMinimo": 1073,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1328.1
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 226.6
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 24,
+    "w": 360,
+    "h": 751.453125,
+    "escala": 0.4368932038834951
+   },
+   "bg": "cathedral",
+   "ground": 1062,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1073
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1328.127777777778,
+   "barrasBottomMundo": 226.60000000000002,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 36.62222222222223,
+     "y": 151.06666666666666,
+     "w": 750.7555555555556,
+     "h": 75.53333333333333
+    },
+    {
+     "id": "titulo",
+     "x": 36.62222222222223,
+     "y": 50.35555555555556,
+     "w": 551.0500000000001,
+     "h": 64.08888888888889
+    },
+    {
+     "id": "cerrar",
+     "x": 686.6666666666667,
+     "y": 32.044444444444444,
+     "w": 100.71111111111112,
+     "h": 100.71111111111112
+    },
+    {
+     "id": "boton1",
+     "x": 61.800000000000004,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton2",
+     "x": 203.71111111111114,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton3",
+     "x": 345.62222222222226,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton4",
+     "x": 487.53333333333336,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton5",
+     "x": 629.4444444444445,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "avanzar",
+     "x": 36.62222222222223,
+     "y": 1561.0222222222224,
+     "w": 750.7555555555556,
+     "h": 109.86666666666667
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48018488676401005,
+      "scaleY": 0.4849778963259648,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.38585364861746,
+      "ancho": 213.20208972322047
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.161173779557885,
+      "y": 1021.2536158632057,
+      "w": 205.5191315349963,
+      "h": 298.7463841367943
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48018488676401005,
+      "scaleY": 0.4849778963259648,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.38585364861746,
+      "ancho": 210.3209804026364
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.6017284398499,
+      "y": 1021.2536158632057,
+      "w": 198.79654312030016,
+      "h": 298.7463841367943
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48018488676401005,
+      "scaleY": 0.4849778963259648,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.38585364861746,
+      "ancho": 198.31635823353616
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6040395244,
+      "y": 1021.2536158632057,
+      "w": 191.113584932076,
+      "h": 298.7463841367943
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.39443758555615116,
+      "scaleY": 0.3983747005534711,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.95980835422148,
+      "ancho": 175.52472557248726
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.9708882404302,
+      "y": 934.8044350579548,
+      "w": 166.05822351913963,
+      "h": 246.1955649420451
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.39443758555615116,
+      "scaleY": 0.3983747005534711,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.95980835422148,
+      "ancho": 183.01903969805414
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.22373117764675,
+      "y": 935.6011844590618,
+      "w": 173.55253764470652,
+      "h": 245.3988155409382
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "boss_devorador",
+     "row": "EF",
+     "key": "enemy:boss_devorador:idle",
+     "depth": 1073,
+     "lane": 1073,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1073
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9805555555555555,
+      "scaleX": 0.8578194658208435,
+      "scaleY": 0.8663818696270482,
+      "W": 688,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 623.7949461314747,
+      "ancho": 590.1797924847403
+     },
+     "pie": 1073,
+     "alphaBox": {
+      "x": 128.91957627912163,
+      "y": 473.46374621808263,
+      "w": 566.1608474417567,
+      "h": 599.5362537819174
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Devorador",
+     "aria": "Vida de Devorador",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "360x800_victoria": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1328.1
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 226.6
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 24,
+    "w": 360,
+    "h": 751.453125,
+    "escala": 0.4368932038834951
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1328.127777777778,
+   "barrasBottomMundo": 226.60000000000002,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 36.62222222222223,
+     "y": 151.06666666666666,
+     "w": 750.7555555555556,
+     "h": 75.53333333333333
+    },
+    {
+     "id": "titulo",
+     "x": 36.62222222222223,
+     "y": 50.35555555555556,
+     "w": 638.8861111111112,
+     "h": 64.08888888888889
+    },
+    {
+     "id": "cerrar",
+     "x": 686.6666666666667,
+     "y": 32.044444444444444,
+     "w": 100.71111111111112,
+     "h": 100.71111111111112
+    },
+    {
+     "id": "boton1",
+     "x": 61.800000000000004,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton2",
+     "x": 203.71111111111114,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton3",
+     "x": 345.62222222222226,
+     "y": 1328.127777777778,
+     "w": 132.75555555555556,
+     "h": 214.58333333333334
+    },
+    {
+     "id": "boton4",
+     "x": 487.53333333333336,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton5",
+     "x": 629.4444444444445,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4795942025635454,
+      "scaleY": 0.48704529102759114,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.70898625765835,
+      "ancho": 212.93982593821417
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.28521746165546,
+      "y": 1019.9801007270039,
+      "w": 205.26631869719742,
+      "h": 300.01989927299616
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4795942025635454,
+      "scaleY": 0.48704529102759114,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.70898625765835,
+      "ancho": 210.0622607228329
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.7240000693461,
+      "y": 1019.9801007270039,
+      "w": 198.5519998613078,
+      "h": 300.01989927299616
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4795942025635454,
+      "scaleY": 0.48704529102759114,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 311.70898625765835,
+      "ancho": 198.07240565874426
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.7189276013904,
+      "y": 1019.9801007270039,
+      "w": 190.87849262029107,
+      "h": 300.01989927299616
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.393952380677198,
+      "scaleY": 0.400072917629807,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 256.0466672830765,
+      "ancho": 175.3088094013531
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 189.07302386744985,
+      "y": 933.7549369047792,
+      "w": 165.85395226510036,
+      "h": 247.24506309522073
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.393952380677198,
+      "scaleY": 0.400072917629807,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 256.0466672830765,
+      "ancho": 182.79390463421987
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.3304762510164,
+      "y": 934.5550827400389,
+      "w": 173.33904749796713,
+      "h": 246.44491725996113
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:hit",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 933
+     },
+     "sp": {
+      "x": 240.83680555555554,
+      "y": -113.16869513888892,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.466,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.3811805555555556,
+      "scaleY": 0.6930555555555555,
+      "W": 665,
+      "H": 720,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 499,
+      "ancho": 253.48506944444446
+     },
+     "pie": 819.8313048611111,
+     "alphaBox": {
+      "x": 539.6681104166667,
+      "y": 338.15769375,
+      "w": 243.574375,
+      "h": 481.6736111111111
+     },
+     "muerto": true
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": true,
+     "opacidad": "0.45",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": {
+    "resultado": "victory",
+    "top": 332.234375,
+    "bottom": 467.734375,
+    "alto": 135.5,
+    "vh": 800,
+    "fraccionAlto": 0.169375,
+    "centro": 0.49998046875,
+    "tapaFilaHeroes": false,
+    "volverVisible": true
+   }
+  }
+ },
+ "360x800_derrota": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1346.4
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 226.6
+  },
+  "caraTapadaPct": {
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 0,
+    "y": 24,
+    "w": 360,
+    "h": 751.453125,
+    "escala": 0.4368932038834951
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1346.4388888888889,
+   "barrasBottomMundo": 226.60000000000002,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 36.62222222222223,
+     "y": 151.06666666666666,
+     "w": 750.7555555555556,
+     "h": 75.53333333333333
+    },
+    {
+     "id": "titulo",
+     "x": 36.62222222222223,
+     "y": 50.35555555555556,
+     "w": 638.8861111111112,
+     "h": 64.08888888888889
+    },
+    {
+     "id": "cerrar",
+     "x": 686.6666666666667,
+     "y": 32.044444444444444,
+     "w": 100.71111111111112,
+     "h": 100.71111111111112
+    },
+    {
+     "id": "boton1",
+     "x": 61.800000000000004,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton2",
+     "x": 203.71111111111114,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton3",
+     "x": 345.62222222222226,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton4",
+     "x": 487.53333333333336,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    },
+    {
+     "id": "boton5",
+     "x": 629.4444444444445,
+     "y": 1346.4388888888889,
+     "w": 132.75555555555556,
+     "h": 196.27222222222224
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": -128,
+      "y": -57.70187500000001,
+      "angle": 90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 444,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 117.52125000000001
+     },
+     "pie": 1262.298125,
+     "alphaBox": {
+      "x": -51.584375,
+      "y": 965.848125,
+      "w": 113.28625000000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 148.225,
+      "y": -54.790312500000006,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 438,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 115.933125
+     },
+     "pie": 1265.2096875,
+     "alphaBox": {
+      "x": 505.4346875,
+      "y": 968.7596874999999,
+      "w": 109.58062500000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 127.99999999999997,
+      "y": -51.481718750000006,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 413,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 109.3159375
+     },
+     "pie": 1268.51828125,
+     "alphaBox": {
+      "x": 768.51828125,
+      "y": 972.0682812499999,
+      "w": 105.34562500000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": -122.1515625,
+      "y": -45.76730468750001,
+      "angle": 90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.21742187500000001,
+      "scaleY": 0.3953125,
+      "W": 445,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 253,
+      "ancho": 96.752734375
+     },
+     "pie": 1135.2326953125,
+     "alphaBox": {
+      "x": 104.08113281249999,
+      "y": 890.9295703125001,
+      "w": 91.534609375,
+      "h": 244.303125
+     },
+     "muerto": true
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 121.75625000000001,
+      "y": -47.8328125,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.21742187500000001,
+      "scaleY": 0.3953125,
+      "W": 464,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 253,
+      "ancho": 100.88375
+     },
+     "pie": 1133.1671875,
+     "alphaBox": {
+      "x": 625.9234375000001,
+      "y": 889.6546874999999,
+      "w": 95.665625,
+      "h": 243.51250000000002
+     },
+     "muerto": true
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:idle",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 406.4915500307356,
+      "y": 933
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.6916172016634659,
+      "scaleY": 0.6980897941778695,
+      "W": 620,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 502.62465180806606,
+      "ancho": 428.80266503134885
+     },
+     "pie": 933,
+     "alphaBox": {
+      "x": 201.08124113668623,
+      "y": 447.8275930463807,
+      "w": 410.82061778809873,
+      "h": 485.1724069536193
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    }
+   ],
+   "cartel": {
+    "resultado": "defeat",
+    "top": 334.734375,
+    "bottom": 465.234375,
+    "alto": 130.5,
+    "vh": 800,
+    "fraccionAlto": 0.163125,
+    "centro": 0.49998046875,
+    "tapaFilaHeroes": false,
+    "volverVisible": true
+   }
+  }
+ },
+ "1280x800_1enemigo": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1346.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 217.2
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "v4": {
+   "normalPx": 40,
+   "criticoPx": 60,
+   "escalaInicial": 1.4,
+   "baseNumero": 439.3263888888889,
+   "cabeza": 451.3263888888889,
+   "caraBajo": 619.9121527777778,
+   "sobreLaCabeza": true,
+   "apilado": 28,
+   "escala140ms": 1,
+   "subida840ms": 60,
+   "vivoA840ms": false
+  },
+  "v7": {
+   "flipDurante": true,
+   "anguloDurante": 15,
+   "texturaDurante": "hero:ranger:attack",
+   "objetivoALaIzquierda": true,
+   "flipDespues": false,
+   "anguloDespues": 0,
+   "texturaDespues": "hero:ranger:idle",
+   "h1FlipDurante": false,
+   "h1ObjetivoALaDerecha": true
+  },
+  "crudo": {
+   "lienzo": {
+    "x": 448,
+    "y": 0,
+    "w": 383.25,
+    "h": 800,
+    "escala": 0.4651092233009709
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1346.4579256360078,
+   "barrasBottomMundo": 217.15329419439007,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 35.20678408349641,
+     "y": 146.20221787345076,
+     "w": 755.1989562948467,
+     "h": 70.95107632093934
+    },
+    {
+     "id": "titulo",
+     "x": 35.20678408349641,
+     "y": 51.60078277886497,
+     "w": 596.8692106979778,
+     "h": 60.20091324200913
+    },
+    {
+     "id": "cerrar",
+     "x": 695.8043052837573,
+     "y": 34.400521852576645,
+     "w": 94.60143509458578,
+     "h": 94.60143509458578
+    },
+    {
+     "id": "boton1",
+     "x": 83.85127201565558,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton2",
+     "x": 217.15329419439007,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton3",
+     "x": 350.4553163731246,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton4",
+     "x": 483.7573385518591,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton5",
+     "x": 617.0593607305937,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "avanzar",
+     "x": 35.20678408349641,
+     "y": 1565.2237442922374,
+     "w": 755.1989562948467,
+     "h": 103.20156555772994
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48018488676401005,
+      "scaleY": 0.4849778963259648,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.38585364861746,
+      "ancho": 213.20208972322047
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.161173779557885,
+      "y": 1021.2536158632057,
+      "w": 205.5191315349963,
+      "h": 298.7463841367943
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48018488676401005,
+      "scaleY": 0.4849778963259648,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.38585364861746,
+      "ancho": 210.3209804026364
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.6017284398499,
+      "y": 1021.2536158632057,
+      "w": 198.79654312030016,
+      "h": 298.7463841367943
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48018488676401005,
+      "scaleY": 0.4849778963259648,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.38585364861746,
+      "ancho": 198.31635823353616
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6040395244,
+      "y": 1021.2536158632057,
+      "w": 191.113584932076,
+      "h": 298.7463841367943
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.39443758555615116,
+      "scaleY": 0.3983747005534711,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.95980835422148,
+      "ancho": 175.52472557248726
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.9708882404302,
+      "y": 934.8044350579548,
+      "w": 166.05822351913963,
+      "h": 246.1955649420451
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.39443758555615116,
+      "scaleY": 0.3983747005534711,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.95980835422148,
+      "ancho": 183.01903969805414
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.22373117764675,
+      "y": 935.6011844590618,
+      "w": 173.55253764470652,
+      "h": 245.3988155409382
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:idle",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 933
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.6915216695389351,
+      "scaleY": 0.698424156613727,
+      "W": 620,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 502.86539276188347,
+      "ancho": 428.7434351141398
+     },
+     "pie": 933,
+     "alphaBox": {
+      "x": 206.61806414693626,
+      "y": 447.5952111534597,
+      "w": 410.7638717061275,
+      "h": 485.40478884654027
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "1280x800_3enemigos": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 937,
+    "EB": 833
+   },
+   "piso": 825,
+   "carrilMinimo": 833,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1346.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 296.7
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0,
+   "e1": 0,
+   "e2": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 448,
+    "y": 0,
+    "w": 383.25,
+    "h": 800,
+    "escala": 0.4651092233009709
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 937,
+    "EB": 833
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1346.4579256360078,
+   "barrasBottomMundo": 296.70450097847356,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 35.20678408349641,
+     "y": 146.20221787345076,
+     "w": 755.1989562948467,
+     "h": 150.50228310502283
+    },
+    {
+     "id": "titulo",
+     "x": 35.20678408349641,
+     "y": 51.60078277886497,
+     "w": 399.80528375733854,
+     "h": 60.20091324200913
+    },
+    {
+     "id": "cerrar",
+     "x": 695.8043052837573,
+     "y": 34.400521852576645,
+     "w": 94.60143509458578,
+     "h": 94.60143509458578
+    },
+    {
+     "id": "boton1",
+     "x": 83.85127201565558,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton2",
+     "x": 217.15329419439007,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton3",
+     "x": 350.4553163731246,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton4",
+     "x": 483.7573385518591,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton5",
+     "x": 617.0593607305937,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "avanzar",
+     "x": 35.20678408349641,
+     "y": 1565.2237442922374,
+     "w": 755.1989562948467,
+     "h": 103.20156555772994
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.480089357239059,
+      "scaleY": 0.48531224966329356,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.5998397845079,
+      "ancho": 213.1596746141422
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.181234979797605,
+      "y": 1021.0476542074111,
+      "w": 205.47824489831726,
+      "h": 298.95234579258886
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.480089357239059,
+      "scaleY": 0.48531224966329356,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.5998397845079,
+      "ancho": 210.27913847070784
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.62150305151476,
+      "y": 1021.0476542074111,
+      "w": 198.7569938969704,
+      "h": 298.95234579258886
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.480089357239059,
+      "scaleY": 0.48531224966329356,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.5998397845079,
+      "ancho": 198.27690453973136
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6226200170031,
+      "y": 1021.0476542074111,
+      "w": 191.07556418114547,
+      "h": 298.95234579258886
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.39435911487494135,
+      "scaleY": 0.3986493479377054,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.13558268013145,
+      "ancho": 175.4898061193489
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.98740631882484,
+      "y": 934.634702974498,
+      "w": 166.02518736235032,
+      "h": 246.36529702550195
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.39435911487494135,
+      "scaleY": 0.3986493479377054,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 255.13558268013145,
+      "ancho": 182.9826293019728
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.2409947275129,
+      "y": 935.4320016703734,
+      "w": 173.5180105449742,
+      "h": 245.56799832962653
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EB",
+     "key": "enemy:carroneros:idle",
+     "depth": 833,
+     "lane": 833,
+     "cx": 147.94861111111112,
+     "cont": {
+      "x": 147.94861111111112,
+      "y": 833
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.4137920221843803,
+      "scaleY": 0.42047792235466885,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.7441040953616,
+      "ancho": 278.89582295227234
+     },
+     "pie": 833,
+     "alphaBox": {
+      "x": 14.293787945556275,
+      "y": 539.5064101964412,
+      "w": 267.3096463311097,
+      "h": 293.49358980355885
+     },
+     "muerto": false
+    },
+    {
+     "id": "e1",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EB",
+     "key": "enemy:carroneros:idle",
+     "depth": 833,
+     "lane": 833,
+     "cx": 676.0513888888888,
+     "cont": {
+      "x": 676.0513888888888,
+      "y": 833
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.4139832622695535,
+      "scaleY": 0.4198085820565629,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.2621790807253,
+      "ancho": 279.02471876967905
+     },
+     "pie": 833,
+     "alphaBox": {
+      "x": 542.334795175823,
+      "y": 539.9736097245192,
+      "w": 267.43318742613155,
+      "h": 293.02639027548094
+     },
+     "muerto": false
+    },
+    {
+     "id": "e2",
+     "kind": "enemy",
+     "art": "carroneros",
+     "row": "EF",
+     "key": "enemy:carroneros:idle",
+     "depth": 937,
+     "lane": 937,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 937
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9888888888888889,
+      "scaleX": 0.4142762418888273,
+      "scaleY": 0.4187831533891047,
+      "W": 674,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 301.5238704401554,
+      "ancho": 279.2221870330696
+     },
+     "pie": 937,
+     "alphaBox": {
+      "x": 278.1887738699088,
+      "y": 644.6893589344049,
+      "w": 267.6224522601824,
+      "h": 292.31064106559506
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Carroñero",
+     "aria": "Vida de Carroñero",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "1280x800_4enemigos_veil": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1109,
+    "EB": 1006
+   },
+   "piso": 998,
+   "carrilMinimo": 1006,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1346.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 296.7
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0,
+   "e1": 0,
+   "e2": 0,
+   "e3": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 448,
+    "y": 0,
+    "w": 383.25,
+    "h": 800,
+    "escala": 0.4651092233009709
+   },
+   "bg": "veil_gate",
+   "ground": 998,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1109,
+    "EB": 1006
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1346.4579256360078,
+   "barrasBottomMundo": 296.70450097847356,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 35.20678408349641,
+     "y": 146.20221787345076,
+     "w": 755.1989562948467,
+     "h": 150.50228310502283
+    },
+    {
+     "id": "titulo",
+     "x": 35.20678408349641,
+     "y": 51.60078277886497,
+     "w": 458.0241356816699,
+     "h": 60.20091324200913
+    },
+    {
+     "id": "cerrar",
+     "x": 695.8043052837573,
+     "y": 34.400521852576645,
+     "w": 94.60143509458578,
+     "h": 94.60143509458578
+    },
+    {
+     "id": "boton1",
+     "x": 83.85127201565558,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton2",
+     "x": 217.15329419439007,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton3",
+     "x": 350.4553163731246,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton4",
+     "x": 483.7573385518591,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton5",
+     "x": 617.0593607305937,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "avanzar",
+     "x": 35.20678408349641,
+     "y": 1565.2237442922374,
+     "w": 755.1989562948467,
+     "h": 103.20156555772994
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802875,
+      "scaleY": 0.48461875000000004,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.156,
+      "ancho": 213.24765
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.139625000000002,
+      "y": 1021.4748500000001,
+      "w": 205.56305,
+      "h": 298.52515000000005
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802875,
+      "scaleY": 0.48461875000000004,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.156,
+      "ancho": 210.365925
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.58048749999995,
+      "y": 1021.4748500000001,
+      "w": 198.839025,
+      "h": 298.52515000000005
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4802875,
+      "scaleY": 0.48461875000000004,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.156,
+      "ancho": 198.3587375
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.58408125,
+      "y": 1021.4748500000001,
+      "w": 191.154425,
+      "h": 298.52515000000005
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.394521875,
+      "scaleY": 0.3980796875,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.77100000000002,
+      "ancho": 175.562234375
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.9531453125,
+      "y": 934.986753125,
+      "w": 166.093709375,
+      "h": 246.013246875
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.394521875,
+      "scaleY": 0.3980796875,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.77100000000002,
+      "ancho": 183.05815
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.20518749999997,
+      "y": 935.7829125000001,
+      "w": 173.589625,
+      "h": 245.2170875
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EB",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1006,
+     "lane": 1006,
+     "cx": 275.6958333333333,
+     "cont": {
+      "x": 275.6958333333333,
+      "y": 1006
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.41400660321081195,
+      "scaleY": 0.41972688876215836,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.203359908754,
+      "ancho": 265.79223926134125
+     },
+     "pie": 1006,
+     "alphaBox": {
+      "x": 148.18179954440325,
+      "y": 714.7095391990621,
+      "w": 255.02806757786016,
+      "h": 291.2904608009379
+     },
+     "muerto": false
+    },
+    {
+     "id": "e1",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EB",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1006,
+     "lane": 1006,
+     "cx": 548.3041666666667,
+     "cont": {
+      "x": 548.3041666666667,
+      "y": 1006
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.4138927660066306,
+      "scaleY": 0.420125318976793,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.49022966329096,
+      "ancho": 265.71915577625686
+     },
+     "pie": 1006,
+     "alphaBox": {
+      "x": 420.82519473662444,
+      "y": 714.4330286301057,
+      "w": 254.95794386008444,
+      "h": 291.56697136989436
+     },
+     "muerto": false
+    },
+    {
+     "id": "e2",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EF",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1109,
+     "lane": 1109,
+     "cx": 141.30416666666667,
+     "cont": {
+      "x": 141.30416666666667,
+      "y": 1109
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.4137752886630053,
+      "scaleY": 0.42053648967948165,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 302.7862725692268,
+      "ancho": 265.6437353216494
+     },
+     "pie": 1109,
+     "alphaBox": {
+      "x": 13.86137775846105,
+      "y": 817.1476761624397,
+      "w": 254.88557781641126,
+      "h": 291.8523238375603
+     },
+     "muerto": false
+    },
+    {
+     "id": "e3",
+     "kind": "enemy",
+     "art": "voz_del_velo",
+     "row": "EF",
+     "key": "enemy:voz_del_velo:idle",
+     "depth": 1109,
+     "lane": 1109,
+     "cx": 682.6958333333333,
+     "cont": {
+      "x": 682.6958333333333,
+      "y": 1109
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9819444444444444,
+      "scaleX": 0.4141350157072349,
+      "scaleY": 0.41927744502467806,
+      "W": 642,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 301.8797604177682,
+      "ancho": 265.87468008404477
+     },
+     "pie": 1109,
+     "alphaBox": {
+      "x": 555.142248495505,
+      "y": 818.0214531528734,
+      "w": 255.10716967565668,
+      "h": 290.97854684712655
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    },
+    {
+     "nombre": "Voz del Velo",
+     "aria": "Vida de Voz del Velo",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "1280x800_jefe": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1073
+   },
+   "piso": 1062,
+   "carrilMinimo": 1073,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1346.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 217.2
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0,
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 448,
+    "y": 0,
+    "w": 383.25,
+    "h": 800,
+    "escala": 0.4651092233009709
+   },
+   "bg": "cathedral",
+   "ground": 1062,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 1073
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1346.4579256360078,
+   "barrasBottomMundo": 217.15329419439007,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 35.20678408349641,
+     "y": 146.20221787345076,
+     "w": 755.1989562948467,
+     "h": 70.95107632093934
+    },
+    {
+     "id": "titulo",
+     "x": 35.20678408349641,
+     "y": 51.60078277886497,
+     "w": 517.6203522504892,
+     "h": 60.20091324200913
+    },
+    {
+     "id": "cerrar",
+     "x": 695.8043052837573,
+     "y": 34.400521852576645,
+     "w": 94.60143509458578,
+     "h": 94.60143509458578
+    },
+    {
+     "id": "boton1",
+     "x": 83.85127201565558,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton2",
+     "x": 217.15329419439007,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton3",
+     "x": 350.4553163731246,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton4",
+     "x": 483.7573385518591,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton5",
+     "x": 617.0593607305937,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "avanzar",
+     "x": 35.20678408349641,
+     "y": 1565.2237442922374,
+     "w": 755.1989562948467,
+     "h": 103.20156555772994
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4801888963855184,
+      "scaleY": 0.4849638626506855,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3768720964387,
+      "ancho": 213.20386999517018
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.16033175904113,
+      "y": 1021.2622606071778,
+      "w": 205.52084765300188,
+      "h": 298.7377393928223
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4801888963855184,
+      "scaleY": 0.4849638626506855,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3768720964387,
+      "ancho": 210.32273661685707
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.60089844819765,
+      "y": 1021.2622606071778,
+      "w": 198.79820310360464,
+      "h": 298.7377393928223
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.4801888963855184,
+      "scaleY": 0.4849638626506855,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.3768720964387,
+      "ancho": 198.3180142072191
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.6032596530166,
+      "y": 1021.2622606071778,
+      "w": 191.11518076143633,
+      "h": 298.7377393928223
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.39444087917381876,
+      "scaleY": 0.3983631728916345,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.95243065064608,
+      "ancho": 175.52619123234936
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.97019493391116,
+      "y": 934.8115591529698,
+      "w": 166.0596101321777,
+      "h": 246.1884408470301
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.39444087917381876,
+      "scaleY": 0.3983631728916345,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.95243065064608,
+      "ancho": 183.0205679366519
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.2230065817599,
+      "y": 935.6082854987532,
+      "w": 173.55398683648025,
+      "h": 245.39171450124684
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "boss_devorador",
+     "row": "EF",
+     "key": "enemy:boss_devorador:idle",
+     "depth": 1073,
+     "lane": 1073,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1073
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9805555555555555,
+      "scaleX": 0.8578266287521961,
+      "scaleY": 0.866356799367314,
+      "W": 688,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 623.7768955444661,
+      "ancho": 590.1847205815109
+     },
+     "pie": 1073,
+     "alphaBox": {
+      "x": 128.91721251177532,
+      "y": 473.48109483781866,
+      "w": 566.1655749764494,
+      "h": 599.5189051621813
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Devorador",
+     "aria": "Vida de Devorador",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": null
+  }
+ },
+ "1280x800_victoria": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1346.5
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 217.2
+  },
+  "caraTapadaPct": {
+   "h1": 0,
+   "h2": 0,
+   "h3": 0,
+   "h4": 0,
+   "h5": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 448,
+    "y": 0,
+    "w": 383.25,
+    "h": 800,
+    "escala": 0.4651092233009709
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1346.4579256360078,
+   "barrasBottomMundo": 217.15329419439007,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 35.20678408349641,
+     "y": 146.20221787345076,
+     "w": 755.1989562948467,
+     "h": 70.95107632093934
+    },
+    {
+     "id": "titulo",
+     "x": 35.20678408349641,
+     "y": 51.60078277886497,
+     "w": 600.1278538812785,
+     "h": 60.20091324200913
+    },
+    {
+     "id": "cerrar",
+     "x": 695.8043052837573,
+     "y": 34.400521852576645,
+     "w": 94.60143509458578,
+     "h": 94.60143509458578
+    },
+    {
+     "id": "boton1",
+     "x": 83.85127201565558,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton2",
+     "x": 217.15329419439007,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton3",
+     "x": 350.4553163731246,
+     "y": 1346.4579256360078,
+     "w": 124.70189171559035,
+     "h": 201.5655577299413
+    },
+    {
+     "id": "boton4",
+     "x": 483.7573385518591,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton5",
+     "x": 617.0593607305937,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48035397027475013,
+      "scaleY": 0.4843861040383746,
+      "W": 444,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.0071065845598,
+      "ancho": 213.27716280198905
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 31.125666242302476,
+      "y": 1021.6181599123613,
+      "w": 205.59149927759304,
+      "h": 298.38184008763875
+     },
+     "muerto": false
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48035397027475013,
+      "scaleY": 0.4843861040383746,
+      "W": 438,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.0071065845598,
+      "ancho": 210.39503898034056
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 312.5667281531267,
+      "y": 1021.6181599123613,
+      "w": 198.86654369374656,
+      "h": 298.38184008763875
+     },
+     "muerto": false
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.48035397027475013,
+      "scaleY": 0.4843861040383746,
+      "W": 413,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 310.0071065845598,
+      "ancho": 198.3861897234718
+     },
+     "pie": 1320,
+     "alphaBox": {
+      "x": 598.5711527815612,
+      "y": 1021.6181599123613,
+      "w": 191.18088016935056,
+      "h": 298.38184008763875
+     },
+     "muerto": false
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.3945764755828305,
+      "scaleY": 0.3978885854600934,
+      "W": 445,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.64869469445978,
+      "ancho": 175.58653163435957
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 188.94165188981418,
+      "y": 935.1048541856622,
+      "w": 166.11669622037164,
+      "h": 245.89514581433772
+     },
+     "muerto": false
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.3945764755828305,
+      "scaleY": 0.3978885854600934,
+      "W": 464,
+      "H": 640,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 254.64869469445978,
+      "ancho": 183.08348467043334
+     },
+     "pie": 1181,
+     "alphaBox": {
+      "x": 465.1931753717773,
+      "y": 935.9006313565825,
+      "w": 173.61364925644543,
+      "h": 245.09936864341756
+     },
+     "muerto": false
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:hit",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 933
+     },
+     "sp": {
+      "x": 240.83680555555554,
+      "y": -113.16869513888892,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.466,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.3811805555555556,
+      "scaleY": 0.6930555555555555,
+      "W": 665,
+      "H": 720,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 499,
+      "ancho": 253.48506944444446
+     },
+     "pie": 819.8313048611111,
+     "alphaBox": {
+      "x": 539.6681104166667,
+      "y": 338.15769375,
+      "w": 243.574375,
+      "h": 481.6736111111111
+     },
+     "muerto": true
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": true,
+     "opacidad": "0.45",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    },
+    {
+     "muerta": false,
+     "opacidad": "1"
+    }
+   ],
+   "cartel": {
+    "resultado": "victory",
+    "top": 332.234375,
+    "bottom": 467.734375,
+    "alto": 135.5,
+    "vh": 800,
+    "fraccionAlto": 0.169375,
+    "centro": 0.49998046875,
+    "tapaFilaHeroes": false,
+    "volverVisible": true
+   }
+  }
+ },
+ "1280x800_derrota": {
+  "V2": {
+   "piePeorDesvio": 0,
+   "carriles": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "piso": 825,
+   "carrilMinimo": 933,
+   "carrilMaximo": 1320,
+   "sobrePiso": true,
+   "sobreBotones": true,
+   "botonesTopMundo": 1363.7
+  },
+  "V3": {
+   "solapeMaxDentroDeFila": 0,
+   "hudSobreSiluetas": [],
+   "cabezaBajoBarras": true,
+   "barrasBottomMundo": 217.2
+  },
+  "caraTapadaPct": {
+   "e0": 0
+  },
+  "caraTapadaMax": 0,
+  "crudo": {
+   "lienzo": {
+    "x": 448,
+    "y": 0,
+    "w": 383.25,
+    "h": 800,
+    "escala": 0.4651092233009709
+   },
+   "bg": "crypt",
+   "ground": 825,
+   "lanes": {
+    "HF": 1320,
+    "HB": 1181,
+    "EF": 933
+   },
+   "HUD_TOP": 1328,
+   "botonesTopMundo": 1363.6581865622961,
+   "barrasBottomMundo": 217.15329419439007,
+   "hud": [
+    {
+     "id": "barras",
+     "x": 35.20678408349641,
+     "y": 146.20221787345076,
+     "w": 755.1989562948467,
+     "h": 70.95107632093934
+    },
+    {
+     "id": "titulo",
+     "x": 35.20678408349641,
+     "y": 51.60078277886497,
+     "w": 600.1278538812785,
+     "h": 60.20091324200913
+    },
+    {
+     "id": "cerrar",
+     "x": 695.8043052837573,
+     "y": 34.400521852576645,
+     "w": 94.60143509458578,
+     "h": 94.60143509458578
+    },
+    {
+     "id": "boton1",
+     "x": 83.85127201565558,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton2",
+     "x": 217.15329419439007,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton3",
+     "x": 350.4553163731246,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton4",
+     "x": 483.7573385518591,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    },
+    {
+     "id": "boton5",
+     "x": 617.0593607305937,
+     "y": 1363.6581865622961,
+     "w": 124.70189171559035,
+     "h": 184.36529680365297
+    }
+   ],
+   "actores": [
+    {
+     "id": "h1",
+     "kind": "hero",
+     "art": "warrior",
+     "row": "HF",
+     "key": "hero:warrior:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 132,
+     "cont": {
+      "x": 132,
+      "y": 1320
+     },
+     "sp": {
+      "x": -128,
+      "y": -57.70187500000001,
+      "angle": 90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 444,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 117.52125000000001
+     },
+     "pie": 1262.298125,
+     "alphaBox": {
+      "x": -51.584375,
+      "y": 965.848125,
+      "w": 113.28625000000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h2",
+     "kind": "hero",
+     "art": "mage",
+     "row": "HF",
+     "key": "hero:mage:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 412,
+     "cont": {
+      "x": 412,
+      "y": 1320
+     },
+     "sp": {
+      "x": 148.225,
+      "y": -54.790312500000006,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 438,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 115.933125
+     },
+     "pie": 1265.2096875,
+     "alphaBox": {
+      "x": 505.4346875,
+      "y": 968.7596874999999,
+      "w": 109.58062500000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h3",
+     "kind": "hero",
+     "art": "ranger",
+     "row": "HF",
+     "key": "hero:ranger:idle",
+     "depth": 1320,
+     "lane": 1320,
+     "cx": 692,
+     "cont": {
+      "x": 692,
+      "y": 1320
+     },
+     "sp": {
+      "x": 127.99999999999997,
+      "y": -51.481718750000006,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.2646875,
+      "scaleY": 0.48125,
+      "W": 413,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 308,
+      "ancho": 109.3159375
+     },
+     "pie": 1268.51828125,
+     "alphaBox": {
+      "x": 768.51828125,
+      "y": 972.0682812499999,
+      "w": 105.34562500000001,
+      "h": 296.45
+     },
+     "muerto": true
+    },
+    {
+     "id": "h4",
+     "kind": "hero",
+     "art": "paladin",
+     "row": "HB",
+     "key": "hero:paladin:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 272,
+     "cont": {
+      "x": 272,
+      "y": 1181
+     },
+     "sp": {
+      "x": -122.1515625,
+      "y": -45.76730468750001,
+      "angle": 90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9828125,
+      "scaleX": 0.21742187500000001,
+      "scaleY": 0.3953125,
+      "W": 445,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 253,
+      "ancho": 96.752734375
+     },
+     "pie": 1135.2326953125,
+     "alphaBox": {
+      "x": 104.08113281249999,
+      "y": 890.9295703125001,
+      "w": 91.534609375,
+      "h": 244.303125
+     },
+     "muerto": true
+    },
+    {
+     "id": "h5",
+     "kind": "hero",
+     "art": "rogue",
+     "row": "HB",
+     "key": "hero:rogue:idle",
+     "depth": 1181,
+     "lane": 1181,
+     "cx": 552,
+     "cont": {
+      "x": 552,
+      "y": 1181
+     },
+     "sp": {
+      "x": 121.75625000000001,
+      "y": -47.8328125,
+      "angle": -90,
+      "alpha": 0.85,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.98125,
+      "scaleX": 0.21742187500000001,
+      "scaleY": 0.3953125,
+      "W": 464,
+      "H": 640,
+      "tint": 10132122,
+      "gris": true
+     },
+     "dibujado": {
+      "alto": 253,
+      "ancho": 100.88375
+     },
+     "pie": 1133.1671875,
+     "alphaBox": {
+      "x": 625.9234375000001,
+      "y": 889.6546874999999,
+      "w": 95.665625,
+      "h": 243.51250000000002
+     },
+     "muerto": true
+    },
+    {
+     "id": "e0",
+     "kind": "enemy",
+     "art": "bruto",
+     "row": "EF",
+     "key": "enemy:bruto:idle",
+     "depth": 933,
+     "lane": 933,
+     "cx": 412,
+     "cont": {
+      "x": 407.8116524827539,
+      "y": 933
+     },
+     "sp": {
+      "x": 0,
+      "y": 0,
+      "angle": 0,
+      "alpha": 1,
+      "flipX": false,
+      "originX": 0.5,
+      "originY": 0.9833333333333333,
+      "scaleX": 0.6920505781514372,
+      "scaleY": 0.6965729764699697,
+      "W": 620,
+      "H": 720,
+      "tint": 16777215,
+      "gris": false
+     },
+     "dibujado": {
+      "alto": 501.5325430583782,
+      "ancho": 429.0713584538911
+     },
+     "pie": 933,
+     "alphaBox": {
+      "x": 202.27263077177705,
+      "y": 448.881781353371,
+      "w": 411.07804342195374,
+      "h": 484.118218646629
+     },
+     "muerto": false
+    }
+   ],
+   "nombres": [
+    {
+     "texto": "Aria",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Lyra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Elena",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Viktor",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    },
+    {
+     "texto": "Sombra",
+     "px": 11,
+     "recortado": false,
+     "ancho": 58,
+     "caja": 58
+    }
+   ],
+   "barrasEnemigo": [
+    {
+     "nombre": "Bruto",
+     "aria": "Vida de Bruto",
+     "muerta": false,
+     "opacidad": "1",
+     "recortado": false
+    }
+   ],
+   "barrasHeroe": [
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    },
+    {
+     "muerta": true,
+     "opacidad": "0.45"
+    }
+   ],
+   "cartel": {
+    "resultado": "defeat",
+    "top": 334.734375,
+    "bottom": 465.234375,
+    "alto": 130.5,
+    "vh": 800,
+    "fraccionAlto": 0.163125,
+    "centro": 0.49998046875,
+    "tapaFilaHeroes": false,
+    "volverVisible": true
+   }
+  }
+ },
+ "errores": []
+}
