@@ -2,7 +2,8 @@
 //   T = borde inferior del bloque de barras de vida (ninguna cabeza puede quedar por encima: V3)
 //   B = borde superior de la fila de botones de héroe, incluida la etiqueta «¡TAP!» (ningún pie por debajo: V3)
 // Estado sintético (5 héroes con energía llena, como en las capturas de la hoja) sobre el combate real del cliente.
-// Uso: KH_PREVIEW_URL=http://localhost:5175 node medir_hud.mjs  → hud_medidas.json
+// Uso: KH_PREVIEW_URL=http://localhost:5175 node medir_hud.mjs  → hud_medidas.json (5 viewports; el server local limita /api
+// a 100 peticiones por minuto, por eso hay una pausa entre viewports)
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -17,6 +18,8 @@ const VPS = [
   { w: 412, h: 860, dpr: 2, name: '412x860' },
   { w: 360, h: 800, dpr: 3, name: '360x800' },
   { w: 1280, h: 800, dpr: 1.5, name: '1280x800' },
+  { w: 360, h: 740, dpr: 3, name: '360x740' },   // T10.7 (H2): vistas bajas obligatorias de V2/V3
+  { w: 375, h: 667, dpr: 2, name: '375x667' },
 ];
 
 async function abrir(browser, vp) {
@@ -84,14 +87,21 @@ try {
       console.log(vp.name, `m=${m}`, JSON.stringify(out[vp.name][m]));
     }
     await ctx.close();
+    if (vp !== VPS[VPS.length - 1]) await new Promise((r) => setTimeout(r, 65000));
   }
 } finally {
   await browser.close();
 }
+// resumen: las 3 vistas de T10.6 (412×860, 360×800, 1280×800) y, aparte, el borde de cada viewport (H2: en tiempo de
+// ejecución la formación toma el borde real de su pantalla)
+const base = ['412x860', '360x800', '1280x800'];
 const resumen = {
-  Tmax_1enemigo: Math.max(...Object.values(out).map((v) => v[1].T)),
-  Tmax_2omas: Math.max(...Object.values(out).flatMap((v) => [v[2].T, v[3].T, v[4].T])),
-  Bmin: Math.min(...Object.values(out).flatMap((v) => [1, 2, 3, 4].map((m) => v[m].B))),
+  Tmax_1enemigo: Math.max(...base.map((n) => out[n][1].T)),
+  Tmax_2omas: Math.max(...base.flatMap((n) => [out[n][2].T, out[n][3].T, out[n][4].T])),
+  Bmin: Math.min(...base.flatMap((n) => [1, 2, 3, 4].map((m) => out[n][m].B))),
+  porViewport: Object.fromEntries(Object.entries(out).map(([n, v]) => [n, {
+    B: Math.min(...[1, 2, 3, 4].map((m) => v[m].B)), T1: v[1].T, TN: Math.max(v[2].T, v[3].T, v[4].T), escala: v[1].lienzo.escala,
+  }])),
 };
 fs.writeFileSync(path.join(HERE, 'hud_medidas.json'), JSON.stringify({ resumen, porViewport: out }, null, 1));
 console.log('resumen', JSON.stringify(resumen));

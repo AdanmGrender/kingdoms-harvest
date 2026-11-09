@@ -59,6 +59,7 @@ export default class CombatScene extends Phaser.Scene {
     this.reduced = this.opts.reducedMotion ?? prefersReducedMotion();
     this.state0 = this.opts.state || {};
     this.node = this.opts.node || null;
+    this.hud = this.opts.hud || null;   // bordes reales del HUD en el mundo (H2), si el panel ya los midió
     this.queue = createRoundQueue({ warn: (m) => console.warn(m) });
     this.assets = collectAssetKeys(this.state0, this.node);
   }
@@ -155,7 +156,7 @@ export default class CombatScene extends Phaser.Scene {
   buildActors() {
     const enemies = enemyList(this.state0);
     const boss = !!(this.node && (this.node.isBoss || this.node.type === 'boss'));
-    const f = computeFormation(this.state0.heroes || [], enemies, { boss, node: this.node });
+    const f = computeFormation(this.state0.heroes || [], enemies, { boss, node: this.node, hud: this.hud });
     this.formation = f;
     this.lying = lyingBoxes(f);
     const mk = (b, kind) => {
@@ -200,6 +201,34 @@ export default class CombatScene extends Phaser.Scene {
     this.queue.enqueueRound(events, { units });
     this.waiting = true;
     this.finalState = state;
+  }
+
+  /**
+   * H2: el panel mide en tiempo de ejecución el borde superior real de los botones de héroe y el inferior de las barras
+   * (y los vuelve a medir si cambia el alto, p. ej. en Telegram). Si cambian los carriles, cada personaje se recoloca.
+   */
+  setHud(hud) {
+    if (!hud) return;
+    const same = this.hud && ['bottom', 'top'].every((k) => Math.abs((this.hud[k] ?? 0) - (hud[k] ?? 0)) < 0.5);
+    this.hud = hud;
+    if (same || !this.ready) return;
+    this.relayout();
+  }
+
+  relayout() {
+    const enemies = enemyList(this.state0);
+    const boss = !!(this.node && (this.node.isBoss || this.node.type === 'boss'));
+    const f = computeFormation(this.state0.heroes || [], enemies, { boss, node: this.node, hud: this.hud });
+    this.formation = f;
+    this.lying = lyingBoxes(f);
+    for (const b of [...f.heroes, ...f.enemies]) {
+      const a = this.actors[b.id];
+      if (!a || (a.base.x === b.cx && a.base.y === b.lane)) continue;
+      this.tweens.killTweensOf(a.c);
+      Object.assign(a.base, { x: b.cx, y: b.lane, headY: b.alpha.y });
+      a.c.setPosition(b.cx, b.lane).setDepth(b.depth);
+      if (a.dead) this.layDown(a);
+    }
   }
 
   skip() {

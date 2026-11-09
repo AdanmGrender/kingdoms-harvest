@@ -5,7 +5,7 @@
  * - `combat:open` al crear el juego y `combat:close` al destruirlo; el hub duerme/despierta (R39).
  * - Al desmontar: `game.destroy(true)` una vez; no queda ningún listener de EventBridge del stage (R38).
  * Props: `state` (estado inicial), `node`, `step` ({ id, state, roundLog, action, result } por cada ronda resuelta),
- *        `onMode(mode)` con 'loading' | 'ready' | 'unavailable'.
+ *        `onMode(mode)` con 'loading' | 'ready' | 'unavailable', `hud` ({ bottom, top } en y del mundo, H2).
  */
 import { useEffect, useRef, useState } from 'react';
 import EventBridge from '../../game/EventBridge';
@@ -19,7 +19,7 @@ export function canRenderCombat() {
   }
 }
 
-export default function CombatStage({ state, node, step, onMode, className = '' }) {
+export default function CombatStage({ state, node, step, onMode, hud = null, className = '' }) {
   const hostRef = useRef(null);
   const gameRef = useRef(null);
   const sceneRef = useRef(null);
@@ -29,6 +29,8 @@ export default function CombatStage({ state, node, step, onMode, className = '' 
   const [mode, setMode] = useState(() => (canRenderCombat() ? 'loading' : 'unavailable'));
   const onModeRef = useRef(onMode);
   onModeRef.current = onMode;
+  const hudRef = useRef(hud);   // H2: bordes reales del HUD (mundo), medidos por el panel
+  hudRef.current = hud;
 
   const change = (m) => { setMode(m); if (onModeRef.current) onModeRef.current(m); };
 
@@ -46,8 +48,10 @@ export default function CombatStage({ state, node, step, onMode, className = '' 
         game = createCombatGame(hostRef.current, {
           state,
           node,
+          hud: hudRef.current,
           onReady: (scene) => {
             sceneRef.current = scene;
+            if (hudRef.current && scene.setHud) scene.setHud(hudRef.current);
             for (const job of pendingRef.current.splice(0)) scene.playRound(job.events, job.state);
           },
           onRoundDone: (info) => EventBridge.emit('combat:round-done', info),
@@ -74,6 +78,11 @@ export default function CombatStage({ state, node, step, onMode, className = '' 
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // H2: si el HUD cambia de alto (Telegram, giro, teclado), la escena recoloca los carriles.
+  useEffect(() => {
+    if (hud && sceneRef.current && sceneRef.current.setHud) sceneRef.current.setHud(hud);
+  }, [hud]);
 
   // Cada ronda resuelta: eventos del servidor (v2) o derivados (v1) → a la escena.
   useEffect(() => {

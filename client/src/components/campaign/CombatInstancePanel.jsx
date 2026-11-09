@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import useGameStore from '../../store/gameStore';
 import SpriteIcon from '../ui/SpriteIcon';
 import Bar from '../ui/Bar';
@@ -9,6 +9,7 @@ import EmberField from '../fx/EmberField';
 import EventBridge from '../../game/EventBridge';
 import CombatStage from './CombatStage';
 import { enemyDisplayName } from '../../game/combat/artMap';
+import { hudToWorld } from '../../game/combat/formation';
 
 // combate_b: la escena (Phaser, CombatStage) dibuja fondo, enemigos y héroes; este panel es solo el HUD.
 // Retratos (Q6): ícono de clase del kit B, sin arte del set viejo (R42).
@@ -18,6 +19,7 @@ export const classIcon = (h) => CLASS_ICON[h?.class] || h?.skill?.icon || 'sword
 const ADVANCE_PAUSE_MS = 300;   // R17: pausa tras `combat:round-done`
 const IDLE_ADVANCE_MS = 2000;   // auto-avance sin escena (o antes de la primera ronda)
 const SCENE_FALLBACK_MS = 4000; // R19b: la escena no responde
+const TAP_LIFT_PX = 8;          // «¡TAP!» asoma 8 px sobre su botón (`-top-2`): se cuenta siempre, se vea o no
 
 // R54: filas de vida desde `state.enemies` (v2) o `[state.enemy]` (v1), en el orden recibido.
 // V9: con `node`, el nombre de cada barra es el del enemigo que la escena dibuja (todos usan el mismo arte), no el del servidor.
@@ -128,6 +130,35 @@ export default function CombatInstancePanel({ onClose }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRun?.state?.round, result, busy, playing, stageMode]);
 
+  // H2: borde superior REAL de la fila de botones (con «¡TAP!») e inferior de las barras, en y del mundo. Se mide al
+  // montar y cada vez que cambia el alto (Telegram, giro, teclado); la escena recoloca sus carriles con eso.
+  const rootRef = useRef(null);
+  const heroRowRef = useRef(null);
+  const barsRef = useRef(null);
+  const [hud, setHud] = useState(null);
+  const nEnemies = activeRun ? enemyBars(activeRun.state).length : 0;
+  const nHeroes = activeRun?.state?.heroes?.length ?? 0;
+  useLayoutEffect(() => {
+    const measure = () => {
+      const root = rootRef.current;
+      const stage = root && root.querySelector('[data-combat-stage]');
+      const btns = heroRowRef.current ? Array.from(heroRowRef.current.querySelectorAll('button')) : [];
+      if (!stage || !btns.length) return;
+      const h = hudToWorld({
+        stage: stage.getBoundingClientRect(),
+        buttonsTop: Math.min(...btns.map((b) => b.getBoundingClientRect().top)) - TAP_LIFT_PX,
+        barsBottom: barsRef.current ? barsRef.current.getBoundingClientRect().bottom : undefined,
+      });
+      if (!h) return;
+      setHud((p) => (p && ['bottom', 'top'].every((k) => Math.abs((p[k] ?? 0) - (h[k] ?? 0)) < 0.5) ? p : h));
+    };
+    measure();
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
+    if (ro && rootRef.current) ro.observe(rootRef.current);
+    window.addEventListener('resize', measure);
+    return () => { if (ro) ro.disconnect(); window.removeEventListener('resize', measure); };
+  }, [nEnemies, nHeroes]);
+
   if (!activeRun) { onClose(); return null; }
   const { node, state } = activeRun;
   const safeNode = node || { name: 'Combate', type: 'combat' };
@@ -136,8 +167,8 @@ export default function CombatInstancePanel({ onClose }) {
   const enemyRows = enemyBars(state, node);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col p-4 pb-6 overflow-hidden" style={{ background: KH.ink }}>
-      <CombatStage state={initialState.current} node={node} step={step} onMode={onMode} />
+    <div ref={rootRef} className="fixed inset-0 z-50 flex flex-col p-4 pb-6 overflow-hidden" style={{ background: KH.ink }}>
+      <CombatStage state={initialState.current} node={node} step={step} onMode={onMode} hud={hud} />
 
       {/* ── HUD (por encima de la escena; solo lo interactivo captura toques, el resto deja pasar el salto).
           Columna del ancho de la escena: en escritorio no se estira fuera del lienzo. ── */}
@@ -152,7 +183,7 @@ export default function CombatInstancePanel({ onClose }) {
         </div>
 
         {/* Enemigos — una barra de vida por enemigo (R54); con 3+ se reparten en dos columnas para no crecer. */}
-        <div data-enemy-bars className="mb-2 grid gap-x-3 gap-y-1"
+        <div ref={barsRef} data-enemy-bars className="mb-2 grid gap-x-3 gap-y-1"
           style={{ gridTemplateColumns: enemyRows.length > 2 ? 'repeat(2, minmax(0, 1fr))' : '1fr' }}>
           {enemyRows.map((e) => (
             <div key={e.key} data-enemy-bar data-dead={e.dead ? 'true' : 'false'} style={{ opacity: e.dead ? 0.45 : 1 }}>
@@ -165,7 +196,7 @@ export default function CombatInstancePanel({ onClose }) {
         <div className="flex-1" />
 
         {/* Fila de héroes: ícono de clase, energía y toque = habilidad. */}
-        <div className="flex justify-center items-end gap-1 mb-2">
+        <div ref={heroRowRef} data-hero-row className="flex justify-center items-end gap-1 mb-2">
           {state.heroes.map((h) => {
             const ready = h.alive && h.energy >= h.energyMax;
             return (

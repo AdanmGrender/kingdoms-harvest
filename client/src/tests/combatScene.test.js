@@ -617,3 +617,41 @@ describe('B3: tendidos de derrota (largo ×0,9, todos hacia el mismo lado)', () 
     }
   });
 });
+
+describe('H2: la escena toma el borde real del HUD y se recoloca si cambia el alto', () => {
+  it('con un borde más alto que el de la hoja no cambia nada; con uno más bajo, cada personaje sube a su carril nuevo', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.preload();
+    s.create();
+    const antes = Object.fromEntries(Object.values(s.actors).map((a) => [a.id, [a.c.x, a.c.y]]));
+    s.setHud({ bottom: 1372.5, top: 276 });          // 412×860: sin cambios visibles
+    for (const a of Object.values(s.actors)) expect([a.c.x, a.c.y], a.id).toEqual(antes[a.id]);
+    s.setHud({ bottom: 1272, top: 358.5 });          // 375×667 (hud_medidas.json)
+    const f = computeFormation(FULL.heroes, enemyList(FULL), { node: FULL_NODE, hud: { bottom: 1272, top: 358.5 } });
+    for (const b of [...f.heroes, ...f.enemies]) {
+      const a = s.actors[b.id];
+      expect([a.c.x, a.c.y], b.id).toEqual([b.cx, b.lane]);
+      expect(a.c.depth).toBe(b.lane);
+      expect(a.base.headY).toBe(b.alpha.y);
+    }
+    expect(s.actors.h1.c.y).toBeLessThanOrEqual(1272);
+  });
+  it('un borde medido antes de crear la escena ya se usa al armar la formación', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.setHud({ bottom: 1316.2, top: 320.8 });         // 360×740, llega antes de create()
+    s.preload();
+    s.create();
+    const f = computeFormation(FULL.heroes, enemyList(FULL), { node: FULL_NODE, hud: { bottom: 1316.2, top: 320.8 } });
+    expect(s.actors.h1.c.y).toBe(f.lanes.HF);
+  });
+  it('un caído se vuelve a tender en su carril nuevo', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.preload();
+    s.create();
+    s.playBeat(BEAT({ kind: 'death', targetId: 'h2' }));
+    s.setHud({ bottom: 1272, top: 358.5 });
+    const a = s.actors.h2;
+    expect(Math.abs(a.sp.angle)).toBe(90);
+    expect(a.c.y).toBeLessThanOrEqual(1272);
+  });
+});

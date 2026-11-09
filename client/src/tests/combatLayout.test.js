@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  computeFormation, enemyList, faceCoverage, groundY, lyingBox, lyingBoxes, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP, ENEMY_TOP_SOLO,
+  computeFormation, enemyList, faceCoverage, groundY, lyingBox, lyingBoxes, hudToWorld, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP, ENEMY_TOP_SOLO,
   LANE_MAX, LANE_GAP, FLOOR_MARGIN, FOOT_MARGIN, HERO_H, ROWS,
 } from '../game/combat/formation';
 import {
@@ -24,6 +24,11 @@ const inter = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h &&
 const HOJA = path.resolve(__dirname, '..', '..', '..', 'specs', 'combate_b', 'evidencia', 'hoja');
 const CALIB = JSON.parse(fs.readFileSync(path.join(HOJA, 'calibracion_suelo.json'), 'utf8'));
 const HUD = JSON.parse(fs.readFileSync(path.join(HOJA, 'hud_medidas.json'), 'utf8')).resumen;
+// Vistas de la hoja (T10.6) y las bajas que la decisión del 2026-11-09 suma a V2/V3 (H2).
+const VISTAS = ['412x860', '360x800', '1280x800'];
+const BAJAS = ['360x740', '375x667'];
+const PEOR = '360x800';   // sin medida en tiempo de ejecución, la formación usa el peor caso de las 3 vistas
+const hudDe = (vp, m) => ({ bottom: HUD.porViewport[vp].B, top: m === 1 ? HUD.porViewport[vp].T1 : HUD.porViewport[vp].TN });
 
 // Las 14 configuraciones de la matriz R24: los 13 nodos de combate reales + «sin nodo» (crypt + bruto).
 const NODES = CAMPAIGN.filter((n) => ['combat', 'wave', 'boss'].includes(n.type));
@@ -38,7 +43,7 @@ const form = (node, n, m, cls) => computeFormation(squad(n, cls), enemies(m), { 
 const label = (node) => (node ? `${node.id} (${bgArt(node)})` : 'sin nodo (crypt)');
 
 /** Verifica una formación contra R24 enmendado, V2 enmendada y los topes reales del HUD (V3). */
-function checkFormation(f, node, n, m) {
+function checkFormation(f, node, n, m, vp = PEOR) {
   const all = [...f.heroes, ...f.enemies];
   expect(f.heroes).toHaveLength(n);
   expect(f.enemies).toHaveLength(m);
@@ -69,13 +74,17 @@ function checkFormation(f, node, n, m) {
   }
   for (let i = 1; i < present.length; i++) expect(f.lanes[present[i]] - f.lanes[present[i - 1]]).toBeGreaterThanOrEqual(LANE_GAP);
   // V2: todos los carriles sobre el piso transitable de SU fondo (calibración medida) y sobre los botones reales
+  // H1: los márgenes se miden contra lo medido, no contra constantes del módulo: piso real del fondo
+  // (calibracion_suelo.json) y bordes reales del HUD de la pantalla (hud_medidas.json). Márgenes ≥ 0.
   const g = CALIB[bgArt(node)].groundY;
+  const hud = HUD.porViewport[vp];
   for (const r of present) {
-    expect(f.lanes[r], `${r} ≥ piso ${g}`).toBeGreaterThanOrEqual(g + FLOOR_MARGIN);
-    expect(f.lanes[r]).toBeLessThanOrEqual(LANE_MAX);
+    expect(f.lanes[r] - g, `${vp} ${r}: margen sobre el piso ${g}`).toBeGreaterThanOrEqual(0);
+    expect(hud.B - f.lanes[r], `${vp} ${r}: margen bajo los botones ${hud.B}`).toBeGreaterThanOrEqual(0);
   }
-  // V3: cabezas de los enemigos bajo las barras
-  for (const b of f.enemies) expect(b.y).toBeGreaterThanOrEqual(m === 1 ? ENEMY_TOP_SOLO : ENEMY_TOP);
+  // V3: cabezas (tope de la silueta) de los enemigos bajo las barras medidas
+  const T = m === 1 ? hud.T1 : hud.TN;
+  for (const b of f.enemies) expect(b.alpha.y - T, `${vp} ${b.id}: margen bajo las barras ${T}`).toBeGreaterThanOrEqual(0);
   // legibilidad: las caras de los héroes nunca quedan tapadas
   const cov = faceCoverage(f);
   for (const b of f.heroes) expect(cov[b.id], `cara de ${b.id}`).toBe(0);
@@ -324,15 +333,63 @@ describe('V2: piso calibrado por fondo (BG_GROUND_Y_FRAC = calibracion_suelo.jso
   });
 });
 
-describe('V3: topes reales del HUD (hud_medidas.json, 412×860 / 360×800 / 1280×800)', () => {
-  it('HUD_TOP = borde superior real de los botones de héroe (peor caso) y los pies quedan por encima', () => {
+describe('V3: topes reales del HUD (hud_medidas.json)', () => {
+  it('sin medida en tiempo de ejecución valen los del peor caso de las 3 vistas de la hoja', () => {
     expect(HUD_TOP).toBeLessThanOrEqual(HUD.Bmin);
     expect(HUD.Bmin - HUD_TOP).toBeLessThan(1);
     expect(LANE_MAX).toBe(HUD_TOP - FOOT_MARGIN);
-  });
-  it('las cabezas de los enemigos quedan por debajo de las barras de vida medidas', () => {
     expect(ENEMY_TOP_SOLO).toBeGreaterThanOrEqual(HUD.Tmax_1enemigo);
     expect(ENEMY_TOP).toBeGreaterThanOrEqual(HUD.Tmax_2omas);
+  });
+});
+
+describe('H2: carriles con el borde REAL de los botones y de las barras de cada pantalla (medido en tiempo de ejecución)', () => {
+  for (const vp of [...VISTAS, ...BAJAS]) {
+    it(`${vp}: matriz R24 de 280 (14 configuraciones × n 1–5 × m 1–4) y las escuadras rogue y ranger, con sus bordes medidos`, () => {
+      for (const cls of Object.values(SQUADS)) {
+        for (const node of CONFIGS) {
+          for (let n = 1; n <= 5; n++) {
+            for (let m = 1; m <= 4; m++) {
+              const f = computeFormation(squad(n, cls), enemies(m), { node, boss: !!node && isBossNode(node), hud: hudDe(vp, m) });
+              checkFormation(f, node, n, m, vp);
+            }
+          }
+        }
+      }
+    });
+  }
+  it('412×860, 360×800 y 1280×800: con su borde medido la formación es idéntica a la de siempre (nada visible cambia)', () => {
+    for (const vp of VISTAS) {
+      for (const node of CONFIGS) {
+        for (let m = 1; m <= 4; m++) {
+          const base = form(node, 5, m);
+          const conHud = computeFormation(squad(5), enemies(m), { node, boss: !!node && isBossNode(node), hud: hudDe(vp, m) });
+          expect(conHud, `${vp} ${label(node)} m${m}`).toEqual(base);
+        }
+      }
+    }
+  });
+  it('360×740 y 375×667: los héroes suben hasta quedar sobre los botones de esa pantalla', () => {
+    for (const vp of BAJAS) {
+      const f = computeFormation(squad(5), enemies(3), { node: NODES[0], hud: hudDe(vp, 3) });
+      expect(f.lanes.HF).toBeLessThanOrEqual(HUD.porViewport[vp].B);
+      expect(f.lanes.HF).toBeLessThan(form(NODES[0], 5, 3).lanes.HF);
+    }
+  });
+  it('hudToWorld: rectángulos de pantalla → y del mundo (lienzo FIT y centrado en el escenario)', () => {
+    // 360×740: escenario 360×740 (k = 740/1720), botones con «¡TAP!» desde y 566, barras hasta 138 (hud_medidas.json)
+    const h = hudToWorld({ stage: { top: 0, width: 360, height: 740 }, buttonsTop: 566, barsBottom: 138 });
+    expect(h.bottom).toBeCloseTo(566 / (740 / 1720), 6);
+    expect(h.top).toBeCloseTo(138 / (740 / 1720), 6);
+    expect(Math.abs(h.bottom - HUD.porViewport['360x740'].B)).toBeLessThan(1);
+    // 1280×800: k por el alto, el lienzo arranca arriba del escenario
+    const d = hudToWorld({ stage: { top: 0, width: 1248, height: 800 }, buttonsTop: 626 });
+    expect(Math.abs(d.bottom - HUD.porViewport['1280x800'].B)).toBeLessThan(1);
+    // escenario más alto que el lienzo (FIT por el ancho): se descuenta la franja de arriba
+    const c = hudToWorld({ stage: { top: 10, width: 412, height: 900 }, buttonsTop: 700 });
+    expect(c.bottom).toBeCloseTo((700 - (10 + (900 - 1720 * 0.5) / 2)) / 0.5, 6);
+    expect(hudToWorld({ stage: { top: 0, width: 0, height: 0 }, buttonsTop: 10 })).toBeNull();
+    expect(hudToWorld()).toBeNull();
   });
 });
 

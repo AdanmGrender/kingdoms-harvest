@@ -211,15 +211,42 @@ function enemyLo(units, floor, topLimit) {
 }
 
 /**
+ * Límites de los carriles con el HUD REAL medido en tiempo de ejecución (H2, decisión del owner del 2026-11-09):
+ * `hud.bottom` = borde superior de la fila de botones de héroe (con «¡TAP!») y `hud.top` = borde inferior de las barras
+ * de vida, en y del mundo. Sin medida valen las constantes del peor caso de la hoja (HUD_TOP, ENEMY_TOP*). Una pantalla
+ * más alta nunca baja a los héroes: el tope inferior es el menor de los dos, así 412×860, 360×800 y 1280×800 no cambian.
+ */
+export function laneLimits(hud) {
+  const bottom = hud && Number.isFinite(hud.bottom) ? Math.min(HUD_TOP, hud.bottom) : HUD_TOP;
+  const top = hud && Number.isFinite(hud.top) ? hud.top + 8 : -Infinity;
+  return { laneMax: Math.floor(bottom - FOOT_MARGIN), top1: Math.max(ENEMY_TOP_SOLO, top), topN: Math.max(ENEMY_TOP, top) };
+}
+
+/**
+ * Bordes del HUD en px de pantalla → y del mundo. El lienzo 824×1720 va en FIT y centrado dentro del escenario
+ * (`stage` = su rectángulo). `buttonsTop` y `barsBottom` en px CSS de la ventana. Devuelve { bottom?, top? } o null.
+ */
+export function hudToWorld({ stage, buttonsTop, barsBottom } = {}) {
+  if (!stage || !(stage.width > 0) || !(stage.height > 0)) return null;
+  const k = Math.min(stage.width / WORLD.w, stage.height / WORLD.h);
+  const canvasTop = stage.top + (stage.height - WORLD.h * k) / 2;
+  const out = {};
+  if (Number.isFinite(buttonsTop)) out.bottom = (buttonsTop - canvasTop) / k;
+  if (Number.isFinite(barsBottom)) out.top = (barsBottom - canvasTop) / k;
+  return Object.keys(out).length ? out : null;
+}
+
+/**
  * @param heroes   `state.heroes` (usa `slot`, `heroId`, `class`)
  * @param enemies  salida de `enemyList(state)` (usa `id`)
- * @param opts     { boss?: boolean | node, node? }  (un nodo `{type:'boss'}` también vale en `boss`)
+ * @param opts     { boss?: boolean | node, node?, hud?: { bottom?, top? } }  (un nodo `{type:'boss'}` también vale en `boss`)
  */
 export function computeFormation(heroes, enemies, opts = {}) {
   const boss = typeof opts.boss === 'object' && opts.boss ? isBossNode(opts.boss) : !!opts.boss;
   const node = opts.node || (typeof opts.boss === 'object' ? opts.boss : null);
   const ground = groundY(node);
   const floor = ground + FLOOR_MARGIN;
+  const lim = laneLimits(opts.hud);
   const H = heroRows(heroes);
   const E = enemyRows(enemies, boss, node);
   const band = enemyFootBand(node);
@@ -230,7 +257,7 @@ export function computeFormation(heroes, enemies, opts = {}) {
   // héroes: delanteros sobre los botones; traseros lo más adelante posible sin que la fila delantera les tape la cara
   const out = { HF: [], HB: [], EF: [], EB: [] };
   if (H.HF.length) {
-    lanes.HF = LANE_MAX;
+    lanes.HF = lim.laneMax;
     out.HF = H.HF.map((u, i) => place(u, H.xF[i], lanes.HF));
   }
   if (H.HB.length) {
@@ -239,7 +266,7 @@ export function computeFormation(heroes, enemies, opts = {}) {
       const ahB = Math.min(...H.HB.map((u) => u.ah));
       lanes.HB = Math.max(floor, Math.min(lanes.HF - LANE_GAP, Math.floor(topF + (1 - FACE_FRAC) * ahB)));
     } else {
-      lanes.HB = LANE_MAX; // sin nadie en los slots 1–3, la fila trasera es la de más adelante
+      lanes.HB = lim.laneMax; // sin nadie en los slots 1–3, la fila trasera es la de más adelante
     }
     out.HB = H.HB.map((u, i) => place(u, H.xB[i], lanes.HB));
   }
@@ -247,8 +274,8 @@ export function computeFormation(heroes, enemies, opts = {}) {
   // enemigos: búsqueda del carril (o par de carriles) que menos cara tapa, y a igualdad, el más cercano a los héroes
   if (E.EF.length) {
     const heroBoxes = [...out.HF, ...out.HB];
-    const below = H.HB.length ? lanes.HB : H.HF.length ? lanes.HF : LANE_MAX + LANE_GAP;
-    const topLimit = E.EB.length || E.EF.length > 1 ? ENEMY_TOP : ENEMY_TOP_SOLO;
+    const below = H.HB.length ? lanes.HB : H.HF.length ? lanes.HF : lim.laneMax + LANE_GAP;
+    const topLimit = E.EB.length || E.EF.length > 1 ? lim.topN : lim.top1;
     const hiF = below - LANE_GAP;
     const loB = E.EB.length ? enemyLo(E.EB, floor, topLimit) : null;
     const loF = Math.max(enemyLo(E.EF, floor, topLimit), loB !== null ? loB + LANE_GAP : -Infinity);

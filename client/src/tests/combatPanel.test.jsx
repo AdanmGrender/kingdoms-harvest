@@ -308,3 +308,25 @@ describe('T10.6 (hoja_visual V5, V6, V8)', () => {
     expect(screen.getByText('Guarnición')).toBeTruthy();
   });
 });
+
+describe('H2: el panel mide el borde real de los botones (con «¡TAP!») y de las barras y se lo pasa a la escena', () => {
+  it('con los rectángulos de 375×667 la escena recibe { bottom ≈ 1272, top ≈ 358 } en y del mundo', async () => {
+    const orig = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = function rect() {
+      if (this.hasAttribute && this.hasAttribute('data-combat-stage')) return { top: 0, left: 27, width: 320, height: 667, bottom: 667, right: 347 };
+      if (this.tagName === 'BUTTON' && this.closest('[data-hero-row]')) return { top: 501, left: 0, width: 58, height: 90, bottom: 591, right: 58 };
+      if (this.hasAttribute && this.hasAttribute('data-enemy-bars')) return { top: 68, left: 16, width: 343, height: 71, bottom: 139, right: 359 };
+      return { top: 0, left: 0, width: 0, height: 0, bottom: 0, right: 0 };
+    };
+    try {
+      setup(async () => ({}), [hero(1), hero(2)]);
+      await act(async () => {});
+      const last = stageProps[stageProps.length - 1];
+      const k = Math.min(320 / 824, 667 / 1720);
+      expect(last.hud.bottom).toBeCloseTo((501 - 8) / k, 6);   // «¡TAP!» asoma 8 px sobre el botón
+      expect(last.hud.top).toBeCloseTo(139 / k, 6);
+    } finally {
+      Element.prototype.getBoundingClientRect = orig;
+    }
+  });
+});
