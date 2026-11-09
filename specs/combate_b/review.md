@@ -113,3 +113,121 @@ Antes de esta revisión había cambios sin commitear en `CHANGELOG.md`, `feature
 
 ## Cambios requeridos
 Ver hallazgos 1–3. Tras los cambios: nueva review (ronda 2, lente de contrato) con la medición medium corregida y la línea de suelo por fondo verificada.
+
+---
+
+# Review — Etapa C (T10.6 carriles y hoja visual, HEAD 98757cf) · ronda 2
+
+## Veredicto
+**APPROVED** (lente de contrato: código, tests y trazabilidad; el juicio visual queda para el visual_reviewer contra `hoja_visual.md`). Los tres puntos de la ronda 1 quedan cerrados: (1) R48 salió de F7 por enmienda del owner y está documentado; (2) el piso está calibrado por fondo; (3) no queda ningún servidor escuchando. Como falta la revisión visual, no se tocan `feature_list.json` ni `CHANGELOG.md`.
+
+Commits revisados: 04692a1, 7e96559, 8e994aa, be4e216, a2458b1 (implementación y evidencia), 4ab9030 (bloqueo), 4e67df2 y 98757cf (documentación). Fuera de esta review: los tres restos sin commitear (`evidencia/fps_emulador.mjs`, `evidencia/visual/medidas_r2.json`, `evidencia/visual/medir_visual_r2.mjs`). No se tocaron.
+
+## Trazabilidad
+- **R24 enmendado** (cero intersección dentro de cada fila, `requirements.md:112`), **R25** y **R27**: `client/src/tests/combatLayout.test.js:40-95`. La matriz son 280 `it`: 13 nodos reales más «sin nodo», n = 1…5 y m = 1…4. Se repite con las escuadras rogue y ranger. R27 está en `:153-165`.
+- **V2 sobre R24**:
+  - el carril es ≥ el piso de SU fondo, leído de `calibracion_suelo.json` (`:71-75`);
+  - el pie cae en el carril (`:65`), `depth` = carril (`:66`) y los carriles van en orden con ≥ 24 de separación (`:69`);
+  - `HUD_TOP` ya no es 1440: vale 1328 (`client/src/game/combat/formation.js:24`) y el test lo ata a `hud_medidas.json` (`:327-331`).
+  - Reproducido y contrastado por separado: ver la verificación (puntos 2 a 4).
+- **R54 y V5/V6/V8/V9**: `client/src/tests/combatPanel.test.jsx:199-310`. R40 y R41 siguen en verde y `pantallasB.test.jsx` no cambió desde 91b2090 (R44).
+- **R48**: la enmienda del owner está en `requirements.md:215` y `design.md:192-193`, y la feature #27 `combate_rendimiento` figura `pending` en `feature_list.json`. No bloquea.
+- **R1, R2, R4, R51, R52, R53**: verificados de nuevo (ver abajo).
+- **R43**: los botones nuevos cumplen por estilo: 58 px de ancho y 44 de mínimo; el cierre 44×44 se comprueba en `combatPanel.test.jsx:176-186` y «Volver» ≥ 44 está medido en V8.
+- **R49**: las 18 vistas de T10.6 registran `errores: []`.
+- **R28 y R50**: su evidencia es de T11 (ver H6).
+- El resto (R3, R5–R23, R26, R29–R42, R45–R47) no cambió en esta ronda: conserva su `Cubre:` y su evidencia en T1–T12, y sus tests pasan en la suite completa.
+- Cobertura mecánica: los 54 R tienen al menos una task con `Cubre:` y evidencia.
+
+## Tasks
+- T1–T12, T10.5 y T10.6 están en `[x]`, con `Evidencia:`. El `## Bloqueado` quedó cerrado (`tasks.md:193-195`).
+- No queda ninguna `[ ]`. Algunas evidencias van en una sub-viñeta en vez de inline; es el formato ya aceptado en rondas anteriores.
+
+## Verificación ejecutada por el revisor
+1. **Suites y build:**
+   - `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null` → `Test Files  33 passed (33)`, `Tests  902 passed (902)`.
+   - `cd server && npx jest --runInBand --forceExit` → `Test Suites: 33 passed, 33 total`, `Tests: 545 passed, 545 total`.
+   - `cd client && npm run build` → `✓ built in 9.23s`, con el único aviso preexistente de chunks > 500 kB.
+   - Los 4 archivos de combate en verbose → `Tests  410 passed (410)`: combatLayout 311 (280 de la matriz), combatScene 26, combatPanel 25 y pantallasB 48.
+2. **Mutaciones.** Copié `combatLayout.test.js`, `formation.js` y `artMap.js` al scratch del revisor. La línea base da 3 fallos ajenos (no copié `public/`). Resultados:
+   - Detectadas por los tests:
+     - `HUD_TOP = 1440` → +1 (V3).
+     - piso de crypt 0,48 → 0,53 → +2.
+     - un solo piso para los 6 fondos → +93.
+     - enemigos 100 px sobre el piso → +111.
+     - delanteros todos en el centro → +226.
+     - fila EB de 4 enemigos superpuesta → +71.
+     - `depth` constante → +281.
+   - Detección débil o nula:
+     - `FLOOR_MARGIN = −60`: solo falla `:318-323`; la matriz no lo detecta.
+     - `FOOT_MARGIN = −30`: 0 fallos (H1).
+3. **Chequeo independiente.** Armé un bundle de `formation.js` con `artMap.js` (esbuild del cliente) y un script propio en el scratch. El script lee `calibracion_suelo.json`, `hud_medidas.json` y `CAMPAIGN`, y usa su propia tabla acto:tipo → fondo. Recorrió 6 escuadras (mixta, rogue, ranger, warrior, mage, paladin) × 14 × 5 × 4 = **1680 combinaciones, 0 fallos**. Comprobó:
+   - cero intersección dentro de cada fila, todo dentro de 824×1720;
+   - piso del fondo + 8 ≤ carril ≤ `Bmin` − 8;
+   - la caja de cada enemigo empieza por debajo de `Tmax`;
+   - `depth` = carril, una línea por fila, orden EB < EF < HB < HF con ≥ 24 y slots 1–3 en HF.
+4. **`SPRITE_GEOM` contra el alfa real.** Recalculé con sharp la caja con alfa > 0 de cada textura: 26/26 coinciden en W, H, l, r, t y b. Por eso el origen `oy = (b+1)/H` apoya de verdad la última fila con alfa sobre el carril, y el «pie± 0.00» de `hoja_medidas.json` no es una tautología.
+5. **Hallazgo 2 de la ronda 1: resuelto.**
+   - `client/src/game/combat/artMap.js:52-59` define 6 filas de imagen distintas, y `:62-70` las pasa al mundo con cover × 1,04 y deriva × 1,025.
+   - A mano: s = 1720/1935 × 1,04 = 0,9244. Catedral: 860 + 0,11 × 1935 × s × 1,025 = 1061,7 → 1062. Los 6 valores son iguales a `calibracion_suelo.json` (825 / 860 / 1062 / 717 / 879 / 998).
+   - La escena usa la misma transformación (`CombatScene.js:110-113`; test en `combatScene.test.js:257-264`).
+   - Abrí `evidencia/hoja/suelo/suelo_{crypt,cathedral,ashfield}.webp`: la línea está trazada sobre cada fondo real.
+6. **«Compañeros 0 px» y un contenedor por actor.**
+   - Cada actor es un `Container` con sombra y sprite (`CombatScene.js:155-171`), y los marcadores van dentro (`:444-450`).
+   - Cada tween toca solo al actor que anima o a sus hijos: respiración `:168`, embestida `:382`, retroceso `:397`, caída `:293-294`.
+   - Tests: `combatScene.test.js:233-328`. Cubren contenedor en (cx, carril), `depth` = carril y pie en el origen; idle; attack, hit, skill, KO de enemigo y de héroe: los compañeros no varían en x, y ni ángulo, y el que actúa vuelve a su sitio.
+   - Los tests previos siguen byte a byte: el bloque `:48-157` de 91b2090 es `:123-231` de HEAD. El diff solo enriquece el mock (`chain()` → `mkObj()`, `add.container`, tweens y time con estado). Son **11, no 13** (H5).
+7. **Invariantes:**
+   - `git diff 46d156d..HEAD --stat -- server shared` → vacío; `shared/gameConfig.js:1155` sigue en `engineVersion: 1`.
+   - `gameStore.js` no tiene diff (R4); `package*.json` tampoco (R51); no hay archivos borrados (R52).
+   - Barrido de R3 sobre `game/combat/*.js`, `CombatInstancePanel.jsx` y `CombatStage.jsx` buscando `Math.random`, `COMBAT`, `HERO_PASSIVE_FX`, `mitigate`, `critMult`, `shared/`, `api.` y `axios` → 0 coincidencias.
+   - Ids: en `artMap.js` solo se quitó el viejo `BG_GROUND_Y_FRAC` (0,53 × 6). Las claves de nodo, enemigo, fondo y clase, y los ids `h<slot>`/`e<i>`, no cambiaron.
+   - Phaser/React: `CombatScene.js` no importa React. El panel importa `enemyDisplayName` de `artMap.js` (`CombatInstancePanel.jsx:11`), un módulo puro sin imports, no una clase Phaser.
+   - `window.__combatGame` (`CombatStage.jsx:56,68`) existe solo con `import.meta.env.DEV`; un grep sobre `client/dist` no lo encuentra.
+8. **Higiene:**
+   - Antes y después de la review no había nada escuchando en :3001, :3002, :3003, :3101, :5173–5176 ni :5180. No levanté servidores.
+   - `git status` muestra solo los 3 restos fuera de alcance.
+
+## Hallazgos (archivo:línea)
+Ninguno bloquea. Son recomendaciones para el leader.
+- **H1. El test no ata los márgenes.** En `combatLayout.test.js:73-74` los carriles se comparan con `g + FLOOR_MARGIN` y con `LANE_MAX`, y ambos márgenes se importan del módulo bajo prueba (`formation.js:25-27`).
+  - `HUD_TOP` sí está atado a `hud_medidas.json`, pero los márgenes no: con `FOOT_MARGIN = −30` los pies quedarían 22 px bajo el borde real de los botones y ningún test fallaría.
+  - Además, `SPRITE_GEOM` solo se contrasta con el webp en W×H (`:369`). Si se regenera el arte, un cambio en la caja alfa (l, r, t, b) pasaría sin que nada falle.
+  - Propuesta: comparar directo con `HUD.Bmin` y `CALIB[...].groundY` (o exigir márgenes ≥ 0) y contrastar l, r, t, b con `hoja_alfa.json`.
+- **H2. Pantallas más bajas que las vistas obligatorias** (derivado, no medido).
+  - La pila inferior del HUD mide 174 px CSS fijos en las 3 vistas medidas: 860−686, 756−(604−22) y 800−626. El carril HF está fijo en 1320 de mundo.
+  - Cuando el lienzo queda limitado por el alto, el borde de los botones en mundo es B = 1720·(1 − 174/alto del marco):
+    - 360×740 → ≈1316: «¡TAP!» roza los pies del slot 1, ~2 px CSS.
+    - 375×667 → ≈1271: los íconos tapan ~11 px CSS de los pies de la fila delantera, ~19 px con «¡TAP!».
+    - Dentro de Telegram el marco suele ser más bajo que la pantalla.
+  - El contrato fija el peor caso en 360×800 sobre las 3 vistas obligatorias (`hoja_visual.md:3,62`), así que se cumple. Pero «en cada viewport» no vale fuera de ellas.
+  - Lo decide el owner: sumar una vista baja a la hoja, o derivar el carril HF del HUD real en runtime.
+- **H3. R11 frente a V6.**
+  - `requirements.md:53-55` dice «enemigo: se desvanece». Con T10.6 todas las unidades caen y quedan tendidas a α 0,85 (`CombatScene.js:282-295`).
+  - Es coherente con V6, pero R11 no tiene enmienda escrita, a diferencia de R24 y R48.
+  - También quedaron desactualizados `design.md:65` (fila `death`) y `design.md` §8 `:96-101` (cajas de 190×250 y tope en y 1440).
+- **H4. R54 frente a V9.**
+  - Los tests de R54 corren ahora con `node = null` (`combatPanel.test.jsx:201`) para conservar «Enemigo N».
+  - En el juego siempre hay nodo, y la barra muestra el nombre del arte dibujado (`CombatInstancePanel.jsx:24-33`). Ese camino está cubierto por `:225-233` y `:180`.
+  - Conviene anotar en R54 que «Enemigo N» solo aplica sin nodo.
+- **H5. Conteo de tests.** `tasks.md:62` dice «Los 13 tests anteriores»; son 11 y están intactos.
+- **H6. R49 y R50 se probaron antes de T10.6.**
+  - El combate a1n3 completo en v1 y v2, con red y consola, es de T11. T10.6 cambió la escena, aunque el pipeline de eventos (`eventPlanner`, `eventSource`, `v1Adapter`, `createCombatGame`) no cambió desde 91b2090.
+  - T10.6 sí repitió la consola limpia en 18 vistas, con rondas de victoria y derrota sobre la escena real.
+  - Conviene repetir `capturar_combate.mjs` antes del merge.
+- **H7. Beats de v2 sin test en la escena.** Ningún test de la escena reproduce `status`, `dot`, `heal` ni `passive` (`CombatScene.js:414-433`; los marcadores ahora van dentro del contenedor). Con `engineVersion` 1 no ocurren en producción (R23).
+- **H8. Texto superado en la hoja.** `hoja_visual.md:52-55` (2026-11-07, «R24 … No se relaja») quedó superado por `:57-64` (2026-11-08). Conviene marcarlo como superado.
+- **H9. Capturas por fondo.**
+  - La ronda 1 pedía una captura con enemigo sobre cada fondo. La línea está trazada en los 6 (`evidencia/hoja/suelo/`), pero solo hay enemigos dibujados sobre crypt, veil_gate y cathedral.
+  - Moor, ashfield y veil_marsh quedan cubiertos solo por la geometría de la matriz.
+
+### Para el visual_reviewer (no lo juzgo)
+- **Victoria.**
+  - Abrí `evidencia/hoja/412x860_victoria.webp`: el cartel, en el tercio medio, tapa al bruto caído y las cabezas de los héroes traseros (Viktor, Sombra).
+  - El «no tapa la fila de héroes» de `tasks.md:81` se refiere a la fila DOM de botones: `generar_evidencia_hoja.mjs:189-193` compara el cartel con `btns`. Además, la métrica V3 «HUD sobre siluetas» no incluye el cartel (`:147-151`).
+  - Falta decidir si el cartel cuenta como «HUD» para V3.
+- **Derrota.** Los tres delanteros tendidos se pisan entre sí: cada cuerpo ocupa ~296 de ancho con paso 280 (`CombatScene.js:248-259`). V6 no lo regula.
+- **V4.** Los tamaños están en px de mundo: 40 y 60 de 824, o sea 20 y 30 px CSS a 412 de ancho. La cabecera de la hoja usa el mundo como unidad (`hoja_visual.md:3`).
+
+## Cambios requeridos
+Ninguno. H1–H9 son recomendaciones; el leader decide si se hacen antes del merge. La feature sigue `in_progress` hasta el veredicto del visual_reviewer.
