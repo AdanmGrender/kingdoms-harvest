@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  computeFormation, enemyList, faceCoverage, groundY, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP, ENEMY_TOP_SOLO,
+  computeFormation, enemyList, faceCoverage, groundY, lyingBox, lyingBoxes, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP, ENEMY_TOP_SOLO,
   LANE_MAX, LANE_GAP, FLOOR_MARGIN, FOOT_MARGIN, HERO_H, ROWS,
 } from '../game/combat/formation';
 import {
@@ -372,5 +372,43 @@ describe('Geometría de las texturas (SPRITE_GEOM)', () => {
   it('arte desconocido → geometría del fallback (sin lanzar)', () => {
     expect(spriteGeom('enemy', 'zzz', 'hit')).toEqual(spriteGeom('enemy', FALLBACK.enemy, 'idle'));
     expect(spriteGeom('hero', 'zzz')).toEqual(spriteGeom('hero', FALLBACK.hero, 'idle'));
+  });
+});
+
+describe('B3: tendidos (V6) — largo ×0,9, todos hacia el mismo lado, solape ≤ 10 % dentro de la fila', () => {
+  it('en las 14 configuraciones, con 1–5 héroes y 1–4 enemigos y las tres escuadras', () => {
+    for (const cls of Object.values(SQUADS)) {
+      for (const node of CONFIGS) {
+        for (let n = 1; n <= 5; n++) {
+          for (let m = 1; m <= 4; m++) {
+            const f = form(node, n, m, cls);
+            const rows = {};
+            const lyings = lyingBoxes(f);
+            for (const b of [...f.heroes, ...f.enemies]) {
+              const L = lyings[b.id];
+              expect(L.w).toBeCloseTo(lyingBox(b).w, 10);                   // conserva el largo ×0,9
+              (rows[b.row] = rows[b.row] || []).push(L);
+            }
+            for (const list of Object.values(rows)) {
+              expect(new Set(list.map((L) => L.dir)).size).toBe(1);          // todos hacia el mismo lado
+              for (const L of list) {
+                expect(L.x).toBeGreaterThanOrEqual(0);
+                expect(L.x + L.w).toBeLessThanOrEqual(WORLD.w);
+              }
+              for (let i = 0; i < list.length; i++) {
+                for (let j = i + 1; j < list.length; j++) {
+                  const [a, b] = [list[i], list[j]];
+                  const ov = Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x));
+                  expect(ov / Math.min(a.w, b.w), `${label(node)} ${a.id}×${b.id}`).toBeLessThanOrEqual(0.1);
+                  // sin cabeza sobre cabeza: la cabeza de uno no cae dentro del otro cuerpo
+                  expect(a.head > b.x && a.head < b.x + b.w, `${a.id} cabeza sobre ${b.id}`).toBe(false);
+                  expect(b.head > a.x && b.head < a.x + a.w, `${b.id} cabeza sobre ${a.id}`).toBe(false);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   });
 });

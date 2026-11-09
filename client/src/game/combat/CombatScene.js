@@ -9,7 +9,7 @@
  */
 import Phaser from 'phaser';
 import { collectAssetKeys, textureKey, spriteGeom, bgCoverScale, BG_DRIFT, HERO_ART, ENEMY_ART } from './artMap';
-import { computeFormation, enemyList, WORLD } from './formation';
+import { computeFormation, enemyList, lyingBoxes, WORLD, DEAD_FLAT, DEAD_LEN, fallDir } from './formation';
 import { createRoundQueue } from './eventPlanner';
 import { QUALITY, DEFAULT_QUALITY } from './combatQuality';
 
@@ -25,7 +25,6 @@ export const FLOAT_POP_MS = 120;  // pop 1,4 → 1 en 120 ms
 export const FLOAT_POP_FROM = 1.4;
 export const FLOAT_HEAD_GAP = 12; // el número arranca 12 px por encima de la cabeza (tope de la silueta)
 export const DEAD_ALPHA = 0.85;   // V6: tendido, nunca fantasma
-export const DEAD_FLAT = 0.55;    // V6: tendido en el suelo visto en 2,5D: el grosor del cuerpo se aplana al 55 %
 const DEAD_TINT = 0x9a9a9a;       // V6: apagado (con WebGL además se desatura con una matriz de color)
 export const FALL_MS = 450;       // V6: caída ≤600 ms
 const LUNGE_PX = 40;
@@ -152,6 +151,7 @@ export default class CombatScene extends Phaser.Scene {
     const boss = !!(this.node && (this.node.isBoss || this.node.type === 'boss'));
     const f = computeFormation(this.state0.heroes || [], enemies, { boss, node: this.node });
     this.formation = f;
+    this.lying = lyingBoxes(f);
     const mk = (b, kind) => {
       const c = this.add.container(b.cx, b.lane).setDepth(b.depth);
       const sh = this.add.image(0, 6, 'shadow');
@@ -256,18 +256,22 @@ export default class CombatScene extends Phaser.Scene {
     }
   }
 
-  /** Pose tendida (V6), en coordenadas del contenedor: cae hacia el centro, apoyada sobre su carril y centrada en x. */
+  /**
+   * Pose tendida (V6, B3), en coordenadas del contenedor: todos los de un bando caen hacia el mismo lado (fallDir), con
+   * el largo al 90 % y el grosor aplanado, apoyados sobre su carril y centrados en su x sin salirse del lienzo
+   * (la caja de `lyingBoxes` de formation.js: si dos de la misma fila se pisan, se separan lo justo).
+   */
   deadPose(a) {
     const g = spriteGeom(a.kind, a.art, a.kind === 'enemy' ? 'hit' : 'idle');
     const s = a.base.h / g.H;
-    const dir = a.base.x >= W / 2 ? -1 : 1;     // +1 = gira a la derecha (la cabeza queda a la derecha)
+    const dir = fallDir(a.kind);                 // +1 = la cabeza queda a la derecha
     // con el pie como pivote, el eje X local (el ancho del cuerpo) queda en vertical: se aplana (DEAD_FLAT) y se sube
     // lo que sobresale por debajo del carril
     const below = (dir > 0 ? (g.r + 1 - g.ox * g.W) : (g.ox * g.W - g.l)) * s * DEAD_FLAT;
-    // tendido, el cuerpo ocupa alphaH a lo ancho: se centra en su x, sin salirse del lienzo
-    const half = a.base.alphaH / 2;
-    const cx = Math.min(W - half - 4, Math.max(half + 4, a.base.x));
-    return { angle: dir * 90, x: cx - a.base.x - dir * half, y: -below, scaleX: s * DEAD_FLAT, scaleY: s };
+    const half = ((g.b - g.t + 1) * s * DEAD_LEN) / 2;
+    const L = this.lying && this.lying[a.id];
+    const cx = L ? L.cx : Math.min(W - half - 4, Math.max(half + 4, a.base.x));
+    return { angle: dir * 90, x: cx - a.base.x - dir * half, y: -below, scaleX: s * DEAD_FLAT, scaleY: s * DEAD_LEN };
   }
 
   desaturate(a) {

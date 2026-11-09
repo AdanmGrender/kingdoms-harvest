@@ -244,6 +244,54 @@ export function computeFormation(heroes, enemies, opts = {}) {
   };
 }
 
+// ── tendidos (V6, B3 de la revisión visual ronda 2) ─────────────────────────
+export const DEAD_FLAT = 0.55;  // el grosor del cuerpo tendido se aplana al 55 % (suelo visto en 2,5D)
+export const DEAD_LEN = 0.9;    // y el largo, al 90 %: tres delanteros tendidos caben en 824 con hueco
+/** Todos los de un bando caen hacia el mismo lado: héroes con la cabeza a la izquierda, enemigos a la derecha. */
+export const fallDir = (kind) => (kind === 'hero' ? -1 : 1);
+
+/**
+ * Caja (mundo) de una unidad tendida sobre su carril: largo = alto de su silueta × DEAD_LEN, centrado en su x sin
+ * salirse del lienzo; grosor = ancho de su silueta × DEAD_FLAT, apoyado en el carril. `head` = extremo de la cabeza.
+ */
+export function lyingBox(b) {
+  const kind = b.side === 'e' ? 'enemy' : 'hero';
+  const g = spriteGeom(kind, b.art, kind === 'enemy' ? 'hit' : 'idle');
+  const s = b.h / g.H;
+  const len = (g.b - g.t + 1) * s * DEAD_LEN;
+  const thick = (g.r - g.l + 1) * s * DEAD_FLAT;
+  const half = len / 2;
+  const cx = Math.min(WORLD.w - half - 4, Math.max(half + 4, b.cx));
+  const dir = fallDir(kind);
+  return { id: b.id, row: b.row, x: cx - half, y: b.lane - thick, w: len, h: thick, cx, dir, head: dir < 0 ? cx - half : cx + half };
+}
+
+/**
+ * Cajas tendidas de toda la formación (como si cayeran todos): dentro de cada fila, si dos cuerpos se pisan se separan
+ * lo justo (hueco ≥ 4) sin salirse del lienzo, conservando el largo ×0,9. Devuelve { [id]: caja }.
+ */
+export function lyingBoxes(f) {
+  const rows = {};
+  for (const b of [...(f.heroes || []), ...(f.enemies || [])]) (rows[b.row] = rows[b.row] || []).push(lyingBox(b));
+  const out = {};
+  for (const list of Object.values(rows)) {
+    list.sort((p, q) => p.cx - q.cx);
+    const move = (L, dx) => { L.cx += dx; L.x += dx; L.head += dx; };
+    for (let it = 0; it < 6; it++) {
+      for (let i = 1; i < list.length; i++) {
+        const need = list[i - 1].x + list[i - 1].w + 4 - list[i].x;
+        if (need > 0) { move(list[i - 1], -need / 2); move(list[i], need / 2); }
+      }
+      for (const L of list) {
+        if (L.x < 4) move(L, 4 - L.x);
+        if (L.x + L.w > WORLD.w - 4) move(L, WORLD.w - 4 - L.x - L.w);
+      }
+    }
+    for (const L of list) out[L.id] = L;
+  }
+  return out;
+}
+
 /** Cobertura de cara de cada unidad por las filas de delante (para medir la legibilidad de una formación). */
 export function faceCoverage(f) {
   const all = [...f.heroes, ...f.enemies];

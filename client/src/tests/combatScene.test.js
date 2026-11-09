@@ -17,7 +17,7 @@ import CombatScene, {
 import { createCombatGame, buildCombatConfig } from '../game/combat/createCombatGame';
 import { QUALITY } from '../game/combat/combatQuality';
 import { spriteGeom, bgCoverScale, BG_DRIFT } from '../game/combat/artMap';
-import { computeFormation, enemyList } from '../game/combat/formation';
+import { computeFormation, enemyList, lyingBoxes, DEAD_LEN, DEAD_FLAT } from '../game/combat/formation';
 
 // Objetos de juego falsos con transformación (x, y, ángulo, escala, origen…) para poder medir quién se mueve.
 const DIMS = (key) => {
@@ -383,10 +383,12 @@ describe('V6: muerte', () => {
       expect(a.sp.tint).not.toBeNull();
       expect(a.sp.y).toBeLessThanOrEqual(0);          // el cuerpo queda por encima del carril, no hundido
       expect([a.c.x, a.c.y]).toEqual([a.base.x, a.base.y]);
-      // tendido dentro del lienzo
-      const cx = a.base.x + a.sp.x + Math.sign(a.sp.angle) * a.base.alphaH / 2;
-      expect(cx - a.base.alphaH / 2).toBeGreaterThanOrEqual(0);
-      expect(cx + a.base.alphaH / 2).toBeLessThanOrEqual(824);
+      // tendido dentro del lienzo (largo = alto de la silueta de la pose tendida × DEAD_LEN, el pie como pivote)
+      const g = spriteGeom(a.kind, a.art, a.kind === 'enemy' ? 'hit' : 'idle');
+      const half = ((g.b - g.t + 1) * a.sp.scaleY) / 2;
+      const cx = a.base.x + a.sp.x + Math.sign(a.sp.angle) * half;
+      expect(cx - half).toBeGreaterThanOrEqual(0);
+      expect(cx + half).toBeLessThanOrEqual(824);
       // no vuelve a levantarse con un restore pendiente
       s.restoreLater(a, 10);
       expect(Math.abs(a.sp.angle)).toBe(90);
@@ -482,5 +484,36 @@ describe('R31 en combate: ninguna pose cae al marcador (bug de la ronda 2)', () 
     }
     for (const fn of pending.splice(0)) fn();
     noPlaceholder(s, 'al volver a idle');
+  });
+});
+
+describe('B3: tendidos de derrota (largo ×0,9, todos hacia el mismo lado)', () => {
+  it('los 5 héroes caen con la cabeza a la izquierda, ocupan la caja de lyingBox y no se pisan dentro de la fila', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.preload();
+    s.create();
+    for (const id of ['h1', 'h2', 'h3', 'h4', 'h5']) s.playBeat(BEAT({ kind: 'death', targetId: id }));
+    const f = computeFormation(FULL.heroes, enemyList(FULL), { node: FULL_NODE });
+    const rows = { HF: [], HB: [] };
+    for (const b of f.heroes) {
+      const a = s.actors[b.id];
+      expect(a.sp.angle, b.id).toBe(-90);
+      const g = spriteGeom('hero', b.art, 'idle');
+      const len = (g.b - g.t + 1) * a.sp.scaleY;
+      const thick = (g.r - g.l + 1) * a.sp.scaleX;
+      expect(len / ((g.b - g.t + 1) * (b.h / g.H))).toBeCloseTo(DEAD_LEN, 10);
+      expect(thick / ((g.r - g.l + 1) * (b.h / g.H))).toBeCloseTo(DEAD_FLAT, 10);
+      // del pie (pivote) hacia la izquierda: x de la caja tendida = pivote − largo
+      const x0 = a.base.x + a.sp.x - len;
+      const L = lyingBoxes(f)[b.id];
+      expect(Math.abs(x0 - L.x), b.id).toBeLessThan(1e-6);
+      rows[b.row].push(L);
+    }
+    for (const list of Object.values(rows)) {
+      for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+        const ov = Math.max(0, Math.min(list[i].x + list[i].w, list[j].x + list[j].w) - Math.max(list[i].x, list[j].x));
+        expect(ov / Math.min(list[i].w, list[j].w), `${list[i].id}×${list[j].id}`).toBeLessThanOrEqual(0.1);
+      }
+    }
   });
 });
