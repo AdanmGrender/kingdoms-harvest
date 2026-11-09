@@ -2,9 +2,10 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  computeFormation, enemyList, faceCoverage, groundY, lyingBox, lyingBoxes, hudToWorld, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP, ENEMY_TOP_SOLO,
-  LANE_MAX, LANE_GAP, FLOOR_MARGIN, FOOT_MARGIN, HERO_H, ROWS,
+  computeFormation, enemyList, faceCoverage, groundY, lyingBox, lyingBoxes, hudToWorld, laneLimits, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP,
+  ENEMY_TOP_SOLO, LANE_MAX, LANE_GAP, FLOOR_MARGIN, FOOT_MARGIN, HERO_H, ROWS, BANNER_ZONE_BOTTOM,
 } from '../game/combat/formation';
+import { MAX_ASPECT } from '../utils/viewport';
 import {
   heroArt, enemyArt, bgArt, isBossNode, collectAssetKeys, textureUrl, spriteGeom, bgImageRowToWorldY, bgCoverScale,
   bgImageColToWorldX, FALLBACK, HERO_ART, ENEMY_ART, BG_ART, BG_GROUND_Y_FRAC, BG_FLOOR_IMAGE_FRAC, BG_FLOOR_OBSTACLES,
@@ -28,7 +29,10 @@ const HUD = JSON.parse(fs.readFileSync(path.join(HOJA, 'hud_medidas.json'), 'utf
 const VISTAS = ['412x860', '360x800', '1280x800'];
 const BAJAS = ['360x740', '375x667'];
 const PEOR = '360x800';   // sin medida en tiempo de ejecución, la formación usa el peor caso de las 3 vistas
-const hudDe = (vp, m) => ({ bottom: HUD.porViewport[vp].B, top: m === 1 ? HUD.porViewport[vp].T1 : HUD.porViewport[vp].TN });
+// Marco del panel (espejo de --kh-frame-h: alto ≤ 2,1 × ancho, centrado): el escenario lo llena y el lienzo va en FIT.
+const marco = (vp) => { const [vw, vh] = vp.split('x').map(Number); const h = Math.min(vh, vw * MAX_ASPECT); return { w: vw, h, top: (vh - h) / 2 }; };
+const zonaDe = (vp) => { const fr = marco(vp); return hudToWorld({ stage: { top: 0, width: fr.w, height: fr.h }, viewH: fr.h }).zoneBottom; };
+const hudDe = (vp, m) => ({ bottom: HUD.porViewport[vp].B, top: m === 1 ? HUD.porViewport[vp].T1 : HUD.porViewport[vp].TN, zoneBottom: zonaDe(vp) });
 
 // Las 14 configuraciones de la matriz R24: los 13 nodos de combate reales + «sin nodo» (crypt + bruto).
 const NODES = CAMPAIGN.filter((n) => ['combat', 'wave', 'boss'].includes(n.type));
@@ -369,6 +373,25 @@ describe('H2: carriles con el borde REAL de los botones y de las barras de cada 
       }
     }
   });
+  it('la franja del cartel (B1) se mide en el marco del panel: el peor caso de las 3 vistas cabe en BANNER_ZONE_BOTTOM', () => {
+    expect(marco('360x800')).toEqual({ w: 360, h: 756, top: 22 });       // tope de aspecto 2,1: bandas de 22 arriba y abajo
+    expect(marco('412x860').top).toBe(0);
+    const z = Object.fromEntries(VISTAS.map((vp) => [vp, zonaDe(vp)]));
+    expect(z['412x860']).toBeCloseTo(654.8, 1);
+    expect(z['1280x800']).toBeCloseTo(660.05, 1);
+    expect(z['360x800']).toBeCloseTo(663.26, 1);
+    for (const vp of VISTAS) expect(z[vp], vp).toBeLessThanOrEqual(BANNER_ZONE_BOTTOM);
+    expect(BANNER_ZONE_BOTTOM - Math.max(...Object.values(z))).toBeLessThan(1);
+  });
+  it('el carril va al px de mundo más cercano: el ruido de subpíxel de la medida no mueve a nadie', () => {
+    // 360×800 medido con DPR 2 (generar_evidencia_hoja.mjs) y con DPR 3 (medir_hud.mjs): el mismo 1320 que sin medida
+    for (const bottom of [1327.5056, 1328.1, HUD_TOP]) expect(laneLimits({ bottom }).laneMax, `${bottom}`).toBe(LANE_MAX);
+    // 375×667: 1271,95 → 1264, y el margen sobre los botones sigue ≥ 7,5
+    const l = laneLimits({ bottom: 1271.949 });
+    expect(l.laneMax).toBe(1264);
+    expect(1271.949 - l.laneMax).toBeGreaterThanOrEqual(FOOT_MARGIN - 0.5);
+    expect(laneLimits().laneMax).toBe(LANE_MAX);
+  });
   it('360×740 y 375×667: los héroes suben hasta quedar sobre los botones de esa pantalla', () => {
     for (const vp of BAJAS) {
       const f = computeFormation(squad(5), enemies(3), { node: NODES[0], hud: hudDe(vp, 3) });
@@ -388,6 +411,13 @@ describe('H2: carriles con el borde REAL de los botones y de las barras de cada 
     // escenario más alto que el lienzo (FIT por el ancho): se descuenta la franja de arriba
     const c = hudToWorld({ stage: { top: 10, width: 412, height: 900 }, buttonsTop: 700 });
     expect(c.bottom).toBeCloseTo((700 - (10 + (900 - 1720 * 0.5) / 2)) / 0.5, 6);
+    // en el marco del panel: 360×800 → marco de 756 desde y 22; el lienzo arranca 2,27 px más abajo dentro del marco
+    const m8 = hudToWorld({ stage: { top: 0, width: 360, height: 756 }, buttonsTop: 604 - 22, barsBottom: 123 - 22, viewH: 756 });
+    const k8 = 360 / 824;
+    const top8 = (756 - 1720 * k8) / 2;
+    expect(m8.bottom).toBeCloseTo((582 - top8) / k8, 6);
+    expect(Math.abs(m8.bottom - HUD.porViewport['360x800'].B)).toBeLessThan(1.5);   // botonesTopCss va redondeado al px
+    expect(m8.zoneBottom).toBeCloseTo((0.34 * 756 + 35 - top8) / k8, 6);
     expect(hudToWorld({ stage: { top: 0, width: 0, height: 0 }, buttonsTop: 10 })).toBeNull();
     expect(hudToWorld()).toBeNull();
   });

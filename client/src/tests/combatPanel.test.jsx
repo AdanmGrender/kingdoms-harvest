@@ -336,3 +336,61 @@ describe('H2: el panel mide el borde real de los botones (con «¡TAP!») y de l
     }
   });
 });
+
+describe('V8 (B1/B2): el cartel se coloca en el MARCO del panel y con su caja de maquetación', () => {
+  it('360×800 (marco de 756 desde y 22), derrota con el bruto de pie: top relativo al marco, alto 68 aunque la entrada lo achique, sin cortar la cara', async () => {
+    const { computeFormation, enemyList, hudToWorld } = await import('../game/combat/formation');
+    const { placeResultBanner, silhouettesCss, worldToCss } = await import('../game/combat/resultLayout');
+    const FR = { left: 0, top: 22, width: 360, height: 756 };
+    const r = (x, y, w, h) => ({ left: x, top: y, width: w, height: h, right: x + w, bottom: y + h });
+    const origRect = Element.prototype.getBoundingClientRect;
+    const desc = (k) => Object.getOwnPropertyDescriptor(HTMLElement.prototype, k);
+    const orig = { offsetLeft: desc('offsetLeft'), offsetWidth: desc('offsetWidth'), offsetHeight: desc('offsetHeight') };
+    const isBanner = (el) => el.hasAttribute && el.hasAttribute('data-outcome');
+    Element.prototype.getBoundingClientRect = function rect() {
+      if (this.hasAttribute('data-combat-panel')) return r(FR.left, FR.top, FR.width, FR.height);
+      if (this.hasAttribute('data-combat-stage')) return r(0, 22, 360, 756);
+      if (this.hasAttribute('data-hero-row')) return r(16, 612, 328, 90);
+      if (this.tagName === 'BUTTON' && this.closest('[data-hero-row]')) return r(16, 612, 58, 90);
+      if (this.hasAttribute('data-enemy-bars')) return r(16, 90, 328, 33);
+      if (this.hasAttribute('data-result-banner')) return r(0, 279, 360, 68);
+      // la entrada `animate-grow` (escala 0,8) achica el rectángulo transformado al montar: no debe contar
+      if (isBanner(this)) return r(24 + 312 * 0.1, 279 - 27.2, 312 * 0.8, 68 * 0.8);
+      return r(0, 0, 0, 0);
+    };
+    Object.defineProperty(HTMLElement.prototype, 'offsetLeft', { configurable: true, get() { return isBanner(this) ? 24 : 0; } });
+    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', { configurable: true, get() { return isBanner(this) ? 312 : 0; } });
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', { configurable: true, get() { return isBanner(this) ? 68 : 0; } });
+    try {
+      stageMode = 'unavailable';
+      const dead = [1, 2, 3, 4, 5].map((i) => hero(i, 0, { alive: false, hp: 0 }));
+      const { container } = setup(async () => ({ result: 'defeat' }), dead, 100);
+      await click('Avanzar ronda');
+      await act(async () => {});
+      const wrap = container.querySelector('[data-result-banner]');
+      const cy = parseFloat(wrap.style.top);
+      expect(wrap.style.top).toMatch(/px$/);
+      // lo mismo que calcula el panel, todo en el marco (restando y 22)
+      const st = useGameStore.getState().activeRun.state;
+      const hud = hudToWorld({ stage: { left: 0, top: 0, width: 360, height: 756 }, buttonsTop: 612 - 8 - 22, barsBottom: 123 - 22, viewH: 756 });
+      const f = computeFormation(st.heroes, enemyList(st), { node: NODE, boss: false, hud });
+      const alive = { e0: true, h1: false, h2: false, h3: false, h4: false, h5: false };
+      const sil = silhouettesCss(f, alive, worldToCss({ left: 0, top: 0, width: 360, height: 756 }));
+      const want = placeResultBanner({
+        outcome: 'defeat', viewH: 756, sil,
+        banner: { x0: 24, x1: 336, h: 68, shadow: 4 },
+        avoid: [{ x: 16, y: 612 - 8 - 22, w: 328, h: 98 }, { x: 16, y: 90 - 22, w: 328, h: 33 }],
+      });
+      expect(cy).toBe(want.cy);
+      expect(wrap.getAttribute('data-ok')).toBe('true');
+      // y no corta la cara del bruto (con la respiración): el cartel de 68 queda entero debajo o encima de ella
+      const face = sil.find((x) => x.id === 'e0').face;
+      expect(cy - 34 >= face.y + face.h || cy + 34 + 4 <= face.y).toBe(true);
+      expect(cy).toBeGreaterThanOrEqual(756 / 3);
+      expect(cy).toBeLessThanOrEqual((2 * 756) / 3);
+    } finally {
+      Element.prototype.getBoundingClientRect = origRect;
+      for (const [k, d] of Object.entries(orig)) if (d) Object.defineProperty(HTMLElement.prototype, k, d);
+    }
+  });
+});
