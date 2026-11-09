@@ -53,6 +53,7 @@ export default function CombatStage({ state, node, step, onMode, className = '' 
           onRoundDone: (info) => EventBridge.emit('combat:round-done', info),
         });
         gameRef.current = game;
+        if (import.meta.env.DEV) window.__combatGame = game;   // solo desarrollo: las mediciones de evidencia leen la escena
         EventBridge.emit('combat:open', {});
         opened = true;
         change('ready');
@@ -64,6 +65,7 @@ export default function CombatStage({ state, node, step, onMode, className = '' 
     return () => {
       cancelled = true;
       sceneRef.current = null;
+      if (import.meta.env.DEV && window.__combatGame === game) window.__combatGame = null;
       if (game) {
         try { game.destroy(true); } catch (e) { console.warn('[combat] destroy falló:', e && e.message); }
         gameRef.current = null;

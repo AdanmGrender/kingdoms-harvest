@@ -8,6 +8,7 @@ import { KH } from '../ui/kitPieces';
 import EmberField from '../fx/EmberField';
 import EventBridge from '../../game/EventBridge';
 import CombatStage from './CombatStage';
+import { enemyDisplayName } from '../../game/combat/artMap';
 
 // combate_b: la escena (Phaser, CombatStage) dibuja fondo, enemigos y héroes; este panel es solo el HUD.
 // Retratos (Q6): ícono de clase del kit B, sin arte del set viejo (R42).
@@ -19,15 +20,20 @@ const IDLE_ADVANCE_MS = 2000;   // auto-avance sin escena (o antes de la primera
 const SCENE_FALLBACK_MS = 4000; // R19b: la escena no responde
 
 // R54: filas de vida desde `state.enemies` (v2) o `[state.enemy]` (v1), en el orden recibido.
-export function enemyBars(state) {
+// V9: con `node`, el nombre de cada barra es el del enemigo que la escena dibuja (todos usan el mismo arte), no el del servidor.
+export function enemyBars(state, node = null) {
   const list = Array.isArray(state?.enemies) && state.enemies.length ? state.enemies : [state?.enemy].filter(Boolean);
+  const drawn = node ? enemyDisplayName(node) : null;
   return list.map((e, i) => {
     const hp = Math.max(0, Number(e.hp) || 0);
     const max = Number(e.maxHp) > 0 ? Number(e.maxHp) : 0;
-    const name = typeof e.name === 'string' && e.name.trim() ? e.name.trim() : `Enemigo ${i + 1}`;
+    const name = drawn || (typeof e.name === 'string' && e.name.trim() ? e.name.trim() : `Enemigo ${i + 1}`);
     return { key: typeof e.id === 'string' ? e.id : `e${i}`, name, dead: hp <= 0, pct: max ? Math.min(100, Math.round((hp / max) * 100)) : 0 };
   });
 }
+
+// V5: nombre corto de héroe para el botón (sin «…»): primer nombre, sin título ni epíteto.
+export const shortHeroName = (name) => String(name || '').split(',')[0].trim().split(/\s+/)[0] || '';
 
 export default function CombatInstancePanel({ onClose }) {
   const activeRun = useGameStore((s) => s.activeRun);
@@ -124,9 +130,10 @@ export default function CombatInstancePanel({ onClose }) {
 
   if (!activeRun) { onClose(); return null; }
   const { node, state } = activeRun;
+  const safeNode = node || { name: 'Combate', type: 'combat' };
 
   const close = () => { clearActiveRun(); onClose(); };
-  const enemyRows = enemyBars(state);
+  const enemyRows = enemyBars(state, node);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col p-4 pb-6 overflow-hidden" style={{ background: KH.ink }}>
@@ -136,8 +143,8 @@ export default function CombatInstancePanel({ onClose }) {
       <div className="relative flex flex-col flex-1 min-h-0 pointer-events-none" style={{ zIndex: 10 }}>
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-kh-bone font-bold flex items-center gap-2 font-display">
-            <SpriteIcon name={node.type === 'boss' ? 'skull' : 'sword'} size={28} />
-            {node.name} · ronda {state.round}/{state.maxRounds}
+            <SpriteIcon name={safeNode.type === 'boss' ? 'skull' : 'sword'} size={28} />
+            {safeNode.name} · ronda {state.round}/{state.maxRounds}
           </h2>
           <button type="button" aria-label="Cerrar" onClick={close} className="kh-close pointer-events-auto" style={{ minWidth: 44, minHeight: 44 }} />
         </div>
@@ -147,7 +154,7 @@ export default function CombatInstancePanel({ onClose }) {
           style={{ gridTemplateColumns: enemyRows.length > 2 ? 'repeat(2, minmax(0, 1fr))' : '1fr' }}>
           {enemyRows.map((e) => (
             <div key={e.key} data-enemy-bar data-dead={e.dead ? 'true' : 'false'} style={{ opacity: e.dead ? 0.45 : 1 }}>
-              <div className="text-kh-bone-dim text-xs mb-0.5 truncate leading-tight">{e.name}</div>
+              <div className="text-kh-bone-dim mb-0.5 leading-tight whitespace-nowrap" style={{ fontSize: 12 }}>{e.name}</div>
               <Bar value={e.pct} tone="seal" label={`Vida de ${e.name}`} />
             </div>
           ))}
@@ -162,7 +169,7 @@ export default function CombatInstancePanel({ onClose }) {
             return (
               <button key={h.slot} onClick={() => doStep({ type: 'skill', slot: h.slot })}
                 disabled={!ready || busy || !!result}
-                className="relative flex flex-col items-center pointer-events-auto" style={{ width: 56, minHeight: 44 }}>
+                className="relative flex flex-col items-center pointer-events-auto" style={{ width: 58, minHeight: 44 }}>
                 {ready && (
                   <span className="absolute -top-2 z-10 text-xs font-bold text-kh-brass-light px-1 rounded"
                     style={{ left: '50%', transform: 'translateX(-50%)', backgroundColor: KH.ink }}>¡TAP!</span>
@@ -178,30 +185,21 @@ export default function CombatInstancePanel({ onClose }) {
                     <SpriteIcon name={h.alive ? classIcon(h) : 'skull'} size={28} />
                   </span>
                 </div>
-                <div className="mt-1 w-full">
+                <div className="mt-1 w-full" data-hero-bar data-dead={h.alive ? 'false' : 'true'} style={{ opacity: h.alive ? 1 : 0.45 }}>
                   <Bar value={h.energy} tone={ready ? 'ember' : 'macula'} label={`Energía de ${h.name}`} />
                 </div>
-                <span className="text-xs text-kh-bone font-bold truncate w-full text-center leading-tight"
-                  style={{ textShadow: '1px 1px 2px #000, -1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000' }}>{h.name}</span>
+                <span className="text-kh-bone font-bold w-full text-center leading-tight whitespace-nowrap"
+                  style={{ fontSize: 11, opacity: h.alive ? 1 : 0.55, textShadow: '1px 1px 2px #000, -1px 1px 2px #000, 1px -1px 2px #000, -1px -1px 2px #000' }}>{shortHeroName(h.name)}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Avanzar / resultado */}
-        <div className="pointer-events-auto">
-          {result ? (
-            <ResultBanner
-              outcome={result === 'victory' ? 'victory' : 'defeat'}
-              title={result === 'victory' ? '¡Victoria!' : 'Derrota'}
-              onClose={close}
-              closeLabel="Volver"
-            />
-          ) : (
-            <Button variant="primary" onClick={() => doStep({ type: 'advance' })} disabled={busy || playing} className="w-full">
-              {busy ? '...' : 'Avanzar ronda'}
-            </Button>
-          )}
+        {/* Avanzar (con resultado queda su hueco, invisible, para que la fila de héroes no salte) */}
+        <div className="pointer-events-auto" style={result ? { visibility: 'hidden' } : undefined} aria-hidden={result ? 'true' : undefined}>
+          <Button variant="primary" onClick={() => doStep({ type: 'advance' })} disabled={busy || playing || !!result} className="w-full">
+            {busy ? '...' : 'Avanzar ronda'}
+          </Button>
         </div>
       </div>
 
@@ -210,6 +208,21 @@ export default function CombatInstancePanel({ onClose }) {
       {result === 'defeat' && (
         <div data-defeat-veil className="absolute inset-0 pointer-events-none animate-fade-in"
           style={{ zIndex: 20, background: 'radial-gradient(circle at 50% 45%, rgba(179,40,33,0.35), transparent 70%)' }} />
+      )}
+
+      {/* V8: el cartel va centrado en el tercio medio (≤ 40 % del alto), sin tapar la fila de héroes ni los botones */}
+      {result && (
+        <div data-result-layer className="absolute inset-x-0 flex items-center justify-center px-6 pointer-events-none"
+          style={{ top: '33.333%', height: '33.334%', zIndex: 30 }}>
+          <div className="w-full pointer-events-auto" style={{ maxWidth: 360, maxHeight: '100%' }}>
+            <ResultBanner
+              outcome={result === 'victory' ? 'victory' : 'defeat'}
+              title={result === 'victory' ? '¡Victoria!' : 'Derrota'}
+              onClose={close}
+              closeLabel="Volver"
+            />
+          </div>
+        </div>
       )}
     </div>
   );

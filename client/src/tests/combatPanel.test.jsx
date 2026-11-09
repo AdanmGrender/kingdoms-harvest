@@ -15,7 +15,7 @@ vi.mock('../components/campaign/CombatStage', async () => {
   };
 });
 
-import CombatInstancePanel, { classIcon } from '../components/campaign/CombatInstancePanel';
+import CombatInstancePanel, { classIcon, shortHeroName } from '../components/campaign/CombatInstancePanel';
 import useGameStore from '../store/gameStore';
 import EventBridge from '../game/EventBridge';
 import { getSprite } from '../utils/spriteMap';
@@ -177,7 +177,7 @@ describe('R40/R42: fila de héroes', () => {
     stageMode = 'unavailable';
     const { container, onClose } = setup(async () => ({}));
     expect(screen.getByText(/Cripta · ronda 1\/10/)).toBeTruthy();
-    expect(screen.getByLabelText('Vida de Enemigo 1')).toBeTruthy();
+    expect(screen.getByLabelText('Vida de Bruto')).toBeTruthy();
     const close = container.querySelector('.kh-close');
     expect(close.style.minWidth).toBe('44px');
     expect(close.style.minHeight).toBe('44px');
@@ -198,9 +198,9 @@ describe('cierre con ronda en curso', () => {
 
 describe('R54: una barra de vida por enemigo', () => {
   const en = (id, hp, extra = {}) => ({ id, hp, maxHp: 100, dps: 5, ...extra });
-  const runWith = (st) => {
+  const runWith = (st, node = null) => {
     useGameStore.setState({
-      activeRun: { runId: 1, node: NODE, state: { round: 1, maxRounds: 10, heroes: [hero(1)], ...st } },
+      activeRun: { runId: 1, node, state: { round: 1, maxRounds: 10, heroes: [hero(1)], ...st } },
       stepInstance: vi.fn(async () => ({})), clearActiveRun: vi.fn(), addNotification: vi.fn(),
     });
     return render(<CombatInstancePanel onClose={vi.fn()} />);
@@ -220,6 +220,16 @@ describe('R54: una barra de vida por enemigo', () => {
     const b = bars(container);
     expect(b.map((x) => x.getAttribute('aria-label'))).toEqual(['Vida de Bruto', 'Vida de Enemigo 2', 'Vida de Voz del Velo']);
     expect(b.map((x) => x.getAttribute('aria-valuenow'))).toEqual(['100', '25', '60']);
+  });
+
+  it('V9: nombres de barras unificados con lo que se dibuja (ej. veil_gate)', () => {
+    const vgNode = { id: 'a2n10', type: 'combat', name: 'Puerta del Velo' };
+    const { container } = runWith(
+      { enemies: [en('e0', 100, { name: 'Enemigo A' }), en('e1', 50, { name: 'Enemigo B' })] },
+      vgNode
+    );
+    const b = bars(container);
+    expect(b.map((x) => x.getAttribute('aria-label'))).toEqual(['Vida de Voz del Velo', 'Vida de Voz del Velo']);
   });
 
   it('4 enemigos: cuatro barras; el muerto queda atenuado, en 0 y sin desaparecer', () => {
@@ -249,5 +259,52 @@ describe('R54: una barra de vida por enemigo', () => {
   it('enemies vacío cae a state.enemy', () => {
     const { container } = runWith({ enemies: [], enemy: en('e0', 55) });
     expect(bars(container)).toHaveLength(1);
+  });
+});
+
+describe('T10.6 (hoja_visual V5, V6, V8)', () => {
+  // eslint-disable-next-line no-undef
+  const { HEROES } = require('../../../shared/gameConfig.js');
+
+  it('V5: el botón muestra el nombre de pila de cada héroe, sin «…» y a 11 px', () => {
+    for (const h of Object.values(HEROES)) {
+      const short = shortHeroName(h.name);
+      expect(short.length, h.name).toBeGreaterThan(1);
+      expect(short.length, h.name).toBeLessThanOrEqual(10);
+      expect(short).not.toMatch(/…|\.\.\./);
+      expect(h.name.startsWith(short), h.name).toBe(true);
+    }
+    expect(shortHeroName('Guarnición')).toBe('Guarnición');
+    const { container } = setup(async () => ({}), [hero(1, 0, { name: 'Serafina, Vestal de Guerra' })]);
+    const label = Array.from(container.querySelectorAll('button span')).find((s) => s.textContent === 'Serafina');
+    expect(label).toBeTruthy();
+    expect(label.className).not.toMatch(/truncate/);
+    expect(label.style.fontSize).toBe('11px');
+    expect(label.className).toMatch(/whitespace-nowrap/);
+  });
+
+  it('V6: la barra del héroe caído se atenúa', () => {
+    const { container } = setup(async () => ({}), [hero(1), hero(2, 0, { alive: false, hp: 0 })]);
+    const rows = Array.from(container.querySelectorAll('[data-hero-bar]'));
+    expect(rows.map((r) => r.getAttribute('data-dead'))).toEqual(['false', 'true']);
+    expect(rows[1].style.opacity).toBe('0.45');
+  });
+
+  it('V8: el cartel va en el tercio medio y la fila de héroes y su hueco de «Avanzar» siguen en su sitio', async () => {
+    stageMode = 'unavailable';
+    const { container } = setup(async () => ({ result: 'victory' }));
+    await click('Avanzar ronda');
+    const layer = container.querySelector('[data-result-layer]');
+    expect(layer).not.toBeNull();
+    expect(layer.style.top).toBe('33.333%');
+    expect(layer.style.height).toBe('33.334%');
+    expect(layer.querySelector('[data-outcome="victory"]')).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Volver' })).toBeTruthy();
+    // el botón «Avanzar» deja su hueco invisible (la fila de héroes no salta) y no se puede pulsar
+    expect(screen.queryByRole('button', { name: 'Avanzar ronda' })).toBeNull();
+    const adv = Array.from(container.querySelectorAll('button')).find((b) => b.textContent === 'Avanzar ronda');
+    expect(adv.disabled).toBe(true);
+    expect(adv.parentElement.style.visibility).toBe('hidden');
+    expect(screen.getByText('Guarnición')).toBeTruthy();
   });
 });
