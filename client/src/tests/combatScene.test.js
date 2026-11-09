@@ -16,7 +16,7 @@ import CombatScene, {
 } from '../game/combat/CombatScene';
 import { createCombatGame, buildCombatConfig } from '../game/combat/createCombatGame';
 import { QUALITY } from '../game/combat/combatQuality';
-import { spriteGeom, bgCoverScale, BG_DRIFT, ATTACK_FX_FRAME } from '../game/combat/artMap';
+import { spriteGeom, bgCoverScale, BG_DRIFT, ATTACK_FX, ATTACK_FX_FRAME } from '../game/combat/artMap';
 import { computeFormation, enemyList, lyingBoxes, DEAD_LEN, DEAD_FLAT } from '../game/combat/formation';
 
 // Objetos de juego falsos con transformación (x, y, ángulo, escala, origen…) para poder medir quién se mueve.
@@ -645,6 +645,24 @@ describe('B5: el tirador dispara al enemigo, sin fogonazo sobre compañeros', ()
         const shot = s.lastShot;
         const tgt = s.actors[e.id];
         expect(shot.to).toEqual({ x: tgt.base.x, y: tgt.base.y - tgt.base.alphaH * 0.55 });
+        // la silueta medida (envolvente de la pose, volteada, escalada e inclinada sobre el pie) no sale del lienzo, salvo
+        // lo que haría falta correr la boca del arma sobre un compañero: entonces la boca queda pegada a esa silueta
+        const ga = spriteGeom('hero', 'ranger', 'attack');
+        const fw = r.sp.width;
+        const ang = (r.sp.angle * Math.PI) / 180;
+        const X = ATTACK_FX.ranger.hull.map(([u, v]) => {
+          const lx = ((r.sp.flipX ? fw - u : u) - r.sp.originX * fw) * r.sp.scaleX;
+          const ly = (v - r.sp.originY * ga.H) * r.sp.scaleY;
+          return r.c.x + r.sp.x + lx * Math.cos(ang) - ly * Math.sin(ang);
+        });
+        const fuera = Math.max(0, Math.max(...X) - 820, 4 - Math.min(...X));
+        if (fuera > 1e-6) {
+          const pegada = f.heroes.some((h) => h.id !== 'h3' && shot.muzzle.y > h.alpha.y && shot.muzzle.y < h.alpha.y + h.alpha.h
+            && (Math.abs(shot.muzzle.x - (h.alpha.x + h.alpha.w)) <= 1.5 || Math.abs(shot.muzzle.x - h.alpha.x) <= 1.5));
+          expect(pegada, `${node.id} → ${e.id}: ${fuera.toFixed(1)} fuera del lienzo sin que lo frene un compañero`).toBe(true);
+        }
+        // y dispara desde su sitio: ningún tween mueve su contenedor
+        expect(log.tweenList.filter((t) => t.targets[0] === r.c && t.props.includes('x')), `${node.id} → ${e.id}`).toHaveLength(0);
         // la estela sale de la boca y apunta al objetivo; el proyectil termina en el objetivo
         const tracer = log.objects.slice(from).find((o) => o.texture === 'tracer');
         expect([tracer.x, tracer.y]).toEqual([shot.muzzle.x, shot.muzzle.y]);
@@ -660,6 +678,7 @@ describe('B5: el tirador dispara al enemigo, sin fogonazo sobre compañeros', ()
         for (const fn of pending.splice(0)) fn();
         expect(r.sp.texture).toBe('hero:ranger:idle');          // de vuelta a idle, con la textura entera
         expect(r.sp.frameName).toBeUndefined();
+        expect(r.sp.x).toBe(0);                                 // y el sprite, en su sitio dentro del contenedor
         expect(r.sp.angle).toBe(0);
       }
     }

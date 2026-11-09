@@ -9,7 +9,7 @@ import { MAX_ASPECT } from '../utils/viewport';
 import {
   heroArt, enemyArt, bgArt, isBossNode, collectAssetKeys, textureUrl, spriteGeom, bgImageRowToWorldY, bgCoverScale,
   bgImageColToWorldX, FALLBACK, HERO_ART, ENEMY_ART, BG_ART, BG_GROUND_Y_FRAC, BG_FLOOR_IMAGE_FRAC, BG_FLOOR_OBSTACLES,
-  SPRITE_GEOM, BG_IMAGE,
+  SPRITE_GEOM, BG_IMAGE, ATTACK_FX,
 } from '../game/combat/artMap';
 
 // shared/ es CommonJS fuera de la raíz de Vite: se lee solo en el test.
@@ -556,6 +556,21 @@ describe('H1: los datos de geometría están atados a sus mediciones', () => {
       const m = ALFA[`${kind === 'hero' ? 'heroes' : 'enemies'}/${art}_${pose}`];
       const g = spriteGeom(kind, art, pose);
       expect([g.W, g.H, g.l, g.r, g.t, g.b, g.pl, g.pr], key).toEqual([m.W, m.H, m.l, m.r, m.t, m.b, m.pl, m.pr]);
+    }
+  });
+  it('ATTACK_FX: el cuadro del tirador termina en la boca del arma y su envolvente = hoja_alfa.json (`casco`)', () => {
+    for (const [art, fx] of Object.entries(ATTACK_FX)) {
+      const m = ALFA[`heroes/${art}_attack`];
+      expect(fx.crop, art).toEqual([0, 0, fx.muzzle[0], m.H]);
+      expect(fx.hull, art).toEqual(m.casco);
+      // la envolvente cabe en el cuadro y llega a la boca del arma
+      for (const [u, v] of fx.hull) {
+        expect(u).toBeGreaterThanOrEqual(0);
+        expect(u).toBeLessThanOrEqual(fx.crop[2]);
+        expect(v).toBeGreaterThanOrEqual(0);
+        expect(v).toBeLessThanOrEqual(m.H);
+      }
+      expect(Math.max(...fx.hull.map(([u]) => u))).toBe(fx.muzzle[0]);
     }
   });
 });

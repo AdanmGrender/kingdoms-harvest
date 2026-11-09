@@ -125,9 +125,16 @@ export const SPRITE_GEOM = {
 // pintados a la derecha de la boca del arma. La escena usa un cuadro de la textura que termina en la boca (`crop`:
 // x, y, ancho, alto en px de la textura; NO un setCrop, que Phaser espeja al voltear y deja ver el lado del fogonazo
 // en lugar del cuerpo) y dibuja su propio disparo desde `muzzle` (px de la textura, sin voltear) hasta el objetivo.
+// `hull`: envolvente convexa de la silueta visible (alfa > 128) dentro de ese cuadro, en px de la textura
+// (medir_alfa.cjs → hoja_alfa.json, `casco`): con ella la escena mantiene dentro del lienzo al tirador inclinado.
 export const ATTACK_FX_FRAME = 'sin_fogonazo';
 export const ATTACK_FX = {
-  ranger: { crop: [0, 0, 533, 640], muzzle: [533, 184] },
+  ranger: {
+    crop: [0, 0, 533, 640], muzzle: [533, 184],
+    hull: [[0, 510], [65, 100], [66, 96], [67, 93], [71, 87], [78, 80], [81, 78], [85, 76], [91, 74], [168, 51], [174, 50],
+      [186, 50], [343, 88], [533, 140], [533, 194], [363, 617], [362, 619], [360, 620], [354, 622], [350, 623], [344, 624],
+      [333, 624], [319, 623], [91, 602], [15, 594], [7, 593], [1, 591], [0, 590]],
+  },
 };
 
 /**

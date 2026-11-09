@@ -308,11 +308,64 @@ export default class CombatScene extends Phaser.Scene {
    */
   clearMuzzle(a, flip) {
     const sign = (FACING[a.kind] > 0) !== !!flip ? -1 : 1;
-    const mates = Object.values(this.actors).filter((o) => o !== a && o.kind === a.kind && !o.dead);
-    const over = (p) => mates.some((o) => Math.abs(p.x - o.base.x) < o.base.alphaW / 2 && p.y > o.base.headY && p.y < o.base.y);
+    const over = (p) => this.matesUnder(a, p).length > 0;
+    a.sp.x = 0;
     for (let deg = Math.abs(a.sp.angle); deg <= AIM_MAX_DEG && over(this.muzzleWorld(a)); deg += 3) {
       a.sp.setAngle(sign * Math.min(AIM_MAX_DEG, deg + 3));
     }
+  }
+
+  /** Compañeros (de pie) de `a` cuya silueta tiene encima el punto `p` del mundo. */
+  matesUnder(a, p) {
+    return Object.values(this.actors).filter((o) => o !== a && o.kind === a.kind && !o.dead
+      && Math.abs(p.x - o.base.x) < o.base.alphaW / 2 && p.y > o.base.headY && p.y < o.base.y);
+  }
+
+  /** Bordes en x (mundo) de la silueta de la pose actual, con volteo, escala y giro sobre el pie y sin corrimiento. */
+  silhouetteX(a) {
+    const key = a.sp.texture && a.sp.texture.key !== undefined ? a.sp.texture.key : a.sp.texture;
+    const m = /^(hero|enemy):([a-z_]+):([a-z]+)$/.exec(String(key));
+    if (!m) return null;
+    const g = spriteGeom(m[1], m[2], m[3]);
+    const fw = a.sp.width || g.W;
+    const fx = m[1] === 'hero' && m[3] === 'attack' ? ATTACK_FX[m[2]] : null;
+    // el tirador: envolvente medida de su silueta (la esquina de la caja alfa inclinada queda lejos del dibujo)
+    const pts = fx && fx.hull && fw === fx.crop[2] ? fx.hull
+      : [[g.l, g.t], [Math.min(g.r + 1, fw), g.t], [g.l, g.b + 1], [Math.min(g.r + 1, fw), g.b + 1]];
+    const sx = Math.abs(a.sp.scaleX);
+    const sy = Math.abs(a.sp.scaleY);
+    const r = (a.sp.angle * Math.PI) / 180;
+    const xs = pts.map(([u, v]) => {
+      const lx = ((a.sp.flipX ? fw - u : u) - a.sp.originX * fw) * sx;
+      const ly = (v - a.sp.originY * g.H) * sy;
+      return a.c.x + lx * Math.cos(r) - ly * Math.sin(r);
+    });
+    return { lo: Math.min(...xs), hi: Math.max(...xs) };
+  }
+
+  /**
+   * La silueta de la pose actual no sale del lienzo: si una pose más ancha o inclinada asomaría por un borde (el tirador
+   * de la derecha inclinado hasta 30°), el sprite se corre dentro de su contenedor lo justo. Al tirador no se lo corre
+   * tanto que la boca del arma quede sobre un compañero (B5 manda): se queda pegado a la silueta de ese compañero.
+   * Vuelve a 0 con la pose de reposo.
+   */
+  keepInside(a) {
+    a.sp.x = 0;
+    const s = this.silhouetteX(a);
+    if (!s) return;
+    const e = 4;
+    let dx = s.hi > W - e ? W - e - s.hi : s.lo < e ? e - s.lo : 0;
+    if (dx !== 0 && ATTACK_FX[a.art] && a.sp.width === ATTACK_FX[a.art].crop[2]) {
+      const m = this.muzzleWorld(a);
+      for (const o of Object.values(this.actors)) {
+        if (o === a || o.kind !== a.kind || o.dead || !(m.y > o.base.headY && m.y < o.base.y)) continue;
+        const x0 = o.base.x - o.base.alphaW / 2;
+        const x1 = o.base.x + o.base.alphaW / 2;
+        if (dx < 0 && m.x >= x1) dx = Math.max(dx, x1 + 1 - m.x);
+        if (dx > 0 && m.x <= x0) dx = Math.min(dx, x0 - 1 - m.x);
+      }
+    }
+    a.sp.x = dx;
   }
 
   /** V7 (B5): el disparo va de la boca del arma al pecho del objetivo: proyectil, estela y fogonazo en la boca. */
@@ -504,6 +557,7 @@ export default class CombatScene extends Phaser.Scene {
       if (a.dead) return;
       this.setPose(a, 'idle', false);
       a.sp.setAngle(0);
+      a.sp.x = 0;
     });
   }
 
@@ -532,9 +586,11 @@ export default class CombatScene extends Phaser.Scene {
           if (target) {
             actor.sp.setAngle(this.aimAngle(actor, target, flip));
             if (ATTACK_FX[actor.art]) this.clearMuzzle(actor, flip);
+            this.keepInside(actor);
             this.lastShot = this.shoot(actor, target);
           }
-          if (!this.reduced && target) {
+          // el tirador dispara desde su sitio (embestir correría la boca del arma sobre la fila de atrás)
+          if (!this.reduced && target && !ATTACK_FX[actor.art]) {
             const dir = Math.sign(target.base.x - actor.base.x) || 1;
             this.tweens.add({ targets: actor.c, x: actor.base.x + dir * LUNGE_PX, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
           }
