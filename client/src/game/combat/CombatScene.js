@@ -16,6 +16,11 @@ import { QUALITY, DEFAULT_QUALITY } from './combatQuality';
 const { w: W, h: H } = WORLD;
 const FONT = "'IM Fell English SC', 'IM Fell English', serif";
 const toInt = (hex) => parseInt(String(hex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+// Caja real de un texto flotante (origen en el borde inferior central, con la escala del momento), en el mundo.
+const floatBox = (o) => {
+  const hw = (o.width * Math.abs(o.scaleX || 1)) / 2;
+  return { x0: o.x - hw, x1: o.x + hw, y0: o.y - o.height * Math.abs(o.scaleY || 1), y1: o.y };
+};
 // V4 (enmienda Last Asylum + decisión del owner del 2026-11-09): tamaños en px de PANTALLA (CSS), no de mundo.
 export const FLOAT_NORMAL = 40;   // 36–44 px CSS en daño normal…
 export const FLOAT_CRIT = 60;     // …56–64 px CSS en crítico
@@ -25,6 +30,7 @@ export const FLOAT_MS = 800;      // …en ≤800 ms
 export const FLOAT_POP_MS = 120;  // pop 1,4 → 1 en 120 ms
 export const FLOAT_POP_FROM = 1.4;
 export const FLOAT_HEAD_GAP = 6;  // el número arranca 6 px CSS por encima de la cabeza (tope de la silueta)
+export const FLOAT_EDGE = 8;      // y dentro del lienzo, a 8 px CSS de sus bordes
 export const DEAD_ALPHA = 0.85;   // V6: tendido, nunca fantasma
 const DEAD_TINT = 0x9a9a9a;       // V6: apagado (con WebGL además se desatura con una matriz de color)
 export const FALL_MS = 450;       // V6: caída ≤600 ms
@@ -419,46 +425,55 @@ export default class CombatScene extends Phaser.Scene {
 
   /**
    * Daño/texto flotante (V4): `css` = tamaño en px de pantalla. Pop 1,4→1 en 120 ms; sube 60 px CSS; se desvanece y
-   * desaparece a los 800 ms. (x, y) es el borde inferior central del texto, en el mundo.
+   * desaparece a los 800 ms. (x, y) es el borde inferior central del texto, en el mundo. `place(t)`, si viene, decide la
+   * posición con el tamaño REAL del texto (ya con el pop) antes de que arranquen las animaciones.
    */
-  float(x, y, text, color, css = FLOAT_NORMAL) {
+  float(x, y, text, color, css = FLOAT_NORMAL, place = null) {
     const k = this.cssPerWorld();
     const size = Math.round(css / k);
     const t = this.add.text(x, y, String(text), {
       fontFamily: FONT, fontSize: `${size}px`, color: color || '#e6dcc3', stroke: '#120a07', strokeThickness: Math.max(4, Math.round(size / 8)),
     }).setOrigin(0.5, 1).setDepth(2700).setScale(FLOAT_POP_FROM);
     t.cssSize = css;
+    if (place) { const p = place(t); t.setPosition(p.x, p.y); }
+    t.spawnX = t.x;
+    t.spawnY = t.y;
     this.tweens.add({ targets: t, scale: 1, duration: FLOAT_POP_MS, ease: 'Quad.easeOut' });
-    this.tweens.add({ targets: t, y: y - FLOAT_RISE / k, duration: FLOAT_MS, ease: 'Cubic.easeOut' });
+    this.tweens.add({ targets: t, y: t.spawnY - FLOAT_RISE / k, duration: FLOAT_MS, ease: 'Cubic.easeOut' });
     this.tweens.add({ targets: t, alpha: 0, duration: FLOAT_MS * 0.4, delay: FLOAT_MS * 0.6, onComplete: () => t.destroy() });
     return t;
   }
 
   /**
    * Flotante SOBRE LA CABEZA del actor (nunca sobre la cara = 35 % superior de la silueta): su borde inferior arranca
-   * FLOAT_HEAD_GAP px CSS por encima del tope de la silueta. Si el actor ya tiene un número a la vista, el nuevo arranca
-   * 4 px CSS por encima del borde superior REAL de ese número (su alto con la escala del momento): nunca se pisan.
+   * FLOAT_HEAD_GAP px CSS por encima del tope de la silueta. Si el actor ya tiene números a la vista, el nuevo se apila
+   * 4 px CSS por encima del borde superior REAL (con la escala del momento) de todos los que tiene debajo: nunca se
+   * pisan, ni al nacer ni después (todos suben lo mismo con una curva que frena, así que el más nuevo, que va arriba,
+   * es el más rápido y se aleja). Si apilado ya no cabe en el lienzo, va en una columna al lado, desde la cabeza y sin
+   * cruzarse con ninguna otra; si tampoco cabe al lado, se queda en la pila aunque asome por arriba, nunca encima de otro.
    */
   floatAt(a, text, color, crit = false) {
     const css = crit ? FLOAT_CRIT : FLOAT_NORMAL;
     const k = this.cssPerWorld();
     const gap = FLOAT_STACK_GAP / k;
-    a.floats = (a.floats || []).filter((t) => t.active !== false && t.alpha > 0.02);
+    const edge = FLOAT_EDGE / k;
+    a.floats = (a.floats || []).filter((o) => o.active !== false && o.alpha > 0.02);
+    const live = a.floats.map(floatBox);
     const prev = a.floats[a.floats.length - 1];
-    if (!prev) a.floatLeft = -Infinity;                   // pila nueva: primera columna, sobre la cabeza
     const head = a.base.headY - FLOAT_HEAD_GAP / k;
-    const top = (t) => t.y - t.height * Math.abs(t.scaleY || 1);
-    const halfW = (t) => (t.width * Math.max(1, Math.abs(t.scaleX || 1))) / 2;
-    let y = prev ? top(prev) - gap : head;
-    let x = prev ? prev.x : Math.min(W - 70, Math.max(70, a.base.x));
-    if (prev && y - (css / k) * 1.25 * FLOAT_POP_FROM < 8 / k) {
-      // sin sitio arriba: columna nueva a la derecha de todo lo que sigue a la vista, otra vez desde la cabeza
-      a.floatLeft = Math.max(...a.floats.map((o) => o.x + halfW(o))) + gap;
-      y = head;
-    }
-    const t = this.float(x, y, text, color, css);
-    x = Math.max(t.x, a.floatLeft + (t.width * FLOAT_POP_FROM) / 2);
-    t.x = Math.min(W - 8 - (t.width * FLOAT_POP_FROM) / 2, x);
+    const t = this.float(a.base.x, head, text, color, css, (txt) => {
+      const hw = (txt.width * Math.abs(txt.scaleX || 1)) / 2;
+      const h = txt.height * Math.abs(txt.scaleY || 1);
+      const clampX = (x) => Math.min(W - edge - hw, Math.max(edge + hw, x));
+      const crosses = (x, b) => x - hw - gap < b.x1 && b.x0 < x + hw + gap;
+      const x1 = clampX(prev ? prev.x : a.base.x);
+      const y1 = Math.min(head, ...live.filter((b) => crosses(x1, b)).map((b) => b.y0 - gap));
+      if (!live.length || y1 - h >= edge) return { x: x1, y: y1 };
+      const side = [clampX(Math.max(...live.map((b) => b.x1)) + gap + hw), clampX(Math.min(...live.map((b) => b.x0)) - gap - hw)]
+        .filter((x) => !live.some((b) => crosses(x, b)))
+        .sort((p, q) => Math.abs(p - a.base.x) - Math.abs(q - a.base.x));
+      return side.length ? { x: side[0], y: head } : { x: x1, y: y1 };
+    });
     a.floats.push(t);
     return t;
   }

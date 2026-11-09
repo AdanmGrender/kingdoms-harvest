@@ -353,15 +353,15 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
       expect(css(t2), `${cssW}`).toBeGreaterThanOrEqual(56);
       expect(css(t2), `${cssW}`).toBeLessThanOrEqual(64);
       expect(t1.originY).toBe(1);                                         // se coloca el borde inferior
-      expect(t1.y0).toBeCloseTo(a.base.headY - FLOAT_HEAD_GAP / k, 6);     // sobre la cabeza, nunca sobre la cara
-      expect(t1.y0).toBeLessThan(a.base.headY);
+      expect(t1.spawnY).toBeCloseTo(a.base.headY - FLOAT_HEAD_GAP / k, 6); // sobre la cabeza, nunca sobre la cara
+      expect(t1.spawnY).toBeLessThan(a.base.headY);
       expect(t1.scaleX).toBe(1.4);
       const tw = log.tweenList.slice(from).filter((t) => t.targets[0] === t1);
       const pop = tw.find((t) => t.props.includes('scale'));
       const rise = tw.find((t) => t.props.includes('y'));
       const fade = tw.find((t) => t.props.includes('alpha'));
       expect([pop.cfg.scale, pop.cfg.duration]).toEqual([1, 120]);
-      expect((t1.y0 - rise.cfg.y) * k).toBeCloseTo(60, 6);
+      expect((t1.spawnY - rise.cfg.y) * k).toBeCloseTo(60, 6);
       expect(rise.cfg.duration).toBe(800);
       expect((fade.cfg.delay || 0) + fade.cfg.duration).toBeLessThanOrEqual(800);
     }
@@ -375,10 +375,10 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
     s.tweens.add = (cfg) => { log.tweenList.push({ targets: [cfg.targets], cfg }); return { stop() {} }; }; // sin aplicar: todos a la vez
     const a = s.actors.e0;
     const ts = [s.floatAt(a, 12, '#fff'), s.floatAt(a, 96, '#fff', true), s.floatAt(a, 7, '#fff'), s.floatAt(a, 55, '#fff', true), s.floatAt(a, 81, '#fff')];
-    const rect = (t) => ({ x0: t.x - (t.width * t.scaleX) / 2, x1: t.x + (t.width * t.scaleX) / 2, y0: t.y0 - t.height * t.scaleY, y1: t.y0 });
+    const rect = (t) => ({ x0: t.spawnX - (t.width * t.scaleX) / 2, x1: t.spawnX + (t.width * t.scaleX) / 2, y0: t.spawnY - t.height * t.scaleY, y1: t.spawnY });
     // mientras haya sitio arriba, cada uno arranca 4 px CSS sobre el borde superior real (con el pop 1,4) del anterior
-    expect(ts[1].y0).toBeCloseTo(rect(ts[0]).y0 - FLOAT_STACK_GAP / k, 6);
-    expect(ts[2].y0).toBeCloseTo(rect(ts[1]).y0 - FLOAT_STACK_GAP / k, 6);
+    expect(ts[1].spawnY).toBeCloseTo(rect(ts[0]).y0 - FLOAT_STACK_GAP / k, 6);
+    expect(ts[2].spawnY).toBeCloseTo(rect(ts[1]).y0 - FLOAT_STACK_GAP / k, 6);
     // nunca se pisan (si no queda sitio arriba, columna nueva al lado)
     for (let i = 0; i < ts.length; i++) {
       for (let j = i + 1; j < ts.length; j++) {
@@ -392,7 +392,98 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
     // un número que ya se fue no empuja al siguiente: vuelve a arrancar sobre la cabeza
     for (const t of ts) t.destroy();
     const t5 = s.floatAt(a, 3, '#fff');
-    expect(t5.y0).toBeCloseTo(a.base.headY - FLOAT_HEAD_GAP / k, 6);
+    expect(t5.spawnY).toBeCloseTo(a.base.headY - FLOAT_HEAD_GAP / k, 6);
+  });
+  // Ráfagas y golpes escalonados en las 5 pantallas de la hoja (ancho CSS del lienzo), sobre el bruto (el común más
+  // alto), el jefe y los carroñeros: con la curva de la escena (pop Quad.easeOut 1,4→1 en 120 ms, subida Cubic.easeOut
+  // de 60 px CSS en 800 ms, desvanecido desde 480 ms) se comprueba cuadro a cuadro que nunca se pisan.
+  const SOLO = { heroes: FULL.heroes, enemies: [{ id: 'e0', hp: 100, maxHp: 100 }] };
+  const ESCENAS = [['bruto', SOLO, { id: 'a1n3', type: 'combat', act: 1 }], ['jefe', SOLO, { id: 'a1n9', type: 'boss', act: 1, isBoss: true }], ['carroñero', FULL, FULL_NODE]];
+  const ANCHOS = [412, 383.2, 360, 354.5, 319.5];
+  const box = (t) => ({ x0: t.x - (t.width * t.scaleX) / 2, x1: t.x + (t.width * t.scaleX) / 2, y0: t.y - t.height * t.scaleY, y1: t.y });
+  const pisan = (p, q, g = 0) => p.x0 < q.x1 + g && q.x0 < p.x1 + g && p.y0 < q.y1 + g && q.y0 < p.y1 + g;
+  // estado de un flotante a los `ms` de nacer, como lo deja la escena
+  const en = (t, ms, k) => {
+    const u = Math.min(1, ms / 800);
+    const p = Math.min(1, ms / 120);
+    t.y = t.spawnY - (60 / k) * (1 - (1 - u) ** 3);
+    t.scaleX = t.scaleY = 1.4 - 0.4 * (p * (2 - p));
+    t.alpha = ms < 480 ? 1 : Math.max(0, 1 - (ms - 480) / 320);
+    if (ms >= 800) t.active = false;
+  };
+  function escenario(cssW, state, node) {
+    const { s } = fakeScene({ state, node, cssW });
+    s.preload();
+    s.create();
+    s.tweens.add = () => ({ stop() {} });   // la simulación mueve los textos a mano
+    return s;
+  }
+  function correr(s, a, golpes, k) {
+    // golpes: [ms, texto, crítico]; devuelve los flotantes con su hora de nacimiento
+    const vivos = [];
+    for (const [ms, txt, crit] of golpes) {
+      for (const v of vivos) en(v.t, ms - v.ms, k);
+      vivos.push({ t: s.floatAt(a, txt, '#fff', crit), ms });
+    }
+    return vivos;
+  }
+  function sinPisarse(vivos, k, msg) {
+    const fin = Math.max(...vivos.map((v) => v.ms)) + 800;
+    for (let now = vivos[0].ms; now <= fin; now += 5) {
+      const act = vivos.filter((v) => v.ms <= now && now - v.ms < 800);
+      for (const v of act) en(v.t, now - v.ms, k);
+      for (let i = 0; i < act.length; i++) {
+        for (let j = i + 1; j < act.length; j++) {
+          expect(pisan(box(act[i].t), box(act[j].t)), `${msg} a +${now} ms: ${act[i].t.text} × ${act[j].t.text}`).toBe(false);
+        }
+      }
+    }
+  }
+  it('ráfagas simultáneas (normal, crítico y textos largos) en las 5 pantallas: arrancan sobre la cabeza y nunca se pisan', () => {
+    const RAFAGAS = [
+      [[0, 37, false], [0, '96!', true], [0, 52, false]],
+      [[0, '¡Crítico!', false], [0, '96!', true]],
+      [[0, 12, false], [0, '96!', true], [0, 7, false], [0, '55!', true], [0, 81, false]],
+      [[0, 'Sangrado', false], [0, 'Esquiva', false], [0, 41, false]],
+    ];
+    for (const cssW of ANCHOS) {
+      const k = cssW / 824;
+      for (const [nombre, state, node] of ESCENAS) {
+        for (const rafaga of RAFAGAS) {
+          const s = escenario(cssW, state, node);
+          const a = s.actors.e0;
+          const vivos = correr(s, a, rafaga, k);
+          const msg = `${cssW} ${nombre} ${rafaga.map((g) => g[1]).join(' ')}`;
+          for (const { t } of vivos) {
+            expect(t.spawnY, msg).toBeLessThanOrEqual(a.base.headY - FLOAT_HEAD_GAP / k + 1e-6);   // nunca sobre la cara
+            expect(t.spawnX - (t.width * 1.4) / 2, msg).toBeGreaterThanOrEqual(-1e-6);
+            expect(t.spawnX + (t.width * 1.4) / 2, msg).toBeLessThanOrEqual(824 + 1e-6);
+          }
+          // el primero de la pila arranca sobre la cabeza y el segundo, si cabe arriba, 4 px CSS sobre el borde real del primero
+          expect(vivos[0].t.spawnY, msg).toBeCloseTo(a.base.headY - FLOAT_HEAD_GAP / k, 6);
+          sinPisarse(vivos, k, msg);
+        }
+      }
+    }
+  });
+  it('golpes escalonados como en el combate (cada 250 ms, y cada 120 ms comprimidos): se apilan sobre el alto real del anterior y nunca se pisan', () => {
+    for (const cssW of ANCHOS) {
+      const k = cssW / 824;
+      for (const [nombre, state, node] of ESCENAS) {
+        for (const paso of [250, 120]) {
+          const s = escenario(cssW, state, node);
+          const a = s.actors.e0;
+          const golpes = [[0, 37, false], [paso, '¡Crítico!', false], [paso, '96!', true], [2 * paso, 52, false], [3 * paso, 18, false]];
+          const vivos = correr(s, a, golpes, k);
+          const msg = `${cssW} ${nombre} cada ${paso} ms`;
+          // el segundo nace 4 px CSS sobre el borde superior REAL del primero, que ya subió y terminó el pop
+          const [p0, p1] = vivos;
+          en(p0.t, paso, k);
+          if (Math.abs(p1.t.spawnX - p0.t.x) < 1e-6) expect((box(p0.t).y0 - p1.t.spawnY) * k, msg).toBeCloseTo(FLOAT_STACK_GAP, 6);
+          sinPisarse(vivos, k, msg);
+        }
+      }
+    }
   });
   it('el daño de un golpe sale con floatAt sobre el objetivo', () => {
     const { s, log } = fakeScene({ state: FULL, node: FULL_NODE });
@@ -400,7 +491,7 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
     s.create();
     s.playBeat(BEAT({ kind: 'hit', actorId: 'h1', targetId: 'e1', num: 33 }));
     const txt = log.objects.find((o) => o.kind === 'text' && String(o.text) === '33');
-    expect(txt.y0).toBeCloseTo(s.actors.e1.base.headY - FLOAT_HEAD_GAP / (412 / 824), 6);
+    expect(txt.spawnY).toBeCloseTo(s.actors.e1.base.headY - FLOAT_HEAD_GAP / (412 / 824), 6);
   });
 });
 
