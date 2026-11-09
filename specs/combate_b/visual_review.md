@@ -70,3 +70,17 @@ Fuentes: `requirements.md` (R#), `design.md` (§8 línea 96-99), `docs/art-direc
 ## Capturas usadas
 - `specs/combate_b/evidencia/despues/` (convertidas a png): `v2_r00_inicio`, `v2_r03`, `v2_r05`, `v2_r07`, `v1_r03`, `v2_resultado_victoria`, `v2_veil_gate_a2n10_3enemigos`, `v2_veil_gate_a2n10_4enemigos`, `v2_vp_360x740`, `v2_vp_360x800`, `v2_vp_412x915`; `reporte_v2.json`.
 - Propias (412×860 @2x, `specs/combate_b/evidencia/visual/`): `run1/muerto_412x860.webp`, `run1/real_ataque_f06.webp`, `run1/real_fin.webp`; recortes citados: `veil3_heroes.png`, `veil3_hud_toast.png`, `veil4_hud_toast.png`, `r05_heroe_boton.png`, `r05_bruto_barra.png`, `heroe_muerto_zoom.png`; reducciones `full_v2_*.webp`; script `capturar_visual_r1.mjs`.
+
+# Revisión visual — Etapa C · T10.6 (hoja visual V1–V9) · ronda 2 · commit 810a48a
+
+> BORRADOR EN CURSO (se escribe por partes): sospechas 1–5 cerradas; faltan la 6 (animación V4/V6/V7) y la 7 (pantallas bajas).
+
+## Veredicto: CHANGES_REQUESTED
+
+Vara única: `hoja_visual.md` (V1–V9, V4 según la enmienda Last Asylum, decisiones del owner del 2026-11-07 y del 2026-11-08). El código de la app no cambió desde a2458b1 (`git diff a2458b1..HEAD -- client` vacío), así que las 18 vistas de `evidencia/hoja/` son vigentes: las abrí todas. Las vistas que faltaban las generé con el mismo andamiaje (estado sintético runId −1, preview aislado :3003/:5175) en `evidencia/visual/ronda2/` (script `capturar_ronda2.mjs`).
+
+Bloqueantes (detalle y regiones en «Afirmaciones vs. imagen»):
+- **B1 · V3 en victoria (sospecha 1, CONFIRMADA).** El cartel tapa las caras de Viktor y Sombra (vivos) y al enemigo caído entero, en las 3 resoluciones y en las 4 formaciones. Arreglo mínimo dentro de V8: cartel compacto (≤ 70 px CSS: título y «Volver» en una fila) con el centro al 34 % del alto, el borde superior del tercio medio. Medido contra las siluetas reales: no toca ninguna en 4 formaciones × 3 viewports.
+- **B2 · V3 en derrota (mismo defecto).** El cartel tapa a los enemigos vivos: al bruto de la cadera para abajo, las 4 caras de las Voz del Velo, la mandíbula y el cuerpo del jefe. Contra el jefe, V3 y V8 no se pueden cumplir a la vez (no queda franja libre en el tercio medio): decide el owner.
+- **B3 · V3 en derrota (sospecha 2, CONFIRMADA).** Los tres delanteros tendidos se solapan 36 px = 12 % del ancho (> 10 %), y la cabeza de Aria queda sobre la de Lyra. Arreglo: tendido más corto (×0,9) y todos hacia el mismo lado.
+- **B4 · V2 con 3 enemigos (sospecha 3, CONFIRMADA).** El carroñero de atrás a la derecha apoya el pie derecho en la repisa del altar (una pared con velas), no en la calle.
