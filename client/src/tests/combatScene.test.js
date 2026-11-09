@@ -525,6 +525,24 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
     const u2 = s2.floatAt(a2, '96!', '#fff', true);
     expect(u2.spawnY).toBeCloseTo(box(u1).y0 - FLOAT_STACK_GAP / k, 6);
   });
+  it('crítico: «¡Crítico!» sale sobre quien lo hace y el número sobre el objetivo, sobre la cabeza y a la vista', () => {
+    const k = 412 / 824;
+    const s = escenario(412, SOLO, { id: 'a1n3', type: 'combat', act: 1 });
+    s.hud = { bottom: 1372.5, top: 202, zoneBottom: 654.8 };
+    s.playBeat(BEAT({ kind: 'hit', actorId: 'h2', targetId: 'e0', num: 37 }));
+    s.playBeat(BEAT({ kind: 'passive', actorId: 'h1', targetId: 'e0', fx: 'crit', text: '¡Crítico!', intensity: 2 }));
+    s.playBeat(BEAT({ kind: 'hit', actorId: 'h1', targetId: 'e0', num: 96, intensity: 2 }));
+    const e0 = s.actors.e0;
+    const h1 = s.actors.h1;
+    expect(h1.floats.map((t) => String(t.text))).toEqual(['¡Crítico!']);
+    expect(h1.floats[0].spawnY).toBeCloseTo(h1.base.headY - FLOAT_HEAD_GAP / k, 6);
+    expect(e0.floats.map((t) => String(t.text))).toEqual(['37', '96!']);
+    for (const t of e0.floats) {
+      expect(t.spawnY).toBeLessThanOrEqual(e0.base.headY - FLOAT_HEAD_GAP / k + 1e-6);
+      expect(box(t).y0, String(t.text)).toBeGreaterThanOrEqual(202);   // nace por debajo de las barras de vida
+    }
+    expect(pisan(box(e0.floats[0]), box(e0.floats[1]))).toBe(false);
+  });
   it('el daño de un golpe sale con floatAt sobre el objetivo', () => {
     const { s, log } = fakeScene({ state: FULL, node: FULL_NODE });
     s.preload();

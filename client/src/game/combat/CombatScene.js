@@ -639,7 +639,10 @@ export default class CombatScene extends Phaser.Scene {
         break;
       }
       case 'passive': {
-        if (b.text && at) this.floatAt(at, b.text, b.color);
+        // «¡Crítico!» sale sobre quien lo hace; sobre el objetivo queda el número (el crítico ya va grande y con «!»).
+        // Así el número no tiene que apilarse sobre el cartel y, en un enemigo alto, subir bajo las barras del HUD.
+        const who = actor || at;
+        if (b.text && who) this.floatAt(who, b.text, b.color);
         else if (b.text) this.float(tx, ty, b.text, b.color, FLOAT_NORMAL);
         else this.burst(tx, ty, 6, tint);
         break;
