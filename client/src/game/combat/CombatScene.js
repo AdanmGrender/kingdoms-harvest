@@ -8,7 +8,7 @@
  * retroceso, pose, giro, caída) toca solo SU contenedor o sus hijos; los compañeros no se mueven (regla del owner).
  */
 import Phaser from 'phaser';
-import { collectAssetKeys, textureKey, spriteGeom, bgCoverScale, BG_DRIFT } from './artMap';
+import { collectAssetKeys, textureKey, spriteGeom, bgCoverScale, BG_DRIFT, HERO_ART, ENEMY_ART } from './artMap';
 import { computeFormation, enemyList, WORLD } from './formation';
 import { createRoundQueue } from './eventPlanner';
 import { QUALITY, DEFAULT_QUALITY } from './combatQuality';
@@ -222,7 +222,7 @@ export default class CombatScene extends Phaser.Scene {
    * el cuerpo donde estaba en la idle (SPRITE_GEOM); al voltear, el origen X se refleja para que el cuerpo no salte.
    */
   setPose(a, pose, flip = false) {
-    const p = a.kind === 'enemy' && pose === 'attack' ? 'hit' : pose;
+    const p = this.poseFor(a, pose);
     const key = this.texFor(a.kind, a.art, p);
     a.sp.setTexture(key);
     const g = key.startsWith('ph:') ? null : spriteGeom(a.kind, a.art, p);
@@ -230,6 +230,18 @@ export default class CombatScene extends Phaser.Scene {
     const oy = g ? g.oy : 1;
     a.sp.setFlipX(!!flip).setOrigin(flip ? 1 - ox : ox, oy);
     a.sp.setScale(a.base.h / (a.sp.height || a.base.h));
+  }
+
+  /**
+   * Pose real de un actor: los enemigos atacan con su pose `hit` y los héroes no tienen `hit` (se quedan en `idle`; el
+   * destello y el retroceso ya marcan el golpe). Una pose que el arte no tiene cae a `idle`, nunca al marcador de R31.
+   */
+  poseFor(a, pose) {
+    let p = pose;
+    if (a.kind === 'enemy' && p === 'attack') p = 'hit';
+    if (a.kind === 'hero' && p === 'hit') p = 'idle';
+    const poses = (a.kind === 'enemy' ? ENEMY_ART : HERO_ART)[a.art];
+    return poses && !poses.includes(p) ? 'idle' : p;
   }
 
   applyView(view) {

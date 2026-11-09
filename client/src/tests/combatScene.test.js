@@ -443,3 +443,44 @@ describe('V7: orientación al atacar', () => {
     expect(w.sp.angle).toBe(0);
   });
 });
+
+describe('R31 en combate: ninguna pose cae al marcador (bug de la ronda 2)', () => {
+  const noPlaceholder = (s, when) => {
+    for (const a of Object.values(s.actors)) expect(String(a.sp.texture), `${a.id} ${when}`).not.toMatch(/^ph:/);
+  };
+  it('cada actor resuelve idle, attack y hit a una textura real (el héroe golpeado queda en idle)', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.preload();
+    s.create();
+    for (const a of Object.values(s.actors)) {
+      for (const pose of ['idle', 'attack', 'hit']) {
+        s.setPose(a, pose, false);
+        expect(String(a.sp.texture), `${a.id}:${pose}`).not.toMatch(/^ph:/);
+      }
+    }
+    s.setPose(s.actors.h1, 'hit');
+    expect(s.actors.h1.sp.texture).toBe('hero:warrior:idle');
+    s.setPose(s.actors.e0, 'attack');
+    expect(s.actors.e0.sp.texture).toBe('enemy:carroneros:hit');
+  });
+  it('una ronda con golpes a cada héroe, ataques, habilidad y caídas nunca muestra el marcador', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.preload();
+    s.create();
+    const pending = [];
+    s.time.delayedCall = (ms, fn) => { pending.push(fn); };
+    const beats = [
+      ...['h1', 'h2', 'h3', 'h4', 'h5'].map((h, i) => BEAT({ kind: 'hit', actorId: `e${i % 3}`, targetId: h, num: 9 })),
+      ...['e0', 'e1', 'e2'].map((e, i) => BEAT({ kind: 'hit', actorId: `h${i + 1}`, targetId: e, num: 12 })),
+      BEAT({ kind: 'skill', actorId: 'h3', targetId: 'e1', num: 40, intensity: 2 }),
+      BEAT({ kind: 'death', targetId: 'e2' }),
+      BEAT({ kind: 'death', targetId: 'h4' }),
+    ];
+    for (const b of beats) {
+      s.playBeat(b);
+      noPlaceholder(s, `tras ${b.kind} ${b.actorId || ''}→${b.targetId}`);
+    }
+    for (const fn of pending.splice(0)) fn();
+    noPlaceholder(s, 'al volver a idle');
+  });
+});
