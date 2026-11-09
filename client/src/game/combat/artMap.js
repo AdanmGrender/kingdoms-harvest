@@ -102,6 +102,13 @@ export const SPRITE_GEOM = {
   'enemy:voz_del_velo:hit': [693, 720, 14, 678, 14, 709, 0.541],
 };
 
+// Disparo (V7, B5 de la revisión visual ronda 2): en la pose de ataque del tirador el fogonazo y el humo vienen
+// pintados a la derecha de la boca del arma. Se recorta la textura en la boca (`crop`, px de la textura) y la escena
+// dibuja su propio disparo desde `muzzle` (px de la textura, sin voltear) hasta el objetivo.
+export const ATTACK_FX = {
+  ranger: { crop: [0, 0, 533, 640], muzzle: [533, 184] },
+};
+
 /**
  * Geometría de `kind/art/pose` (cae a la idle del fallback si falta). `ox`/`oy` = origen que apoya el pie en (x, y):
  * oy = (b + 1) / H deja la fila inferior con alfa justo encima del carril.

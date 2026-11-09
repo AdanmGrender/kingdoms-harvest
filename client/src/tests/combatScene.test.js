@@ -50,6 +50,8 @@ function mkObj(log, kind, x = 0, y = 0, texture = null) {
     setFlipX: self((f) => { o.flipX = f; }),
     setAngle: self((a) => { o.angle = a; }),
     setPosition: self((px, py) => { o.x = px; o.y = py; }),
+    setRotation: self((r) => { o.rotation = r; }),
+    setCrop: self((...c) => { o.isCropped = c.length > 0; o.crop = c.length ? c : null; }),
     add: self((c) => { for (const ch of (Array.isArray(c) ? c : [c])) { o.list.push(ch); ch.parentContainer = o; } }),
     destroy: () => { o.active = false; },
     setParticleTint: () => {},
@@ -467,7 +469,7 @@ describe('V7: orientación al atacar', () => {
       expect(s.actors[id].sp.texture, id).toContain(':idle');
     }
   });
-  it('el tirador apunta: inclina el arma hacia el objetivo, como mucho 15°', () => {
+  it('el tirador apunta: se inclina hacia el objetivo, como mucho 30°', () => {
     const { s } = fakeScene({ state: FULL, node: FULL_NODE });
     s.preload();
     s.create();
@@ -477,9 +479,70 @@ describe('V7: orientación al atacar', () => {
     expect(r.sp.flipX).toBe(true);
     expect(r.sp.angle).toBeGreaterThan(0);                    // mirando a la izquierda, sube el cañón girando a la derecha
     expect(r.sp.angle).toBeLessThanOrEqual(AIM_MAX_DEG);
+    expect(AIM_MAX_DEG).toBe(30);
     const w = s.actors.h1; // warrior: no inclina
     s.playBeat(BEAT({ kind: 'hit', actorId: 'h1', targetId: 'e1', num: 5 }));
     expect(w.sp.angle).toBe(0);
+  });
+});
+
+describe('B5: el tirador dispara al enemigo, sin fogonazo sobre compañeros', () => {
+  const FORMS = [
+    [FULL, FULL_NODE],
+    [{ ...FULL, enemies: [{ id: 'e0', hp: 100, maxHp: 100 }] }, { id: 'a1n9', type: 'boss', act: 1, isBoss: true }],
+    [{ ...FULL, enemies: [0, 1, 2, 3].map((i) => ({ id: `e${i}`, hp: 100, maxHp: 100 })) }, { id: 'a2n10', type: 'boss', act: 2, isBoss: true }],
+    [{ ...FULL, enemies: [{ id: 'e0', hp: 100, maxHp: 100 }] }, { id: 'a1n3', type: 'combat', act: 1 }],
+  ];
+  it('recorta el fogonazo pintado, dispara de la boca del arma al pecho del objetivo y la boca no cae sobre nadie de su bando', () => {
+    for (const [state, node] of FORMS) {
+      const { s, log } = fakeScene({ state, node });
+      s.preload();
+      s.create();
+      const pending = [];
+      s.time.delayedCall = (ms, fn) => { pending.push(fn); };
+      const f = computeFormation(state.heroes, enemyList(state), { node, boss: !!node.isBoss });
+      const r = s.actors.h3;
+      for (const e of f.enemies) {
+        const from = log.objects.length;
+        s.playBeat(BEAT({ kind: 'hit', actorId: 'h3', targetId: e.id, num: 5 }));
+        expect(r.sp.texture).toBe('hero:ranger:attack');
+        expect(r.sp.crop, `${node.id} ${e.id}`).toEqual([0, 0, 533, 640]);       // sin el fogonazo de la textura
+        const shot = s.lastShot;
+        const tgt = s.actors[e.id];
+        expect(shot.to).toEqual({ x: tgt.base.x, y: tgt.base.y - tgt.base.alphaH * 0.55 });
+        // la estela sale de la boca y apunta al objetivo; el proyectil termina en el objetivo
+        const tracer = log.objects.slice(from).find((o) => o.texture === 'tracer');
+        expect([tracer.x, tracer.y]).toEqual([shot.muzzle.x, shot.muzzle.y]);
+        expect(tracer.rotation).toBeCloseTo(Math.atan2(shot.to.y - shot.muzzle.y, shot.to.x - shot.muzzle.x), 10);
+        expect(tracer.scaleX * 64).toBeCloseTo(Math.hypot(shot.to.x - shot.muzzle.x, shot.to.y - shot.muzzle.y), 6);
+        // la boca del arma (y su fogonazo) no cae sobre ningún compañero
+        for (const h of f.heroes) {
+          if (h.id === 'h3') continue;
+          const A = h.alpha;
+          const inside = shot.muzzle.x > A.x && shot.muzzle.x < A.x + A.w && shot.muzzle.y > A.y && shot.muzzle.y < A.y + A.h;
+          expect(inside, `${node.id} → ${e.id}: boca sobre ${h.id}`).toBe(false);
+        }
+        for (const fn of pending.splice(0)) fn();
+        expect(r.sp.isCropped).toBe(false);                     // de vuelta a idle, sin recorte
+        expect(r.sp.angle).toBe(0);
+      }
+    }
+  });
+  it('la boca del arma se calcula con volteo, escala y giro: sin girar coincide con el píxel de la textura', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.preload();
+    s.create();
+    const r = s.actors.h3;
+    s.setPose(r, 'attack', false);
+    r.sp.setAngle(0);
+    const g = spriteGeom('hero', 'ranger', 'attack');
+    const sc = r.sp.scaleX;
+    const m = s.muzzleWorld(r);
+    expect(m.x).toBeCloseTo(r.base.x + (533 - g.ox * g.W) * sc, 6);
+    expect(m.y).toBeCloseTo(r.base.y + (184 - g.oy * g.H) * sc, 6);
+    s.setPose(r, 'attack', true);
+    const mf = s.muzzleWorld(r);
+    expect(mf.x).toBeCloseTo(r.base.x - (533 - g.ox * g.W) * sc, 6);      // volteado: espejo alrededor del pie
   });
 });
 

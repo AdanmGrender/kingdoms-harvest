@@ -8,7 +8,7 @@
  * retroceso, pose, giro, caída) toca solo SU contenedor o sus hijos; los compañeros no se mueven (regla del owner).
  */
 import Phaser from 'phaser';
-import { collectAssetKeys, textureKey, spriteGeom, bgCoverScale, BG_DRIFT, HERO_ART, ENEMY_ART } from './artMap';
+import { collectAssetKeys, textureKey, spriteGeom, bgCoverScale, BG_DRIFT, HERO_ART, ENEMY_ART, ATTACK_FX } from './artMap';
 import { computeFormation, enemyList, lyingBoxes, WORLD, DEAD_FLAT, DEAD_LEN, fallDir } from './formation';
 import { createRoundQueue } from './eventPlanner';
 import { QUALITY, DEFAULT_QUALITY } from './combatQuality';
@@ -30,7 +30,9 @@ const DEAD_TINT = 0x9a9a9a;       // V6: apagado (con WebGL además se desatura 
 export const FALL_MS = 450;       // V6: caída ≤600 ms
 const LUNGE_PX = 40;
 const RECOIL_PX = 24;
-export const AIM_MAX_DEG = 15;    // V7: el tirador inclina el arma hacia su objetivo, como mucho 15°
+export const AIM_MAX_DEG = 30;    // V7: el tirador se inclina hacia su objetivo (el pie hace de pivote), como mucho 30°
+export const SHOT_MS = 110;       // el proyectil va de la boca del arma al objetivo en 110 ms…
+export const TRACER_MS = 220;     // …y la estela se apaga en 220 ms
 const FACING = { hero: 1, enemy: -1 }; // V7: hacia dónde miran las poses (+1 derecha) sin voltear
 const RANGED = new Set(['ranger']);
 
@@ -97,7 +99,10 @@ export default class CombatScene extends Phaser.Scene {
     for (let r = 64; r > 0; r -= 2) { g.fillStyle(0x000000, 0.035); g.fillEllipse(128, 32, r * 4, r); }
     g.generateTexture('shadow', 256, 64); g.clear();
     for (let r = 128; r > 0; r -= 4) { g.fillStyle(0xffffff, 0.02); g.fillEllipse(256, 128, r * 4, r * 2); }
-    g.generateTexture('fog', 512, 256);
+    g.generateTexture('fog', 512, 256); g.clear();
+    // estela del disparo: 64×8, más brillante en el centro
+    for (let r = 4; r > 0; r--) { g.fillStyle(0xfff1c4, 0.28); g.fillRect(0, 4 - r, 64, r * 2); }
+    g.generateTexture('tracer', 64, 8);
     g.destroy();
   }
 
@@ -231,6 +236,55 @@ export default class CombatScene extends Phaser.Scene {
     const oy = g ? g.oy : 1;
     a.sp.setFlipX(!!flip).setOrigin(flip ? 1 - ox : ox, oy);
     a.sp.setScale(a.base.h / (a.sp.height || a.base.h));
+    // el tirador dispara sin el fogonazo pintado en la textura: se recorta en la boca del arma (el disparo lo dibuja shoot)
+    const fx = g && a.kind === 'hero' && p === 'attack' ? ATTACK_FX[a.art] : null;
+    if (fx && a.sp.setCrop) a.sp.setCrop(...fx.crop);
+    else if (a.sp.isCropped && a.sp.setCrop) a.sp.setCrop();
+  }
+
+  /** Boca del arma del tirador en el mundo, con su volteo, escala, giro y la posición del contenedor. */
+  muzzleWorld(a) {
+    const fx = ATTACK_FX[a.art];
+    const g = spriteGeom(a.kind, a.art, 'attack');
+    const mx = a.sp.flipX ? g.W - fx.muzzle[0] : fx.muzzle[0];
+    const lx = (mx - a.sp.originX * g.W) * a.sp.scaleX;
+    const ly = (fx.muzzle[1] - a.sp.originY * g.H) * a.sp.scaleY;
+    const r = (a.sp.angle * Math.PI) / 180;
+    return {
+      x: a.c.x + a.sp.x + lx * Math.cos(r) - ly * Math.sin(r),
+      y: a.c.y + a.sp.y + lx * Math.sin(r) + ly * Math.cos(r),
+    };
+  }
+
+  /**
+   * B5: el fogonazo no puede caer sobre un compañero. Si la boca del arma queda sobre la silueta de otro personaje de su
+   * bando, el tirador se inclina un poco más (de 3 en 3 grados, hasta AIM_MAX_DEG): la boca sube y sale de encima.
+   */
+  clearMuzzle(a, flip) {
+    const sign = (FACING[a.kind] > 0) !== !!flip ? -1 : 1;
+    const mates = Object.values(this.actors).filter((o) => o !== a && o.kind === a.kind && !o.dead);
+    const over = (p) => mates.some((o) => Math.abs(p.x - o.base.x) < o.base.alphaW / 2 && p.y > o.base.headY && p.y < o.base.y);
+    for (let deg = Math.abs(a.sp.angle); deg <= AIM_MAX_DEG && over(this.muzzleWorld(a)); deg += 3) {
+      a.sp.setAngle(sign * Math.min(AIM_MAX_DEG, deg + 3));
+    }
+  }
+
+  /** V7 (B5): el disparo va de la boca del arma al pecho del objetivo: proyectil, estela y fogonazo en la boca. */
+  shoot(a, target) {
+    if (!ATTACK_FX[a.art]) return null;
+    const p = this.muzzleWorld(a);
+    const tx = target.base.x;
+    const ty = target.base.y - target.base.alphaH * 0.55;
+    const dist = Math.hypot(tx - p.x, ty - p.y);
+    const tracer = this.add.image(p.x, p.y, 'tracer').setOrigin(0, 0.5).setDepth(2650)
+      .setRotation(Math.atan2(ty - p.y, tx - p.x)).setScale(dist / 64, 1).setBlendMode('ADD');
+    this.tweens.add({ targets: tracer, alpha: 0, duration: TRACER_MS, ease: 'Quad.easeIn', onComplete: () => tracer.destroy() });
+    const ball = this.add.image(p.x, p.y, 'spark').setDepth(2660).setScale(0.9).setBlendMode('ADD');
+    this.tweens.add({ targets: ball, x: tx, y: ty, duration: SHOT_MS, ease: 'Linear', onComplete: () => ball.destroy() });
+    // fogonazo corto y quieto en la boca (sin chispas que salgan volando sobre los demás)
+    const flash = this.add.image(p.x, p.y, 'spark').setDepth(2660).setScale(2).setBlendMode('ADD').setTint(0xffd27a);
+    this.tweens.add({ targets: flash, alpha: 0, scale: 2.8, duration: 120, ease: 'Quad.easeOut', onComplete: () => flash.destroy() });
+    return { muzzle: p, to: { x: tx, y: ty }, tracer, ball, flash };
   }
 
   /**
@@ -318,7 +372,7 @@ export default class CombatScene extends Phaser.Scene {
     return Math.sign(dx) !== FACING[a.kind];
   }
 
-  /** V7: el tirador inclina el arma hacia el objetivo (el pie hace de pivote), como mucho AIM_MAX_DEG. */
+  /** V7: el tirador se inclina hacia el objetivo (el pie hace de pivote), como mucho AIM_MAX_DEG. */
   aimAngle(a, target, flip) {
     if (!RANGED.has(a.art)) return 0;
     const dx = Math.abs(target.base.x - a.base.x) || 1;
@@ -418,7 +472,11 @@ export default class CombatScene extends Phaser.Scene {
         if (actor && !actor.dead) {
           const flip = target ? this.flipToward(actor, target) : false;
           this.setPose(actor, 'attack', flip);
-          if (target) actor.sp.setAngle(this.aimAngle(actor, target, flip));
+          if (target) {
+            actor.sp.setAngle(this.aimAngle(actor, target, flip));
+            if (ATTACK_FX[actor.art]) this.clearMuzzle(actor, flip);
+            this.lastShot = this.shoot(actor, target);
+          }
           if (!this.reduced && target) {
             const dir = Math.sign(target.base.x - actor.base.x) || 1;
             this.tweens.add({ targets: actor.c, x: actor.base.x + dir * LUNGE_PX, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
