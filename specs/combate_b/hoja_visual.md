@@ -62,3 +62,13 @@ Resuelve el segundo bloqueo de `tasks.md` (con carriles y cero intersección tam
 - **Tope inferior real (V3)**: los carriles y los pies quedan por encima del borde superior REAL de los botones de héroe, contando «¡TAP!», en cada viewport (peor caso 360×800: 1328 de mundo; `evidencia/hoja/hud_medidas.json`). `HUD_TOP = 1440` está por debajo de los botones: corregirlo. Las cabezas siguen por debajo de las barras de vida (T).
 - **Legibilidad**: el objetivo es que ninguna cara (35 % superior del sprite) quede tapada por un personaje de otra fila. No bloquea al implementer: elige la colocación que minimice la cara tapada y reporta el % de cabeza tapada por vista en `hoja_medidas.json`. El visual_reviewer decide si algún caso es bloqueante.
 - **Sin cambios**: V1, V2 enmendada (carriles por profundidad sobre el piso calibrado por fondo, `calibracion_suelo.json`), R27, 3+2, V4–V9.
+
+## Decisión del owner (2026-11-09) — tras la revisión visual ronda 2
+
+Responde lo que la ronda 2 de `visual_review.md` dejó al owner. Todo lo demás de la hoja sigue igual.
+
+- **V3/V8, cartel de derrota (B2):** en derrota el cartel de resultado PUEDE tapar a los enemigos vivos, porque la escena está bajo el velo de derrota (R41). Se elige la posición del tercio medio que no corte caras cuando haya sitio. Nunca tapa a los héroes tendidos ni los botones.
+- **V3/V8, cartel de victoria (B1, sin cambio de regla):** en victoria el cartel no tapa ninguna silueta, ni héroes ni enemigos caídos. Arreglo de la ronda 2: cartel compacto (≤ 70 px CSS, «¡Victoria!» y «Volver» en una fila) con el centro cerca del 34 % del alto, dentro del tercio medio (V8).
+- **V4, tamaño:** los px de V4 son **px de pantalla (CSS)**: normal 36–44 px CSS y crítico 56–64 px CSS, el doble de lo medido en la ronda 2 (en el mundo 824 de ancho, 72–88 y 112–128). La subida (60), el pop y la duración se escalan igual: 60 px CSS.
+- **V4, apilado:** cada número nuevo se apila a la altura real del anterior + 4 px (normal o crítico). Nunca se pisan. Reemplaza el «offset 28 px».
+- **V2/V3, pantallas bajas (H2):** la formación toma el tope inferior de los carriles del borde superior REAL de la fila de botones de héroe (con «¡TAP!») en esa pantalla, medido en tiempo de ejecución y actualizado si cambia el alto (Telegram), en lugar de la constante. Se verifica, sin pies tapados, en las vistas de la hoja más 360×740 y 375×667, que pasan a ser vistas obligatorias de V2/V3. En 412×860, 360×800 y 1280×800 no debe cambiar nada visible. Si en algún alto mínimo no hay solución con R24 por fila + V1 + piso, se reporta con números y no se relaja nada.
