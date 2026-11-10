@@ -231,3 +231,146 @@ Ninguno bloquea. Son recomendaciones para el leader.
 
 ## Cambios requeridos
 Ninguno. H1–H9 son recomendaciones; el leader decide si se hacen antes del merge. La feature sigue `in_progress` hasta el veredicto del visual_reviewer.
+
+---
+
+# Review — Etapa C (T10.7 fix visual ronda 2, HEAD 03fd506) · ronda 3
+
+## Veredicto
+**CHANGES_REQUESTED** (lente de contrato: código, tests y trazabilidad; lo visual lo juzga el visual_reviewer). T10.7 cumple lo que pide en lo que medí. Hay tres bloqueantes, los tres chicos:
+1. La suite del cliente no es fiable: bajo carga, la matriz H2 se pasa del límite de 5 s.
+2. El eslabón que lleva la medida del HUD del stage a la escena (H2) no tiene ningún test.
+3. Una medida 0 o absurda no cae al valor por defecto.
+
+No se tocan `feature_list.json` ni `CHANGELOG.md`.
+
+Revisé el código con `git diff 810a48a..HEAD -- client` (15 commits, de fce00a8 a 03fd506), los ajustes de spec (810a48a, 708db78), la revisión visual ronda 2 (1fec8f5) y la decisión del owner del 2026-11-09 (`hoja_visual.md:66-74`). Quedaron fuera los tres restos viejos de fps sin commitear, que no toqué.
+
+## Trazabilidad
+- **R11 enmendado** (`requirements.md:56`: toda unidad cae y queda tendida) y **R54 con la nota V9** (`requirements.md:243`). `design.md:194` marca §2 (fila `death`) y §8 como superados. Así quedan cerradas H3, H4 y H8 de la ronda 2.
+- **T10.7** cubre R11, R24 enmendado, R54 y V1–V9 con las decisiones del 2026-11-09, de (a) a (j):
+  - en el código: (a) y (b) en el cartel, (c) en los tendidos, (d) en los pies, (e) en el tirador, (f) en R31, (g) en V4, (h) en H2 e (i) en H1;
+  - en la evidencia: (j) H6 en `evidencia/despues_t107/`.
+- **Ronda 2:** H1 cerrado (márgenes ≥ 0 contra `calibracion_suelo.json` y `hud_medidas.json`; `SPRITE_GEOM` y `ATTACK_FX` contra `hoja_alfa.json`), H2 cerrado (decisión del owner y medida en tiempo de ejecución) y H6 cerrado (a1n3 entero sobre el código final).
+- **R48**: sigue en la feature #27.
+- **R53**: en reposo pasa (977/977, 545/545, build). Bajo carga falla (bloqueante 1).
+- El resto de los R conserva su `Cubre:` y su evidencia; los 54 tienen al menos una task.
+
+## Tasks
+- T1–T12, T10.5, T10.6 y T10.7 están en `[x]`, con `Evidencia:`. No queda ninguna `[ ]`. `## Bloqueado` cerrado.
+- Sin `.only` ni `.skip`. No queda ninguna sonda en el repo.
+
+## Verificación ejecutada por el revisor
+1. **Suites y build:**
+   - **Bajo carga.** Un proceso ajeno usaba ~7 núcleos y la CPU estaba al 91 %. Corrí `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null` dos veces:
+     - con jest en paralelo → `Tests  4 failed | 973 passed (977)`;
+     - sola → `Tests  3 failed | 974 passed (977)`.
+
+     Siempre es `Error: Test timed out in 5000ms`, en la matriz H2 (`combatLayout.test.js:352`), con 5,0–7,3 s. El archivo solo, con la misma carga, pasa 326/326 (2,5–3,1 s por pantalla).
+   - **En reposo** (CPU al 4–7 %): `Test Files  34 passed (34)`, `Tests  977 passed (977)`, dos veces. En verbose, la matriz H2 tarda 2773 / 2163 / 1177 / 1078 / 997 ms, el 55 % del límite en la peor pantalla.
+   - `cd server && npx jest --runInBand --forceExit` → `Tests: 545 passed, 545 total`.
+   - `cd client && npm run build` → `✓ built in 8.74s`. `window.__combatGame` no aparece en `client/dist`.
+2. **Mutaciones.** Trabajé sobre un espejo en mi scratch: `client/src`, `public/assets/b`, `shared` y los JSON de `evidencia/hoja`. La línea base es 437/437 en los 4 archivos de combate. Todos los arreglos tienen algún test que falla al romperlos, salvo lo marcado con ✗:
+   - **R31:** `poseFor` vuelto al código de la ronda 2 → 2 fallos.
+   - **B3:**
+     - largo de tendido ×1 → 2 fallos;
+     - caída hacia el centro → 1;
+     - sin separar en `lyingBoxes` → 1.
+   - **B4:**
+     - banda sin obstáculos → 2 fallos;
+     - sin `fitFeet` en EB → 2;
+     - altar corrido a x 0,9 → 2.
+   - **V4:**
+     - sin apilar → 5 fallos;
+     - hueco de −30 → 5;
+     - offset fijo de 28 → 4;
+     - px de mundo en vez de CSS → 7;
+     - sin columna lateral → 3.
+   - **H2:**
+     - `laneLimits` ignora el borde medido → 6 fallos;
+     - el panel sin el alto de «¡TAP!» → 2;
+     - la escena no se recoloca → 2.
+     - ✗ El stage no pasa `hud` a la escena, ni al crearla ni al cambiar → **0 fallos en 79 tests** (bloqueante 2).
+   - **H1:**
+     - `FOOT_MARGIN = −30` → 287 fallos;
+     - `FLOOR_MARGIN = −60` → 126;
+     - `pl` o `b` del bruto alterados → 1 cada uno.
+   - **B1:**
+     - centro al 0,50 → 13 fallos;
+     - sin franja del cartel en la formación → 2, solo en 375×667;
+     - victoria tratada como derrota → 2.
+   - **B2:**
+     - sin evitar caras → 1, solo el test del panel (H-b);
+     - sin envolvente de respiración → 1.
+   - **B5:**
+     - tope de 15° → 2 fallos;
+     - sin `clearMuzzle` → 1;
+     - sin cuadro corto → 2;
+     - el tirador embiste → 1;
+     - sin disparo → 1;
+     - sin `keepInside` → 1.
+   - ✗ **`relayout` que mata los tweens de todos** → 0 fallos (H-a).
+3. **Geometría contra los webp, calculada por mi cuenta con sharp:**
+   - 26/26 texturas: W, H, l, r, t, b, `pl` y `pr` coinciden con `artMap.js` y con `hoja_alfa.json`.
+   - Envolvente del tirador: los 126 610 px opacos del cuadro 0–532 quedan dentro.
+   - A la derecha de la columna 533 quedan 27 457 px opacos, en las filas 64–279 (fogonazo y humo pintados).
+4. **Robustez de H2.**
+   - Hice una sonda en el espejo con un `ResizeObserver` falso y espías de `addEventListener`/`removeEventListener`. Resultado: se crea 1 ResizeObserver y se desconecta al desmontar; se añade 1 listener de `resize` y se quita.
+   - La medida repetida devuelve el mismo objeto `hud` y no re-renderiza: no hay bucle.
+   - El ResizeObserver del cartel también se desconecta (`CombatInstancePanel.jsx:206`).
+   - Con el bundle de `formation.js`:
+     - sin `hud`, `{}`, `undefined`, `NaN` o `Infinity` → los carriles por defecto;
+     - `bottom 0` → HF en −8; `bottom −10` → HF en −18; `bottom 600` → HF 592, por encima de EB;
+     - `top 1500` → enemigos en 1804–1828; `zoneBottom 1700` → enemigos en 1855–1879, fuera del lienzo;
+     - `hudToWorld` con los botones en y 0 devuelve `bottom 0`.
+
+     Ver el bloqueante 3.
+5. **Alto mínimo de marco.**
+   - Barrí la matriz completa (14 × 5 × 4 × 3 escuadras) con la pila inferior real del HUD (174 px CSS) y las barras de 102/139. El primer marco sin solución mide **657 px CSS**, igual con 360, 375 o 390 de ancho. Fallan las combinaciones EF→HB < 24 de catedral con 5 héroes y 2 a 4 enemigos.
+   - Con los jefes reales (1 enemigo, 5 héroes): a1n5 y a1n9 fallan desde **624**, a2n10 desde 553 y a2n5 desde 550.
+   - Las 5 pantallas de la hoja tienen solución, como dice T10.7. Ver H-c.
+6. **Invariantes:**
+   - `git diff 46d156d..HEAD --stat -- server shared` vacío; `shared/gameConfig.js:1155` sigue en `engineVersion: 1`.
+   - Sin cambios en `package*.json`, sin borrados, `gameStore.js` igual (R4) y `pantallasB.test.jsx` sin cambios desde 810a48a.
+   - El barrido R3 sobre `game/combat/*.js`, el panel, el stage y `ResultBanner.jsx` da 0.
+   - Imports:
+     - `CombatScene.js` solo importa `phaser` y módulos puros.
+     - El panel importa `formation.js` y `resultLayout.js`, puros y sin Phaser.
+     - El stage llama `scene.setHud`, igual que `playRound` desde la Etapa A, sin importar clases Phaser.
+   - Ids estables. `window.__combatGame` existe solo con `import.meta.env.DEV` (`CombatStage.jsx:60,72`).
+7. **H6** (`evidencia/despues_t107/`): victoria en 7 rondas. Red: 6 peticiones, `bajoAssetsGame: 0`. Consola: solo los 4 avisos de `[Telegram.WebApp]`.
+8. **Higiene:** ningún puerto escuchando antes ni después (:3001–3003, :3101, :5173–5176, :5180). No levanté servidores.
+
+## Hallazgos (archivo:línea)
+**Bloqueantes**
+- **B-1. Tests lentos para su límite.** `combatLayout.test.js:352`: cada `it` de la matriz H2 arma 840 formaciones con todas sus comprobaciones, y con carga ajena se pasa de 5 s. El fallo no es de lógica: es de tiempo. Pero la suite falla igual (R53 y la regla de `docs/conventions.md`: un fallo nuevo bloquea el cierre). Hay que partirla por configuración o pantalla, como la matriz de la ronda 2, o darle un límite explícito con margen. Después, volver a correr la suite completa.
+- **B-2. (h) H2 sin test en el stage.** `CombatStage.jsx:51,54,82-85` es el único camino de la medida a la escena. Si se borra, la formación vuelve al peor caso de 360×800 y en 375×667 los botones tapan otra vez los pies, sin que falle ningún test (mutación M12c). Falta un test con Phaser simulado: `hud` al crear el juego, `setHud` en `onReady` y `setHud` cuando cambia el prop.
+- **B-3. Medida absurda sin respaldo.** `laneLimits` (`formation.js:236-244`) acepta cualquier `bottom` finito, y también `top` y `zoneBottom` enormes. `hudToWorld` (`:252-261`) devuelve `bottom 0` si los botones miden 0. El pedido era que «sin DOM o 0» cayera al valor por defecto: sin DOM, `NaN` o `undefined` sí cae; con 0, negativo o fuera de rango, no.
+  - Hay que descartar las medidas que no dejan sitio a la formación o que caen fuera del lienzo (por ejemplo, `bottom` por debajo del piso más alto más los carriles, o `top`/`zoneBottom` cerca de los botones) y volver a las constantes.
+  - Con tests de 0, negativo y fuera de rango.
+
+**No bloqueantes**
+- **H-a. Cambio de alto en plena animación.** `relayout` (`CombatScene.js:224-238`) mata los tweens del contenedor de cada actor cuyo carril cambia y lo pone en su sitio nuevo: una embestida o un retroceso en curso se corta de golpe.
+  - Lo que no cambia de carril sigue igual. Ningún actor mueve a otro: «compañeros 0 px» se mantiene, porque es una recolocación de la pantalla y no la animación de un actor.
+  - Como la x no depende del HUD, alcanzaría con mover solo `c.y` y dejar vivo el tween de x. Ningún test cubre este caso (mutación M25: 0 fallos).
+- **H-b. Test de caras autorreferente.** `combatResult.test.js:94` controla las caras con `p.faceCut`, que calcula la misma función bajo prueba: si se anula la regla de caras, los 20 casos de derrota siguen verdes. Solo el test del panel (`combatPanel.test.jsx:340`) lo controla por su cuenta. Conviene medir la intersección con la cara como ya se hace con los héroes.
+- **H-c. Pantallas muy bajas** («se reporta con números», decisión del 2026-11-09).
+  - Por debajo de 658 px CSS de marco no hay solución para toda la matriz. Con el jefe real de la catedral, por debajo de 625.
+  - Un teléfono de 375×667 dentro de Telegram deja un marco de ~611, por debajo de los dos.
+  - El código no lanza: el carril EF queda pegado al HB, a menos de 24 px. Decide el owner.
+- **H-d. Lo que se me pasó en la ronda 2.** El héroe golpeado mostraba el marcador de R31 (venía de 91b2090) y mi ronda 2 no lo vio. Ya está arreglado (`CombatScene.js:393-399`) y los tests lo atrapan (M1: 2 fallos).
+- **H-e. `ResultBanner.jsx` es compartido.** Suma `compact` sin cambiar la otra rama; los tests T8 de `pantallasB` siguen verdes y sin cambios.
+
+### Para el visual_reviewer (no lo juzgo)
+- **V7.** Durante el disparo, la silueta inclinada del tirador sale 32 px de mundo por el borde derecho. `keepInside` no la corre más porque llevaría la boca sobre Sombra (B5 manda). La hoja no exige que quede dentro del lienzo.
+- **V4.** En las pantallas más bajas que 412×860, el primer número de una ráfaga de 3 nace en parte bajo las barras de vida (1/1/1/3), por el tamaño doble en px CSS que decidió el owner. V3 habla de sprites, no de números.
+- **V3.** En 375×667 con 4 Voz del Velo, la cara de e3 queda tapada un 2,9 % por otra fila. Según la decisión del 2026-11-08, decide el visual_reviewer.
+- **Crítico.** «¡Crítico!» ahora sale sobre quien lo hace (`CombatScene.js:641-649`). R13 no fija dónde va.
+- **B5.** Hay que confirmar a ojo que el cuadro corto (columnas 0–532) termina justo en la boca del arma y no se come parte del cañón.
+
+## Cambios requeridos
+1. **B-1:** que la matriz H2 no dependa de la carga de la máquina (partirla o darle límite explícito), y volver a correr la suite completa.
+2. **B-2:** un test del stage que falle si la medida no llega a la escena, al crearla y al cambiar.
+3. **B-3:** descartar medidas del HUD fuera de rango (0, negativas, imposibles) y volver a las constantes, con test.
+
+Lo demás (H-a a H-e y la lista del visual_reviewer) queda a criterio del leader. Después de los cambios: ronda 4 corta con la lente de contrato (suites con carga, el test del stage y las medidas fuera de rango).
