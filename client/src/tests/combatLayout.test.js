@@ -102,11 +102,15 @@ describe('R24 (por fila) + V2 (carriles) + V3: 14 configuraciones × n = 1…5 �
       }
     }
   }
-  it('lo mismo con las escuadras de siluetas más anchas (rogue) y más angostas (ranger)', () => {
-    for (const cls of [SQUADS.rogue, SQUADS.ranger]) {
-      for (const node of CONFIGS) for (let n = 1; n <= 5; n++) for (let m = 1; m <= 4; m++) checkFormation(form(node, n, m, cls), node, n, m);
+  // lo mismo con las escuadras de siluetas más anchas (rogue) y más angostas (ranger): un `it` por escuadra y
+  // configuración (20 formaciones cada uno), así ninguno depende de la carga de la máquina (B-1 de la ronda 3)
+  for (const [nombre, cls] of [['rogue', SQUADS.rogue], ['ranger', SQUADS.ranger]]) {
+    for (const node of CONFIGS) {
+      it(`escuadra ${nombre} · ${label(node)}: n 1–5 × m 1–4`, () => {
+        for (let n = 1; n <= 5; n++) for (let m = 1; m <= 4; m++) checkFormation(form(node, n, m, cls), node, n, m);
+      });
     }
-  });
+  }
   it('slots 1–3 al frente (HF) y 4–5 atrás (HB, más arriba); ids h<slot>', () => {
     const f = computeFormation(heroes(5), enemies(1));
     expect(f.heroes.map((b) => [b.id, b.row])).toEqual([['h1', 'HF'], ['h2', 'HF'], ['h3', 'HF'], ['h4', 'HB'], ['h5', 'HB']]);
@@ -348,10 +352,13 @@ describe('V3: topes reales del HUD (hud_medidas.json)', () => {
 });
 
 describe('H2: carriles con el borde REAL de los botones y de las barras de cada pantalla (medido en tiempo de ejecución)', () => {
+  // Matriz R24 de 280 (14 configuraciones × n 1–5 × m 1–4) × 3 escuadras en cada pantalla, con sus bordes medidos.
+  // Un `it` por pantalla y configuración (60 formaciones cada uno): con la máquina cargada, el `it` por pantalla de 840
+  // formaciones se pasaba de los 5 s (B-1 de la review ronda 3).
   for (const vp of [...VISTAS, ...BAJAS]) {
-    it(`${vp}: matriz R24 de 280 (14 configuraciones × n 1–5 × m 1–4) y las escuadras rogue y ranger, con sus bordes medidos`, () => {
-      for (const cls of Object.values(SQUADS)) {
-        for (const node of CONFIGS) {
+    for (const node of CONFIGS) {
+      it(`${vp} · ${label(node)}: n 1–5 × m 1–4 × escuadras mixta, rogue y ranger, con sus bordes medidos`, () => {
+        for (const cls of Object.values(SQUADS)) {
           for (let n = 1; n <= 5; n++) {
             for (let m = 1; m <= 4; m++) {
               const f = computeFormation(squad(n, cls), enemies(m), { node, boss: !!node && isBossNode(node), hud: hudDe(vp, m) });
@@ -359,8 +366,8 @@ describe('H2: carriles con el borde REAL de los botones y de las barras de cada 
             }
           }
         }
-      }
-    });
+      });
+    }
   }
   it('412×860, 360×800 y 1280×800: con su borde medido la formación es idéntica a la de siempre (nada visible cambia)', () => {
     for (const vp of VISTAS) {
@@ -464,9 +471,10 @@ describe('Geometría de las texturas (SPRITE_GEOM)', () => {
 });
 
 describe('B3: tendidos (V6) — largo ×0,9, todos hacia el mismo lado, solape ≤ 10 % dentro de la fila', () => {
-  it('en las 14 configuraciones, con 1–5 héroes y 1–4 enemigos y las tres escuadras', () => {
-    for (const cls of Object.values(SQUADS)) {
-      for (const node of CONFIGS) {
+  // un `it` por configuración: 1–5 héroes × 1–4 enemigos × las tres escuadras
+  for (const node of CONFIGS) {
+    it(`${label(node)}: 1–5 héroes × 1–4 enemigos × las tres escuadras`, () => {
+      for (const cls of Object.values(SQUADS)) {
         for (let n = 1; n <= 5; n++) {
           for (let m = 1; m <= 4; m++) {
             const f = form(node, n, m, cls);
@@ -497,8 +505,8 @@ describe('B3: tendidos (V6) — largo ×0,9, todos hacia el mismo lado, solape �
           }
         }
       }
-    }
-  });
+    });
+  }
 });
 
 describe('B4: los pies de cada fila de enemigos caen sobre piso real (obstáculos del fondo por columnas)', () => {
@@ -506,11 +514,12 @@ describe('B4: los pies de cada fila de enemigos caen sobre piso real (obstáculo
     expect(BG_FLOOR_OBSTACLES.crypt.map((o) => [o.x0, o.x1, o.floor])).toEqual([[0, 0.165, 0.6], [0.71, 1, 0.585]]);
     for (const o of BG_FLOOR_OBSTACLES.crypt) expect(bgImageRowToWorldY(o.floor)).toBeGreaterThan(CALIB.crypt.groundY);
   });
-  it('en las 14 configuraciones con 1, 2, 3 y 4 enemigos y las tres escuadras, ningún pie pisa un obstáculo por encima de su piso', () => {
-    let revisados = 0;
-    for (const cls of Object.values(SQUADS)) {
-      for (const node of CONFIGS) {
-        const obs = BG_FLOOR_OBSTACLES[bgArt(node)] || [];
+  // un `it` por configuración: 1, 2, 3 y 4 enemigos × 1–5 héroes × las tres escuadras
+  let revisados = 0;
+  for (const node of CONFIGS) {
+    it(`${label(node)}: con 1–4 enemigos y las tres escuadras, ningún pie pisa un obstáculo por encima de su piso`, () => {
+      const obs = BG_FLOOR_OBSTACLES[bgArt(node)] || [];
+      for (const cls of Object.values(SQUADS)) {
         for (let n = 1; n <= 5; n++) {
           for (let m = 1; m <= 4; m++) {
             for (const e of form(node, n, m, cls).enemies) {
@@ -530,7 +539,9 @@ describe('B4: los pies de cada fila de enemigos caen sobre piso real (obstáculo
           }
         }
       }
-    }
+    });
+  }
+  it('la revisión de obstáculos no quedó vacía (crypt los tiene)', () => {
     expect(revisados).toBeGreaterThan(0);
   });
   it('crypt con 2, 3 y 4 enemigos: el de la derecha ya no pisa el altar y todos quedan sobre la calle', () => {

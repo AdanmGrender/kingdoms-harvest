@@ -453,14 +453,15 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
       }
     }
   }
-  it('ráfagas simultáneas (normal, crítico y textos largos) en las 5 pantallas: arrancan sobre la cabeza y nunca se pisan', () => {
-    const RAFAGAS = [
-      [[0, 37, false], [0, '96!', true], [0, 52, false]],
-      [[0, '¡Crítico!', false], [0, '96!', true]],
-      [[0, 12, false], [0, '96!', true], [0, 7, false], [0, '55!', true], [0, 81, false]],
-      [[0, 'Sangrado', false], [0, 'Esquiva', false], [0, 41, false]],
-    ];
-    for (const cssW of ANCHOS) {
+  const RAFAGAS = [
+    [[0, 37, false], [0, '96!', true], [0, 52, false]],
+    [[0, '¡Crítico!', false], [0, '96!', true]],
+    [[0, 12, false], [0, '96!', true], [0, 7, false], [0, '55!', true], [0, 81, false]],
+    [[0, 'Sangrado', false], [0, 'Esquiva', false], [0, 41, false]],
+  ];
+  // un `it` por ancho de pantalla (B-1 de la review ronda 3: ningún `it` depende de la carga de la máquina)
+  for (const cssW of ANCHOS) {
+    it(`${cssW} px CSS: ráfagas simultáneas (normal, crítico y textos largos) arrancan sobre la cabeza y nunca se pisan`, () => {
       const k = cssW / 824;
       for (const [nombre, state, node] of ESCENAS) {
         for (const rafaga of RAFAGAS) {
@@ -478,10 +479,10 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
           sinPisarse(vivos, k, msg);
         }
       }
-    }
-  });
-  it('golpes escalonados como en el combate (cada 250 ms, y cada 120 ms comprimidos): se apilan sobre el alto real del anterior y nunca se pisan', () => {
-    for (const cssW of ANCHOS) {
+    });
+  }
+  for (const cssW of ANCHOS) {
+    it(`${cssW} px CSS: golpes escalonados como en el combate (cada 250 ms, y cada 120 ms comprimidos) se apilan sobre el alto real del anterior y nunca se pisan`, () => {
       const k = cssW / 824;
       for (const [nombre, state, node] of ESCENAS) {
         for (const paso of [250, 120]) {
@@ -497,8 +498,8 @@ describe('V4: números de daño sobre la cabeza (px de pantalla; apilado por alt
           sinPisarse(vivos, k, msg);
         }
       }
-    }
-  });
+    });
+  }
   it('a la vista: si apilado quedaría bajo las barras de vida del HUD, va en una columna al lado desde la cabeza', () => {
     const k = 412 / 824;
     const mk = (hud) => {

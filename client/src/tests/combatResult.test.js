@@ -95,8 +95,9 @@ describe('Cartel de resultado: posición en las 4 formaciones × 5 pantallas', (
       });
     }
   }
-  it('victoria en los 13 nodos reales × 1–4 enemigos × 5 pantallas: siempre hay sitio sin tocar ninguna silueta', () => {
-    for (const vp of Object.keys(VP)) {
+  // un `it` por pantalla: 13 nodos reales × 1–4 enemigos
+  for (const vp of Object.keys(VP)) {
+    it(`${vp} · victoria y derrota en los 13 nodos reales × 1–4 enemigos: siempre hay sitio sin tocar lo prohibido`, () => {
       for (const node of NODES) {
         for (let m = 1; m <= 4; m++) {
           const { vh, map, f, banner, avoid } = escena(vp, node, m);
@@ -111,8 +112,8 @@ describe('Cartel de resultado: posición en las 4 formaciones × 5 pantallas', (
           expect(dr.ok, `derrota ${vp} ${node.id} m${m}`).toBe(true);
         }
       }
-    }
-  });
+    });
+  }
   it('quien sigue de pie se mide con la envolvente de la respiración (caja y cara crecen hacia arriba 1,4 % del alto)', () => {
     const { map, f } = escena('412x860', FORMS[0][1], 1);
     const [e0] = f.enemies;
