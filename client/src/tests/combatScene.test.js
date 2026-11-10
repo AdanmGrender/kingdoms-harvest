@@ -685,6 +685,15 @@ describe('B5: el tirador dispara al enemigo, sin fogonazo sobre compañeros', ()
         // la estela sale de la boca y apunta al objetivo; el proyectil termina en el objetivo
         const tracer = log.objects.slice(from).find((o) => o.texture === 'tracer');
         expect([tracer.x, tracer.y]).toEqual([shot.muzzle.x, shot.muzzle.y]);
+        // la estela y el proyectil van por detrás de toda la fila de héroes (un compañero en medio los tapa) y por delante
+        // de los enemigos; el fogonazo, delante del tirador
+        const minHeroe = Math.min(...f.heroes.map((h) => s.actors[h.id].c.depth));
+        const maxEnemigo = Math.max(...f.enemies.map((x) => s.actors[x.id].c.depth));
+        for (const o of [shot.tracer, shot.ball]) {
+          expect(o.depth, `${node.id} → ${e.id}`).toBeLessThan(minHeroe);
+          expect(o.depth, `${node.id} → ${e.id}`).toBeGreaterThan(maxEnemigo);
+        }
+        expect(shot.flash.depth).toBeGreaterThan(r.c.depth);
         expect(tracer.rotation).toBeCloseTo(Math.atan2(shot.to.y - shot.muzzle.y, shot.to.x - shot.muzzle.x), 10);
         expect(tracer.scaleX * 64).toBeCloseTo(Math.hypot(shot.to.x - shot.muzzle.x, shot.to.y - shot.muzzle.y), 6);
         // la boca del arma (y su fogonazo) no cae sobre ningún compañero

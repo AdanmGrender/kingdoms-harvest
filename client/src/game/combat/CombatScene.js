@@ -383,13 +383,17 @@ export default class CombatScene extends Phaser.Scene {
     const tx = target.base.x;
     const ty = target.base.y - target.base.alphaH * 0.55;
     const dist = Math.hypot(tx - p.x, ty - p.y);
-    const tracer = this.add.image(p.x, p.y, 'tracer').setOrigin(0, 0.5).setDepth(2650)
+    // B5 (preventivo, T10.8): la estela y el proyectil van por detrás de toda la fila de héroes: un compañero que quede
+    // entre el tirador y su objetivo los tapa, así el tiro nunca se lee como que le pasa por delante (ni que le dispara).
+    // Van por delante de los enemigos (sus carriles quedan más arriba): se ve llegar el tiro al pecho del objetivo.
+    const behind = Math.min(...Object.values(this.actors).filter((o) => o.kind === a.kind).map((o) => o.c.depth)) - 1;
+    const tracer = this.add.image(p.x, p.y, 'tracer').setOrigin(0, 0.5).setDepth(behind)
       .setRotation(Math.atan2(ty - p.y, tx - p.x)).setScale(dist / 64, 1).setBlendMode('ADD');
     this.tweens.add({ targets: tracer, alpha: 0, duration: TRACER_MS, ease: 'Quad.easeIn', onComplete: () => tracer.destroy() });
-    const ball = this.add.image(p.x, p.y, 'spark').setDepth(2660).setScale(0.9).setBlendMode('ADD');
+    const ball = this.add.image(p.x, p.y, 'spark').setDepth(behind).setScale(0.9).setBlendMode('ADD');
     this.tweens.add({ targets: ball, x: tx, y: ty, duration: SHOT_MS, ease: 'Linear', onComplete: () => ball.destroy() });
-    // fogonazo corto y quieto en la boca (sin chispas que salgan volando sobre los demás)
-    const flash = this.add.image(p.x, p.y, 'spark').setDepth(2660).setScale(2).setBlendMode('ADD').setTint(0xffd27a);
+    // fogonazo corto y quieto en la boca, delante del propio tirador (sin chispas que salgan volando sobre los demás)
+    const flash = this.add.image(p.x, p.y, 'spark').setDepth(a.c.depth + 1).setScale(2).setBlendMode('ADD').setTint(0xffd27a);
     this.tweens.add({ targets: flash, alpha: 0, scale: 2.8, duration: 120, ease: 'Quad.easeOut', onComplete: () => flash.destroy() });
     return { muzzle: p, to: { x: tx, y: ty }, tracer, ball, flash };
   }
