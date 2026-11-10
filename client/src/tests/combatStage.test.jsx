@@ -8,7 +8,11 @@ vi.mock('../game/combat/createCombatGame', () => ({
   createCombatGame: vi.fn((parent, opts) => {
     const canvas = document.createElement('canvas');
     parent.appendChild(canvas);
-    const scene = { played: [], playRound(events, state) { this.played.push({ events, state }); } };
+    const scene = {
+      played: [], huds: [],
+      playRound(events, state) { this.played.push({ events, state }); },
+      setHud(h) { this.huds.push(h); },
+    };
     const game = { destroyed: 0, destroy: vi.fn((rm) => { game.destroyed += 1; if (rm) canvas.remove(); }), scene, opts };
     made.push(game);
     setTimeout(() => opts.onReady && opts.onReady(scene), 0);
@@ -177,5 +181,40 @@ describe('R39: PhaserGame duerme y despierta el hub', () => {
     const lines = src.split(/\r?\n/).filter((l) => /combat|sleepHub|wakeHub/.test(l));
     expect(lines.length).toBeGreaterThanOrEqual(4);
     expect(lines.length).toBeLessThanOrEqual(15);
+  });
+});
+
+describe('H2 (B-2 de la review ronda 3): la medida del HUD llega a la escena', () => {
+  const hud1 = { bottom: 1272, top: 263, zoneBottom: 675 };     // 375×667 (hud_medidas.json)
+  const hud2 = { bottom: 1316.1, top: 234.8, zoneBottom: 666.2 }; // 360×740
+  it('al crear el juego (opción `hud`), en onReady (`setHud`) y cada vez que cambia el prop', async () => {
+    const { rerender, unmount } = render(<CombatStage state={st(100, 100)} node={NODE} hud={hud1} />);
+    await flush();
+    expect(made).toHaveLength(1);
+    expect(made[0].opts.hud).toEqual(hud1);                       // al crear el juego
+    const { scene } = made[0];
+    expect(scene.huds).toEqual([hud1]);                           // onReady: la escena recibe la medida
+    rerender(<CombatStage state={st(100, 100)} node={NODE} hud={hud2} />);
+    await flush();
+    expect(scene.huds).toEqual([hud1, hud2]);                     // cambio de alto (Telegram, giro, teclado)
+    rerender(<CombatStage state={st(100, 100)} node={NODE} hud={hud2} />);
+    await flush();
+    expect(scene.huds).toEqual([hud1, hud2]);                     // el mismo objeto no se vuelve a mandar
+    unmount();
+  });
+  it('si la medida cambia antes de que la escena esté lista, onReady le pasa la última', async () => {
+    const { rerender, unmount } = render(<CombatStage state={st(100, 100)} node={NODE} hud={hud1} />);
+    rerender(<CombatStage state={st(100, 100)} node={NODE} hud={hud2} />);
+    await flush();
+    const { scene } = made[0];
+    expect(scene.huds[scene.huds.length - 1]).toEqual(hud2);
+    unmount();
+  });
+  it('sin medida (null) no se llama a setHud', async () => {
+    const { unmount } = render(<CombatStage state={st(100, 100)} node={NODE} />);
+    await flush();
+    expect(made[0].opts.hud).toBeNull();
+    expect(made[0].scene.huds).toEqual([]);
+    unmount();
   });
 });
