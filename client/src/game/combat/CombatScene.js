@@ -229,20 +229,38 @@ export default class CombatScene extends Phaser.Scene {
     this.lying = lyingBoxes(f);
     for (const b of [...f.heroes, ...f.enemies]) {
       const a = this.actors[b.id];
-      if (!a || (a.base.x === b.cx && a.base.y === b.lane)) continue;
+      if (!a || (a.base.x === b.cx && a.base.y === b.lane && a.base.h === b.h)) continue;
       // H-a (review ronda 3): se recoloca la pantalla, no se corta la animación de nadie. El carril (y) va a su sitio
       // nuevo; una embestida o un retroceso en curso (tween de x) sigue y al terminar queda en la x nueva; una caída en
       // curso sigue relativa a su contenedor.
-      Object.assign(a.base, { x: b.cx, y: b.lane, headY: b.alpha.y });
+      const k = b.h / a.base.h;
+      Object.assign(a.base, { x: b.cx, y: b.lane, headY: b.alpha.y, h: b.h, alphaH: b.alpha.h, alphaW: b.alpha.w });
       a.c.y = b.lane;
       if (!this.isTweening(a.c)) a.c.x = b.cx;
       a.c.setDepth(b.depth);
+      if (k !== 1) this.resize(a, k);
       if (a.dead && !this.isTweening(a.sp)) this.layDown(a);
     }
   }
 
   isTweening(o) {
     return !!(this.tweens && this.tweens.isTweening && this.tweens.isTweening(o));
+  }
+
+  /**
+   * H-c: cambió el tamaño de la formación (el marco pasó a ser muy bajo, o dejó de serlo). Sombra, escala del sprite y
+   * respiración con el alto nuevo; a un caído lo vuelve a tender relayout (o su caída termina en el tamaño de su pose).
+   */
+  resize(a, k) {
+    a.sh.setScale((a.base.alphaW / 256) * 1.1, 1.1);
+    a.base.sc *= k;
+    if (a.dead) return;
+    if (a.breath) { a.breath.stop(); a.breath = null; }
+    if (!this.isTweening(a.sp)) a.sp.setScale(a.base.h / (a.sp.height || a.base.h));
+    if (!this.reduced) {
+      const sc = a.base.sc;
+      a.breath = this.tweens.add({ targets: a.sp, scaleY: sc * BREATH.y, scaleX: sc * BREATH.x, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
   }
 
   skip() {

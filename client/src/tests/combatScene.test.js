@@ -857,6 +857,34 @@ describe('H2: la escena toma el borde real del HUD y se recoloca si cambia el al
     expect(Math.abs(a.sp.angle)).toBe(90);
     expect(a.c.y).toBeLessThanOrEqual(1272);
   });
+  it('H-c: si el marco pasa a ser muy bajo la escena achica a todos con el factor de la formación, y al volver los agranda', () => {
+    const jefe = { id: 'a1n9', type: 'boss', act: 1, isBoss: true };
+    const st = { heroes: FULL.heroes, enemies: [{ id: 'e0', hp: 100, maxHp: 100 }] };
+    const { s } = fakeScene({ state: st, node: jefe });
+    s.preload();
+    s.create();
+    s.playBeat(BEAT({ kind: 'death', targetId: 'h4' }));            // un caído también se ajusta
+    const k611 = 611 / 1720;                                        // marco de 375×611: lienzo en FIT por el alto
+    const bajo = { bottom: (611 - 174) / k611, top: 102 / k611, zoneBottom: (0.34 * 611 + 35) / k611 };
+    const check = (hud) => {
+      const f = computeFormation(st.heroes, enemyList(st), { node: jefe, boss: true, hud });
+      for (const b of [...f.heroes, ...f.enemies]) {
+        const a = s.actors[b.id];
+        expect([a.c.x, a.c.y, a.base.h], b.id).toEqual([b.cx, b.lane, b.h]);
+        expect(a.sh.scaleX, b.id).toBeCloseTo((b.alpha.w / 256) * 1.1, 6);
+        if (!a.dead) expect(a.sp.scaleY * a.sp.height, b.id).toBeCloseTo(b.h, 6);   // alto dibujado = el de la formación
+      }
+      return f;
+    };
+    s.setHud(bajo);
+    const f = check(bajo);
+    expect(f.factor).toBeLessThan(1);
+    expect(Math.abs(s.actors.h4.sp.angle)).toBe(90);                // sigue tendido, con su tamaño nuevo
+    expect(s.actors.h4.sp.scaleY).toBeCloseTo((s.actors.h4.base.h / s.actors.h4.sp.height) * DEAD_LEN, 6);
+    const normal = { bottom: 1372.5, top: 202, zoneBottom: 654.8 };  // 412×860
+    s.setHud(normal);
+    expect(check(normal).factor).toBe(1);
+  });
   it('H-a: un cambio de alto en plena embestida, retroceso o caída mueve solo el carril y no corta ninguna animación', () => {
     const { s } = fakeScene({ state: FULL, node: FULL_NODE });
     s.preload();
