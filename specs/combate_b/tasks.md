@@ -204,7 +204,104 @@ Cada tarea se cierra con `Evidencia:` inline (comando + salida real, no resumen)
       - `git diff 708db78..HEAD -- shared server` está vacío.
       - Los 3 restos viejos de fps (`evidencia/fps_emulador.mjs`, `evidencia/visual/medidas_r2.json` y `medir_visual_r2.mjs`) siguen sin commitear.
       - La sonda `client/src/tests/zz_probe.test.js` se borró y nunca se commiteó.
-- [ ] T10.8 — Cambios de la review ronda 3 (`review.md`, sección «ronda 3», d1fe278). (a) B-1: la matriz H2 de `combatLayout.test.js:352` no depende de la carga de la máquina (partida por configuración/pantalla como la matriz de la ronda 2, o con límite explícito con margen); la suite completa pasa también con carga; (b) B-2: test del stage con Phaser simulado que falle si la medida del HUD no llega a la escena (al crear el juego, en `onReady` y al cambiar el prop); (c) B-3: `laneLimits`/`hudToWorld` descartan medidas 0, negativas o fuera de rango (sin sitio para la formación o fuera del lienzo) y vuelven a las constantes, con tests; (d) H-a: `relayout` mueve solo `y` del contenedor del actor que cambia de carril y no corta su tween de `x` (test); (e) H-b: el test de caras en derrota mide la intersección con la cara por su cuenta, no con `faceCut`; (f) B5, preventivo del leader: la estela y el proyectil del tirador no pasan por delante de ningún compañero (se dibujan con profundidad por detrás de la fila trasera de héroes, o se evita su silueta), y la secuencia del tirador lo muestra. (g) H-c, decisión del owner del 2026-11-09: en marcos muy bajos la formación se achica en proporción (factor < 1 solo cuando no entra), con la matriz corrida también con marcos de 657, 625 y 611 px CSS; Evidencia: suite completa con carga (y en reposo), tests nuevos, secuencia del tirador regenerada; si cambia algo visible, regenerar las vistas afectadas. Cubre: R53 y V7/B5.
+- [x] T10.8 — Cambios de la review ronda 3 (`review.md`, sección «ronda 3», d1fe278). (a) B-1: la matriz H2 de `combatLayout.test.js:352` no depende de la carga de la máquina (partida por configuración/pantalla como la matriz de la ronda 2, o con límite explícito con margen); la suite completa pasa también con carga; (b) B-2: test del stage con Phaser simulado que falle si la medida del HUD no llega a la escena (al crear el juego, en `onReady` y al cambiar el prop); (c) B-3: `laneLimits`/`hudToWorld` descartan medidas 0, negativas o fuera de rango (sin sitio para la formación o fuera del lienzo) y vuelven a las constantes, con tests; (d) H-a: `relayout` mueve solo `y` del contenedor del actor que cambia de carril y no corta su tween de `x` (test); (e) H-b: el test de caras en derrota mide la intersección con la cara por su cuenta, no con `faceCut`; (f) B5, preventivo del leader: la estela y el proyectil del tirador no pasan por delante de ningún compañero (se dibujan con profundidad por detrás de la fila trasera de héroes, o se evita su silueta), y la secuencia del tirador lo muestra. (g) H-c, decisión del owner del 2026-11-09: en marcos muy bajos la formación se achica en proporción (factor < 1 solo cuando no entra), con la matriz corrida también con marcos de 657, 625 y 611 px CSS; Evidencia: suite completa con carga (y en reposo), tests nuevos, secuencia del tirador regenerada; si cambia algo visible, regenerar las vistas afectadas. Cubre: R53 y V7/B5.
+  - Evidencia (2026-11-09). Commits por ítem: ff2ceb3 (a), f91451d (b), c733104 (a y b: `flush` del stage), 5fdcbc9 (c), 9aee99b (d), 2835324 (e), 98bedc4 (f), beeef7c y 38720e6 (decisión H-c y línea de la task), 30ef21b y 64834a0 (g), 835d76c (evidencia de la hoja) y el de esta evidencia.
+    - **Qué cambió.**
+      - (a) B-1. Las matrices pesadas se parten en `it` chicos, con las mismas comprobaciones y el mismo recorrido:
+        - H2: un `it` por pantalla × configuración (70, de 60 formaciones cada uno);
+        - R24 con escuadras rogue y ranger: uno por escuadra × configuración (28 de 20);
+        - B3 y B4: uno por configuración (14 de 60), con el conteo de obstáculos en un `it` aparte;
+        - combatResult (13 nodos): uno por pantalla;
+        - combatScene (ráfagas y golpes escalonados): uno por ancho.
+        - En reposo, el `it` de combate más lento pasó de 2728 ms a ~250 ms.
+        - `flush` de `combatStage.test.jsx` espera al mismo import dinámico que hace el stage, en vez de 5 ms fijos. Con carga, un test de B-2 falló así una vez.
+      - (b) B-2. `combatStage.test.jsx` (juego simulado cuya escena registra `setHud`):
+        - `hud` va en las opciones al crear el juego, llega en onReady y llega otra vez cuando cambia el prop (el mismo objeto no se vuelve a mandar);
+        - si la medida cambia antes de que la escena esté lista, onReady le pasa la última;
+        - sin medida no se llama a `setHud`.
+        - Mutaciones de `CombatStage.jsx` comprobadas: sin `hud` al crear → 1 fallo; sin `setHud` en onReady → 2; sin el efecto de cambio → 1.
+      - (c) B-3.
+        - `laneLimits` ignora bordes no finitos, 0, negativos o ≥ 1720 y usa la constante.
+        - `hudToWorld` no devuelve bordes fuera del lienzo.
+        - `computeFormation` descarta la medida (vuelven las constantes) si con ella la formación no cabe ni achicada a `SHRINK_MIN` (0,5). Ejemplos: botones en 600, barras en 1500, franja en 1700. `formationFits` = carriles en orden con ≥ 24 y cajas dentro del lienzo.
+        - Tests:
+          - 0, −10, ±∞, NaN, 1720 y 1e6 en cada borde;
+          - los tres casos absurdos dan la formación de siempre en las 14 configuraciones;
+          - barrido por configuración de 7 × 4 × 3 medidas extremas: la formación siempre cabe.
+      - (d) H-a. `relayout` ya no mata tweens.
+        - El carril (y) va a su sitio nuevo.
+        - Una embestida o un retroceso en curso siguen, y al terminar (`onComplete`) quedan en la x de su sitio.
+        - Una caída en curso sigue, relativa a su contenedor.
+        - Test con tweens que quedan en curso; con el `relayout` anterior falla.
+      - (e) H-b. Cada caso de derrota de `combatResult` mide por su cuenta la intersección del cartel (con su sombra) con la cara de cada enemigo de pie: 35 % superior de su caja alfa, más lo que crece al respirar. Con la regla de caras anulada en `resultLayout`, fallan 15 de los 20 casos (antes, 0).
+      - (f) B5.
+        - La estela y el proyectil se dibujan con profundidad justo por detrás del carril más alto de los héroes, así cualquier compañero que quede en medio los tapa. Siguen por delante de los enemigos.
+        - El fogonazo queda delante del propio tirador.
+        - Medido en 412×860: estela y proyectil en 1180, la fila trasera en 1181, el enemigo más adelantado en 933, el tirador en 1320 y el fogonazo en 1321.
+        - Test en las 4 formaciones.
+      - (g) H-c, decisión del owner (`hoja_visual.md`, beeef7c).
+        - Si con el borde medido la formación no cabe con su tamaño de siempre, toda la formación se achica con el mismo factor para héroes y enemigos (`factor`, búsqueda binaria al 0,5 %), hasta que vuelve a caber con R24 por fila, el piso, las cabezas bajo las barras y los pies sobre los botones.
+        - Donde entra, factor 1. La escena ajusta escala, sombra y respiración si el factor cambia en vivo (`resize`), y vuelve a tender a los caídos.
+        - Números (marco de 375 de ancho, con la pila de abajo de 174 px CSS y barras en 102/139):
+          - factor 1 en las 840 combinaciones desde 658 px CSS;
+          - con 657, se achican 30 de 840 (catedral) a 0,996;
+          - con 640, 36 a 0,911;
+          - con 625, 36 a 0,829;
+          - con 611, 48 a 0,75.
+          - Medido en la página a 375×611: el jefe de la catedral queda en 0,931; 3 carroñeros y 4 Voz del Velo entran con factor 1.
+        - Tests:
+          - matriz R24 por fila (14 configuraciones × n 1–5 × m 1–4 × 3 escuadras) con marcos de 657, 625 y 611 px CSS, con `checkFormation` (separación ≥ 24, piso, cabezas bajo las barras, pies sobre los botones, caras de héroes libres) y el mismo factor para todos;
+          - factor 1 en las 5 pantallas de la hoja (matriz H2);
+          - las 20 vistas de pie de `hoja_medidas.json` dan los mismos carriles, altos y x;
+          - en la escena, de 412×860 a un marco de 611 y de vuelta, con alto dibujado = el de la formación.
+    - **Tests** (`cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run src/tests/combatLayout.test.js src/tests/combatScene.test.js src/tests/combatPanel.test.jsx src/tests/combatResult.test.js src/tests/combatStage.test.jsx </dev/null` → `Tests  645 passed (645)`). Por archivo: combatLayout 505, combatScene 50, combatPanel 27, combatResult 48, combatStage 15.
+    - **Suite completa con carga y en reposo.**
+      - Carga: 9 hilos en bucle (`carga.mjs` de mi scratch), con la CPU al 90–100 % medido, y jest del server corriendo en bucle en paralelo.
+        - `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null`, dos veces → `Test Files  34 passed (34)`, `Tests  1173 passed (1173)`, en 43,8 y 44,6 s.
+        - El `it` más lento con carga tardó 757 ms (la prueba de B-3); ningún `it` de combate pasó de 1 s.
+        - Jest del server con la misma carga → `Tests: 545 passed, 545 total` en las 6 vueltas.
+      - Reposo (CPU al 13 %): la misma suite, dos veces → `Test Files  34 passed (34)`, `Tests  1173 passed (1173)`, en 24,4 y 24,5 s.
+      - El total pasa de 977 a 1173: +196 tests, de las matrices partidas y los tests nuevos. Las comprobaciones de las matrices son las mismas.
+    - **Vistas** (preview aislado: server del worktree en :3003 con `BOT_TOKEN` ficticio y `BOT_POLLING=false`; vite en :5175 `--strictPort`; los dos detenidos al final y los puertos comprobados libres).
+      - Comando: `KH_PREVIEW_URL=http://localhost:5175 node specs/combate_b/evidencia/hoja/generar_evidencia_hoja.mjs`, sobre el código final.
+      - Salida: las 60 vistas de las 5 pantallas, más 3 de 375×611 (H-c: de pie con 3 carroñeros, 4 Voz del Velo y el jefe de la catedral), `hoja_contacto.webp`, `hoja_medidas.json` y las 3 secuencias. `errores de consola/página: ninguno`.
+      - Las 60 vistas no cambian. Comparación de `hoja_medidas.json` contra la corrida de T10.7: `vistas comparadas: 60 · iguales (carriles, factor 1, alto/x/carril de cada personaje, centro del cartel): 60`.
+      - Las nuevas:
+        - `375x611_3enemigos`: factor 1 · `{"HF":1223,"HB":1084,"EF":940,"EB":838}`.
+        - `375x611_4enemigos_veil`: factor 1 · `{"HF":1223,"HB":1084,"EF":1060,"EB":1006}`.
+        - `375x611_jefe`: factor 0.931 · `{"HF":1223,"HB":1094,"EF":1070}`, con altos 286,7 (delanteros), 235,5 (traseros) y 576,3 (jefe).
+    - **Tabla V1–V9** (`node specs/combate_b/evidencia/hoja/resumen_hoja.mjs`). Salida tal cual, código de salida 0:
+      | V | Resultado | Valor medido |
+      |---|---|---|
+      | V1 | OK | héroe/común 0.62 · jefe/héroe 2.01 · común en grupo/héroe 0.97 · trasera/delantera 0.82 |
+      | V2 | OK | pie vs. su carril, peor 0.00 px (63 vistas) · carriles ≥ piso del fondo + 8 · el carril más bajo queda 7.9 sobre el borde real de los botones de su pantalla (peor vista) · HF por pantalla {"412x860":1320,"360x800":1320,"1280x800":1320,"360x740":1308,"375x667":1264} |
+      | V3 | OK | solape dentro de una fila 0 % (de pie) y 0 % (tendidos, B3), sin cabeza sobre cabeza · HUD/botones/barras sobre siluetas: 0 casos · cabezas bajo las barras · cara tapada por otras filas: máx. 2.9 % |
+      | V4 | OK | 40.0/60.0, 40.2/59.9, 40.0/60.0, 40.0/59.8, 39.9/60.1 px CSS (normal/crítico, 5 pantallas) · base del número sobre la cabeza · pop 1,4→1 a 140 ms · sube 60 px CSS y desaparece antes de 840 ms · ráfaga 37 / 96! / 52, hueco en px CSS (↑ apilado sobre el alto real del anterior, → columna al lado): 412x860: →4 →61.9 · 360x800: →4 →62.4 · 1280x800: →4 →62 · 360x740: →4 →62.2 · 375x667: →4 →61.7 · sin pisarse al nacer ni a 140 ms · golpes escalonados (+0, +250 ×2, +500 ms): 425 cuadros, 0 con números pisados · nacen fuera del lienzo: 0/0/0/0/0, bajo las barras de vida: 0/1/1/1/3 |
+      | V5 | OK | 315 nombres de botón a 11 px sin recorte ni «…» · 143 nombres de barra sin recorte |
+      | V6 | OK | 145 caídos a ±90°, alfa 0.85, desaturados · barras atenuadas a 0,45 |
+      | V7 | OK | tirador hacia la izquierda: flipX, 30/30/30/30/30° (tope 30), cuadro «sin_fogonazo» de 533 px (sin el fogonazo pintado, cuerpo a la vista), estela de la boca al objetivo, boca fuera de toda silueta de su bando · estela y proyectil por detrás de toda la fila de héroes (profundidad 1180 < 1181) y por delante de los enemigos (> 933), fogonazo delante del tirador · silueta inclinada fuera del lienzo: 32/32/32/32/32 px de mundo (corrida 44/44/44/44/44 px hacia adentro, hasta pegar la boca a Sombra) · al terminar vuelve a idle, 0°, cuadro entero · guerrero hacia la derecha sin voltear |
+      | V8 | OK | 40 carteles compactos de 68–68 px CSS (≤ 70) · centro de victoria 33.6–34.1 %, de derrota 34.0–53.0 % (tercio medio) · no tapa la fila de botones ni las barras · «Volver» ≥ 44 px |
+      | V9 | OK | veil_gate: 64 barras «Vida de Voz del Velo» |
+      | B1 | OK | victoria (4 formaciones × 5 pantallas): el cartel no toca ninguna silueta, ni héroes ni enemigos caídos · centro 33.6–34.1 % del marco del panel |
+      | B2 | OK | derrota (4 formaciones × 5 pantallas): el cartel no toca a los héroes tendidos, ni los botones, y no corta ninguna cara (tapa enemigos vivos en 15 de 20, permitido) · centro 34.0–53.0 % |
+      | B4 | OK | crypt: 43 pies de enemigos entre el carro (77.5) y el altar (618.9); el más a la derecha llega a 614.9 |
+      | H-c | OK | factor 1 en las 60 vistas de las 5 pantallas · marco de 611 (375×611): 3enemigos 1 (HF 1223, HB 1084, EF 940, EB 838) · 4enemigos_veil 1 (HF 1223, HB 1084, EF 1060, EB 1006) · jefe 0.931 (HF 1223, HB 1094, EF 1070), sin pies bajo los botones, sobre el piso, cabezas bajo las barras y sin solape en la fila |
+      | R31 | OK | 184 cuadros con los 5 héroes golpeados (5 pantallas): 0 con marcador |
+      `errores de consola/página durante las capturas: 0`.
+    - **Revisión a ojo** (Read):
+      - `secuencia_tirador.webp`, con zoom en los cuadros de +141 y +299 ms: la estela sale de la boca, pasa por detrás de la capucha de Sombra (Sombra la tapa) y llega al pecho del bruto. El fogonazo queda delante de Elena. Ya no se lee como un tiro a la compañera.
+      - Las 3 vistas de 375×611:
+        - jefe: héroes y Devorador algo más chicos, en proporción; pies sobre los botones; la cabeza del jefe bajo su barra; las caras de los héroes a la vista;
+        - 4 Voz del Velo y 3 carroñeros: igual que en 375×667, con los carriles corridos hacia arriba.
+      - La hoja de contacto (63 vistas).
+    - **Suites y build** (al final, en reposo):
+      - `cd server && npx jest --runInBand --forceExit` → `Test Suites: 33 passed, 33 total`, `Tests: 545 passed, 545 total`.
+      - `cd client && npm run build` → `✓ built in 7.67s` (con el aviso de siempre de chunks > 500 kB). `window.__combatGame` no aparece en `client/dist`.
+    - **Fuera de alcance, sin tocar:**
+      - fps (feature #27), arte, merge y push, `engineVersion`, server, shared, `done` y CHANGELOG.
+      - `git diff 2baed75..HEAD -- shared server` está vacío.
+      - Los 3 restos viejos de fps siguen sin commitear.
+      - Las sondas que usé (`zz_probe.test.js`) se borraron y nunca se commitearon.
 - [x] T11 — Medición y capturas: levantar el preview del owner (`bash D:/Proyectos/_ops/preview/arrancar.sh`), jugar un combate `a1n3` entero con v1 (valor actual) y con v2 (solo en entorno local, sin commitear `engineVersion`); capturas con `node D:/Proyectos/_ops/capturas/capturar.mjs --tag combate_b --pantallas hub` (línea base del hub, que debe verse igual) y, como `PANTALLAS_DEF` (`capturar.mjs:26`) no incluye el combate, un script Playwright propio en `specs/combate_b/evidencia/` que entra a `a1n3` y captura cada ronda (412×860 @2x, webp en `evidencia/despues/`) o, si el owner lo prefiere, una pantalla `combat` agregada a `capturar.mjs` (fuera del repo); captura de red (0 peticiones a `/assets/game/`), consola limpia, `botonesBajo44: []`, fps medio y p5 en `evidencia/fps.json` (medio y bajo; emulador `kh_pixel7` si hay GPU, Q9). Cubre: R28, R43, R48, R49, R50.
   - Evidencia: DESVÍOS: (a) no usé `arrancar.sh` para no tocar :5180/:3101 del owner: server del worktree en :3001 (`NODE_APP_INSTANCE=1 BOT_TOKEN=dummy BOT_POLLING=false`) + vite del worktree en :5173, ambos detenidos al terminar; db local (ignorada por git) sembrada con `evidencia/sembrar_a1n3.cjs`; (b) v2 corrido con `engineVersion: 2` SOLO local y revertido a 1 antes de commitear (`git diff 46d156d..HEAD -- shared server` vacío); (c) fps medido en ESCRITORIO, no en `kh_pixel7` (ver abajo). Scripts en `evidencia/`: `capturar_combate.mjs` (Playwright: entra a a1n3, captura cada ronda 412×860@2x en `evidencia/despues/{v1,v2}_rNN.webp`, red, consola, fps, botones), `resumen.mjs`, `unir_fps.mjs`, `comparar_hub.mjs`, `veil_stats.mjs`. **Combate a1n3 entero**: v1 y v2 → `victoria`, 7 rondas cada uno (~10 s); `entrada.engine` undefined (v1) / 2 (v2); a1n3 tiene 1 enemigo, así que 3 y 4 enemigos se capturan como estado sintético (ver veil). **R28 red** (`despues/red_v1.json`, `red_v2.json`): 6 peticiones a `/assets/`, `bajoAssetsGame: 0` (solo `/assets/b/{bg/combat_crypt,enemies/bruto_idle,enemies/bruto_hit,heroes/warrior_idle,heroes/warrior_attack,ui/btn_red}.webp`). **Consola** (`reporte_v{1,2}.json`.erroresCombate): solo 4 `warning: [Telegram.WebApp] ... not supported in version 6.0` (ruido del SDK de Telegram en navegador); 0 `error`/`pageerror`/HTTP ≥ 400 en el combate real. **Botones**: `botonesBajo44: []` en 412×860 y en 360×740, 360×800, 412×915 (v1 y v2). **Barra por enemigo (T10.5/R54)**: con 1 (a1n3), 3 y 4 enemigos (sintético, `v2_veil_gate_a2n10_{3,4}enemigos.webp`): `barrasTapanAvanzar=false`, `barrasTapanBotonesHud=false`, `barrasTapanHeroesSprites=false` (borde inferior de las barras 101–138 px < inicio de la zona de héroes 426–522 px en los 4 viewports). Matiz: `barrasSolapanZonaEnemigos=true` — la fila de barras (HUD superior, hasta y≈101–138 px) se superpone con la parte alta de la caja del enemigo (ENEMY_TOP=100 lógico → y≈50 px). NO pude mirar las imágenes (sin visión en este entorno): no afirmo que el borde de la caja tenga sprite o sea margen transparente; el reviewer debe abrir `v2_r00_inicio.webp` y `v2_veil_gate_a2n10_4enemigos.webp`. **`combat_veil_gate` (review Etapa B)**: capturas `v1_veil_gate_a2n10_1enemigo.webp`, `v2_veil_gate_a2n10_3enemigos.webp`, `v2_veil_gate_a2n10_4enemigos.webp` (a2n10 boss, estado sintético; su /step da 400 esperado, aislado en `erroresVeilSintetico`). Luma media/desvío por tercio (`veil_stats.mjs`): veil_gate 56.7/40.4 · 76.5/58.0 · 60.1/36.3 vs. crypt 63.6/52.4 · 66.1/44.8 · 55.3/39.0 y ashfield 72.6/42.9 · 66.9/40.7 · 54.7/37.6: el tercio medio del veil_gate es el más claro y de más contraste justo donde van los enemigos → riesgo de confusión con los sprites; sin poder verlo, queda como observación abierta para el reviewer (arte nuevo prohibido en esta etapa). **Hub**: `capturar.mjs --tag combate_b --pantallas hub` → `D:/Proyectos/_ops/capturas/2026-10-31-20-56_combate_b/*__hub.png` (5 viewports ✓). Comparado contra la última base con hub disponible (`2026-10-29-02-16_fix24_despues`; no existe una de HEAD previo) con `comparar_hub.mjs`: 4,1–10,3 % de píxeles distintos y solo 0,17–2,08 % con diferencia fuerte (hub animado; la rama solo toca `PhaserGame.jsx` para dormir el loop en combate, R39) → NO es igualdad pixel-exacta demostrada. **fps** (`evidencia/fps.json`): medio v1 avg 60 / p5 60, v2 avg 60 / p5 58; bajo v1 avg 60 / p5 58, v2 avg 60 / p5 58 (15–16 ventanas de 500 ms, Chromium headless con RTX 5060). **PENDIENTE**: medición en `kh_pixel7`/móvil real; 60 fps de escritorio NO demuestra Q9 (medio ≥ 50 avg, bajo ≥ 30 p5). No corrí el emulador. Verificación abierta para el owner.
 - [x] T12 — Cierre: suites completas `cd server && npx jest --runInBand --forceExit` y `cd client && npx vitest run` (citar `Tests: N passed`, comparar con T1), `cd client && npm run build`; verificar R1, R2, R51, R52 con los `git diff` del requirements; `CHANGELOG.md` bajo `## [Unreleased]` solo cuando el reviewer apruebe. Cubre: R1, R2, R51, R52, R53.
