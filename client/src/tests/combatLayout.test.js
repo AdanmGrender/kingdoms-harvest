@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   computeFormation, enemyList, faceCoverage, groundY, lyingBox, lyingBoxes, hudToWorld, laneLimits, formationFits, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP,
-  ENEMY_TOP_SOLO, LANE_MAX, LANE_GAP, FLOOR_MARGIN, FOOT_MARGIN, HERO_H, ROWS, BANNER_ZONE_BOTTOM,
+  ENEMY_TOP_SOLO, LANE_MAX, LANE_GAP, FLOOR_MARGIN, FOOT_MARGIN, HERO_H, ROWS, BANNER_ZONE_BOTTOM, SHRINK_MIN,
 } from '../game/combat/formation';
 import { MAX_ASPECT } from '../utils/viewport';
 import {
@@ -47,6 +47,7 @@ const form = (node, n, m, cls) => computeFormation(squad(n, cls), enemies(m), { 
 const label = (node) => (node ? `${node.id} (${bgArt(node)})` : 'sin nodo (crypt)');
 
 /** Verifica una formación contra R24 enmendado, V2 enmendada y los topes reales del HUD (V3). */
+// `vp`: pantalla de hud_medidas.json, o directamente sus bordes { B, T1, TN } (marcos muy bajos de H-c)
 function checkFormation(f, node, n, m, vp = PEOR) {
   const all = [...f.heroes, ...f.enemies];
   expect(f.heroes).toHaveLength(n);
@@ -81,7 +82,7 @@ function checkFormation(f, node, n, m, vp = PEOR) {
   // H1: los márgenes se miden contra lo medido, no contra constantes del módulo: piso real del fondo
   // (calibracion_suelo.json) y bordes reales del HUD de la pantalla (hud_medidas.json). Márgenes ≥ 0.
   const g = CALIB[bgArt(node)].groundY;
-  const hud = HUD.porViewport[vp];
+  const hud = typeof vp === 'string' ? HUD.porViewport[vp] : vp;
   for (const r of present) {
     expect(f.lanes[r] - g, `${vp} ${r}: margen sobre el piso ${g}`).toBeGreaterThanOrEqual(0);
     expect(hud.B - f.lanes[r], `${vp} ${r}: margen bajo los botones ${hud.B}`).toBeGreaterThanOrEqual(0);
@@ -363,6 +364,7 @@ describe('H2: carriles con el borde REAL de los botones y de las barras de cada 
             for (let m = 1; m <= 4; m++) {
               const f = computeFormation(squad(n, cls), enemies(m), { node, boss: !!node && isBossNode(node), hud: hudDe(vp, m) });
               checkFormation(f, node, n, m, vp);
+              expect(f.factor, `${vp} ${label(node)} n${n} m${m}`).toBe(1);   // H-c: en las pantallas de la hoja no se achica
             }
           }
         }
@@ -444,6 +446,30 @@ describe('H2: carriles con el borde REAL de los botones y de las barras de cada 
       }
     });
   }
+  it('las vistas de la hoja (hoja_medidas.json) no cambian: mismos carriles y altos con su borde medido, factor 1', () => {
+    const MED = JSON.parse(fs.readFileSync(path.join(HOJA, 'hoja_medidas.json'), 'utf8'));
+    const ESC = {
+      '1enemigo': [{ id: 'a1n3', act: 1, type: 'combat' }, 1], '3enemigos': [{ id: 'a1n7', act: 1, type: 'combat' }, 3],
+      '4enemigos_veil': [{ id: 'a2n10', act: 2, type: 'boss', isBoss: true }, 4], jefe: [{ id: 'a1n9', act: 1, type: 'boss', isBoss: true }, 1],
+    };
+    const SQUAD = ['warrior', 'mage', 'ranger', 'paladin', 'rogue'];   // aria, lyra, elena, viktor, shadow
+    let vistas = 0;
+    for (const vp of [...VISTAS, ...BAJAS]) {
+      for (const [key, [node, m]] of Object.entries(ESC)) {
+        const v = MED[`${vp}_${key}`];
+        const f = computeFormation(squad(5, SQUAD), enemies(m), { node, boss: !!node.isBoss, hud: v.crudo.hudMedido });
+        expect(f.lanes, `${vp} ${key}`).toEqual(v.crudo.lanes);
+        expect(f.factor, `${vp} ${key}`).toBe(1);
+        for (const a of v.crudo.actores) {
+          const b = [...f.heroes, ...f.enemies].find((x) => x.id === a.id);
+          expect(b.h, `${vp} ${key} ${a.id}`).toBeCloseTo(a.dibujado.alto, 6);
+          expect(b.cx, `${vp} ${key} ${a.id}`).toBeCloseTo(a.cx, 6);
+        }
+        vistas += 1;
+      }
+    }
+    expect(vistas).toBe(20);
+  });
   it('360×740 y 375×667: los héroes suben hasta quedar sobre los botones de esa pantalla', () => {
     for (const vp of BAJAS) {
       const f = computeFormation(squad(5), enemies(3), { node: NODES[0], hud: hudDe(vp, 3) });
@@ -472,6 +498,48 @@ describe('H2: carriles con el borde REAL de los botones y de las barras de cada 
     expect(m8.zoneBottom).toBeCloseTo((0.34 * 756 + 35 - top8) / k8, 6);
     expect(hudToWorld({ stage: { top: 0, width: 0, height: 0 }, buttonsTop: 10 })).toBeNull();
     expect(hudToWorld()).toBeNull();
+  });
+});
+
+// H-c (decisión del owner del 2026-11-09): marcos muy bajos. Bordes de un marco de 375 de ancho y `alto` px CSS, como los
+// mide el panel: el lienzo en FIT dentro del marco, la pila de abajo (botones con «¡TAP!», nombres y «Avanzar») ocupa
+// 174 px CSS y las barras terminan en 102 (1 enemigo) o 139 (2 o más) px CSS, como en 375×667 (hud_medidas.json).
+const marcoBajo = (alto, m) => {
+  const stage = { left: 0, top: 0, width: 375, height: alto };
+  const h = hudToWorld({ stage, buttonsTop: alto - 174, barsBottom: m === 1 ? 102 : 139, viewH: alto });
+  return { hud: h, bordes: { B: h.bottom, T1: hudToWorld({ stage, barsBottom: 102 }).top, TN: hudToWorld({ stage, barsBottom: 139 }).top } };
+};
+describe('H-c: en marcos muy bajos la formación se achica en proporción (factor < 1 solo cuando no entra)', () => {
+  for (const alto of [657, 625, 611]) {
+    for (const node of CONFIGS) {
+      it(`marco de ${alto} px CSS · ${label(node)}: matriz R24 (n 1–5 × m 1–4 × 3 escuadras) con su separación, piso, cabezas bajo las barras y pies sobre los botones`, () => {
+        for (const cls of Object.values(SQUADS)) {
+          for (let n = 1; n <= 5; n++) {
+            for (let m = 1; m <= 4; m++) {
+              const { hud, bordes } = marcoBajo(alto, m);
+              const opts = { node, boss: !!node && isBossNode(node) };
+              const f = computeFormation(squad(n, cls), enemies(m), { ...opts, hud });
+              checkFormation(f, node, n, m, bordes);
+              expect(f.factor).toBeGreaterThanOrEqual(SHRINK_MIN);
+              expect(f.factor).toBeLessThanOrEqual(1);
+              // el mismo factor para héroes y enemigos: las proporciones de V1 se mantienen
+              const base = computeFormation(squad(n, cls), enemies(m), opts);
+              for (const b of [...f.heroes, ...f.enemies]) {
+                const b0 = [...base.heroes, ...base.enemies].find((x) => x.id === b.id);
+                expect(b.h / b0.h, `${alto} ${label(node)} n${n} m${m} ${b.id}`).toBeCloseTo(f.factor, 6);
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+  it('el factor baja solo donde hace falta: con 657 el bruto de a1n3 entra entero; el jefe de la catedral a 611 se achica', () => {
+    const jefe = NODES.find((x) => x.id === 'a1n9');
+    const f = (alto, m, node = jefe) => computeFormation(squad(5), enemies(m), { node, boss: true, hud: marcoBajo(alto, m).hud });
+    expect(f(611, 1).factor).toBeLessThan(1);
+    expect(f(611, 1).factor).toBeLessThanOrEqual(f(657, 1).factor);
+    expect(computeFormation(squad(5), enemies(1), { node: NODES[0], hud: marcoBajo(657, 1).hud }).factor).toBe(1);   // a1n3: entra
   });
 });
 

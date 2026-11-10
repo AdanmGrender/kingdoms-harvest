@@ -137,14 +137,14 @@ function rowScore(units, xs, lane, front) {
 
 // ── formación ─────────────────────────────────────────────────────────────
 
-function heroRows(heroes) {
+function heroRows(heroes, fs = 1) {
   const sorted = [...(Array.isArray(heroes) ? heroes : [])].sort((a, b) => a.slot - b.slot);
   const front = []; const back = [];
   for (const h of sorted) (h.slot <= 3 && front.length < 3 ? front : back).push(h);
   const back2 = back.slice(0, Math.max(0, 5 - front.length));
   const mk = (h, row, H) => unit(`h${h.slot}`, 'hero', heroArt(h), H, { row, side: 'h', slot: h.slot, heroId: h.heroId ?? null });
-  const HF = front.map((h) => mk(h, 'HF', HERO_H));
-  const HB = back2.map((h) => mk(h, 'HB', Math.round(HERO_H * BACK_SCALE)));
+  const HF = front.map((h) => mk(h, 'HF', HERO_H * fs));
+  const HB = back2.map((h) => mk(h, 'HB', Math.round(HERO_H * BACK_SCALE) * fs));
   const xF = spread(HF.map((u) => u.w));
   const pitch = xF.length > 1 ? xF[1] - xF[0] : PITCH_MAX;
   // traseros en los huecos entre los delanteros (ladrillo): sus caras asoman entre las cabezas de delante
@@ -152,12 +152,12 @@ function heroRows(heroes) {
   return { HF, HB, xF, xB };
 }
 
-function enemyRows(enemies, boss, node) {
+function enemyRows(enemies, boss, node, fs = 1) {
   const list = (Array.isArray(enemies) ? enemies : []).slice(0, MAX_ENEMIES);
   const m = list.length;
   const art = enemyArt(node);
   const solo = Math.round(ENEMY_HEIGHT_FRAC.normal * WORLD.h);
-  const h = m === 1 ? Math.round((boss ? ENEMY_HEIGHT_FRAC.boss : ENEMY_HEIGHT_FRAC.normal) * WORLD.h) : Math.round(solo * (GROUP_SCALE[m] || 0.6));
+  const h = fs * (m === 1 ? Math.round((boss ? ENEMY_HEIGHT_FRAC.boss : ENEMY_HEIGHT_FRAC.normal) * WORLD.h) : Math.round(solo * (GROUP_SCALE[m] || 0.6)));
   const scale = m === 1 ? 1 : GROUP_SCALE[m] || 0.6;
   const us = list.map((e, i) => unit(e.id ?? `e${i}`, 'enemy', art, h, { side: 'e', index: i, scale }));
   const w = us.length ? us[0].w : 0;
@@ -279,23 +279,38 @@ export function formationFits(f) {
  * @param enemies  salida de `enemyList(state)` (usa `id`)
  * @param opts     { boss?: boolean | node, node?, hud?: { bottom?, top?, zoneBottom? } }  (un nodo `{type:'boss'}` también
  *                 vale en `boss`)
- * B-3 (review ronda 3): si con la medida del HUD la formación no cabe (carriles fuera de orden o cajas fuera del lienzo,
- * p. ej. botones medidos en y 600 o barras en 1500), la medida se descarta y vuelven las constantes.
+ * H-c (decisión del owner del 2026-11-09): si con la medida del HUD la formación no cabe con su tamaño de siempre (un
+ * marco muy bajo: los carriles no tienen su separación de 24), toda la formación se achica en proporción (el mismo
+ * factor `factor` para héroes y enemigos: las proporciones de V1 se mantienen) lo justo para que vuelva a caber, con
+ * R24 por fila, el piso, las cabezas bajo las barras y los pies sobre los botones. Donde entra, `factor` = 1.
+ * B-3 (review ronda 3): si ni achicada a SHRINK_MIN cabe (botones medidos en y 600, barras en 1500, franja en 1700), la
+ * medida es absurda: se descarta y vuelven las constantes.
  */
+export const SHRINK_MIN = 0.5;
 export function computeFormation(heroes, enemies, opts = {}) {
-  const f = buildFormation(heroes, enemies, opts);
-  if (opts.hud && !formationFits(f)) return buildFormation(heroes, enemies, { ...opts, hud: null });
-  return f;
+  const f = buildFormation(heroes, enemies, opts, 1);
+  if (!opts.hud || formationFits(f)) return f;
+  const at = (fs) => buildFormation(heroes, enemies, opts, fs);
+  let best = at(SHRINK_MIN);
+  if (!formationFits(best)) return buildFormation(heroes, enemies, { ...opts, hud: null }, 1);
+  // el mayor factor (al 0,5 %) con el que cabe: cabe en `lo`, no cabe en `hi`
+  let lo = SHRINK_MIN; let hi = 1;
+  while (hi - lo > 0.005) {
+    const mid = Math.round(((lo + hi) / 2) * 1000) / 1000;
+    const g = at(mid);
+    if (formationFits(g)) { lo = mid; best = g; } else hi = mid;
+  }
+  return best;
 }
 
-function buildFormation(heroes, enemies, opts) {
+function buildFormation(heroes, enemies, opts, fs) {
   const boss = typeof opts.boss === 'object' && opts.boss ? isBossNode(opts.boss) : !!opts.boss;
   const node = opts.node || (typeof opts.boss === 'object' ? opts.boss : null);
   const ground = groundY(node);
   const floor = ground + FLOOR_MARGIN;
   const lim = laneLimits(opts.hud);
-  const H = heroRows(heroes);
-  const E = enemyRows(enemies, boss, node);
+  const H = heroRows(heroes, fs);
+  const E = enemyRows(enemies, boss, node, fs);
   const band = enemyFootBand(node);
   E.xB = fitFeet(E.EB, E.xB, band);
   E.xF = fitFeet(E.EF, E.xF, band);
@@ -355,7 +370,7 @@ function buildFormation(heroes, enemies, opts) {
 
   const byIndex = [...out.EB, ...out.EF].sort((a, b) => a.index - b.index);
   return {
-    world: WORLD, boss, ground, lanes, bg: bgArt(node),
+    world: WORLD, boss, ground, lanes, bg: bgArt(node), factor: fs,
     heroes: [...out.HF, ...out.HB],
     enemies: byIndex,
   };
