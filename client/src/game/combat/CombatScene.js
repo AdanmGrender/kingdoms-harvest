@@ -230,11 +230,19 @@ export default class CombatScene extends Phaser.Scene {
     for (const b of [...f.heroes, ...f.enemies]) {
       const a = this.actors[b.id];
       if (!a || (a.base.x === b.cx && a.base.y === b.lane)) continue;
-      this.tweens.killTweensOf(a.c);
+      // H-a (review ronda 3): se recoloca la pantalla, no se corta la animación de nadie. El carril (y) va a su sitio
+      // nuevo; una embestida o un retroceso en curso (tween de x) sigue y al terminar queda en la x nueva; una caída en
+      // curso sigue relativa a su contenedor.
       Object.assign(a.base, { x: b.cx, y: b.lane, headY: b.alpha.y });
-      a.c.setPosition(b.cx, b.lane).setDepth(b.depth);
-      if (a.dead) this.layDown(a);
+      a.c.y = b.lane;
+      if (!this.isTweening(a.c)) a.c.x = b.cx;
+      a.c.setDepth(b.depth);
+      if (a.dead && !this.isTweening(a.sp)) this.layDown(a);
     }
+  }
+
+  isTweening(o) {
+    return !!(this.tweens && this.tweens.isTweening && this.tweens.isTweening(o));
   }
 
   skip() {
@@ -592,7 +600,10 @@ export default class CombatScene extends Phaser.Scene {
           // el tirador dispara desde su sitio (embestir correría la boca del arma sobre la fila de atrás)
           if (!this.reduced && target && !ATTACK_FX[actor.art]) {
             const dir = Math.sign(target.base.x - actor.base.x) || 1;
-            this.tweens.add({ targets: actor.c, x: actor.base.x + dir * LUNGE_PX, duration: 110, yoyo: true, ease: 'Quad.easeOut' });
+            this.tweens.add({
+              targets: actor.c, x: actor.base.x + dir * LUNGE_PX, duration: 110, yoyo: true, ease: 'Quad.easeOut',
+              onComplete: () => { actor.c.x = actor.base.x; },   // si la pantalla se recolocó en medio, termina en su x nueva
+            });
           }
           this.restoreLater(actor, 420);
         }
@@ -607,7 +618,10 @@ export default class CombatScene extends Phaser.Scene {
               cam.shake(b.intensity > 1.5 ? 260 : 170, b.intensity > 1.5 ? 0.014 : 0.008);
               if (!target.dead) {
                 const away = actor ? Math.sign(target.base.x - actor.base.x) || 1 : 1;
-                this.tweens.add({ targets: target.c, x: target.base.x + away * RECOIL_PX, duration: 90, yoyo: true, ease: 'Quad.easeOut' });
+                this.tweens.add({
+                  targets: target.c, x: target.base.x + away * RECOIL_PX, duration: 90, yoyo: true, ease: 'Quad.easeOut',
+                  onComplete: () => { target.c.x = target.base.x; },
+                });
               }
             }
             this.restoreLater(target, 360);

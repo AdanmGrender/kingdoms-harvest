@@ -848,4 +848,39 @@ describe('H2: la escena toma el borde real del HUD y se recoloca si cambia el al
     expect(Math.abs(a.sp.angle)).toBe(90);
     expect(a.c.y).toBeLessThanOrEqual(1272);
   });
+  it('H-a: un cambio de alto en plena embestida, retroceso o caída mueve solo el carril y no corta ninguna animación', () => {
+    const { s } = fakeScene({ state: FULL, node: FULL_NODE });
+    s.preload();
+    s.create();
+    // tweens que quedan en curso: no se aplican ni terminan hasta que el test lo diga
+    const vivos = [];
+    s.tweens.add = (cfg) => { const t = { cfg, targets: [].concat(cfg.targets), done: false }; vivos.push(t); return { stop() { t.done = true; } }; };
+    s.tweens.isTweening = (o) => vivos.some((t) => !t.done && t.targets.includes(o));
+    const muertos = [];
+    s.tweens.killTweensOf = (o) => { for (const x of [].concat(o)) muertos.push(x); for (const t of vivos) if (t.targets.some((y) => [].concat(o).includes(y))) t.done = true; };
+    s.playBeat(BEAT({ kind: 'hit', actorId: 'h1', targetId: 'e2', num: 9 }));   // h1 embiste y e2 retrocede
+    s.playBeat(BEAT({ kind: 'death', targetId: 'e1' }));                        // e1 cae
+    const h1 = s.actors.h1; const e2 = s.actors.e2; const e1 = s.actors.e1;
+    const enCurso = (a) => vivos.filter((t) => !t.done && t.targets.includes(a.c) && 'x' in t.cfg);
+    expect(enCurso(h1)).toHaveLength(1);
+    expect(enCurso(e2)).toHaveLength(1);
+    expect(vivos.some((t) => !t.done && t.targets.includes(e1.sp))).toBe(true);
+    const xAntes = { h1: h1.c.x, e2: e2.c.x };
+    muertos.length = 0;
+    s.setHud({ bottom: 1272, top: 358.5 });                                     // 375×667: cambian los carriles
+    const f = computeFormation(FULL.heroes, enemyList(FULL), { node: FULL_NODE, hud: { bottom: 1272, top: 358.5 } });
+    const lane = (id) => [...f.heroes, ...f.enemies].find((b) => b.id === id).lane;
+    for (const a of [h1, e2, e1]) {
+      expect(a.c.y, a.id).toBe(lane(a.id));                                     // el carril, a su sitio nuevo
+      expect(muertos.includes(a.c) || muertos.includes(a.sp), `${a.id}: animación cortada`).toBe(false);
+    }
+    expect(h1.c.y).not.toBe(1320);                                              // de verdad cambió de carril
+    expect(enCurso(h1)).toHaveLength(1);                                        // la embestida sigue
+    expect(enCurso(e2)).toHaveLength(1);                                        // el retroceso sigue
+    expect([h1.c.x, e2.c.x]).toEqual([xAntes.h1, xAntes.e2]);                   // nadie le pisa la x al tween
+    expect(vivos.some((t) => !t.done && t.targets.includes(e1.sp))).toBe(true); // la caída sigue
+    // al terminar, cada uno queda en la x de su sitio (nuevo si la recolocación la cambió)
+    for (const t of vivos.filter((x) => !x.done && x.cfg.onComplete && x.targets.some((y) => y === h1.c || y === e2.c))) t.cfg.onComplete();
+    expect([h1.c.x, e2.c.x]).toEqual([h1.base.x, e2.base.x]);
+  });
 });
