@@ -28,7 +28,15 @@ const CH = ['combat:open', 'combat:close', 'combat:round-done'];
 const hero = (hp) => ({ slot: 1, heroId: null, class: 'warrior', hp, maxHp: 100, alive: hp > 0 });
 const st = (e, h) => ({ round: 1, enemy: { hp: e, maxHp: 100 }, heroes: [hero(h)] });
 const NODE = { id: 'a1n3', type: 'combat' };
-const flush = () => act(async () => { await new Promise((r) => setTimeout(r, 5)); });
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Con la máquina cargada el import dinámico del juego puede tardar más de 5 ms (B-1 de la review ronda 3): además de la
+// espera corta, se espera al mismo import que hace el stage (cuando resuelve, el stage ya creó el juego) y a un turno
+// más, el del onReady del juego simulado.
+const flush = () => act(async () => {
+  await sleep(5);
+  await import('../game/combat/createCombatGame');
+  await sleep(1);
+});
 
 beforeEach(() => {
   made.length = 0;
