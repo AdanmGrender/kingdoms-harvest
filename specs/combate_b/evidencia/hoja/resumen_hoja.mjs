@@ -54,7 +54,9 @@ const v7s = dyn.map((v) => v.v7);
 // el tirador dibuja el cuadro de la textura que termina en la boca del arma (nunca un setCrop, que Phaser espeja al voltear)
 const V7ok = v7s.every((d) => d.flipDurante && d.anguloDurante > 0 && d.anguloDurante <= 30 && d.cuadroDurante === 'sin_fogonazo'
   && !d.recorteDurante && d.estelaHastaObjetivo && d.bocaSobreCompañero.length === 0 && !d.flipDespues && d.anguloDespues === 0
-  && d.cuadroDespues === '__BASE' && !d.recorteDespues && !d.h1FlipDurante);
+  && d.cuadroDespues === '__BASE' && !d.recorteDespues && !d.h1FlipDurante
+  && d.profundidad && d.profundidad.estela < d.profundidad.heroeMin && d.profundidad.proyectil < d.profundidad.heroeMin
+  && d.profundidad.estela > d.profundidad.enemigoMax && d.profundidad.fogonazo > d.profundidad.tirador);
 const fueraTirador = v7s.map((d) => Math.max(0, d.siluetaX.hi - 824, -d.siluetaX.lo));
 const r31 = dyn.map((v) => v.r31);
 const R31ok = r31.every((d) => d.cuadrosConMarcador === 0 && !d.texturasVistas.some((t) => t.startsWith('ph:')));
@@ -96,6 +98,13 @@ const veil = vistas.filter(([k]) => /4enemigos_veil/.test(k)).flatMap(([, v]) =>
 const V9ok = veil.length > 0 && veil.every((x) => x === 'Vida de Voz del Velo');
 
 const fmt = (xs) => `${Math.min(...xs).toFixed(1)}–${Math.max(...xs).toFixed(1)} %`;
+
+// H-c: factor de la formación (1 en las pantallas de la hoja; < 1 solo donde no entra, 375×611)
+const deLaHoja = vistas.filter(([k]) => !k.startsWith('375x611_'));
+const bajas611 = vistas.filter(([k]) => k.startsWith('375x611_'));
+const HCok = deLaHoja.length === 60 && deLaHoja.every(([, v]) => v.crudo.factor === 1) && bajas611.length === 3
+  && bajas611.every(([, v]) => v.crudo.factor > 0 && v.crudo.factor <= 1 && v.V2.sobreBotones && v.V2.sobrePiso && v.V3.hudSobreSiluetas.length === 0
+    && v.V3.cabezaBajoBarras && v.V3.solapeMaxDentroDeFila === 0);
 const filas = [
   ['V1', V1ok, `héroe/común ${V1.heroeSobreComun} · jefe/héroe ${V1.jefeSobreHeroe} · común en grupo/héroe ${V1.grupoSobreHeroe} · trasera/delantera ${V1.traseraSobreDelantera}`],
   ['V2', pie <= 12 && sobrePiso && sobreBotones, `pie vs. su carril, peor ${pie.toFixed(2)} px (${vistas.length} vistas) · carriles ≥ piso del fondo + ${margenPiso} · el carril más bajo queda ${margenBotones.toFixed(1)} sobre el borde real de los botones de su pantalla (peor vista) · HF por pantalla ${JSON.stringify(hfPorPantalla)}`],
@@ -103,12 +112,13 @@ const filas = [
   ['V4', V4ok, `${v4s.map((d) => `${d.normalCss.toFixed(1)}/${d.criticoCss.toFixed(1)}`).join(', ')} px CSS (normal/crítico, 5 pantallas) · base del número sobre la cabeza · pop 1,4→1 a 140 ms · sube ${v4s[0].subidaCss840ms} px CSS y desaparece antes de 840 ms · ráfaga 37 / 96! / 52, hueco en px CSS (↑ apilado sobre el alto real del anterior, → columna al lado): ${paresTxt} · sin pisarse al nacer ni a 140 ms · golpes escalonados (+0, +250 ×2, +500 ms): ${v4s.reduce((n, d) => n + d.escalonado.cuadros, 0)} cuadros, ${v4s.reduce((n, d) => n + d.escalonado.cuadrosConPisada, 0)} con números pisados · nacen fuera del lienzo: ${v4s.map((d) => d.asomanArribaAlNacer).join('/')}, bajo las barras de vida: ${v4s.map((d) => d.bajoLasBarrasAlNacer).join('/')}`],
   ['V5', V5ok, `${nombres.length} nombres de botón a ${Math.min(...nombres.map((n) => n.px))} px sin recorte ni «…» · ${barras.length} nombres de barra sin recorte`],
   ['V6', V6ok, `${caidos.length} caídos a ±90°, alfa ${Math.min(...caidos.map((a) => a.sp.alpha))}, desaturados · barras atenuadas a 0,45`],
-  ['V7', V7ok, `tirador hacia la izquierda: flipX, ${v7s.map((d) => d.anguloDurante).join('/')}° (tope 30), cuadro «${v7s[0].cuadroDurante}» de ${v7s[0].anchoCuadroDurante} px (sin el fogonazo pintado, cuerpo a la vista), estela de la boca al objetivo, boca fuera de toda silueta de su bando · silueta inclinada fuera del lienzo: ${fueraTirador.map((x) => x.toFixed(0)).join('/')} px de mundo (corrida ${v7s.map((d) => Math.round(-d.corrimiento)).join('/')} px hacia adentro, hasta pegar la boca a Sombra) · al terminar vuelve a idle, 0°, cuadro entero · guerrero hacia la derecha sin voltear`],
+  ['V7', V7ok, `tirador hacia la izquierda: flipX, ${v7s.map((d) => d.anguloDurante).join('/')}° (tope 30), cuadro «${v7s[0].cuadroDurante}» de ${v7s[0].anchoCuadroDurante} px (sin el fogonazo pintado, cuerpo a la vista), estela de la boca al objetivo, boca fuera de toda silueta de su bando · estela y proyectil por detrás de toda la fila de héroes (profundidad ${v7s[0].profundidad.estela} < ${v7s[0].profundidad.heroeMin}) y por delante de los enemigos (> ${v7s[0].profundidad.enemigoMax}), fogonazo delante del tirador · silueta inclinada fuera del lienzo: ${fueraTirador.map((x) => x.toFixed(0)).join('/')} px de mundo (corrida ${v7s.map((d) => Math.round(-d.corrimiento)).join('/')} px hacia adentro, hasta pegar la boca a Sombra) · al terminar vuelve a idle, 0°, cuadro entero · guerrero hacia la derecha sin voltear`],
   ['V8', V8ok, `40 carteles compactos de ${Math.min(...carteles.map(([, c]) => c.alto)).toFixed(0)}–${Math.max(...carteles.map(([, c]) => c.alto)).toFixed(0)} px CSS (≤ 70) · centro de victoria ${fmt(centrosVictoria)}, de derrota ${fmt(centrosDerrota)} (tercio medio) · no tapa la fila de botones ni las barras · «Volver» ≥ 44 px`],
   ['V9', V9ok, `veil_gate: ${veil.length} barras «${veil[0]}»`],
   ['B1', B1ok, `victoria (4 formaciones × 5 pantallas): el cartel no toca ninguna silueta, ni héroes ni enemigos caídos · centro ${fmt(centrosVictoria)} del marco del panel`],
   ['B2', B2ok, `derrota (4 formaciones × 5 pantallas): el cartel no toca a los héroes tendidos, ni los botones, y no corta ninguna cara (tapa enemigos vivos en ${derrotas.filter(([, c]) => Object.keys(c.sobreSiluetas).length).length} de 20, permitido) · centro ${fmt(centrosDerrota)}`],
   ['B4', B4ok, `crypt: ${piesCrypt.length} pies de enemigos entre el carro (${CARRO}) y el altar (${ALTAR}); el más a la derecha llega a ${Math.max(...piesCrypt.map((p) => p.x1)).toFixed(1)}`],
+  ['H-c', HCok, `factor 1 en las ${deLaHoja.length} vistas de las 5 pantallas · marco de 611 (375×611): ${bajas611.map(([k, v]) => `${k.replace('375x611_', '')} ${v.crudo.factor} (HF ${v.crudo.lanes.HF}, ${Object.entries(v.crudo.lanes).filter(([x]) => x !== 'HF').map(([x, y]) => `${x} ${y}`).join(', ')})`).join(' · ')}, sin pies bajo los botones, sobre el piso, cabezas bajo las barras y sin solape en la fila`],
   ['R31', R31ok, `${r31.reduce((s, d) => s + d.cuadros, 0)} cuadros con los 5 héroes golpeados (5 pantallas): ${r31.reduce((s, d) => s + d.cuadrosConMarcador, 0)} con marcador`],
 ];
 for (const [v, ok, txt] of filas) console.log(`| ${v} | ${ok ? 'OK' : 'NO'} | ${txt} |`);

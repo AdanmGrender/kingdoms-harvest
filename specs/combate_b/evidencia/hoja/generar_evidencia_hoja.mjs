@@ -33,6 +33,9 @@ const VPS = [
   { w: 1280, h: 800, dpr: 1.5, name: '1280x800' },
   { w: 360, h: 740, dpr: 2, name: '360x740' },
   { w: 375, h: 667, dpr: 2, name: '375x667' },
+  // H-c (decisión del owner del 2026-11-09): marco muy bajo, como un 375×667 dentro de Telegram (~611): de pie con
+  // 3 carroñeros, 4 Voz del Velo y el jefe de la catedral (5 héroes)
+  { w: 375, h: 611, dpr: 2, name: '375x611', escenas: ['3enemigos', '4enemigos_veil', 'jefe'] },
 ];
 const SQUAD = ['aria', 'lyra', 'elena', 'viktor', 'shadow'];
 const ENERGY = [100, 40, 100, 70, 20];
@@ -237,7 +240,7 @@ async function medir(page) {
       };
     }
     return {
-      lienzo: { x: cr.left, y: cr.top, w: cr.width, h: cr.height, escala: k }, bg: f.bg, ground: f.ground, lanes: f.lanes,
+      lienzo: { x: cr.left, y: cr.top, w: cr.width, h: cr.height, escala: k }, bg: f.bg, ground: f.ground, lanes: f.lanes, factor: f.factor,
       HUD_TOP: fm.HUD_TOP, hudMedido: sc.hud, botonesTopMundo: (heroBtnTop - cr.top) / k, barrasBottomMundo: (bars.bottom - cr.top) / k,
       hud, actores, nombres, barrasEnemigo, barrasHeroe, cartel,
     };
@@ -313,6 +316,12 @@ async function dinamica(page) {
       bocaSobreCompañero: shot ? Object.values(sc.actors).filter((o) => o !== h3 && o.kind === 'hero' && !o.dead)
         .filter((o) => Math.abs(shot.muzzle.x - o.base.x) < o.base.alphaW / 2 && shot.muzzle.y > o.base.headY && shot.muzzle.y < o.base.y).map((o) => o.id) : null,
       estelaHastaObjetivo: shot ? Math.abs(shot.tracer.scaleX * 64 - Math.hypot(shot.to.x - shot.muzzle.x, shot.to.y - shot.muzzle.y)) < 0.5 : false,
+      // T10.8 (B5): la estela y el proyectil van por detrás de toda la fila de héroes y por delante de los enemigos
+      profundidad: shot ? {
+        estela: shot.tracer.depth, proyectil: shot.ball.depth, fogonazo: shot.flash.depth, tirador: h3.c.depth,
+        heroeMin: Math.min(...Object.values(sc.actors).filter((o) => o.kind === 'hero').map((o) => o.c.depth)),
+        enemigoMax: Math.max(...Object.values(sc.actors).filter((o) => o.kind === 'enemy').map((o) => o.c.depth)),
+      } : null,
     };
     await wait(700);
     Object.assign(v7, {
@@ -523,7 +532,7 @@ const run = async () => {
     for (const vp of (PRUEBA ? VPS.slice(0, 1) : VPS)) {
       await respirar(30);
       const { ctx, page, errores } = await abrir(browser, vp);
-      for (const esc of (PRUEBA ? SCEN.slice(0, 1) : SCEN)) {
+      for (const esc of (PRUEBA ? SCEN.slice(0, 1) : SCEN.filter((e) => !vp.escenas || vp.escenas.includes(e.key)))) {
         const nombre = `${vp.name}_${esc.key}`;
         await respirar();
         await abrirEscenario(page, esc);
