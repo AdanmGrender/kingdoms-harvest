@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  computeFormation, enemyList, faceCoverage, groundY, lyingBox, lyingBoxes, hudToWorld, laneLimits, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP,
+  computeFormation, enemyList, faceCoverage, groundY, lyingBox, lyingBoxes, hudToWorld, laneLimits, formationFits, ENEMY_HEIGHT_FRAC, WORLD, HUD_TOP, ENEMY_TOP,
   ENEMY_TOP_SOLO, LANE_MAX, LANE_GAP, FLOOR_MARGIN, FOOT_MARGIN, HERO_H, ROWS, BANNER_ZONE_BOTTOM,
 } from '../game/combat/formation';
 import { MAX_ASPECT } from '../utils/viewport';
@@ -399,6 +399,51 @@ describe('H2: carriles con el borde REAL de los botones y de las barras de cada 
     expect(1271.949 - l.laneMax).toBeGreaterThanOrEqual(FOOT_MARGIN - 0.5);
     expect(laneLimits().laneMax).toBe(LANE_MAX);
   });
+  it('B-3: una medida 0, negativa, no finita o fuera del lienzo no es una medida: vuelven las constantes', () => {
+    const def = laneLimits();
+    for (const v of [0, -10, -1e6, WORLD.h, 1e6, NaN, Infinity, -Infinity]) {
+      expect(laneLimits({ bottom: v }).laneMax, `bottom ${v}`).toBe(def.laneMax);
+      expect(laneLimits({ top: v }).top1, `top ${v}`).toBe(def.top1);
+      expect(laneLimits({ top: v }).topN, `top ${v}`).toBe(def.topN);
+      expect(laneLimits({ zoneBottom: v }).zoneBottom, `zoneBottom ${v}`).toBe(def.zoneBottom);
+    }
+    // hudToWorld no devuelve bordes fuera del lienzo: botones en y 0 o por encima, barras por debajo de todo
+    const st = { top: 0, width: 412, height: 860 };
+    expect(hudToWorld({ stage: st, buttonsTop: 0, barsBottom: 101 })).toEqual({ top: 202 });
+    expect(hudToWorld({ stage: st, buttonsTop: -20 })).toBeNull();
+    expect(hudToWorld({ stage: st, barsBottom: 900 })).toBeNull();                 // 1800 del mundo: fuera
+    expect(hudToWorld({ stage: st, buttonsTop: 686, barsBottom: 0 })).toEqual({ bottom: 1372 });
+    expect(hudToWorld({ stage: st, buttonsTop: 686, viewH: -5 })).toEqual({ bottom: 1372 });
+  });
+  it('B-3: con una medida que no deja sitio a la formación (botones en 600, barras en 1500, franja en 1700) vuelven las constantes', () => {
+    for (const hud of [{ bottom: 600 }, { top: 1500 }, { zoneBottom: 1700 }, { bottom: 600, top: 1500, zoneBottom: 1700 }]) {
+      for (const node of CONFIGS) {
+        for (const m of [1, 2, 4]) {
+          const opts = { node, boss: !!node && isBossNode(node) };
+          const conHud = computeFormation(squad(5), enemies(m), { ...opts, hud });
+          expect(formationFits(conHud), `${JSON.stringify(hud)} ${label(node)} m${m}`).toBe(true);
+          expect(conHud, `${JSON.stringify(hud)} ${label(node)} m${m}`).toEqual(computeFormation(squad(5), enemies(m), opts));
+        }
+      }
+    }
+    // la medida buena se sigue usando: 375×667 sube a los héroes a 1264
+    expect(computeFormation(squad(5), enemies(3), { node: NODES[0], hud: hudDe('375x667', 3) }).lanes.HF).toBe(1264);
+  });
+  // con cualquier combinación de medidas raras, la formación siempre cabe (si la medida no deja sitio, se descarta)
+  for (const node of CONFIGS) {
+    it(`B-3 · ${label(node)}: barrido de medidas absurdas o extremas, la formación siempre cabe`, () => {
+      for (const bottom of [-10, 0, 600, 900, 1250, 1500, 2000]) {
+        for (const top of [-5, 0, 300, 1500]) {
+          for (const zoneBottom of [0, 661, 1700]) {
+            for (const m of [1, 4]) {
+              const f = computeFormation(squad(5), enemies(m), { node, boss: !!node && isBossNode(node), hud: { bottom, top, zoneBottom } });
+              expect(formationFits(f), `${label(node)} m${m} ${bottom}/${top}/${zoneBottom}`).toBe(true);
+            }
+          }
+        }
+      }
+    });
+  }
   it('360×740 y 375×667: los héroes suben hasta quedar sobre los botones de esa pantalla', () => {
     for (const vp of BAJAS) {
       const f = computeFormation(squad(5), enemies(3), { node: NODES[0], hud: hudDe(vp, 3) });

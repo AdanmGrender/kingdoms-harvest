@@ -234,9 +234,11 @@ function enemyLo(units, floor, topLimit, zoneBottom) {
  * da 1327,5 con DPR 2 y 1328,1 con DPR 3) y los dos dan el mismo 1320; el margen sobre los botones queda ≥ 7,5.
  */
 export function laneLimits(hud) {
-  const bottom = hud && Number.isFinite(hud.bottom) ? Math.min(HUD_TOP, hud.bottom) : HUD_TOP;
-  const top = hud && Number.isFinite(hud.top) ? hud.top + 8 : -Infinity;
-  const zone = hud && Number.isFinite(hud.zoneBottom) ? hud.zoneBottom : -Infinity;
+  // B-3 (review ronda 3): una medida fuera del lienzo (0, negativa, más allá del borde) no es una medida: vale la constante
+  const m = (k) => (hud && Number.isFinite(hud[k]) && hud[k] > 0 && hud[k] < WORLD.h ? hud[k] : null);
+  const bottom = m('bottom') !== null ? Math.min(HUD_TOP, m('bottom')) : HUD_TOP;
+  const top = m('top') !== null ? m('top') + 8 : -Infinity;
+  const zone = m('zoneBottom') !== null ? m('zoneBottom') : -Infinity;
   return {
     laneMax: Math.round(bottom - FOOT_MARGIN), top1: Math.max(ENEMY_TOP_SOLO, top), topN: Math.max(ENEMY_TOP, top),
     zoneBottom: Math.max(BANNER_ZONE_BOTTOM, zone),
@@ -247,25 +249,46 @@ export function laneLimits(hud) {
  * Bordes del HUD en px de pantalla → y del mundo. El lienzo 824×1720 va en FIT y centrado dentro del escenario
  * (`stage` = su rectángulo). Todo en px CSS en el MARCO del panel (0 = su borde superior; con el tope de aspecto el
  * marco puede no arrancar en el borde de la ventana): `buttonsTop`, `barsBottom` y `viewH` (alto del marco).
- * Devuelve { bottom?, top?, zoneBottom? } o null.
+ * Devuelve { bottom?, top?, zoneBottom? } o null. Un borde que cae fuera del lienzo (botones en y 0, barras por encima o
+ * por debajo de todo) no se devuelve: la formación usa la constante (B-3 de la review ronda 3).
  */
 export function hudToWorld({ stage, buttonsTop, barsBottom, viewH } = {}) {
   if (!stage || !(stage.width > 0) || !(stage.height > 0)) return null;
   const k = Math.min(stage.width / WORLD.w, stage.height / WORLD.h);
   const canvasTop = stage.top + (stage.height - WORLD.h * k) / 2;
   const out = {};
-  if (Number.isFinite(buttonsTop)) out.bottom = (buttonsTop - canvasTop) / k;
-  if (Number.isFinite(barsBottom)) out.top = (barsBottom - canvasTop) / k;
-  if (viewH > 0) out.zoneBottom = (BANNER_ZONE.center * viewH + BANNER_ZONE.half - canvasTop) / k;
+  const put = (key, v) => { if (Number.isFinite(v) && v > 0 && v < WORLD.h) out[key] = v; };
+  if (Number.isFinite(buttonsTop)) put('bottom', (buttonsTop - canvasTop) / k);
+  if (Number.isFinite(barsBottom)) put('top', (barsBottom - canvasTop) / k);
+  if (viewH > 0) put('zoneBottom', (BANNER_ZONE.center * viewH + BANNER_ZONE.half - canvasTop) / k);
   return Object.keys(out).length ? out : null;
+}
+
+/**
+ * La formación cabe: carriles en orden con ≥ LANE_GAP entre filas consecutivas y todas las cajas dentro del lienzo.
+ * Con las constantes (sin medida) siempre cabe (matriz R24); con una medida absurda puede no caber.
+ */
+export function formationFits(f) {
+  const present = ROWS.filter((r) => f.lanes[r] !== undefined);
+  for (let i = 1; i < present.length; i++) if (f.lanes[present[i]] - f.lanes[present[i - 1]] < LANE_GAP) return false;
+  return [...f.heroes, ...f.enemies].every((b) => b.alpha.y >= 0 && b.lane <= WORLD.h && b.alpha.x >= 0 && b.alpha.x + b.alpha.w <= WORLD.w);
 }
 
 /**
  * @param heroes   `state.heroes` (usa `slot`, `heroId`, `class`)
  * @param enemies  salida de `enemyList(state)` (usa `id`)
- * @param opts     { boss?: boolean | node, node?, hud?: { bottom?, top? } }  (un nodo `{type:'boss'}` también vale en `boss`)
+ * @param opts     { boss?: boolean | node, node?, hud?: { bottom?, top?, zoneBottom? } }  (un nodo `{type:'boss'}` también
+ *                 vale en `boss`)
+ * B-3 (review ronda 3): si con la medida del HUD la formación no cabe (carriles fuera de orden o cajas fuera del lienzo,
+ * p. ej. botones medidos en y 600 o barras en 1500), la medida se descarta y vuelven las constantes.
  */
 export function computeFormation(heroes, enemies, opts = {}) {
+  const f = buildFormation(heroes, enemies, opts);
+  if (opts.hud && !formationFits(f)) return buildFormation(heroes, enemies, { ...opts, hud: null });
+  return f;
+}
+
+function buildFormation(heroes, enemies, opts) {
   const boss = typeof opts.boss === 'object' && opts.boss ? isBossNode(opts.boss) : !!opts.boss;
   const node = opts.node || (typeof opts.boss === 'object' ? opts.boss : null);
   const ground = groundY(node);
