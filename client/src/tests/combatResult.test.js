@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { computeFormation, lyingBoxes, hudToWorld, BANNER_ZONE } from '../game/combat/formation';
+import { computeFormation, lyingBoxes, hudToWorld, BANNER_ZONE, BREATH } from '../game/combat/formation';
 import { placeResultBanner, silhouettesCss, worldToCss, BANNER_CENTER, BANNER_MAX_H } from '../game/combat/resultLayout';
 import { MAX_ASPECT } from '../utils/viewport';
 
@@ -92,6 +92,14 @@ describe('Cartel de resultado: posición en las 4 formaciones × 5 pantallas', (
         for (const s of sil.filter((x) => x.side === 'h')) expect(inter(r, s.rect), `${vp} ${name}: cartel sobre ${s.id}`).toBe(0);
         for (const a of avoid) expect(inter(r, a)).toBe(0);
         expect(p.faceCut, `${vp} ${name}: corta caras`).toBe(0);
+        // H-b (review ronda 3): la cara se mide por su cuenta, no con el `faceCut` de la función bajo prueba: 35 % superior
+        // de la caja alfa de cada enemigo de pie, con lo que crece al respirar (escala y hasta BREATH.y desde el pie)
+        for (const e of f.enemies) {
+          const grow = (BREATH.y - 1) * e.alpha.h;
+          const cara = { x: e.alpha.x, y: e.alpha.y - grow, w: e.alpha.w, h: 0.35 * e.alpha.h + grow };
+          const css = { x: map.x0 + cara.x * map.k, y: map.y0 + cara.y * map.k, w: cara.w * map.k, h: cara.h * map.k };
+          expect(inter(r, css), `${vp} ${name}: cartel sobre la cara de ${e.id}`).toBe(0);
+        }
       });
     }
   }
