@@ -374,3 +374,77 @@ Revisé el código con `git diff 810a48a..HEAD -- client` (15 commits, de fce00a
 3. **B-3:** descartar medidas del HUD fuera de rango (0, negativas, imposibles) y volver a las constantes, con test.
 
 Lo demás (H-a a H-e y la lista del visual_reviewer) queda a criterio del leader. Después de los cambios: ronda 4 corta con la lente de contrato (suites con carga, el test del stage y las medidas fuera de rango).
+
+---
+
+# Review — Etapa C (T10.8, HEAD 44be153) · ronda 4
+
+## Veredicto
+**APPROVED** (lente de contrato; lo visual sigue en manos del visual_reviewer). Los tres bloqueantes de la ronda 3 quedan cerrados, y también H-a y H-b. El preventivo de la estela (f) y la decisión del owner H-c (g) están implementados y cubiertos por tests que fallan de verdad. No se tocan `feature_list.json` ni `CHANGELOG.md`.
+
+Revisé el código con `git diff 2baed75..HEAD -- client` (13 commits, de ff2ceb3 a 44be153; los componentes React no cambiaron), además de `hoja_visual.md` § «Decisión del owner (2026-11-09, H-c)» y T10.8 en `tasks.md`.
+
+## Trazabilidad y tasks
+- T10.8 está en `[x]` con `Evidencia:`, y de T1 a T12 no queda ninguna `[ ]`.
+- H-c es una decisión del owner y enmienda en la práctica el tope de R27: con factor < 1 el enemigo mide la fracción × 1720 × factor. Solo pasa en marcos más bajos que las pantallas de la hoja; el test de R27, sin medida, sigue fijando 0,29 y 0,36.
+- La cobertura de los 54 R no cambia.
+
+## Verificación ejecutada por el revisor
+1. **Suites y build:**
+   - **Con carga.** Puse 8 hilos en bucle (`carga.cjs` de mi scratch, 170 s) y corrí jest del server en paralelo. `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run --reporter=verbose </dev/null` → `Test Files  34 passed (34)`, `Tests  1173 passed (1173)`, en 65 s. El `it` de combate más lento tardó 679 ms. El más lento de toda la suite fue el de R39 en `combatStage.test.jsx`, con 2851 ms: es anterior a T10.8 (ver H-3). Jest del server con esa carga → `Tests: 545 passed, 545 total`.
+   - **En reposo:** `Test Files  34 passed (34)`, `Tests  1173 passed (1173)` (24,3 s). Jest → `Tests: 545 passed, 545 total`. `npm run build` → `✓ built in 12.20s`. `window.__combatGame` no aparece en `client/dist`.
+2. **Mutaciones.** Las corrí sobre un espejo nuevo en mi scratch; la línea base son 645/645 en los 5 archivos de combate. Las cuatro que en la ronda 3 daban 0 fallos ahora fallan:
+   - el stage no pasa `hud` (M12c) → 3 fallos; sin el efecto de cambio → 1;
+   - `relayout` mata los tweens de todos (M25) → 1; con el `relayout` de la ronda 3 → 1;
+   - regla de caras anulada (H-b) → 16 (15 en `combatResult` y 1 en el panel);
+   - B-3:
+     - `laneLimits` acepta 0 → 1;
+     - `hudToWorld` acepta bordes fuera del lienzo → 1;
+     - una medida absurda no se descarta → 15;
+   - H-c:
+     - sin achicar → 23;
+     - achicar solo a los héroes → 6;
+     - `formationFits` sin la separación → 9;
+     - factor fijo de 0,9 → 75;
+     - la escena no redimensiona → 1;
+   - (f): estela delante → 1; proyectil delante → 1;
+   - B5 sigue cubierto: tope de 15° → 2; sin `clearMuzzle` → 1; estela hacia otro lado → 1.
+3. **H-c, comprobado por mi cuenta.** Usé un bundle de `formation.js` y un script propio con la matriz completa (14 configuraciones × n 1–5 × m 1–4 × 3 escuadras = 840 por caso). Comprueba R24 por fila, separación ≥ 24, piso, pies sobre los botones, cabezas bajo las barras, que todo quede dentro del lienzo y que el factor sea el mismo para todos:
+   - **Las 5 pantallas de la hoja** con `hud_medidas.json`: factor 1 en las 840 combinaciones y 0 fallos.
+   - **Marcos de 375 de ancho:**
+
+     | Alto del marco | Combinaciones achicadas | Factor mínimo | Fallos |
+     |---|---|---|---|
+     | 700 y 658 | 0 | 1 | 0 |
+     | 657 | 30 | 0,996 | 0 |
+     | 640 | 36 | 0,911 | 0 |
+     | 625 | 36 | 0,829 | 0 |
+     | 611 | 48 | 0,75 | 0 |
+     | 580 | 48 | 0,563 | 0 |
+
+     Coincide con las cifras de T10.8. V1 se mantiene: todos usan el mismo factor y no hubo ningún caso «factor distinto».
+   - **Las 60 vistas de la hoja**, comparadas por mi cuenta (`hoja_medidas.json` de 03fd506 contra HEAD): las 60 son iguales en carriles, alto, x y carril de cada personaje y centro del cartel. Las 3 nuevas de 375×611 dan factor 1 (3 carroñeros y 4 Voz del Velo) y 0,931 (jefe). `errores: []`.
+   - **«Compañeros 0 px» con un cambio de tamaño en plena partida.** `relayout` (`CombatScene.js:224-244`) solo mueve el carril (y). Si hay un tween de x en curso no lo pisa, y al terminar (`onComplete`, `:627` y `:645`) cada uno queda en su x nueva. `resize` (`:254-266`) toca solo la escala, la sombra y la respiración del propio actor. El test de H-a reproduce tweens en curso y los tests de «Movimiento» siguen verdes.
+   - Comprobé en Phaser 3.90 que `tween.stop()` deja de contar para `isTweening`. Así, `resize` vuelve a escalar el sprite después de parar la respiración.
+4. **(f) La estela.** La estela y el proyectil van justo por detrás del héroe de carril más alto (`CombatScene.js:407-416`). El fogonazo va delante del tirador. El test de B5 lo controla en 4 formaciones, junto con la boca fuera de los compañeros y el disparo de la boca al objetivo; las mutaciones del punto 2 lo confirman.
+5. **Invariantes:**
+   - `git diff 46d156d..HEAD --stat -- server shared` vacío; `engineVersion: 1` (`shared/gameConfig.js:1155`).
+   - Sin cambios en `package*.json`, sin borrados, `gameStore.js` igual y `pantallasB.test.jsx` sin cambios.
+   - El barrido R3 da 0. `client/src/game/combat` solo importa `phaser` desde la escena, y ningún componente importa `phaser`.
+   - `__combatGame` existe solo con `import.meta.env.DEV`. Sin `.only` ni `.skip`.
+6. **Higiene:** ningún puerto escuchando antes ni después. No levanté servidores. La carga sintética terminó sola (170 s). `git status` muestra solo los 3 restos viejos de fps.
+
+## Hallazgos (archivo:línea), ninguno bloquea
+- **H-1. Marcos todavía más bajos** («se reporta con números»). Si la formación no cabe ni achicada a `SHRINK_MIN` (`formation.js:289-304`; el descarte está en `:295`), la regla de B-3 descarta la medida y vuelven las constantes, con los pies bajo los botones.
+  - Con los datos de hoy (1 enemigo por nodo) pasa desde **545 px CSS** de marco: a1n9 con 5 héroes, HF 1320 contra botones en 1171.
+  - Con las combinaciones sintéticas de 2 a 4 enemigos en la catedral pasa desde ~560.
+  - Afecta a teléfonos de 320×568 dentro de Telegram (~512 px). La decisión H-c apunta a 611, así que está dentro de lo pedido. Decide el owner si 0,5 es el piso correcto o si esos marcos quedan fuera de alcance.
+- **H-2. Caída durante un cambio de factor.** Si el factor cambia en plena caída (450 ms), el cuerpo termina tendido con el tamaño anterior. El `applyView` del cierre de ronda (`CombatScene.js:431`) lo vuelve a tender con el tamaño nuevo mediante `layDown` (`:468`). Se corrige solo; menor.
+- **H-3. El test más lento con carga no es de T10.8.** Es el de R39 en `combatStage.test.jsx` (2,85 s, el 57 % del límite): el import dinámico de `PhaserGame` con la máquina cargada. Conviene vigilarlo si la carga crece.
+
+### Para el visual_reviewer
+- Con un tirador en la fila trasera (slot 4 o 5), la estela nace por detrás de su propio cuerpo: la profundidad es la del héroe de carril más alto menos 1. El fogonazo sí queda delante. En las vistas de la hoja el tirador es Elena, en el slot 3.
+- Las 3 vistas de 375×611 son nuevas (el jefe de la catedral al 0,931). Las 60 de la hoja no cambian.
+
+## Cambios requeridos
+Ninguno. H-1 es para el owner y H-2 y H-3 son menores. Sigue la revisión visual; la feature queda `in_progress` hasta su veredicto.
