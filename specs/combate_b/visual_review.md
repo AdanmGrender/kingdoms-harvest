@@ -246,3 +246,191 @@ Fuera de la hoja: NO bloquean el veredicto. Van ordenados por gravedad.
   - animación: `s6_v4_numeros_secuencia.webp`, `s6_v6_caida_bruto_secuencia.webp`, `s6_v6_barra_bruto_secuencia.webp`, `s6_v7_bruto_gira_secuencia.webp`, `s6_v7_tirador_secuencia.webp`, `s6_v7_tirador_dispara_a_sombra_45ms.webp`, `s6_heroes_golpe_placeholder_y_caida.webp`, `s6_placeholder_elena_593ms.webp`;
   - pantallas bajas: `s7_bajo_360x740_pies_botones.webp`, `s7_bajo_375x667_pies_botones.webp`.
 - Los cuadros crudos del screencast (rondas A, B y C, 744 jpg) quedaron fuera del repo. Los citados están dentro de las secuencias `s6_*`.
+
+# Revisión visual — Etapa C · T10.7 y T10.8 (hoja visual con las decisiones del 2026-11-09) · ronda 3 · commit ecdcc99
+
+## Veredicto: APPROVED
+
+Vara única: `hoja_visual.md` con todas sus decisiones, incluidas las dos del 2026-11-09 (la de la ronda 2 y la H-c). Lo que no está en la hoja va a backlog y no bloquea.
+
+Qué miré:
+- Abrí yo mismo las 63 vistas de `evidencia/hoja/`, la hoja de contacto y las tres secuencias. Recorté y amplié donde hizo falta.
+- Lo que la evidencia no traía lo generé en `evidencia/visual/ronda3/` con `capturar_ronda3.mjs`: crypt con 2 y 4 carroñeros, el disparo cuadro a cuadro a @2, las ráfagas de números en las 5 pantallas, el golpe a los 5 héroes, la caída y el giro.
+- Usé el preview aislado: server del worktree en :3003 (`BOT_TOKEN` ficticio, `BOT_POLLING=false`, su `kingdoms.db`) y vite en :5175 `--strictPort` (`VITE_API_URL`). Al terminar los detuve y comprobé los puertos libres.
+- Ninguna de mis corridas dio errores de consola ni de página.
+
+Los cinco bloqueantes de la ronda 2 están cerrados (B2 por decisión del owner). El bug del marcador de R31 también. No encuentro ninguna FALLA contra la hoja.
+
+En el backlog dejo tres cosas nuevas, ninguna en la letra de la hoja:
+- en pantallas bajas, los números de daño terminan su subida detrás de la barra de vida;
+- el cañón del tirador apunta unos 30° por debajo de su propio tiro;
+- la silueta del tirador asoma fuera del lienzo durante el disparo.
+
+Los 10 puntos del leader:
+1. **B1: OK.** Las 20 victorias (4 formaciones × 5 pantallas): el cartel no toca ninguna silueta.
+2. **B2: OK.** No tapa héroes tendidos ni botones y no corta caras; tapa enemigos vivos en 15 de 20, lo que la decisión permite.
+3. **B3: OK.** 0 px de solape píxel a píxel y ninguna cabeza sobre otra.
+4. **B4: OK.** Con 2, 3 y 4 carroñeros, en 412×860 y en 375×667.
+5. **B5 y V7: OK.** Se lee como un tiro que pasa junto al hombro de Sombra y llega al bruto. El cuadro corto termina justo en la boca. Lo de los 32 px no es un problema de V7.
+6. **R31: OK.** 0 cuadros con marcador.
+7. **V4: OK por la letra.** La legibilidad bajo las barras va a backlog. «¡Crítico!» se entiende.
+8. **V2/V3 en las pantallas bajas: OK.** El 2,9 % de cara tapada no es bloqueante.
+9. **H-c: OK.**
+10. **Nada roto:** escalas, piso, caras, caída, giro y nombres siguen como en la ronda 2.
+
+## Afirmaciones vs. imagen
+
+Coordenadas de las regiones:
+- Capturas de 412×860 @2: 824×1720 px, coinciden con el mundo.
+- 360×740, 375×667 y 375×611 @2: px de la imagen (el lienzo de 375×667 empieza en x = 54).
+- Mis cuadros frenados: @2 a 412×860.
+- Las tiras (`*.webp` de `ronda3/` que empiezan con `b1_`, `b2_`, `v4_`, …) llevan el nombre de cada cuadro.
+
+**B1 · V3/V8, cartel de victoria** (decisión 2026-11-09: no tapa ninguna silueta; ≤ 70 px CSS; centro cerca del 34 %, dentro del tercio medio)
+- [OK] **Cartel compacto.** «¡Victoria!» y «Volver» van en una fila, con 68 px CSS de alto y el centro entre 33,6 y 34,1 % del marco. Pasa en las 20 vistas: bruto, 3 carroñeros, 4 Voz del Velo y jefe, en 412×860, 360×800, 1280×800, 360×740 y 375×667.
+- [OK] **Nada queda debajo del cartel.** Las caras de Viktor y Sombra se ven enteras. Los caídos (bruto, carroñeros, Voz del Velo y Devorador) quedan tendidos por debajo, con aire. `sobreSiluetas` está vacío en las 20 vistas.
+- Capturas: `ronda3/b1_victoria_{412x860,360x800,360x740,375x667}.webp` y `ronda3/b1_b2_1280x800.webp` (fila de arriba); detalle en `hoja/412x860_victoria.webp` región 56,516,711,136 (cartel) y 190,690,460,245 (bruto caído, libre).
+
+**B2 · V3/V8, cartel de derrota** (decisión 2026-11-09: puede tapar enemigos vivos; elige el tercio medio sin cortar caras cuando hay sitio; nunca tapa héroes tendidos ni botones)
+- [OK] **No toca a los tendidos ni la fila de botones.** El centro va del 34,0 al 53,0 %, según formación. Con 4 Voz del Velo cae al 34 %, por encima de las cabezas, y no tapa a nadie.
+- [OK] **No corta caras.** Con el bruto, el borde superior del cartel queda justo bajo los colmillos (la cara llega a y 618 de mundo y el cartel arranca en 620). Con el jefe se ven el ojo y los dientes de arriba. Con 3 carroñeros, el cartel tapa solo patas y cuerpo.
+- Capturas: `ronda3/b2_derrota_bruto_cara_412.webp` (de `hoja/412x860_derrota.webp` región 100,420,640,420), `ronda3/b2_derrota_{412x860,375x667,360x740_360x800}.webp` y `ronda3/b1_b2_1280x800.webp` (fila de abajo).
+
+**B3 · V3, tendidos de derrota** (≤ 10 % dentro de la fila, nunca cabeza sobre cabeza)
+- [OK] **Tres cuerpos separados en la fila delantera.** Todos tienen la cabeza a la izquierda, con un largo de 267 (×0,9) y 8–9 px de hueco entre uno y otro.
+- **Medición píxel a píxel**, con el alfa real y la transformación de cada caído: 0 px de solape en las dos filas, en las 5 pantallas, también con el jefe y con 4 Voz del Velo.
+- Se leen como cinco caídos y no como una mancha.
+- Captura: `ronda3/b3_tendidos_412x860.webp`, de `hoja/412x860_derrota.webp` región 0,1040,824,320.
+
+**B4 · V2, carroñeros de crypt** (con 2, 3 y 4 enemigos, ningún pie sobre el altar)
+- [OK] **Pies sobre la calle.** En 412×860 y en 375×667, los pies de todos los carroñeros caen entre x 89,6 y 614,2, entre el carro (77,5) y el altar (618,9).
+- Sin héroes se ve que pisan la calle: el altar queda libre en los 6 casos.
+- Con 4 forman dos columnas de 2. Las caras de atrás asoman por encima de las de adelante: apretado, pero legible.
+- Capturas: `ronda3/b4_crypt_2_3_4_{412x860,375x667}.webp` (de `ronda3/crypt_*_sinheroes.webp`, región 0,440,824,700 a 412). Vistas con héroes: `ronda3/crypt_*_{2,3,4}en.webp`. Medidas: `ronda3/medidas_crypt.json`.
+
+**B5 · V7, «el tirador apunta al enemigo»** (cuadros frenados ×0,1 a @2: `ronda3/b5_*`; datos en `ronda3/medidas_tirador.json`)
+- [OK] **Gira, se inclina y dispara al objetivo.** Elena voltea hacia el objetivo, se inclina 30° (el tope) y usa el cuadro `sin_fogonazo`, de 533 px. La estela va de la boca, en el mundo (640, 1071), al pecho del objetivo, y el proyectil la recorre. Pasa igual con los cinco objetivos probados: bruto, carroñero de adelante, carroñero de atrás a la izquierda, Voz del Velo de atrás y jefe.
+  - Captura: `ronda3/b5_tirador_1en_secuencia_css.webp` (seis cuadros a escala de pantalla, 412 CSS).
+- [OK] **El fogonazo está en la boca, no sobre un compañero.** El fogonazo queda delante de Elena. Roza la punta del puñal de Sombra, pero no cae sobre su cuerpo (`ronda3/b5_boca_fogonazo_x3.webp`, mundo 540,980,200,160 ×3).
+- [OK] **Se lee como un tiro al bruto.** La estela va por detrás de la fila de héroes. Asoma pegada al brazo derecho de Sombra, pasa junto a su hombro y llega al pecho del bruto (`ronda3/b5_tirador_1en_02_estela.webp`, mundo 330,380,494,900).
+  - Con objetivos más a la izquierda la estela se ve entera, cruzando por delante de otro enemigo (`ronda3/b5_tirador_otros_objetivos.webp`).
+  - Ya no parece que le dispare a Sombra.
+  - Queda un matiz para el backlog: el cañón sigue apuntando hacia el hombro de Sombra.
+- [OK] **El cuadro corto termina en la boca y no se come el cañón.** En la textura, el corte de la columna 533 cae justo después del anillo de la boca y el fogonazo pintado queda fuera (`ronda3/b5_textura_corte_col533.webp`). En pantalla, el cañón termina limpio (`ronda3/b5_boca_cuadro_corto_x3.webp`).
+- [OK] **Los 32 px fuera del lienzo no chocan con V7.** V7 pide giro y puntería, no que la pose quede dentro del lienzo. Durante el disparo (~420 ms) la silueta inclinada sale 32 px de mundo (16 px CSS a 412) por la derecha. Lo que se corta es el ala trasera del morrión y la espalda; la cara y el arma quedan a la vista (`ronda3/b5_silueta_borde_derecho.webp`, mundo 560,980,264,380). Lo dejo en el backlog como menor.
+
+**V7, giro** (muestreo por cuadro a velocidad real, `ronda3/medidas_giro.json`)
+- [OK] **El atacante se gira hacia su objetivo y vuelve a los ~423 ms.**
+  - El bruto voltea hacia Elena (a su derecha) y no hacia Aria (a su izquierda).
+  - Aria ataca sin voltear.
+  - Elena voltea y vuelve a idle con 0° y el cuadro entero.
+
+**R31 · marcador**
+- [OK] **Ningún golpe a un héroe muestra el marcador.** El bruto golpea a los 5 héroes: 55 cuadros por pantalla en 412×860 y en 375×667, 0 con textura `ph:`; solo aparecen las `idle` de las 5 clases.
+- Se ve el destello de la silueta propia de cada héroe, sin lápidas ni bloques grises, y los números sobre la cabeza (`ronda3/r31_golpe_5_heroes_412x860.webp`, cuadros +30/+100/+300 ms).
+- La secuencia de la hoja (`hoja/secuencia_golpe_heroe.webp`) muestra lo mismo con Elena.
+- En la caída de los 5 héroes (`ronda3/medidas_caida.json`) tampoco hay ningún cuadro con marcador.
+
+**V4 · números** (decisión 2026-11-09: px CSS, apilado por el alto real + 4, nunca se pisan; `ronda3/medidas_numeros.json`)
+- [OK] **Tamaño en px CSS, en las 5 pantallas:**
+
+  | Pantalla | Normal | Crítico |
+  |---|---|---|
+  | 412×860 | 40,0 | 60,0 |
+  | 360×800 | 40,2 | 59,9 |
+  | 360×740 | 40,0 | 59,8 |
+  | 375×667 | 39,9 | 60,1 |
+  | 1280×800 | 40,0 | 60,0 |
+
+  Arrancan sobre la cabeza. El pop y la subida están como en la tabla de T10.8.
+- [OK] **Apilado sin pisarse.**
+  - Ráfaga de 37, 96! y 52 en el mismo cuadro: van en columnas, una al lado de la otra, con 4 px CSS de hueco, porque apiladas en vertical quedarían bajo las barras. No se pisan ni al nacer ni a 140 ms.
+  - Secuencia con crítico: 96! entra al lado de 37 y 52 al otro lado.
+  - Capturas: `ronda3/v4_rafaga_{360x800,360x740,375x667}.webp`, `ronda3/v4_critico_{412x860,375x667}.webp`, y `hoja/secuencia_numeros.webp`.
+  - Es el espíritu de la decisión (alto real, nunca se pisan) aunque la pila sea horizontal.
+- **¿Se lee el primer número que nace bajo la barra?** (pantallas más bajas que 412×860)
+  - Al nacer se lee en 360×800, 1280×800 y 360×740: solo el 96! roza la barra (3–23 px CSS).
+  - En 375×667 el 96! nace con 44 px CSS bajo la barra y el 37 y el 52 con 9 px; a 140 ms ya están 20–45 px por debajo.
+  - En las cuatro pantallas bajas los números terminan la subida detrás de la barra de vida, que es DOM por encima del lienzo y los corta.
+  - En 412×860 nunca llegan a la barra.
+  - Ni V4 ni V3 lo cubren: V4 no habla del HUD y V3 habla de sprites. Va al backlog con prioridad (ver abajo).
+- [OK] **«¡Crítico!» sobre quien lo hace se entiende.** Aparece sobre Aria en el color del crítico, Aria embiste y el 96! amarillo cae sobre el bruto: el color une las dos cosas. No tapa caras (`ronda3/v4_critico_412x860.webp`, cuadros 150 y 400 ms). R13 no fija dónde va.
+
+**V2/V3 en las pantallas bajas** (360×740 y 375×667, ahora obligatorias)
+- [OK] **Ningún pie tapado.** El carril delantero queda 8 px de mundo sobre el borde real de los botones con «¡TAP!»:
+  - 360×740: HF 1308 contra botones en 1316;
+  - 375×667: HF 1264 contra 1272.
+  
+  Las botas terminan justo encima de «¡TAP!» (`ronda3/v3_pies_botones_375x667.webp`, de `hoja/375x667_3enemigos.webp` región 54,860,640,200; `ronda3/v3_pies_botones_360x740.webp`). La H2 de la ronda 2 queda resuelta.
+- [OK] **Cabezas bajo las barras y pies sobre el piso** en las 24 vistas bajas (`ronda3/reg_de_pie_bajas.webp`).
+- [OK] **El 2,9 % de 375×667 con 4 Voz del Velo no es bloqueante.**
+  - Lo que se tapa es la esquina inferior izquierda del 35 % superior de e3: su mano sujetando la capucha, detrás de la capucha de Sombra.
+  - La cara (ojos, nariz, boca) se ve entera.
+  - Captura: `ronda3/v3_375x667_veil_e3_cara.webp`, de `hoja/375x667_4enemigos_veil.webp` región 440,560,280,220 ×2,5.
+  - Pasa lo mismo en 375×611 (e3 2,9 %, e0 0,8 %, e1 0,1 %).
+
+**H-c · marco muy bajo (375×611)**
+- [OK] **La escena achicada se lee bien.**
+  - Con el jefe de la catedral (factor 0,931), héroes y Devorador quedan algo más chicos y en proporción. La cabeza del jefe queda bajo su barra y las caras de los héroes se ven. Los pies delanteros quedan sobre «¡TAP!», con unos 3 px CSS de aire (HF 1223 contra botones en 1231) (`ronda3/hc_375x611_jefe_pies.webp`, de `hoja/375x611_jefe.webp` región 40,700,670,300).
+  - Con 3 carroñeros y con 4 Voz del Velo (factor 1), la escena queda apretada pero se ve entera, y las cuatro caras de las Voz del Velo asoman (`ronda3/hc_375x611_veil_caras.webp`).
+  - Sheet: `ronda3/hc_375x611.webp`.
+
+**Nada de lo que estaba OK en la ronda 2 se rompió**
+- [OK] **V1, escalas:** héroe/común 0,62 · jefe/héroe 2,01 · común en grupo/héroe 0,97 · trasera/delantera 0,82, iguales en las 5 pantallas (`ronda3/reg_de_pie_412x860.webp`).
+- [OK] **V2, piso:** el bruto pisa la calle, las Voz del Velo el pie de la escalera y el Devorador la nave; los carroñeros ahora fuera del altar. Volví a capturar moor (a1n4), ashfield (a2n7) y veil_marsh (a2n4) con 1, 3 y 4 enemigos y sin héroes: pisan su piso como en la ronda 2, con los mismos carriles (±2) (`ronda3/reg_fondos_sinheroes.webp`, `ronda3/fondo_*_sinheroes.webp`, `ronda3/medidas_fondos.json`).
+- [OK] **Caras de héroes y enemigos libres** en las 412×860.
+- [OK] **V6, caída:** 465–467 ms, α 0,85, desaturada, en una ronda real con planificador. La última de la ronda sigue cerrando a 383 ms, como en la ronda 2: dentro de los 600 ms (`ronda3/medidas_caida.json`).
+- [OK] **V7, giro:** ver arriba.
+- [OK] **V5, nombres:** sin «…» en las 5 pantallas. En 360×740 y 375×667 el título pasa a dos líneas, sin recortar.
+- [OK] **V8:** cartel ≤ 40 % del alto y dentro del tercio medio en las 40 vistas de resultado.
+- [OK] **V9:** 4 barras «Voz del Velo» en las vistas de veil_gate.
+
+## Hallazgos no escritos
+
+Todos van a backlog y ninguno bloquea. No repito los que ya estaban (caídos oscuros, clones de las Voz del Velo, ritmo de la barra).
+
+1. **Media · en pantallas bajas los números de daño terminan su subida detrás de la barra de vida.**
+   - Qué se ve:
+     - En 375×667 el 96! de un crítico nace con 44 px CSS bajo la barra, y a los ~400 ms la barra lo corta por la mitad. En la secuencia real con crítico se lee mal casi toda su vida.
+     - En 360×740, 360×800 y 1280×800 los números se leen al nacer, pero la segunda mitad de la subida va por detrás de la barra.
+     - Pasa con enemigos altos (bruto y jefe, cabeza a 439–476 de mundo); con carroñeros y Voz del Velo, la cabeza está más abajo y no ocurre.
+   - Capturas: `ronda3/v4_rafaga_375x667.webp` (0/140/440 ms), `ronda3/v4_critico_375x667.webp` (400/650 ms), `ronda3/v4_rafaga_{360x740,360x800}.webp`.
+   - Causa: con el tamaño doble que decidió el owner, la subida de 60 px CSS lleva la base de 40–60 px CSS por encima del borde de las barras. `floatAt` (`CombatScene.js:550-575`) mira las barras al colocar el número, pero no al hacerlo subir (`float`, `:536`).
+   - Arreglo: que la subida no pase el borde de las barras (`hud.top` + 4 px CSS). Si no queda sitio, que suba menos o que vaya en la columna de al lado más abajo.
+   - 375×667 es un teléfono muy común y dentro de Telegram el marco es aún más bajo: lo dejo como el primero del backlog.
+2. **Baja · el cañón del tirador apunta unos 30° por debajo de su propio tiro.**
+   - Qué se ve: con el tope de 30°, el cañón señala hacia el hombro de Sombra, mientras la estela sale de la boca a unos 61° hacia el pecho del bruto. El fogonazo roza la punta del puñal de Sombra.
+   - Se entiende gracias a la estela, pero la pose sigue sugiriendo que apunta a la fila de atrás.
+   - Captura: `ronda3/b5_tirador_1en_00_fogonazo.webp`.
+   - Arreglo, a decidir: más inclinación cuando el objetivo está muy arriba, otra pose de disparo hacia arriba (arte), o correr la boca para que el cañón no quede pegado a un compañero.
+3. **Baja · la silueta del tirador sale 32 px de mundo por la derecha durante el disparo.** El ala trasera del morrión se corta contra el borde unos 420 ms; en 1280×800 el corte queda contra el margen negro (`ronda3/b5_silueta_borde_derecho.webp`).
+4. **Info · tirador en la fila trasera, sin captura.** El reviewer de código avisa que, con el tirador en el slot 4 o 5, la estela nacería por detrás de su propio cuerpo. En las vistas de la hoja Elena siempre va en el slot 3: no hay captura de ese caso.
+
+## Fuera de la hoja (backlog, no bloqueante)
+
+- Los hallazgos n.º 1 (prioridad media/alta: números bajo la barra en pantallas bajas), 2, 3 y 4.
+- Para el owner, ya reportado por el reviewer de código (H-1 de la ronda 4) y fuera de lo que mira la hoja: en marcos de menos de ~545 px CSS (320×568 dentro de Telegram), la formación no cabe ni achicada a 0,5. Ahí vuelven las constantes y los pies quedan bajo los botones.
+
+## Capturas usadas
+
+- `specs/combate_b/evidencia/hoja/`:
+  - las 60 vistas `{412x860,360x800,1280x800,360x740,375x667}_{1enemigo,3enemigos,4enemigos_veil,jefe,victoria,derrota,victoria_3enemigos,derrota_3enemigos,victoria_4enemigos_veil,derrota_4enemigos_veil,victoria_jefe,derrota_jefe}.webp`;
+  - `375x611_{3enemigos,4enemigos_veil,jefe}.webp`;
+  - `hoja_contacto.webp`, `hoja_medidas.json`;
+  - `secuencia_golpe_heroe.webp`, `secuencia_numeros.webp`, `secuencia_tirador.webp`.
+- `specs/combate_b/evidencia/visual/ronda3/`, generadas en esta ronda con `capturar_ronda3.mjs` (modos `crypt`, `tirador`, `numeros`, `golpe`, `caida`, `giro`, `fondos`):
+  - crypt: `crypt_{412x860,375x667}_{2,3,4}en{,_sinheroes}.webp`;
+  - números: `numeros_{412x860,360x800,360x740,375x667,1280x800}_{rafaga_{0,140,440}ms,critico_{150,400,650,850}ms}.webp`;
+  - golpe: `golpe_{412x860,375x667}_{30,100,300}ms.webp`;
+  - caída: `caida_{victoria,derrota}_final.webp`;
+  - fondos: `fondo_{a1n4,a2n7,a2n4}_{1,3,4}en_sinheroes.webp`;
+  - medidas: `medidas_{crypt,tirador,numeros,golpe,caida,giro,fondos}.json`.
+- Recortes y tiras citados (`ronda3/`):
+  - B1–B4: `b1_victoria_{412x860,360x800,360x740,375x667}.webp`, `b1_b2_1280x800.webp`, `b2_derrota_{412x860,375x667,360x740_360x800}.webp`, `b2_derrota_bruto_cara_412.webp`, `b3_tendidos_412x860.webp`, `b4_crypt_2_3_4_{412x860,375x667}.webp`;
+  - B5: `b5_tirador_1en_secuencia_css.webp`, `b5_tirador_1en_00_fogonazo.webp`, `b5_tirador_1en_02_estela.webp`, `b5_boca_fogonazo_x3.webp`, `b5_boca_cuadro_corto_x3.webp`, `b5_textura_corte_col533.webp`, `b5_silueta_borde_derecho.webp`, `b5_tirador_otros_objetivos.webp`;
+  - V4: `v4_rafaga_{360x800,360x740,375x667}.webp`, `v4_critico_{412x860,375x667}.webp`;
+  - R31: `r31_golpe_5_heroes_412x860.webp`;
+  - V3: `v3_375x667_veil_e3_cara.webp`, `v3_pies_botones_{375x667,360x740}.webp`;
+  - H-c: `hc_375x611.webp`, `hc_375x611_jefe_pies.webp`, `hc_375x611_veil_caras.webp`;
+  - regresión: `reg_de_pie_412x860.webp`, `reg_de_pie_bajas.webp`, `reg_fondos_sinheroes.webp`.
+- Los cuadros crudos del tirador (77 png a @2) quedaron fuera del repo. Los citados están en las tiras `b5_*`.

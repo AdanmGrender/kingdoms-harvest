@@ -7,7 +7,7 @@
 // los tiempos reales salen del muestreo por requestAnimationFrame a velocidad normal).
 // Preview aislado: server del worktree :3003 (BOT_TOKEN ficticio, BOT_POLLING=false, WEBAPP_URL=http://localhost:5175)
 // y vite :5175 --strictPort con VITE_API_URL=http://localhost:3003.
-// Uso: KH_PREVIEW_URL=http://localhost:5175 node capturar_ronda3.mjs <crypt|tirador|numeros|golpe|caida|giro>
+// Uso: KH_PREVIEW_URL=http://localhost:5175 node capturar_ronda3.mjs <crypt|tirador|numeros|golpe|caida|giro|fondos>
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -400,7 +400,32 @@ async function giro(browser) {
   fs.writeFileSync(path.join(HERE, 'medidas_giro.json'), JSON.stringify(out, null, 1));
 }
 
-const MODOS = { crypt, tirador, numeros, golpe, caida, giro };
+/** V2 (regresión de la ronda 2, H9): moor (a1n4), ashfield (a2n7) y veil_marsh (a2n4) con 3 y 4 enemigos, sin héroes. */
+async function fondos(browser) {
+  const out = {};
+  const nodos = {
+    a1n4: { id: 'a1n4', act: 1, type: 'wave', name: 'Marea Menor' },
+    a2n7: { id: 'a2n7', act: 2, type: 'combat', name: 'Los Sin Rostro' },
+    a2n4: { id: 'a2n4', act: 2, type: 'wave', name: 'Marea de Cenizas' },
+  };
+  const { ctx, page, errores } = await abrir(browser, { w: 412, h: 860 });
+  try {
+    for (const [id, node] of Object.entries(nodos)) {
+      for (const m of [1, 3, 4]) {
+        await abrirEscenario(page, { node, enemies: ens(m) });
+        await ocultarHeroes(page);
+        await page.waitForTimeout(150);
+        const base = `fondo_${id}_${m}en_sinheroes`;
+        await shot(page, path.join(HERE, `${base}.webp`));
+        out[base] = await medir(page);
+        console.log(base, out[base].bg, 'piso', out[base].ground, 'carriles', JSON.stringify(out[base].lanes));
+      }
+    }
+  } finally { out.errores = errores; await ctx.close(); }
+  fs.writeFileSync(path.join(HERE, 'medidas_fondos.json'), JSON.stringify(out, null, 1));
+}
+
+const MODOS = { crypt, tirador, numeros, golpe, caida, giro, fondos };
 const modo = process.argv[2];
 if (!MODOS[modo]) { console.error(`modo: ${Object.keys(MODOS).join(' | ')}`); process.exit(2); }
 const browser = await chromium.launch({ headless: true, args: ['--ignore-gpu-blocklist', '--use-angle=d3d11'] });
