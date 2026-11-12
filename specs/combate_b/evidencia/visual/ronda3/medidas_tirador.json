@@ -1,0 +1,3205 @@
+{
+ "1en": {
+  "objetivo": "e0",
+  "cuadros": [
+   {
+    "i": 0,
+    "escenaMs": 1,
+    "file": "00_+1ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0860038491552,
+     "hi": 900.9651596633452
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 1
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 1
+    },
+    "proyectil": {
+     "x": 639.96875,
+     "y": 1070.5692303980738,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 1,
+    "escenaMs": 39,
+    "file": "01_+39ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0886006118302,
+     "hi": 900.985265778643
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.9957157024793388
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.7744
+    },
+    "proyectil": {
+     "x": 610.1255681818182,
+     "y": 1017.8796675095987,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 2,
+    "escenaMs": 74,
+    "file": "02_+74ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0994482807376,
+     "hi": 901.0692566969735
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.8907997933884297
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.15536736111111105
+    },
+    "proyectil": {
+     "x": 489.30213068181814,
+     "y": 804.5601177597306,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 3,
+    "escenaMs": 108,
+    "file": "03_+108ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1058408056114,
+     "hi": 901.1187524954888
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.7678512396694211
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.013611111111110907
+    },
+    "proyectil": {
+     "x": 420.2897727272726,
+     "y": 682.7155035801317,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 4,
+    "escenaMs": 142,
+    "file": "04_+142ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1126713849544,
+     "hi": 901.1716400454919
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.5892355371900823
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 5,
+    "escenaMs": 177,
+    "file": "05_+177ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1149740618683,
+     "hi": 901.1894691247412
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.5182378099173552
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 6,
+    "escenaMs": 211,
+    "file": "06_+211ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1262125078267,
+     "hi": 901.2764857367629
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.09404214876033046
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 7,
+    "escenaMs": 247,
+    "file": "07_+247ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1281807800522,
+     "hi": 901.291725600106
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.006353512396694461
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 8,
+    "escenaMs": 283,
+    "file": "08_+283ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1358038915718,
+     "hi": 901.3507495381091
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 9,
+    "escenaMs": 318,
+    "file": "09_+318ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1472752702896,
+     "hi": 901.4395696930427
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 10,
+    "escenaMs": 352,
+    "file": "10_+352ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1540177749025,
+     "hi": 901.4917753013749
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 11,
+    "escenaMs": 387,
+    "file": "11_+387ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1559193799725,
+     "hi": 901.506498976801
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 12,
+    "escenaMs": 425,
+    "file": "12_+425ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1673249142956,
+     "hi": 901.5948093142598
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 13,
+    "escenaMs": 460,
+    "file": "13_+460ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1694215997426,
+     "hi": 901.6110434506124
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 14,
+    "escenaMs": 497,
+    "file": "14_+497ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1755205882357,
+     "hi": 901.658266466801
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 668.0795138888889
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   }
+  ],
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.36255178326809,
+     "pr": 208.75171428849012
+    },
+    "silueta": {
+     "lo": 31.263374996356717,
+     "hi": 236.57421071806777
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.13401963975167,
+     "pr": 471.9622767878829
+    },
+    "silueta": {
+     "lo": 312.7024696392659,
+     "hi": 511.2975303607341
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 567.1638164079851,
+     "pr": 740.814569985694
+    },
+    "silueta": {
+     "lo": 651.1853860673934,
+     "hi": 901.7346525236867
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.39595117794443,
+     "pr": 340.36556157772765
+    },
+    "silueta": {
+     "lo": 189.0550391232757,
+     "hi": 354.9449608767243
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.6824028040133,
+     "pr": 637.9002445184128
+    },
+    "silueta": {
+     "lo": 465.3116798438036,
+     "hi": 638.6883201561964
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EF",
+    "lane": 933,
+    "cx": 412,
+    "h": 499,
+    "headY": 451.3263888888889,
+    "alphaH": 481.6736111111111,
+    "alphaW": 411.675,
+    "tex": "enemy:bruto:hit",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 341.61226817715954,
+     "pr": 579.2546251018539
+    },
+    "silueta": {
+     "lo": 206.90221119949842,
+     "hi": 648.3367056032187
+    }
+   }
+  ]
+ },
+ "3en_e2": {
+  "objetivo": "e2",
+  "cuadros": [
+   {
+    "i": 0,
+    "escenaMs": 0,
+    "file": "00_+0ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0323371511429,
+     "hi": 900.5496311946649
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 1
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 1
+    },
+    "proyectil": {
+     "x": 639.96875,
+     "y": 1070.5692303980738,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 1,
+    "escenaMs": 34,
+    "file": "01_+34ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0967805171659,
+     "hi": 901.0486008386331
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.9978504132231405
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.837225
+    },
+    "proyectil": {
+     "x": 618.8298295454546,
+     "y": 1051.1897525187374,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 2,
+    "escenaMs": 68,
+    "file": "02_+68ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1076071588492,
+     "hi": 901.1324289481724
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.9080807851239668
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.19728402777777765
+    },
+    "proyectil": {
+     "x": 501.7367897727272,
+     "y": 943.8426446577064,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 3,
+    "escenaMs": 103,
+    "file": "03_+103ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1144813697808,
+     "hi": 901.1856543271804
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.7858834710743801
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.023002777777777816
+    },
+    "proyectil": {
+     "x": 428.99403409090905,
+     "y": 877.1544413670483,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 4,
+    "escenaMs": 137,
+    "file": "04_+137ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1167702064554,
+     "hi": 901.2033762447506
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.7343066115702479
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.0030250000000000554
+    },
+    "proyectil": null
+   },
+   {
+    "i": 5,
+    "escenaMs": 170,
+    "file": "05_+170ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1230526490318,
+     "hi": 901.25201970224
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.5649997933884298
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 6,
+    "escenaMs": 203,
+    "file": "06_+203ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1342781453409,
+     "hi": 901.3389360482099
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.16027768595041358
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 7,
+    "escenaMs": 236,
+    "file": "07_+236ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1408976868155,
+     "hi": 901.3901895822294
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 8,
+    "escenaMs": 271,
+    "file": "08_+271ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1428425262982,
+     "hi": 901.405248011423
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 9,
+    "escenaMs": 303,
+    "file": "09_+303ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1538460424366,
+     "hi": 901.4904456177682
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 10,
+    "escenaMs": 337,
+    "file": "10_+337ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1560520312987,
+     "hi": 901.5075260644466
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 11,
+    "escenaMs": 370,
+    "file": "11_+370ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1662402809962,
+     "hi": 901.586411256794
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 12,
+    "escenaMs": 403,
+    "file": "12_+403ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.168062452567,
+     "hi": 901.6005198975431
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 13,
+    "escenaMs": 437,
+    "file": "13_+437ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.177913352,
+     "hi": 901.6767930670903
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 14,
+    "escenaMs": 470,
+    "file": "14_+470ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1796002887321,
+     "hi": 901.6898546166733
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 15,
+    "escenaMs": 503,
+    "file": "15_+503ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1885996498918,
+     "hi": 901.7595345280571
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 861.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   }
+  ],
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.37415120733657,
+     "pr": 208.73855182146204
+    },
+    "silueta": {
+     "lo": 31.28065073433106,
+     "hi": 236.55627685674204
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.14874514973934,
+     "pr": 471.9519936105172
+    },
+    "silueta": {
+     "lo": 312.7194985809835,
+     "hi": 511.2805014190165
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 567.1852250783409,
+     "pr": 740.8061985743988
+    },
+    "silueta": {
+     "lo": 651.1934997091395,
+     "hi": 901.797474520474
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.40497246254483,
+     "pr": 340.35383728650544
+    },
+    "silueta": {
+     "lo": 189.0692636956231,
+     "hi": 354.93073630437686
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.6924039285141,
+     "pr": 637.8855131323238
+    },
+    "silueta": {
+     "lo": 465.3265463802237,
+     "hi": 638.6734536197763
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "carroneros",
+    "row": "EF",
+    "lane": 1021,
+    "cx": 412,
+    "h": 299,
+    "headY": 731.1361111111111,
+    "alphaH": 289.8638888888889,
+    "alphaW": 268.26944444444445,
+    "tex": "enemy:carroneros:hit",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1021,
+    "muerto": false,
+    "pie": {
+     "pl": 353.1091051159442,
+     "pr": 509.55110735197024
+    },
+    "silueta": {
+     "lo": 274.06036853636493,
+     "hi": 553.4210868149828
+    }
+   }
+  ]
+ },
+ "3en_e0": {
+  "objetivo": "e0",
+  "cuadros": [
+   {
+    "i": 0,
+    "escenaMs": 0,
+    "file": "00_+0ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0323371511429,
+     "hi": 900.5496311946649
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 1
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 1
+    },
+    "proyectil": {
+     "x": 639.96875,
+     "y": 1070.5692303980738,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 1,
+    "escenaMs": 33,
+    "file": "01_+33ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.101049266954,
+     "hi": 901.0816527521711
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.9792378099173553
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.5414506944444444
+    },
+    "proyectil": {
+     "x": 498.1774917929293,
+     "y": 956.1626712490128,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 2,
+    "escenaMs": 67,
+    "file": "02_+67ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1029657415068,
+     "hi": 901.0964915584639
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.964072520661157
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.42575624999999984
+    },
+    "proyectil": {
+     "x": 453.4483882575757,
+     "y": 920.072274041107,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 3,
+    "escenaMs": 100,
+    "file": "03_+100ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.114008714961,
+     "hi": 901.1819946734138
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.7999471074380164
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.032399999999999984
+    },
+    "proyectil": {
+     "x": 199.8343712121212,
+     "y": 715.4397218722817,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 4,
+    "escenaMs": 134,
+    "file": "04_+134ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1162961011273,
+     "hi": 901.199705360044
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.7499999999999999
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.00694444444444442
+    },
+    "proyectil": null
+   },
+   {
+    "i": 5,
+    "escenaMs": 168,
+    "file": "05_+168ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.122595866691,
+     "hi": 901.2484829453003
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.5845611570247935
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 6,
+    "escenaMs": 202,
+    "file": "06_+202ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1295325479998,
+     "hi": 901.3021920175697
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.35489896694214906
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 7,
+    "escenaMs": 235,
+    "file": "07_+235ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1361404592923,
+     "hi": 901.3533555018571
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.08884297520661233
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 8,
+    "escenaMs": 269,
+    "file": "08_+269ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1427052226067,
+     "hi": 901.4041849016213
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 9,
+    "escenaMs": 302,
+    "file": "09_+302ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1492142626673,
+     "hi": 901.4545828494956
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 10,
+    "escenaMs": 335,
+    "file": "10_+335ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1599828609834,
+     "hi": 901.5379615430577
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 11,
+    "escenaMs": 370,
+    "file": "11_+370ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1664214852432,
+     "hi": 901.5878142781467
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 12,
+    "escenaMs": 403,
+    "file": "12_+403ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1723526534379,
+     "hi": 901.6337379017102
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 13,
+    "escenaMs": 439,
+    "file": "13_+439ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1741095651453,
+     "hi": 901.6473412508712
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 14,
+    "escenaMs": 472,
+    "file": "14_+472ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1800142608546,
+     "hi": 901.6930599042821
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 15,
+    "escenaMs": 506,
+    "file": "15_+506ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1854017861041,
+     "hi": 901.7347742299215
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 147.94861111111112,
+     "y": 673.5748611111111
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   }
+  ],
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.36984863555917,
+     "pr": 208.74343417241514
+    },
+    "silueta": {
+     "lo": 31.27424264870514,
+     "hi": 236.56292905991563
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.1432830196106,
+     "pr": 471.95580794719933
+    },
+    "silueta": {
+     "lo": 312.7131820394379,
+     "hi": 511.2868179605621
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 567.1772839650304,
+     "pr": 740.8093037801195
+    },
+    "silueta": {
+     "lo": 651.1904901178199,
+     "hi": 901.7741719712456
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.40162619946415,
+     "pr": 340.35818617522824
+    },
+    "silueta": {
+     "lo": 189.06398737818128,
+     "hi": 354.9360126218187
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.68869421363814,
+     "pr": 637.8909774420736
+    },
+    "silueta": {
+     "lo": 465.3210319391918,
+     "hi": 638.6789680608082
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "carroneros",
+    "row": "EB",
+    "lane": 833,
+    "cx": 147.94861111111112,
+    "h": 299,
+    "headY": 543.1361111111111,
+    "alphaH": 289.8638888888889,
+    "alphaW": 268.26944444444445,
+    "tex": "enemy:carroneros:hit",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 147.94861111111112,
+    "depth": 833,
+    "muerto": false,
+    "pie": {
+     "pl": 89.09157333283966,
+     "pr": 245.4436351217177
+    },
+    "silueta": {
+     "lo": 10.088282852216082,
+     "hi": 289.2883931894984
+    }
+   }
+  ]
+ },
+ "4veil_e0": {
+  "objetivo": "e0",
+  "cuadros": [
+   {
+    "i": 0,
+    "escenaMs": 0,
+    "file": "00_+0ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0323371511429,
+     "hi": 900.5496311946649
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 1
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 1
+    },
+    "proyectil": {
+     "x": 639.96875,
+     "y": 1070.5692303980738,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 1,
+    "escenaMs": 34,
+    "file": "01_+34ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0983099616305,
+     "hi": 901.060442963076
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.9769512396694214
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.5208027777777777
+    },
+    "proyectil": {
+     "x": 529.3622462121211,
+     "y": 1002.8338001883152,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 2,
+    "escenaMs": 70,
+    "file": "02_+70ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1005528333562,
+     "hi": 901.0778089849881
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.9577884297520661
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.38854444444444436
+    },
+    "proyectil": {
+     "x": 490.2856969696969,
+     "y": 978.9033188567239,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 3,
+    "escenaMs": 104,
+    "file": "03_+104ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1069463326744,
+     "hi": 901.1273123283944
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.8730049586776859
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.1201777777777776
+    },
+    "proyectil": {
+     "x": 380.34150757575753,
+     "y": 911.5734900254669,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 4,
+    "escenaMs": 140,
+    "file": "04_+140ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1141071574887,
+     "hi": 901.1827568904732
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.7267561983471075
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.0017361111111111605
+    },
+    "proyectil": null
+   },
+   {
+    "i": 5,
+    "escenaMs": 173,
+    "file": "05_+173ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1207104224319,
+     "hi": 901.2338843991859
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.5449884297520661
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 6,
+    "escenaMs": 207,
+    "file": "06_+207ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.127325872534,
+     "hi": 901.2851062546827
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.31787417355371916
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 7,
+    "escenaMs": 240,
+    "file": "07_+240ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.133941032629,
+     "hi": 901.3363258647232
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.04493801652892626
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 8,
+    "escenaMs": 274,
+    "file": "08_+274ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1454445993626,
+     "hi": 901.4253952438016
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 9,
+    "escenaMs": 310,
+    "file": "09_+310ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1477026313855,
+     "hi": 901.4428786482864
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 10,
+    "escenaMs": 345,
+    "file": "10_+345ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1544562134923,
+     "hi": 901.4951700270161
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 11,
+    "escenaMs": 380,
+    "file": "11_+380ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1607282566422,
+     "hi": 901.5437329642205
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 12,
+    "escenaMs": 413,
+    "file": "12_+413ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1671445767525,
+     "hi": 901.5934130035896
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 13,
+    "escenaMs": 448,
+    "file": "13_+448ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1733293250513,
+     "hi": 901.6413000375405
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 14,
+    "escenaMs": 483,
+    "file": "14_+483ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.179317967458,
+     "hi": 901.687668670248
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 15,
+    "escenaMs": 518,
+    "file": "15_+518ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1849922728605,
+     "hi": 901.7316034663518
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 275.6958333333333,
+     "y": 847.4884722222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   }
+  ],
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.37447646592267,
+     "pr": 208.73818273370478
+    },
+    "silueta": {
+     "lo": 31.281135162012475,
+     "hi": 236.55577397467277
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.1491580666678,
+     "pr": 471.95170526070683
+    },
+    "silueta": {
+     "lo": 312.71997608826945,
+     "hi": 511.28002391173055
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 567.1858253972713,
+     "pr": 740.8059638322783
+    },
+    "silueta": {
+     "lo": 651.1937272231631,
+     "hi": 901.7992361074054
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.40522542771416,
+     "pr": 340.3535085265288
+    },
+    "silueta": {
+     "lo": 189.06966256579648,
+     "hi": 354.9303374342035
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.6926843693011,
+     "pr": 637.885100050624
+    },
+    "silueta": {
+     "lo": 465.32696325166376,
+     "hi": 638.6730367483362
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EB",
+    "lane": 1006,
+    "cx": 275.6958333333333,
+    "h": 299,
+    "headY": 717.7972222222222,
+    "alphaH": 288.2027777777778,
+    "alphaW": 255.81111111111113,
+    "tex": "enemy:voz_del_velo:hit",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 275.6958333333333,
+    "depth": 1006,
+    "muerto": false,
+    "pie": {
+     "pl": 189.28103811298737,
+     "pr": 322.8867919730714
+    },
+    "silueta": {
+     "lo": 126.40774217883018,
+     "hi": 401.4784118907679
+    }
+   }
+  ]
+ },
+ "jefe": {
+  "objetivo": "e0",
+  "cuadros": [
+   {
+    "i": 0,
+    "escenaMs": 0,
+    "file": "00_+0ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0323371511429,
+     "hi": 900.5496311946649
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 1
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 1
+    },
+    "proyectil": {
+     "x": 639.96875,
+     "y": 1070.5692303980738,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 1,
+    "escenaMs": 32,
+    "file": "01_+32ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0821448115179,
+     "hi": 900.9352800534679
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.9979338842975206
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.8402777777777778
+    },
+    "proyectil": {
+     "x": 619.2443181818181,
+     "y": 1041.0438205639055,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 2,
+    "escenaMs": 62,
+    "file": "02_+62ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0874781113469,
+     "hi": 900.9765745245835
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.9669421487603306
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.4444444444444444
+    },
+    "proyectil": {
+     "x": 557.0710227272727,
+     "y": 952.4675910614005,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 3,
+    "escenaMs": 94,
+    "file": "03_+94ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.0973459784946,
+     "hi": 901.0529790711072
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.8197611570247934
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.049136111111110936
+    },
+    "proyectil": {
+     "x": 446.4025568181818,
+     "y": 794.8019025469416,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 4,
+    "escenaMs": 126,
+    "file": "04_+126ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.099239254736,
+     "hi": 901.0676382583954
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.7791000000000001
+    },
+    "fogonazo": {
+     "depth": 1321,
+     "alfa": 0.01913611111111102
+    },
+    "proyectil": {
+     "x": 425.678125,
+     "y": 765.2764927127733,
+     "depth": 1180
+    }
+   },
+   {
+    "i": 5,
+    "escenaMs": 156,
+    "file": "05_+156ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1053181910139,
+     "hi": 901.1147060150556
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.622892355371901
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 6,
+    "escenaMs": 187,
+    "file": "06_+187ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1154079101157,
+     "hi": 901.1928283084526
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.2798163223140502
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 7,
+    "escenaMs": 222,
+    "file": "07_+222ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1177389820143,
+     "hi": 901.2108772433107
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": {
+     "depth": 1180,
+     "alfa": 0.1859039256198356
+    },
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 8,
+    "escenaMs": 256,
+    "file": "08_+256ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1243241769521,
+     "hi": 901.2618648402703
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 9,
+    "escenaMs": 291,
+    "file": "09_+291ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.135902893504,
+     "hi": 901.3515160865052
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 10,
+    "escenaMs": 325,
+    "file": "10_+325ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1382166036161,
+     "hi": 901.3694305931821
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 11,
+    "escenaMs": 361,
+    "file": "11_+361ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1496202563187,
+     "hi": 901.4577263617014
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 12,
+    "escenaMs": 396,
+    "file": "12_+396ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1563171480515,
+     "hi": 901.5095788003589
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 13,
+    "escenaMs": 430,
+    "file": "13_+430ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1628580059631,
+     "hi": 901.5602231062795
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 14,
+    "escenaMs": 465,
+    "file": "14_+465ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1646932228446,
+     "hi": 901.5744327537641
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   },
+   {
+    "i": 15,
+    "escenaMs": 501,
+    "file": "15_+501ms_escena.png",
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "ancho": 533,
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "silueta": {
+     "lo": 651.1709643342579,
+     "hi": 901.6229884767542
+    },
+    "boca": {
+     "x": 639.96875,
+     "y": 1070.5692303980738
+    },
+    "a": {
+     "x": 412,
+     "y": 745.7897222222222
+    },
+    "estela": null,
+    "fogonazo": null,
+    "proyectil": null
+   }
+  ],
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.35061428144948,
+     "pr": 208.76526038984457
+    },
+    "silueta": {
+     "lo": 31.245595738329015,
+     "hi": 236.5926672811632
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.1188649388614,
+     "pr": 471.97285967956606
+    },
+    "silueta": {
+     "lo": 312.6849443706386,
+     "hi": 511.3150556293614
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:attack",
+    "frame": "sin_fogonazo",
+    "flip": true,
+    "ang": 30,
+    "spx": -44.466984078457244,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 567.1417837587952,
+     "pr": 740.8231853908186
+    },
+    "silueta": {
+     "lo": 651.1770359447903,
+     "hi": 901.6699995119105
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.38666695825498,
+     "pr": 340.3776275860881
+    },
+    "silueta": {
+     "lo": 189.04039996039455,
+     "hi": 354.95960003960545
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.6721101859306,
+     "pr": 637.9154052666697
+    },
+    "silueta": {
+     "lo": 465.29638000611305,
+     "hi": 638.703619993887
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "boss_devorador",
+    "row": "EF",
+    "lane": 1073,
+    "cx": 412,
+    "h": 619,
+    "headY": 478.07222222222214,
+    "alphaH": 594.9277777777778,
+    "alphaW": 567.4166666666667,
+    "tex": "enemy:boss_devorador:hit",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1073,
+    "muerto": false,
+    "pie": {
+     "pl": 224.232246473143,
+     "pr": 657.0684039688764
+    },
+    "silueta": {
+     "lo": 147.9502305976573,
+     "hi": 700.7805703694355
+    }
+   }
+  ]
+ },
+ "errores": []
+}
