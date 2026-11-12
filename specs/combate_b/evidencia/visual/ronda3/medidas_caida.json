@@ -1,0 +1,69 @@
+{
+ "victoria": {
+  "caidas": {
+   "e0": {
+    "inicio": 428,
+    "tendido": 893,
+    "ms": 465,
+    "alfa": 0.85,
+    "gris": true,
+    "tex": "enemy:bruto:hit",
+    "ang": 90
+   }
+  },
+  "cuadros": 253,
+  "conMarcador": 0
+ },
+ "derrota": {
+  "caidas": {
+   "h1": {
+    "inicio": 1135,
+    "tendido": 1602,
+    "ms": 467,
+    "alfa": 0.85,
+    "gris": true,
+    "tex": "hero:warrior:idle",
+    "ang": -90
+   },
+   "h2": {
+    "inicio": 1386,
+    "tendido": 1852,
+    "ms": 466,
+    "alfa": 0.85,
+    "gris": true,
+    "tex": "hero:mage:idle",
+    "ang": -90
+   },
+   "h3": {
+    "inicio": 1619,
+    "tendido": 2086,
+    "ms": 467,
+    "alfa": 0.85,
+    "gris": true,
+    "tex": "hero:ranger:idle",
+    "ang": -90
+   },
+   "h4": {
+    "inicio": 1869,
+    "tendido": 2335,
+    "ms": 466,
+    "alfa": 0.85,
+    "gris": true,
+    "tex": "hero:paladin:idle",
+    "ang": -90
+   },
+   "h5": {
+    "inicio": 2119,
+    "tendido": 2502,
+    "ms": 383,
+    "alfa": 0.85,
+    "gris": true,
+    "tex": "hero:rogue:idle",
+    "ang": -90
+   }
+  },
+  "cuadros": 253,
+  "conMarcador": 0
+ },
+ "errores": []
+}

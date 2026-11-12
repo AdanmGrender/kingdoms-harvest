@@ -7,7 +7,7 @@
 // los tiempos reales salen del muestreo por requestAnimationFrame a velocidad normal).
 // Preview aislado: server del worktree :3003 (BOT_TOKEN ficticio, BOT_POLLING=false, WEBAPP_URL=http://localhost:5175)
 // y vite :5175 --strictPort con VITE_API_URL=http://localhost:3003.
-// Uso: KH_PREVIEW_URL=http://localhost:5175 node capturar_ronda3.mjs <crypt|tirador|numeros|golpe|caida>
+// Uso: KH_PREVIEW_URL=http://localhost:5175 node capturar_ronda3.mjs <crypt|tirador|numeros|golpe|caida|giro>
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -371,7 +371,36 @@ async function caida(browser) {
   fs.writeFileSync(path.join(HERE, 'medidas_caida.json'), JSON.stringify(out, null, 1));
 }
 
-const MODOS = { crypt, tirador, numeros, golpe, caida };
+/** V7: giro hacia el objetivo y vuelta, muestreado por cuadro a velocidad real (bruto → Elena y → Aria; Aria y Elena → bruto). */
+async function giro(browser) {
+  const out = {};
+  const { ctx, page, errores } = await abrir(browser, { w: 412, h: 860 });
+  try {
+    await abrirEscenario(page, { node: NODES.a1n3, enemies: [en(0)] });
+    for (const [actor, objetivo] of [['e0', 'h3'], ['e0', 'h1'], ['h1', 'e0'], ['h3', 'e0']]) {
+      const s = await page.evaluate(({ actor, objetivo }) => new Promise((resolve) => {
+        const sc = window.__combatGame.scene.getScene('combat');
+        const a = sc.actors[actor];
+        const muestra = () => ({ tex: a.sp.texture.key, frame: a.sp.frame && a.sp.frame.name, flip: a.sp.flipX, ang: Math.round(a.sp.angle), x: Math.round(a.c.x) });
+        const antes = muestra();
+        sc.playBeat({ kind: 'hit', actorId: actor, targetId: objetivo, num: 9, color: '#e6dcc3', intensity: 1 });
+        const out = []; const t0 = performance.now();
+        const tick = () => {
+          const t = performance.now() - t0;
+          out.push({ t: Math.round(t), ...muestra() });
+          if (t < 900) requestAnimationFrame(tick); else resolve({ antes, durante: out.find((q) => q.t >= 50), fin: out.at(-1), vuelveA: (out.find((q) => q.t > 60 && q.tex === antes.tex && q.flip === antes.flip && q.ang === 0) || {}).t });
+        };
+        requestAnimationFrame(tick);
+      }), { actor, objetivo });
+      out[`${actor}>${objetivo}`] = s;
+      console.log(`${actor}>${objetivo}`, JSON.stringify(s));
+      await page.waitForTimeout(700);
+    }
+  } finally { out.errores = errores; await ctx.close(); }
+  fs.writeFileSync(path.join(HERE, 'medidas_giro.json'), JSON.stringify(out, null, 1));
+}
+
+const MODOS = { crypt, tirador, numeros, golpe, caida, giro };
 const modo = process.argv[2];
 if (!MODOS[modo]) { console.error(`modo: ${Object.keys(MODOS).join(' | ')}`); process.exit(2); }
 const browser = await chromium.launch({ headless: true, args: ['--ignore-gpu-blocklist', '--use-angle=d3d11'] });
