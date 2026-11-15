@@ -1,0 +1,6 @@
+# Hoja de contacto P1r2 + P2 (T8 rogue ronda 2 + T9 enemigos)
+- Hoja: evidencia/contacto_T8r2_T9_P2.webp (1832x2309, fondo oscuro, 4 columnas). Orden: rogue idle/attack, refs warrior_idle + mage_idle | bruto idle/hit (ref existente) | carroneros, aullador, coloso, boss_devorador, boss_heraldo, sin_rostro, voz_del_velo (idle, hit).
+- Generación web (gen_art_web.js): rogue con la regla de p-kh copiada literal en el manifest (sheet_rogue); solo se sube la 1a ref (mage_idle); warrior_idle queda en `refs` sin subirse. Enemigos idle con --ref brute_idle.webp (estilo); hit con --ref de su propio idle (mismo diseño, pose nueva).
+- Generaciones web acumuladas: 17 de 40 (2 ronda 1 + 1 rogue + 14 enemigos); sin regeneraciones de enemigos todavía.
+- Procesado: process_art_b.js --height 720 (enemigos) / 640 (rogue), webp con --quality ajustado para <=100 KB (enemigos) y rogue 49/68 KB. Verificación de pies del rogue: sin línea de piso ni sombra (perfil inferior comparable al de warrior aprobado).
+- Dudosos (sin visión, revisión por script/ASCII): diseños de carroneros/aullador/coloso/devorador/heraldo/sin_rostro/voz_del_velo, orientación izquierda, coherencia idle↔hit; boss_devorador_hit toca fila 7 arriba; voz_del_velo_hit salió 976x1095 (recortada a 642x720).

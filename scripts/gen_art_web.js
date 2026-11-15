@@ -107,7 +107,7 @@ async function openContext() {
   const { chromium } = require('playwright');
   fs.mkdirSync(PROFILE_DIR, { recursive: true });
   const ctx = await chromium.launchPersistentContext(PROFILE_DIR, {
-    channel: 'msedge',
+    ...(process.env.GEMINI_WEB_EXE ? { executablePath: process.env.GEMINI_WEB_EXE } : { channel: 'msedge' }), // GEMINI_WEB_EXE: msedge.exe si Edge no está en la ruta estándar (p. ej. EdgeCore)
     headless: false,
     ignoreDefaultArgs: ['--enable-automation'],
     args: ['--disable-blink-features=AutomationControlled'],

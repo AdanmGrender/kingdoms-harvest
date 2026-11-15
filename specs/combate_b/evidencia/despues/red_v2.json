@@ -1,0 +1,13 @@
+{
+  "nota": "Peticiones a /assets/ desde que se abre el combate hasta el banner (la del hub previo se excluye).",
+  "total": 6,
+  "bajoAssetsGame": 0,
+  "urls": [
+    "/assets/b/bg/combat_crypt.webp",
+    "/assets/b/enemies/bruto_hit.webp",
+    "/assets/b/enemies/bruto_idle.webp",
+    "/assets/b/heroes/warrior_attack.webp",
+    "/assets/b/heroes/warrior_idle.webp",
+    "/assets/b/ui/btn_red.webp"
+  ]
+}

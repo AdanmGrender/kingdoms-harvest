@@ -1,0 +1,452 @@
+{
+  "motor": "v2",
+  "calidad": "medium",
+  "viewport": {
+    "w": 412,
+    "h": 860,
+    "dpr": 2
+  },
+  "entrada": {
+    "kind": "combat",
+    "engine": 2,
+    "nEnemies": 1
+  },
+  "resultado": "victoria",
+  "duracionS": 10.1,
+  "rondas": [
+    {
+      "ronda": 1,
+      "hpEnemigos": [
+        340
+      ]
+    },
+    {
+      "ronda": 2,
+      "hpEnemigos": [
+        280
+      ]
+    },
+    {
+      "ronda": 3,
+      "hpEnemigos": [
+        220
+      ]
+    },
+    {
+      "ronda": 4,
+      "hpEnemigos": [
+        160
+      ]
+    },
+    {
+      "ronda": 5,
+      "hpEnemigos": [
+        100
+      ]
+    },
+    {
+      "ronda": 6,
+      "hpEnemigos": [
+        40
+      ]
+    },
+    {
+      "ronda": 7,
+      "hpEnemigos": [
+        -20
+      ]
+    }
+  ],
+  "errores": [
+    "warning: [Telegram.WebApp] Header color is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Background color is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Closing confirmation is not supported in version 6.0"
+  ],
+  "medidasInicio": {
+    "vw": 412,
+    "vh": 860,
+    "nBotones": 8,
+    "botonesBajo44": [],
+    "barrasEnemigo": 1,
+    "cajaBarras": {
+      "x": 16,
+      "y": 68,
+      "w": 380,
+      "h": 33,
+      "r": 396,
+      "b": 101
+    },
+    "cajaAvanzar": {
+      "x": 16,
+      "y": 700,
+      "w": 380,
+      "h": 48,
+      "r": 396,
+      "b": 748
+    },
+    "zonaHeroes": {
+      "top": 495,
+      "bottom": 715
+    },
+    "zonaEnemigos": {
+      "top": 50,
+      "bottom": 480
+    },
+    "lienzoCombate": {
+      "x": 0,
+      "y": 0,
+      "w": 412,
+      "h": 860
+    },
+    "barrasTapanAvanzar": false,
+    "barrasTapanBotonesHud": false,
+    "barrasTapanHeroesSprites": false,
+    "barrasSolapanZonaEnemigos": true,
+    "canvases": [
+      [
+        824,
+        1720
+      ],
+      [
+        824,
+        1720
+      ]
+    ]
+  },
+  "medidasFin": {
+    "vw": 412,
+    "vh": 860,
+    "nBotones": 8,
+    "botonesBajo44": [],
+    "barrasEnemigo": 1,
+    "cajaBarras": {
+      "x": 16,
+      "y": 68,
+      "w": 380,
+      "h": 33,
+      "r": 396,
+      "b": 101
+    },
+    "cajaAvanzar": null,
+    "zonaHeroes": {
+      "top": 495,
+      "bottom": 715
+    },
+    "zonaEnemigos": {
+      "top": 50,
+      "bottom": 480
+    },
+    "lienzoCombate": {
+      "x": 0,
+      "y": 0,
+      "w": 412,
+      "h": 860
+    },
+    "barrasTapanAvanzar": false,
+    "barrasTapanBotonesHud": false,
+    "barrasTapanHeroesSprites": false,
+    "barrasSolapanZonaEnemigos": true,
+    "canvases": [
+      [
+        824,
+        1720
+      ],
+      [
+        824,
+        1720
+      ]
+    ]
+  },
+  "erroresCombate": [
+    "warning: [Telegram.WebApp] Header color is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Background color is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Closing confirmation is not supported in version 6.0"
+  ],
+  "botones": {
+    "360x740": {
+      "entrada": {
+        "kind": "combat",
+        "engine": 2,
+        "nEnemies": 1
+      },
+      "vw": 360,
+      "vh": 740,
+      "nBotones": 8,
+      "botonesBajo44": [],
+      "barrasEnemigo": 1,
+      "cajaBarras": {
+        "x": 16,
+        "y": 68,
+        "w": 328,
+        "h": 33,
+        "r": 344,
+        "b": 101
+      },
+      "cajaAvanzar": {
+        "x": 16,
+        "y": 580,
+        "w": 328,
+        "h": 48,
+        "r": 344,
+        "b": 628
+      },
+      "zonaHeroes": {
+        "top": 426,
+        "bottom": 615
+      },
+      "zonaEnemigos": {
+        "top": 43,
+        "bottom": 413
+      },
+      "lienzoCombate": {
+        "x": 2,
+        "y": 0,
+        "w": 355,
+        "h": 740
+      },
+      "barrasTapanAvanzar": false,
+      "barrasTapanBotonesHud": false,
+      "barrasTapanHeroesSprites": false,
+      "barrasSolapanZonaEnemigos": true,
+      "canvases": [
+        [
+          1080,
+          2220
+        ],
+        [
+          824,
+          1720
+        ]
+      ]
+    },
+    "360x800": {
+      "entrada": {
+        "kind": "combat",
+        "engine": 2,
+        "nEnemies": 1
+      },
+      "vw": 360,
+      "vh": 800,
+      "nBotones": 8,
+      "botonesBajo44": [],
+      "barrasEnemigo": 1,
+      "cajaBarras": {
+        "x": 16,
+        "y": 90,
+        "w": 328,
+        "h": 33,
+        "r": 344,
+        "b": 123
+      },
+      "cajaAvanzar": {
+        "x": 16,
+        "y": 618,
+        "w": 328,
+        "h": 48,
+        "r": 344,
+        "b": 666
+      },
+      "zonaHeroes": {
+        "top": 457,
+        "bottom": 649
+      },
+      "zonaEnemigos": {
+        "top": 68,
+        "bottom": 443
+      },
+      "lienzoCombate": {
+        "x": 0,
+        "y": 24,
+        "w": 360,
+        "h": 751
+      },
+      "barrasTapanAvanzar": false,
+      "barrasTapanBotonesHud": false,
+      "barrasTapanHeroesSprites": false,
+      "barrasSolapanZonaEnemigos": true,
+      "canvases": [
+        [
+          1080,
+          2268
+        ],
+        [
+          824,
+          1720
+        ]
+      ]
+    },
+    "412x915": {
+      "entrada": {
+        "kind": "combat",
+        "engine": 2,
+        "nEnemies": 1
+      },
+      "vw": 412,
+      "vh": 915,
+      "nBotones": 8,
+      "botonesBajo44": [],
+      "barrasEnemigo": 1,
+      "cajaBarras": {
+        "x": 16,
+        "y": 93,
+        "w": 380,
+        "h": 33,
+        "r": 396,
+        "b": 126
+      },
+      "cajaAvanzar": {
+        "x": 16,
+        "y": 730,
+        "w": 380,
+        "h": 48,
+        "r": 396,
+        "b": 778
+      },
+      "zonaHeroes": {
+        "top": 522,
+        "bottom": 742
+      },
+      "zonaEnemigos": {
+        "top": 77,
+        "bottom": 507
+      },
+      "lienzoCombate": {
+        "x": 0,
+        "y": 27,
+        "w": 412,
+        "h": 860
+      },
+      "barrasTapanAvanzar": false,
+      "barrasTapanBotonesHud": false,
+      "barrasTapanHeroesSprites": false,
+      "barrasSolapanZonaEnemigos": true,
+      "canvases": [
+        [
+          1082,
+          2271
+        ],
+        [
+          824,
+          1720
+        ]
+      ]
+    }
+  },
+  "erroresAntesDelVeil": [
+    "warning: [Telegram.WebApp] Header color is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Background color is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Changing swipes behavior is not supported in version 6.0",
+    "warning: [Telegram.WebApp] Closing confirmation is not supported in version 6.0"
+  ],
+  "veil": {
+    "3enemigos": {
+      "vw": 412,
+      "vh": 860,
+      "nBotones": 10,
+      "botonesBajo44": [],
+      "barrasEnemigo": 3,
+      "cajaBarras": {
+        "x": 16,
+        "y": 68,
+        "w": 380,
+        "h": 70,
+        "r": 396,
+        "b": 138
+      },
+      "cajaAvanzar": {
+        "x": 16,
+        "y": 700,
+        "w": 380,
+        "h": 48,
+        "r": 396,
+        "b": 748
+      },
+      "zonaHeroes": {
+        "top": 495,
+        "bottom": 715
+      },
+      "zonaEnemigos": {
+        "top": 50,
+        "bottom": 480
+      },
+      "lienzoCombate": {
+        "x": 0,
+        "y": 0,
+        "w": 412,
+        "h": 860
+      },
+      "barrasTapanAvanzar": false,
+      "barrasTapanBotonesHud": false,
+      "barrasTapanHeroesSprites": false,
+      "barrasSolapanZonaEnemigos": true,
+      "canvases": [
+        [
+          824,
+          1720
+        ],
+        [
+          824,
+          1720
+        ]
+      ]
+    },
+    "4enemigos": {
+      "vw": 412,
+      "vh": 860,
+      "nBotones": 10,
+      "botonesBajo44": [],
+      "barrasEnemigo": 4,
+      "cajaBarras": {
+        "x": 16,
+        "y": 68,
+        "w": 380,
+        "h": 70,
+        "r": 396,
+        "b": 138
+      },
+      "cajaAvanzar": {
+        "x": 16,
+        "y": 700,
+        "w": 380,
+        "h": 48,
+        "r": 396,
+        "b": 748
+      },
+      "zonaHeroes": {
+        "top": 495,
+        "bottom": 715
+      },
+      "zonaEnemigos": {
+        "top": 50,
+        "bottom": 480
+      },
+      "lienzoCombate": {
+        "x": 0,
+        "y": 0,
+        "w": 412,
+        "h": 860
+      },
+      "barrasTapanAvanzar": false,
+      "barrasTapanBotonesHud": false,
+      "barrasTapanHeroesSprites": false,
+      "barrasSolapanZonaEnemigos": true,
+      "canvases": [
+        [
+          824,
+          1720
+        ],
+        [
+          824,
+          1720
+        ]
+      ]
+    }
+  },
+  "erroresVeilSintetico": [
+    "http 400 POST /api/campaign/step",
+    "error: Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "error: API Error: {error: Run inexistente}"
+  ]
+}

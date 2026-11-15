@@ -1,0 +1,1623 @@
+{
+ "victoria_a1n7_3en": {
+  "vp": {
+   "w": 412,
+   "h": 860
+  },
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "crypt",
+  "ground": 825,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 937,
+   "EB": 833
+  },
+  "barras": {
+   "cssBottom": 138,
+   "mundoBottom": 276
+  },
+  "botones": [
+   {
+    "texto": "¡TAP!Aria",
+    "cssTop": 686.25,
+    "cssLeft": 53,
+    "cssRight": 111,
+    "tapTop": 686.25,
+    "mundoTop": 1372.5
+   },
+   {
+    "texto": "Lyra",
+    "cssTop": 694.25,
+    "cssLeft": 115,
+    "cssRight": 173,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "¡TAP!Elena",
+    "cssTop": 686.25,
+    "cssLeft": 177,
+    "cssRight": 235,
+    "tapTop": 686.25,
+    "mundoTop": 1372.5
+   },
+   {
+    "texto": "Viktor",
+    "cssTop": 694.25,
+    "cssLeft": 239,
+    "cssRight": 297,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Sombra",
+    "cssTop": 694.25,
+    "cssLeft": 301,
+    "cssRight": 359,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   }
+  ],
+  "botonesMundoTop": 1372.5,
+  "cartel": {
+   "css": {
+    "top": 362.234375,
+    "bottom": 497.734375,
+    "left": 26,
+    "right": 386
+   },
+   "mundo": {
+    "x": 52,
+    "y": 724.46875,
+    "w": 720,
+    "h": 271
+   }
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 31.027066516017328,
+     "y": 1022.6304504355555,
+     "w": 205.7924549102123,
+     "h": 297.3695495644445
+    },
+    "tr": {
+     "cx": 132,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4808234927808699,
+     "sy": 0.4827427752669554,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 444,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:warrior:idle"
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 312.46953699435994,
+     "y": 1022.6304504355555,
+     "w": 199.06092601128015,
+     "h": 297.3695495644445
+    },
+    "tr": {
+     "cx": 412,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4808234927808699,
+     "sy": 0.4827427752669554,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 438,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:mage:idle"
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 598.4798306541209,
+     "y": 1022.6304504355555,
+     "w": 191.3677501267862,
+     "h": 297.3695495644445
+    },
+    "tr": {
+     "cx": 692,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4808234927808699,
+     "sy": 0.4827427752669554,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 413,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:ranger:idle"
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "depth": 1181,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 188.8604664179078,
+     "y": 935.9390782984105,
+     "w": 166.2790671641844,
+     "h": 245.06092170158945
+    },
+    "tr": {
+     "cx": 272,
+     "cy": 1181,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.394962154784286,
+     "sy": 0.3965387082549991,
+     "ox": 0.5,
+     "oy": 0.9828125,
+     "W": 445,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:paladin:idle"
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "depth": 1181,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 465.1083259474571,
+     "y": 936.7321557149205,
+     "w": 173.78334810508582,
+     "h": 244.26784428507943
+    },
+    "tr": {
+     "cx": 552,
+     "cy": 1181,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.394962154784286,
+     "sy": 0.3965387082549991,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 464,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:rogue:idle"
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "carroneros",
+    "row": "EB",
+    "lane": 833,
+    "cx": 147.94861111111112,
+    "depth": 833,
+    "muerto": true,
+    "visible": true,
+    "angulo": 90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 147.94861111111112,
+     "cy": 833,
+     "x": -143.94861111111112,
+     "y": -78.04659958333335,
+     "angle": 90,
+     "sx": 0.22840277777777782,
+     "sy": 0.4152777777777778,
+     "ox": 0.494,
+     "oy": 0.9819444444444444,
+     "W": 701,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:carroneros:hit"
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "carroneros",
+    "row": "EB",
+    "lane": 833,
+    "cx": 676.0513888888888,
+    "depth": 833,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 676.0513888888888,
+     "cy": 833,
+     "x": 143.9486111111112,
+     "y": -76.12527541666668,
+     "angle": -90,
+     "sx": 0.22840277777777782,
+     "sy": 0.4152777777777778,
+     "ox": 0.494,
+     "oy": 0.9819444444444444,
+     "W": 701,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:carroneros:hit"
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "carroneros",
+    "row": "EF",
+    "lane": 937,
+    "cx": 412,
+    "depth": 937,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 412,
+     "cy": 937,
+     "x": 144.93194444444444,
+     "y": -76.12527541666668,
+     "angle": -90,
+     "sx": 0.22840277777777782,
+     "sy": 0.4152777777777778,
+     "ox": 0.494,
+     "oy": 0.9819444444444444,
+     "W": 701,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:carroneros:hit"
+    }
+   }
+  ]
+ },
+ "victoria_a2n10_4en": {
+  "vp": {
+   "w": 412,
+   "h": 860
+  },
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "veil_gate",
+  "ground": 998,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 1109,
+   "EB": 1006
+  },
+  "barras": {
+   "cssBottom": 138,
+   "mundoBottom": 276
+  },
+  "botones": [
+   {
+    "texto": "¡TAP!Aria",
+    "cssTop": 686.25,
+    "cssLeft": 53,
+    "cssRight": 111,
+    "tapTop": 686.25,
+    "mundoTop": 1372.5
+   },
+   {
+    "texto": "Lyra",
+    "cssTop": 694.25,
+    "cssLeft": 115,
+    "cssRight": 173,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "¡TAP!Elena",
+    "cssTop": 686.25,
+    "cssLeft": 177,
+    "cssRight": 235,
+    "tapTop": 686.25,
+    "mundoTop": 1372.5
+   },
+   {
+    "texto": "Viktor",
+    "cssTop": 694.25,
+    "cssLeft": 239,
+    "cssRight": 297,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Sombra",
+    "cssTop": 694.25,
+    "cssLeft": 301,
+    "cssRight": 359,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   }
+  ],
+  "botonesMundoTop": 1372.5,
+  "cartel": {
+   "css": {
+    "top": 362.234375,
+    "bottom": 497.734375,
+    "left": 26,
+    "right": 386
+   },
+   "mundo": {
+    "x": 52,
+    "y": 724.46875,
+    "w": 720,
+    "h": 271
+   }
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 31.06956680838946,
+     "y": 1022.1941141005349,
+     "w": 205.705835266711,
+     "h": 297.8058858994652
+    },
+    "tr": {
+     "cx": 132,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4806211104362407,
+     "sy": 0.4834511134731577,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 444,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:warrior:idle"
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 312.5114301396982,
+     "y": 1022.1941141005349,
+     "w": 198.97713972060365,
+     "h": 297.8058858994652
+    },
+    "tr": {
+     "cx": 412,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4806211104362407,
+     "sy": 0.4834511134731577,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 438,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:mage:idle"
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 598.5191940201512,
+     "y": 1022.1941141005349,
+     "w": 191.2872019536238,
+     "h": 297.8058858994652
+    },
+    "tr": {
+     "cx": 692,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4806211104362407,
+     "sy": 0.4834511134731577,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 413,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:ranger:idle"
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "depth": 1181,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 188.89546049367644,
+     "y": 935.5794954675906,
+     "w": 166.2090790126471,
+     "h": 245.4205045324094
+    },
+    "tr": {
+     "cx": 272,
+     "cy": 1181,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.39479591214405485,
+     "sy": 0.3971205574958081,
+     "ox": 0.5,
+     "oy": 0.9828125,
+     "W": 445,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:paladin:idle"
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "depth": 1181,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 465.14489932830793,
+     "y": 936.3737365825822,
+     "w": 173.71020134338414,
+     "h": 244.6262634174178
+    },
+    "tr": {
+     "cx": 552,
+     "cy": 1181,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.39479591214405485,
+     "sy": 0.3971205574958081,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 464,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:rogue:idle"
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EB",
+    "lane": 1006,
+    "cx": 275.6958333333333,
+    "depth": 1006,
+    "muerto": true,
+    "visible": true,
+    "angulo": 90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 275.6958333333333,
+     "cy": 1006,
+     "x": -144.1013888888889,
+     "y": -69.45431548611111,
+     "angle": 90,
+     "sx": 0.22840277777777782,
+     "sy": 0.4152777777777778,
+     "ox": 0.541,
+     "oy": 0.9861111111111112,
+     "W": 693,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:voz_del_velo:hit"
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EB",
+    "lane": 1006,
+    "cx": 548.3041666666667,
+    "depth": 1006,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 548.3041666666667,
+     "cy": 1006,
+     "x": 144.1013888888889,
+     "y": -82.43353173611114,
+     "angle": -90,
+     "sx": 0.22840277777777782,
+     "sy": 0.4152777777777778,
+     "ox": 0.541,
+     "oy": 0.9861111111111112,
+     "W": 693,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:voz_del_velo:hit"
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EF",
+    "lane": 1109,
+    "cx": 141.30416666666667,
+    "depth": 1109,
+    "muerto": true,
+    "visible": true,
+    "angulo": 90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 141.30416666666667,
+     "cy": 1109,
+     "x": -137.30416666666667,
+     "y": -69.45431548611111,
+     "angle": 90,
+     "sx": 0.22840277777777782,
+     "sy": 0.4152777777777778,
+     "ox": 0.541,
+     "oy": 0.9861111111111112,
+     "W": 693,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:voz_del_velo:hit"
+    }
+   },
+   {
+    "id": "e3",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EF",
+    "lane": 1109,
+    "cx": 682.6958333333333,
+    "depth": 1109,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 682.6958333333333,
+     "cy": 1109,
+     "x": 137.30416666666667,
+     "y": -82.43353173611114,
+     "angle": -90,
+     "sx": 0.22840277777777782,
+     "sy": 0.4152777777777778,
+     "ox": 0.541,
+     "oy": 0.9861111111111112,
+     "W": 693,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:voz_del_velo:hit"
+    }
+   }
+  ]
+ },
+ "victoria_a1n9_jefe": {
+  "vp": {
+   "w": 412,
+   "h": 860
+  },
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "cathedral",
+  "ground": 1062,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 1073
+  },
+  "barras": {
+   "cssBottom": 101,
+   "mundoBottom": 202
+  },
+  "botones": [
+   {
+    "texto": "¡TAP!Aria",
+    "cssTop": 686.25,
+    "cssLeft": 53,
+    "cssRight": 111,
+    "tapTop": 686.25,
+    "mundoTop": 1372.5
+   },
+   {
+    "texto": "Lyra",
+    "cssTop": 694.25,
+    "cssLeft": 115,
+    "cssRight": 173,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "¡TAP!Elena",
+    "cssTop": 686.25,
+    "cssLeft": 177,
+    "cssRight": 235,
+    "tapTop": 686.25,
+    "mundoTop": 1372.5
+   },
+   {
+    "texto": "Viktor",
+    "cssTop": 694.25,
+    "cssLeft": 239,
+    "cssRight": 297,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Sombra",
+    "cssTop": 694.25,
+    "cssLeft": 301,
+    "cssRight": 359,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   }
+  ],
+  "botonesMundoTop": 1372.5,
+  "cartel": {
+   "css": {
+    "top": 362.234375,
+    "bottom": 497.734375,
+    "left": 26,
+    "right": 386
+   },
+   "mundo": {
+    "x": 52,
+    "y": 724.46875,
+    "w": 720,
+    "h": 271
+   }
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 31.2287377367468,
+     "y": 1020.5599592360662,
+     "w": 205.3814297555827,
+     "h": 299.44004076393384
+    },
+    "tr": {
+     "cx": 132,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.479863153634539,
+     "sy": 0.48610396227911334,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 444,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:warrior:idle"
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 312.66832719765046,
+     "y": 1020.5599592360662,
+     "w": 198.66334560469915,
+     "h": 299.44004076393384
+    },
+    "tr": {
+     "cx": 412,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.479863153634539,
+     "sy": 0.48610396227911334,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 438,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:mage:idle"
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "depth": 1320,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 598.6666166180821,
+     "y": 1020.5599592360662,
+     "w": 190.98553514654654,
+     "h": 299.44004076393384
+    },
+    "tr": {
+     "cx": 692,
+     "cy": 1320,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.479863153634539,
+     "sy": 0.48610396227911334,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 413,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:ranger:idle"
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "depth": 1181,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 189.0265193456564,
+     "y": 934.2327957201672,
+     "w": 165.9469613086872,
+     "h": 246.76720427983275
+    },
+    "tr": {
+     "cx": 272,
+     "cy": 1181,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.3941733047712285,
+     "sy": 0.39929968330070026,
+     "ox": 0.5,
+     "oy": 0.9828125,
+     "W": 445,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:paladin:idle"
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "depth": 1181,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 465.2818729503297,
+     "y": 935.0313950867687,
+     "w": 173.43625409934054,
+     "h": 245.96860491323136
+    },
+    "tr": {
+     "cx": 552,
+     "cy": 1181,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.3941733047712285,
+     "sy": 0.39929968330070026,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 464,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:rogue:idle"
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "boss_devorador",
+    "row": "EF",
+    "lane": 1073,
+    "cx": 412,
+    "depth": 1073,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 412,
+     "cy": 1073,
+     "x": 297.4638888888889,
+     "y": -145.6714622916667,
+     "angle": -90,
+     "sx": 0.4728472222222223,
+     "sy": 0.8597222222222223,
+     "ox": 0.479,
+     "oy": 0.9902777777777778,
+     "W": 687,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:boss_devorador:hit"
+    }
+   }
+  ]
+ },
+ "derrota_a1n9_jefe": {
+  "vp": {
+   "w": 412,
+   "h": 860
+  },
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "cathedral",
+  "ground": 1062,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 1073
+  },
+  "barras": {
+   "cssBottom": 101,
+   "mundoBottom": 202
+  },
+  "botones": [
+   {
+    "texto": "Aria",
+    "cssTop": 694.25,
+    "cssLeft": 53,
+    "cssRight": 111,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Lyra",
+    "cssTop": 694.25,
+    "cssLeft": 115,
+    "cssRight": 173,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Elena",
+    "cssTop": 694.25,
+    "cssLeft": 177,
+    "cssRight": 235,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Viktor",
+    "cssTop": 694.25,
+    "cssLeft": 239,
+    "cssRight": 297,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Sombra",
+    "cssTop": 694.25,
+    "cssLeft": 301,
+    "cssRight": 359,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   }
+  ],
+  "botonesMundoTop": 1388.5,
+  "cartel": {
+   "css": {
+    "top": 364.734375,
+    "bottom": 495.234375,
+    "left": 26,
+    "right": 386
+   },
+   "mundo": {
+    "x": 52,
+    "y": 729.46875,
+    "w": 720,
+    "h": 261
+   }
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "depth": 1320,
+    "muerto": true,
+    "visible": true,
+    "angulo": 90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 132,
+     "cy": 1320,
+     "x": -128,
+     "y": -57.70187500000001,
+     "angle": 90,
+     "sx": 0.2646875,
+     "sy": 0.48125,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 444,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:warrior:idle"
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "depth": 1320,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 412,
+     "cy": 1320,
+     "x": 148.225,
+     "y": -54.790312500000006,
+     "angle": -90,
+     "sx": 0.2646875,
+     "sy": 0.48125,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 438,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:mage:idle"
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "depth": 1320,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 692,
+     "cy": 1320,
+     "x": 127.99999999999997,
+     "y": -51.481718750000006,
+     "angle": -90,
+     "sx": 0.2646875,
+     "sy": 0.48125,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 413,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:ranger:idle"
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "depth": 1181,
+    "muerto": true,
+    "visible": true,
+    "angulo": 90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 272,
+     "cy": 1181,
+     "x": -122.1515625,
+     "y": -45.76730468750001,
+     "angle": 90,
+     "sx": 0.21742187500000001,
+     "sy": 0.3953125,
+     "ox": 0.5,
+     "oy": 0.9828125,
+     "W": 445,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:paladin:idle"
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "depth": 1181,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 552,
+     "cy": 1181,
+     "x": 121.75625000000001,
+     "y": -47.8328125,
+     "angle": -90,
+     "sx": 0.21742187500000001,
+     "sy": 0.3953125,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 464,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:rogue:idle"
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "boss_devorador",
+    "row": "EF",
+    "lane": 1073,
+    "cx": 412,
+    "depth": 1073,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 123.6875201745211,
+     "y": 476.2340726350357,
+     "w": 566.9157671094648,
+     "h": 596.7659273649642
+    },
+    "tr": {
+     "cx": 407.1454037292535,
+     "cy": 1073,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.858963283499189,
+     "sy": 0.8623785077528385,
+     "ox": 0.5,
+     "oy": 0.9805555555555555,
+     "W": 688,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:boss_devorador:idle"
+    }
+   }
+  ]
+ },
+ "derrota_a2n10_4en": {
+  "vp": {
+   "w": 412,
+   "h": 860
+  },
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "veil_gate",
+  "ground": 998,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 1109,
+   "EB": 1006
+  },
+  "barras": {
+   "cssBottom": 138,
+   "mundoBottom": 276
+  },
+  "botones": [
+   {
+    "texto": "Aria",
+    "cssTop": 694.25,
+    "cssLeft": 53,
+    "cssRight": 111,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Lyra",
+    "cssTop": 694.25,
+    "cssLeft": 115,
+    "cssRight": 173,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Elena",
+    "cssTop": 694.25,
+    "cssLeft": 177,
+    "cssRight": 235,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Viktor",
+    "cssTop": 694.25,
+    "cssLeft": 239,
+    "cssRight": 297,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   },
+   {
+    "texto": "Sombra",
+    "cssTop": 694.25,
+    "cssLeft": 301,
+    "cssRight": 359,
+    "tapTop": null,
+    "mundoTop": 1388.5
+   }
+  ],
+  "botonesMundoTop": 1388.5,
+  "cartel": {
+   "css": {
+    "top": 364.734375,
+    "bottom": 495.234375,
+    "left": 26,
+    "right": 386
+   },
+   "mundo": {
+    "x": 52,
+    "y": 729.46875,
+    "w": 720,
+    "h": 261
+   }
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "depth": 1320,
+    "muerto": true,
+    "visible": true,
+    "angulo": 90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 132,
+     "cy": 1320,
+     "x": -128,
+     "y": -57.70187500000001,
+     "angle": 90,
+     "sx": 0.2646875,
+     "sy": 0.48125,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 444,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:warrior:idle"
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "depth": 1320,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 412,
+     "cy": 1320,
+     "x": 148.225,
+     "y": -54.790312500000006,
+     "angle": -90,
+     "sx": 0.2646875,
+     "sy": 0.48125,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 438,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:mage:idle"
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "depth": 1320,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 692,
+     "cy": 1320,
+     "x": 127.99999999999997,
+     "y": -51.481718750000006,
+     "angle": -90,
+     "sx": 0.2646875,
+     "sy": 0.48125,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 413,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:ranger:idle"
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "depth": 1181,
+    "muerto": true,
+    "visible": true,
+    "angulo": 90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 272,
+     "cy": 1181,
+     "x": -122.1515625,
+     "y": -45.76730468750001,
+     "angle": 90,
+     "sx": 0.21742187500000001,
+     "sy": 0.3953125,
+     "ox": 0.5,
+     "oy": 0.9828125,
+     "W": 445,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:paladin:idle"
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "depth": 1181,
+    "muerto": true,
+    "visible": true,
+    "angulo": -90,
+    "alfa": 0.85,
+    "alphaBox": null,
+    "tr": {
+     "cx": 552,
+     "cy": 1181,
+     "x": 121.75625000000001,
+     "y": -47.8328125,
+     "angle": -90,
+     "sx": 0.21742187500000001,
+     "sy": 0.3953125,
+     "ox": 0.5,
+     "oy": 0.98125,
+     "W": 464,
+     "H": 640,
+     "flipX": false,
+     "key": "hero:rogue:idle"
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EB",
+    "lane": 1006,
+    "cx": 275.6958333333333,
+    "depth": 1006,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 142.9513540669782,
+     "y": 717.6736227153671,
+     "w": 255.77976599121703,
+     "h": 288.32637728463294
+    },
+    "tr": {
+     "cx": 270.84123706258674,
+     "cy": 1006,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4152268928428848,
+     "sy": 0.4154558750499034,
+     "ox": 0.5,
+     "oy": 0.9819444444444444,
+     "W": 642,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:voz_del_velo:idle"
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EB",
+    "lane": 1006,
+    "cx": 548.3041666666667,
+    "depth": 1006,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 420.4011255638932,
+     "y": 717.7773923332363,
+     "w": 255.80608220554697,
+     "h": 288.2226076667636
+    },
+    "tr": {
+     "cx": 548.3041666666667,
+     "cy": 1006,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4152696139700438,
+     "sy": 0.4153063511048467,
+     "ox": 0.5,
+     "oy": 0.9819444444444444,
+     "W": 642,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:voz_del_velo:idle"
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EF",
+    "lane": 1109,
+    "cx": 141.30416666666667,
+    "depth": 1109,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 13.404201197647833,
+     "y": 820.7531367670348,
+     "w": 255.79993093803768,
+     "h": 288.2468632329652
+    },
+    "tr": {
+     "cx": 141.30416666666667,
+     "cy": 1109,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.41525962814616507,
+     "sy": 0.41534130148842247,
+     "ox": 0.5,
+     "oy": 0.9819444444444444,
+     "W": 642,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:voz_del_velo:idle"
+    }
+   },
+   {
+    "id": "e3",
+    "kind": "enemy",
+    "art": "voz_del_velo",
+    "row": "EF",
+    "lane": 1109,
+    "cx": 682.6958333333333,
+    "depth": 1109,
+    "muerto": false,
+    "visible": true,
+    "angulo": 0,
+    "alfa": 1,
+    "alphaBox": {
+     "x": 554.8245499680963,
+     "y": 820.5269392667553,
+     "w": 255.742566730474,
+     "h": 288.47306073324467
+    },
+    "tr": {
+     "cx": 682.6958333333333,
+     "cy": 1109,
+     "x": 0,
+     "y": 0,
+     "angle": 0,
+     "sx": 0.4151665044325877,
+     "sy": 0.41566723448594334,
+     "ox": 0.5,
+     "oy": 0.9819444444444444,
+     "W": 642,
+     "H": 720,
+     "flipX": false,
+     "key": "enemy:voz_del_velo:idle"
+    }
+   }
+  ]
+ },
+ "errores": []
+}

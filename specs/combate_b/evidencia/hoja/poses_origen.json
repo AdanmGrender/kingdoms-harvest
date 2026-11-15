@@ -1,0 +1,93 @@
+[
+ {
+  "clave": "hero:warrior:attack",
+  "anchoIdle": 444,
+  "anchoPose": 705,
+  "desplazamiento": 4,
+  "ox": 0.321
+ },
+ {
+  "clave": "hero:mage:attack",
+  "anchoIdle": 438,
+  "anchoPose": 735,
+  "desplazamiento": 68,
+  "ox": 0.39
+ },
+ {
+  "clave": "hero:ranger:attack",
+  "anchoIdle": 413,
+  "anchoPose": 791,
+  "desplazamiento": 54,
+  "ox": 0.329
+ },
+ {
+  "clave": "hero:paladin:attack",
+  "anchoIdle": 445,
+  "anchoPose": 517,
+  "desplazamiento": 5,
+  "ox": 0.44
+ },
+ {
+  "clave": "hero:rogue:attack",
+  "anchoIdle": 464,
+  "anchoPose": 803,
+  "desplazamiento": 275,
+  "ox": 0.631
+ },
+ {
+  "clave": "enemy:bruto:hit",
+  "anchoIdle": 620,
+  "anchoPose": 665,
+  "desplazamiento": 0,
+  "ox": 0.466
+ },
+ {
+  "clave": "enemy:carroneros:hit",
+  "anchoIdle": 674,
+  "anchoPose": 701,
+  "desplazamiento": 9,
+  "ox": 0.494
+ },
+ {
+  "clave": "enemy:aullador:hit",
+  "anchoIdle": 522,
+  "anchoPose": 622,
+  "desplazamiento": 2,
+  "ox": 0.423
+ },
+ {
+  "clave": "enemy:coloso:hit",
+  "anchoIdle": 601,
+  "anchoPose": 651,
+  "desplazamiento": 3,
+  "ox": 0.466
+ },
+ {
+  "clave": "enemy:boss_devorador:hit",
+  "anchoIdle": 688,
+  "anchoPose": 687,
+  "desplazamiento": -15,
+  "ox": 0.479
+ },
+ {
+  "clave": "enemy:boss_heraldo:hit",
+  "anchoIdle": 618,
+  "anchoPose": 727,
+  "desplazamiento": 81,
+  "ox": 0.536
+ },
+ {
+  "clave": "enemy:sin_rostro:hit",
+  "anchoIdle": 488,
+  "anchoPose": 632,
+  "desplazamiento": 106,
+  "ox": 0.554
+ },
+ {
+  "clave": "enemy:voz_del_velo:hit",
+  "anchoIdle": 642,
+  "anchoPose": 693,
+  "desplazamiento": 54,
+  "ox": 0.541
+ }
+]

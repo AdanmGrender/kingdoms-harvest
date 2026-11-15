@@ -1,0 +1,396 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
+
+let stageMode = 'ready';
+const stageProps = [];
+vi.mock('../components/campaign/CombatStage', async () => {
+  const React = await import('react');
+  return {
+    default: (p) => {
+      stageProps.push(p);
+      React.useEffect(() => { p.onMode(stageMode); }, []);
+      return <div data-testid="stage" data-combat-stage={stageMode} />;
+    },
+    canRenderCombat: () => stageMode !== 'unavailable',
+  };
+});
+
+import CombatInstancePanel, { classIcon, shortHeroName } from '../components/campaign/CombatInstancePanel';
+import useGameStore from '../store/gameStore';
+import EventBridge from '../game/EventBridge';
+import { getSprite } from '../utils/spriteMap';
+
+const hero = (slot, energy = 0, extra = {}) => ({
+  slot, heroId: slot === 1 ? null : `h${slot}`, class: ['warrior', 'mage', 'ranger', 'paladin'][slot % 4], name: slot === 1 ? 'Guarnición' : `Hé${slot}`,
+  hp: 50, maxHp: 100, alive: true, energy, energyMax: 100, skill: { icon: 'sword' }, ...extra,
+});
+const mkState = (enemyHp = 100, heroes = [hero(1)]) => ({ round: 1, maxRounds: 10, enemy: { hp: enemyHp, maxHp: 100 }, heroes });
+const NODE = { id: 'a1n3', type: 'combat', name: 'Cripta' };
+
+function setup(stepImpl, heroes = [hero(1)], enemyHp = 100) {
+  const stepInstance = vi.fn(stepImpl);
+  useGameStore.setState({
+    activeRun: { runId: 1, node: NODE, state: mkState(enemyHp, heroes) },
+    stepInstance, clearActiveRun: vi.fn(), addNotification: vi.fn(),
+  });
+  const onClose = vi.fn();
+  const view = render(<CombatInstancePanel onClose={onClose} />);
+  return { stepInstance, onClose, ...view };
+}
+const click = (name) => act(async () => { fireEvent.click(screen.getByRole('button', { name })); });
+const advance = (ms) => act(async () => { await vi.advanceTimersByTimeAsync(ms); });
+const roundDone = () => act(async () => { EventBridge.emit('combat:round-done', { lastT: 1 }); });
+
+beforeEach(() => { vi.useFakeTimers(); stageProps.length = 0; stageMode = 'ready'; });
+afterEach(() => { cleanup(); vi.useRealTimers(); EventBridge.removeAllListeners(); });
+
+describe('R5: el resultado sale de data.result, no de los HP', () => {
+  it('stepInstance → defeat con el enemigo en 0 HP: banner de derrota', async () => {
+    stageMode = 'unavailable';
+    const { container } = setup(async () => ({ result: 'defeat' }), [hero(1)], 0);
+    await click('Avanzar ronda');
+    expect(container.querySelector('[data-outcome="defeat"]')).not.toBeNull();
+    expect(container.querySelector('[data-outcome="victory"]')).toBeNull();
+    expect(screen.getByText('Derrota')).toBeTruthy();
+  });
+});
+
+describe('R19: cuándo aparece el ResultBanner', () => {
+  it('(a) con escena: no antes de combat:round-done, sí al emitirse', async () => {
+    const { container } = setup(async () => ({ result: 'victory', state: mkState(0), roundLog: { round: 1 } }));
+    await click('Avanzar ronda');
+    expect(container.querySelector('[data-outcome]')).toBeNull();
+    await roundDone();
+    expect(container.querySelector('[data-outcome="victory"]')).not.toBeNull();
+    expect(screen.getByText('¡Victoria!')).toBeTruthy();
+  });
+
+  it('(b) la escena no responde: banner a los 4000 ms, no antes', async () => {
+    const { container } = setup(async () => ({ result: 'defeat', state: mkState(10) }));
+    await click('Avanzar ronda');
+    await advance(3999);
+    expect(container.querySelector('[data-outcome]')).toBeNull();
+    await advance(1);
+    expect(container.querySelector('[data-outcome="defeat"]')).not.toBeNull();
+  });
+
+  it('con resultado pendiente no se vuelve a llamar a stepInstance mientras se espera la escena', async () => {
+    const { stepInstance } = setup(async () => ({ result: 'victory', state: mkState(0) }));
+    await click('Avanzar ronda');
+    await advance(3900);
+    expect(stepInstance).toHaveBeenCalledTimes(1);
+  });
+
+  it('(c) escena no disponible: banner en el mismo tick', async () => {
+    stageMode = 'unavailable';
+    const { container } = setup(async () => ({ result: 'victory' }));
+    await click('Avanzar ronda');
+    expect(container.querySelector('[data-outcome="victory"]')).not.toBeNull();
+  });
+
+  it('el velo de derrota y la fanfarria solo con su resultado (R41)', async () => {
+    const { container } = setup(async () => ({ result: 'defeat', state: mkState(10) }));
+    await click('Avanzar ronda');
+    expect(container.querySelector('[data-defeat-veil]')).toBeNull();
+    await roundDone();
+    expect(container.querySelector('[data-defeat-veil]')).not.toBeNull();
+  });
+});
+
+describe('R17: no se avanza mientras la escena reproduce', () => {
+  it('mientras playing el auto-avance no llama a stepInstance', async () => {
+    const { stepInstance } = setup(async () => ({ state: mkState(80), roundLog: { round: 1 } }));
+    await click('Avanzar ronda');
+    expect(stepInstance).toHaveBeenCalledTimes(1);
+    await advance(3500);                       // < 4000 ms de plazo: sigue reproduciendo
+    expect(stepInstance).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('button', { name: 'Avanzar ronda' }).disabled).toBe(true);
+  });
+
+  it('tras round-done hay 300 ms de pausa y recién entonces se avanza', async () => {
+    const { stepInstance } = setup(async () => ({ state: mkState(80), roundLog: { round: 1 } }));
+    await click('Avanzar ronda');
+    await roundDone();
+    await advance(299);
+    expect(stepInstance).toHaveBeenCalledTimes(1);
+    await advance(2);
+    expect(stepInstance).toHaveBeenCalledTimes(2);
+    expect(stepInstance.mock.calls[1][0]).toEqual({ type: 'advance' });
+  });
+
+  it('una habilidad pedida durante la reproducción sale exactamente una vez tras round-done', async () => {
+    const { stepInstance } = setup(async () => ({ state: mkState(80), roundLog: { round: 1 } }), [hero(1, 100)]);
+    await click('Avanzar ronda');
+    const tap = screen.getAllByRole('button').find((b) => b.textContent.includes('Guarnición'));
+    await act(async () => { fireEvent.click(tap); fireEvent.click(tap); });
+    expect(stepInstance).toHaveBeenCalledTimes(1);   // en cola, no enviada
+    await roundDone();
+    await advance(400);
+    const skills = stepInstance.mock.calls.filter(([a]) => a.type === 'skill');
+    expect(skills).toHaveLength(1);
+    expect(skills[0][0]).toEqual({ type: 'skill', slot: 1 });
+    expect(stepInstance.mock.calls[1][0].type).toBe('skill'); // antes que el advance automático
+  });
+
+  it('la ronda llega al stage con state, roundLog y acción', async () => {
+    setup(async () => ({ state: mkState(80), roundLog: { round: 1, marker: 'x' } }));
+    await click('Avanzar ronda');
+    const last = stageProps[stageProps.length - 1];
+    expect(last.step).toMatchObject({ id: 1, roundLog: { marker: 'x' }, action: { type: 'advance' } });
+    expect(last.step.state.enemy.hp).toBe(80);
+    expect(last.state.round).toBe(1);   // estado inicial, no cambia entre rondas
+  });
+
+  it('sin escena el auto-avance sigue a los 2000 ms', async () => {
+    stageMode = 'unavailable';
+    const { stepInstance } = setup(async () => ({ state: mkState(80) }));
+    await advance(1999);
+    expect(stepInstance).not.toHaveBeenCalled();
+    await advance(2);
+    expect(stepInstance).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('R40/R42: fila de héroes', () => {
+  it('3 héroes + Guarnición: sin /assets/game/ en src ni backgroundImage, ícono de clase del kit', () => {
+    stageMode = 'unavailable';
+    const hs = [hero(1), hero(2), hero(3), hero(4)];
+    const { container } = setup(async () => ({}), hs);
+    expect(container.innerHTML).not.toMatch(/assets\/game/);
+    for (const el of container.querySelectorAll('[style]')) expect(el.getAttribute('style')).not.toMatch(/assets\/game/);
+    expect(container.querySelectorAll('img').length).toBe(0);
+    expect(screen.getByText('Guarnición')).toBeTruthy();
+    for (const h of hs) expect(getSprite(classIcon(h)), h.class).toBeTruthy();
+    expect(container.querySelector('[data-missing-icon]')).toBeNull();
+  });
+
+  it('el botón de habilidad solo está activo con energía llena y héroe vivo', () => {
+    stageMode = 'unavailable';
+    setup(async () => ({}), [hero(1, 100), hero(2, 40), hero(3, 100, { alive: false, hp: 0 })]);
+    const btn = (n) => screen.getByText(n).closest('button');
+    expect(btn('Guarnición').disabled).toBe(false);
+    expect(btn('Hé2').disabled).toBe(true);
+    expect(btn('Hé3').disabled).toBe(true);
+  });
+
+  it('conserva título con ronda, barra del enemigo, cierre del kit y área táctil ≥ 44', () => {
+    stageMode = 'unavailable';
+    const { container, onClose } = setup(async () => ({}));
+    expect(screen.getByText(/Cripta · ronda 1\/10/)).toBeTruthy();
+    expect(screen.getByLabelText('Vida de Bruto')).toBeTruthy();
+    const close = container.querySelector('.kh-close');
+    expect(close.style.minWidth).toBe('44px');
+    expect(close.style.minHeight).toBe('44px');
+    fireEvent.click(close);
+    expect(onClose).toHaveBeenCalled();
+  });
+});
+
+describe('cierre con ronda en curso', () => {
+  it('desmontar con la ronda en curso no lanza ni deja listeners de round-done', async () => {
+    const { unmount } = setup(async () => ({ state: mkState(80) }));
+    await click('Avanzar ronda');
+    unmount();
+    expect(EventBridge.listenerCount('combat:round-done')).toBe(0);
+    await expect(advance(5000)).resolves.not.toThrow();
+  });
+});
+
+describe('R54: una barra de vida por enemigo', () => {
+  const en = (id, hp, extra = {}) => ({ id, hp, maxHp: 100, dps: 5, ...extra });
+  const runWith = (st, node = null) => {
+    useGameStore.setState({
+      activeRun: { runId: 1, node, state: { round: 1, maxRounds: 10, heroes: [hero(1)], ...st } },
+      stepInstance: vi.fn(async () => ({})), clearActiveRun: vi.fn(), addNotification: vi.fn(),
+    });
+    return render(<CombatInstancePanel onClose={vi.fn()} />);
+  };
+  const bars = (c) => Array.from(c.querySelectorAll('[role="progressbar"][aria-label^="Vida de "]'));
+
+  it('1 enemigo (v2): una barra, nombre «Enemigo 1» y valor hp/maxHp', () => {
+    const { container } = runWith({ enemies: [en('e0', 40)], enemy: en('e0', 40) });
+    const b = bars(container);
+    expect(b).toHaveLength(1);
+    expect(b[0].getAttribute('aria-label')).toBe('Vida de Enemigo 1');
+    expect(b[0].getAttribute('aria-valuenow')).toBe('40');
+  });
+
+  it('3 enemigos: tres barras en orden, con nombre propio o «Enemigo N»', () => {
+    const { container } = runWith({ enemies: [en('e0', 100, { name: 'Bruto' }), en('e1', 25), en('e2', 60, { name: 'Voz del Velo' })] });
+    const b = bars(container);
+    expect(b.map((x) => x.getAttribute('aria-label'))).toEqual(['Vida de Bruto', 'Vida de Enemigo 2', 'Vida de Voz del Velo']);
+    expect(b.map((x) => x.getAttribute('aria-valuenow'))).toEqual(['100', '25', '60']);
+  });
+
+  it('V9: nombres de barras unificados con lo que se dibuja (ej. veil_gate)', () => {
+    const vgNode = { id: 'a2n10', type: 'combat', name: 'Puerta del Velo' };
+    const { container } = runWith(
+      { enemies: [en('e0', 100, { name: 'Enemigo A' }), en('e1', 50, { name: 'Enemigo B' })] },
+      vgNode
+    );
+    const b = bars(container);
+    expect(b.map((x) => x.getAttribute('aria-label'))).toEqual(['Vida de Voz del Velo', 'Vida de Voz del Velo']);
+  });
+
+  it('4 enemigos: cuatro barras; el muerto queda atenuado, en 0 y sin desaparecer', () => {
+    const { container } = runWith({ enemies: [en('e0', 10), en('e1', 0), en('e2', -30), en('e3', 100)] });
+    const b = bars(container);
+    expect(b).toHaveLength(4);
+    expect(b.map((x) => x.getAttribute('aria-valuenow'))).toEqual(['10', '0', '0', '100']);
+    const rows = Array.from(container.querySelectorAll('[data-enemy-bar]'));
+    expect(rows.map((r) => r.getAttribute('data-dead'))).toEqual(['false', 'true', 'true', 'false']);
+    expect(rows[1].style.opacity).toBe('0.45');
+    expect(rows[0].style.opacity).toBe('1');
+  });
+
+  it('4 enemigos no sacan del DOM a los héroes ni «Avanzar ronda» (el no-tapar se mide en la captura de T11)', () => {
+    runWith({ enemies: [en('e0', 10), en('e1', 20), en('e2', 30), en('e3', 40)] });
+    expect(screen.getByRole('button', { name: 'Avanzar ronda' }).disabled).toBe(false);
+    expect(screen.getByText('Guarnición')).toBeTruthy();
+  });
+
+  it('fallback v1: solo state.enemy → una barra', () => {
+    const { container } = runWith({ enemy: en(undefined, 70) });
+    const b = bars(container);
+    expect(b).toHaveLength(1);
+    expect(b[0].getAttribute('aria-valuenow')).toBe('70');
+  });
+
+  it('enemies vacío cae a state.enemy', () => {
+    const { container } = runWith({ enemies: [], enemy: en('e0', 55) });
+    expect(bars(container)).toHaveLength(1);
+  });
+});
+
+describe('T10.6 (hoja_visual V5, V6, V8)', () => {
+  // eslint-disable-next-line no-undef
+  const { HEROES } = require('../../../shared/gameConfig.js');
+
+  it('V5: el botón muestra el nombre de pila de cada héroe, sin «…» y a 11 px', () => {
+    for (const h of Object.values(HEROES)) {
+      const short = shortHeroName(h.name);
+      expect(short.length, h.name).toBeGreaterThan(1);
+      expect(short.length, h.name).toBeLessThanOrEqual(10);
+      expect(short).not.toMatch(/…|\.\.\./);
+      expect(h.name.startsWith(short), h.name).toBe(true);
+    }
+    expect(shortHeroName('Guarnición')).toBe('Guarnición');
+    const { container } = setup(async () => ({}), [hero(1, 0, { name: 'Serafina, Vestal de Guerra' })]);
+    const label = Array.from(container.querySelectorAll('button span')).find((s) => s.textContent === 'Serafina');
+    expect(label).toBeTruthy();
+    expect(label.className).not.toMatch(/truncate/);
+    expect(label.style.fontSize).toBe('11px');
+    expect(label.className).toMatch(/whitespace-nowrap/);
+  });
+
+  it('V6: la barra del héroe caído se atenúa', () => {
+    const { container } = setup(async () => ({}), [hero(1), hero(2, 0, { alive: false, hp: 0 })]);
+    const rows = Array.from(container.querySelectorAll('[data-hero-bar]'));
+    expect(rows.map((r) => r.getAttribute('data-dead'))).toEqual(['false', 'true']);
+    expect(rows[1].style.opacity).toBe('0.45');
+  });
+
+  it('V8 (B1/B2): cartel compacto en una fila, arranca al 34 % y la fila de héroes y su hueco de «Avanzar» siguen en su sitio', async () => {
+    stageMode = 'unavailable';
+    const { container } = setup(async () => ({ result: 'victory' }));
+    await click('Avanzar ronda');
+    const layer = container.querySelector('[data-result-layer]');
+    expect(layer).not.toBeNull();
+    const wrap = layer.querySelector('[data-result-banner]');
+    expect(wrap.style.top).toBe('34%');                                  // sin medida (jsdom): el centro preferido
+    expect(wrap.style.transform).toBe('translateY(-50%)');
+    const banner = wrap.querySelector('[data-outcome="victory"]');
+    expect(banner.getAttribute('data-compact')).toBe('true');
+    const fila = banner.firstElementChild;                               // título y «Volver» en una sola fila
+    expect(fila.className).toMatch(/flex/);
+    expect(fila.querySelector('[data-banner-band]').textContent).toBe('¡Victoria!');
+    expect(fila.querySelector('button').textContent).toBe('Volver');
+    expect(screen.getByRole('button', { name: 'Volver' })).toBeTruthy();
+    // el botón «Avanzar» deja su hueco invisible (la fila de héroes no salta) y no se puede pulsar
+    expect(screen.queryByRole('button', { name: 'Avanzar ronda' })).toBeNull();
+    const adv = Array.from(container.querySelectorAll('button')).find((b) => b.textContent === 'Avanzar ronda');
+    expect(adv.disabled).toBe(true);
+    expect(adv.parentElement.style.visibility).toBe('hidden');
+    expect(screen.getByText('Guarnición')).toBeTruthy();
+  });
+});
+
+describe('H2: el panel mide el borde real de los botones (con «¡TAP!») y de las barras y se lo pasa a la escena', () => {
+  it('con los rectángulos de 375×667 la escena recibe { bottom ≈ 1272, top ≈ 358 } en y del mundo', async () => {
+    const orig = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = function rect() {
+      if (this.hasAttribute && this.hasAttribute('data-combat-stage')) return { top: 0, left: 27, width: 320, height: 667, bottom: 667, right: 347 };
+      if (this.tagName === 'BUTTON' && this.closest('[data-hero-row]')) return { top: 501, left: 0, width: 58, height: 90, bottom: 591, right: 58 };
+      if (this.hasAttribute && this.hasAttribute('data-enemy-bars')) return { top: 68, left: 16, width: 343, height: 71, bottom: 139, right: 359 };
+      return { top: 0, left: 0, width: 0, height: 0, bottom: 0, right: 0 };
+    };
+    try {
+      setup(async () => ({}), [hero(1), hero(2)]);
+      await act(async () => {});
+      const last = stageProps[stageProps.length - 1];
+      const k = Math.min(320 / 824, 667 / 1720);
+      expect(last.hud.bottom).toBeCloseTo((501 - 8) / k, 6);   // «¡TAP!» asoma 8 px sobre el botón
+      expect(last.hud.top).toBeCloseTo(139 / k, 6);
+    } finally {
+      Element.prototype.getBoundingClientRect = orig;
+    }
+  });
+});
+
+describe('V8 (B1/B2): el cartel se coloca en el MARCO del panel y con su caja de maquetación', () => {
+  it('360×800 (marco de 756 desde y 22), derrota con el bruto de pie: top relativo al marco, alto 68 aunque la entrada lo achique, sin cortar la cara', async () => {
+    const { computeFormation, enemyList, hudToWorld } = await import('../game/combat/formation');
+    const { placeResultBanner, silhouettesCss, worldToCss } = await import('../game/combat/resultLayout');
+    const FR = { left: 0, top: 22, width: 360, height: 756 };
+    const r = (x, y, w, h) => ({ left: x, top: y, width: w, height: h, right: x + w, bottom: y + h });
+    const origRect = Element.prototype.getBoundingClientRect;
+    const desc = (k) => Object.getOwnPropertyDescriptor(HTMLElement.prototype, k);
+    const orig = { offsetLeft: desc('offsetLeft'), offsetWidth: desc('offsetWidth'), offsetHeight: desc('offsetHeight') };
+    const isBanner = (el) => el.hasAttribute && el.hasAttribute('data-outcome');
+    Element.prototype.getBoundingClientRect = function rect() {
+      if (this.hasAttribute('data-combat-panel')) return r(FR.left, FR.top, FR.width, FR.height);
+      if (this.hasAttribute('data-combat-stage')) return r(0, 22, 360, 756);
+      if (this.hasAttribute('data-hero-row')) return r(16, 612, 328, 90);
+      if (this.tagName === 'BUTTON' && this.closest('[data-hero-row]')) return r(16, 612, 58, 90);
+      if (this.hasAttribute('data-enemy-bars')) return r(16, 90, 328, 33);
+      if (this.hasAttribute('data-result-banner')) return r(0, 279, 360, 68);
+      // la entrada `animate-grow` (escala 0,8) achica el rectángulo transformado al montar: no debe contar
+      if (isBanner(this)) return r(24 + 312 * 0.1, 279 - 27.2, 312 * 0.8, 68 * 0.8);
+      return r(0, 0, 0, 0);
+    };
+    Object.defineProperty(HTMLElement.prototype, 'offsetLeft', { configurable: true, get() { return isBanner(this) ? 24 : 0; } });
+    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', { configurable: true, get() { return isBanner(this) ? 312 : 0; } });
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', { configurable: true, get() { return isBanner(this) ? 68 : 0; } });
+    try {
+      stageMode = 'unavailable';
+      const dead = [1, 2, 3, 4, 5].map((i) => hero(i, 0, { alive: false, hp: 0 }));
+      const { container } = setup(async () => ({ result: 'defeat' }), dead, 100);
+      await click('Avanzar ronda');
+      await act(async () => {});
+      const wrap = container.querySelector('[data-result-banner]');
+      const cy = parseFloat(wrap.style.top);
+      expect(wrap.style.top).toMatch(/px$/);
+      // lo mismo que calcula el panel, todo en el marco (restando y 22)
+      const st = useGameStore.getState().activeRun.state;
+      const hud = hudToWorld({ stage: { left: 0, top: 0, width: 360, height: 756 }, buttonsTop: 612 - 8 - 22, barsBottom: 123 - 22, viewH: 756 });
+      const f = computeFormation(st.heroes, enemyList(st), { node: NODE, boss: false, hud });
+      const alive = { e0: true, h1: false, h2: false, h3: false, h4: false, h5: false };
+      const sil = silhouettesCss(f, alive, worldToCss({ left: 0, top: 0, width: 360, height: 756 }));
+      const want = placeResultBanner({
+        outcome: 'defeat', viewH: 756, sil,
+        banner: { x0: 24, x1: 336, h: 68, shadow: 4 },
+        avoid: [{ x: 16, y: 612 - 8 - 22, w: 328, h: 98 }, { x: 16, y: 90 - 22, w: 328, h: 33 }],
+      });
+      expect(cy).toBe(want.cy);
+      expect(wrap.getAttribute('data-ok')).toBe('true');
+      // y no corta la cara del bruto (con la respiración): el cartel de 68 queda entero debajo o encima de ella
+      const face = sil.find((x) => x.id === 'e0').face;
+      expect(cy - 34 >= face.y + face.h || cy + 34 + 4 <= face.y).toBe(true);
+      expect(cy).toBeGreaterThanOrEqual(756 / 3);
+      expect(cy).toBeLessThanOrEqual((2 * 756) / 3);
+    } finally {
+      Element.prototype.getBoundingClientRect = origRect;
+      for (const [k, d] of Object.entries(orig)) if (d) Object.defineProperty(HTMLElement.prototype, k, d);
+    }
+  });
+});

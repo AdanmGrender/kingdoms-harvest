@@ -1,0 +1,2157 @@
+{
+ "fondo_a1n4_1en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "moor",
+  "ground": 860,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 933
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 202,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.40344203792033,
+     "pr": 208.70531399952304
+    },
+    "silueta": {
+     "lo": 31.324275375626016,
+     "hi": 236.51099032435013
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.1859299630336,
+     "pr": 471.9260265621274
+    },
+    "silueta": {
+     "lo": 312.76250001311706,
+     "hi": 511.23749998688294
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.9462258567851,
+     "pr": 738.7423007184593
+    },
+    "silueta": {
+     "lo": 598.7551026693297,
+     "hi": 789.5595712431434
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.42775298313938,
+     "pr": 340.32423114176265
+    },
+    "silueta": {
+     "lo": 189.10518354270295,
+     "hi": 354.89481645729705
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.7176587378624,
+     "pr": 637.8483134807162
+    },
+    "silueta": {
+     "lo": 465.3640873130387,
+     "hi": 638.6359126869613
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "aullador",
+    "row": "EF",
+    "lane": 933,
+    "cx": 412,
+    "h": 499,
+    "headY": 453.40555555555557,
+    "alphaH": 479.59444444444443,
+    "alphaW": 342.3694444444444,
+    "tex": "enemy:aullador:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 307.7491214907998,
+     "pr": 545.2478116044745
+    },
+    "silueta": {
+     "lo": 241.47041727303005,
+     "hi": 582.5295827269699
+    }
+   }
+  ]
+ },
+ "fondo_a1n4_3en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "moor",
+  "ground": 860,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 933,
+   "EB": 908
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 276,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.39435194953694,
+     "pr": 208.71562899343326
+    },
+    "silueta": {
+     "lo": 31.31073694611885,
+     "hi": 236.5250445035528
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.17439006359655,
+     "pr": 471.93408515111975
+    },
+    "silueta": {
+     "lo": 312.7491549897457,
+     "hi": 511.2508450102543
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.934653722992,
+     "pr": 738.7485864178734
+    },
+    "silueta": {
+     "lo": 598.7425635048577,
+     "hi": 789.5726906260229
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.4206832981391,
+     "pr": 340.33341908444095
+    },
+    "silueta": {
+     "lo": 189.09403621167252,
+     "hi": 354.9059637883275
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.70982118445386,
+     "pr": 637.8598579850612
+    },
+    "silueta": {
+     "lo": 465.3524368958098,
+     "hi": 638.6475631041902
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "aullador",
+    "row": "EB",
+    "lane": 908,
+    "cx": 116.3875,
+    "h": 299,
+    "headY": 620.6277777777777,
+    "alphaH": 287.37222222222226,
+    "alphaW": 205.14722222222224,
+    "tex": "enemy:aullador:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 116.3875,
+    "depth": 908,
+    "muerto": false,
+    "pie": {
+     "pl": 53.928587858566225,
+     "pr": 196.21908969070677
+    },
+    "silueta": {
+     "lo": 14.219610603085144,
+     "hi": 218.55538939691485
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "aullador",
+    "row": "EB",
+    "lane": 908,
+    "cx": 707.6125,
+    "h": 299,
+    "headY": 620.6277777777777,
+    "alphaH": 287.37222222222226,
+    "alphaW": 205.14722222222224,
+    "tex": "enemy:aullador:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 707.6125,
+    "depth": 908,
+    "muerto": false,
+    "pie": {
+     "pl": 645.1544931882958,
+     "pr": 787.44293254741
+    },
+    "silueta": {
+     "lo": 605.4460915066825,
+     "hi": 809.7789084933174
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "aullador",
+    "row": "EF",
+    "lane": 933,
+    "cx": 412,
+    "h": 299,
+    "headY": 645.6277777777777,
+    "alphaH": 287.37222222222226,
+    "alphaW": 205.14722222222224,
+    "tex": "enemy:aullador:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 349.5246404504957,
+     "pr": 491.852611874532
+    },
+    "silueta": {
+     "lo": 309.8052065647181,
+     "hi": 514.1947934352819
+    }
+   }
+  ]
+ },
+ "fondo_a1n4_4en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "moor",
+  "ground": 860,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 969,
+   "EB": 868
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 276,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.39465352964106,
+     "pr": 208.71528677487538
+    },
+    "silueta": {
+     "lo": 31.311186107976056,
+     "hi": 236.5245782307677
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.1747729206082,
+     "pr": 471.9338177928714
+    },
+    "silueta": {
+     "lo": 312.74959773500495,
+     "hi": 511.25040226499505
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.9350376494367,
+     "pr": 738.7483778784397
+    },
+    "silueta": {
+     "lo": 598.7429795142921,
+     "hi": 789.5722553667946
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.42091784771097,
+     "pr": 340.3331142578438
+    },
+    "silueta": {
+     "lo": 189.09440604451805,
+     "hi": 354.90559395548195
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.71008120944737,
+     "pr": 637.8594749752735
+    },
+    "silueta": {
+     "lo": 465.3528234194488,
+     "hi": 638.6471765805512
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "aullador",
+    "row": "EB",
+    "lane": 868,
+    "cx": 300.6125,
+    "h": 299,
+    "headY": 580.6277777777777,
+    "alphaH": 287.37222222222226,
+    "alphaW": 205.14722222222224,
+    "tex": "enemy:aullador:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 300.6125,
+    "depth": 868,
+    "muerto": false,
+    "pie": {
+     "pl": 238.148053396322,
+     "pr": 380.45116353980035
+    },
+    "silueta": {
+     "lo": 198.43555754232807,
+     "hi": 402.78944245767195
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "aullador",
+    "row": "EB",
+    "lane": 868,
+    "cx": 523.3875,
+    "h": 299,
+    "headY": 580.6277777777777,
+    "alphaH": 287.37222222222226,
+    "alphaW": 205.14722222222224,
+    "tex": "enemy:aullador:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 523.3875,
+    "depth": 868,
+    "muerto": false,
+    "pie": {
+     "pl": 460.92228394785536,
+     "pr": 603.2271470070459
+    },
+    "silueta": {
+     "lo": 421.2092989080812,
+     "hi": 625.5657010919189
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "aullador",
+    "row": "EF",
+    "lane": 969,
+    "cx": 116.3875,
+    "h": 299,
+    "headY": 681.6277777777777,
+    "alphaH": 287.37222222222226,
+    "alphaW": 205.14722222222224,
+    "tex": "enemy:aullador:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 116.3875,
+    "depth": 969,
+    "muerto": false,
+    "pie": {
+     "pl": 53.928587858566225,
+     "pr": 196.21908969070677
+    },
+    "silueta": {
+     "lo": 14.219610603085144,
+     "hi": 218.55538939691485
+    }
+   },
+   {
+    "id": "e3",
+    "kind": "enemy",
+    "art": "aullador",
+    "row": "EF",
+    "lane": 969,
+    "cx": 707.6125,
+    "h": 299,
+    "headY": 681.6277777777777,
+    "alphaH": 287.37222222222226,
+    "alphaW": 205.14722222222224,
+    "tex": "enemy:aullador:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 707.6125,
+    "depth": 969,
+    "muerto": false,
+    "pie": {
+     "pl": 645.154447486499,
+     "pr": 787.4429909609647
+    },
+    "silueta": {
+     "lo": 605.4460167494387,
+     "hi": 809.7789832505612
+    }
+   }
+  ]
+ },
+ "fondo_a2n7_1en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "ashfield",
+  "ground": 717,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 933
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 202,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.38925621884911,
+     "pr": 208.72141138286625
+    },
+    "silueta": {
+     "lo": 31.303147559988034,
+     "hi": 236.53292300915527
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.16792101541836,
+     "pr": 471.9386026428643
+    },
+    "silueta": {
+     "lo": 312.74167402341675,
+     "hi": 511.25832597658325
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.9281666048469,
+     "pr": 738.7521100614341
+    },
+    "silueta": {
+     "lo": 598.7355342877032,
+     "hi": 789.580045102583
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.41672016716723,
+     "pr": 340.33856967038565
+    },
+    "silueta": {
+     "lo": 189.0877872298779,
+     "hi": 354.9122127701221
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.7054276010543,
+     "pr": 637.8663296146633
+    },
+    "silueta": {
+     "lo": 465.3459058934591,
+     "hi": 638.6540941065409
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "sin_rostro",
+    "row": "EF",
+    "lane": 933,
+    "cx": 412,
+    "h": 499,
+    "headY": 452.0194444444445,
+    "alphaH": 480.98055555555555,
+    "alphaW": 320.19166666666666,
+    "tex": "enemy:sin_rostro:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 304.27450310808365,
+     "pr": 570.1355050528772
+    },
+    "silueta": {
+     "lo": 252.48339883312389,
+     "hi": 571.5166011668762
+    }
+   }
+  ]
+ },
+ "fondo_a2n7_3en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "ashfield",
+  "ground": 717,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 933,
+   "EB": 907
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 276,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.39186719024185,
+     "pr": 208.71844857844897
+    },
+    "silueta": {
+     "lo": 31.307036240785735,
+     "hi": 236.5288861881367
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.1712356528602,
+     "pr": 471.93628795191324
+    },
+    "silueta": {
+     "lo": 312.74550715163167,
+     "hi": 511.25449284836833
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.9314905010526,
+     "pr": 738.7503046024923
+    },
+    "silueta": {
+     "lo": 598.739135946823,
+     "hi": 789.5762767857148
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.41875081247153,
+     "pr": 340.3359305920314
+    },
+    "silueta": {
+     "lo": 189.0909891088034,
+     "hi": 354.9090108911966
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.7076788033392,
+     "pr": 637.8630136545409
+    },
+    "silueta": {
+     "lo": 465.349252275234,
+     "hi": 638.650747724766
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "sin_rostro",
+    "row": "EB",
+    "lane": 907,
+    "cx": 109.32777777777778,
+    "h": 299,
+    "headY": 618.7972222222222,
+    "alphaH": 288.2027777777778,
+    "alphaW": 191.85833333333335,
+    "tex": "enemy:sin_rostro:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 109.32777777777778,
+    "depth": 907,
+    "muerto": false,
+    "pie": {
+     "pl": 44.79970718046302,
+     "pr": 204.05167628281038
+    },
+    "silueta": {
+     "lo": 13.776596316369378,
+     "hi": 204.8789592391862
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "sin_rostro",
+    "row": "EB",
+    "lane": 907,
+    "cx": 714.6722222222222,
+    "h": 299,
+    "headY": 618.7972222222222,
+    "alphaH": 288.2027777777778,
+    "alphaW": 191.85833333333335,
+    "tex": "enemy:sin_rostro:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 714.6722222222222,
+    "depth": 907,
+    "muerto": false,
+    "pie": {
+     "pl": 650.146786340945,
+     "pr": 809.3922530992254
+    },
+    "silueta": {
+     "lo": 619.124942167254,
+     "hi": 810.2195022771905
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "sin_rostro",
+    "row": "EF",
+    "lane": 933,
+    "cx": 412,
+    "h": 299,
+    "headY": 644.7972222222222,
+    "alphaH": 288.2027777777778,
+    "alphaW": 191.85833333333335,
+    "tex": "enemy:sin_rostro:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 347.4535477003396,
+     "pr": 506.7508819014246
+    },
+    "silueta": {
+     "lo": 316.42159947934897,
+     "hi": 507.57840052065103
+    }
+   }
+  ]
+ },
+ "fondo_a2n7_4en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "ashfield",
+  "ground": 717,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 933,
+   "EB": 907
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 276,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.39202621498549,
+     "pr": 208.71826812483914
+    },
+    "silueta": {
+     "lo": 31.307273086148598,
+     "hi": 236.52864032009336
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.17143753533617,
+     "pr": 471.9361469725306
+    },
+    "silueta": {
+     "lo": 312.7457406134893,
+     "hi": 511.2542593865107
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.9316929474461,
+     "pr": 738.7501946385738
+    },
+    "silueta": {
+     "lo": 598.7393553107424,
+     "hi": 789.5760472712798
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.41887449166995,
+     "pr": 340.33576985539526
+    },
+    "silueta": {
+     "lo": 189.09118412356946,
+     "hi": 354.90881587643054
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.7078159158588,
+     "pr": 637.8628116915053
+    },
+    "silueta": {
+     "lo": 465.34945609114146,
+     "hi": 638.6505439088585
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "sin_rostro",
+    "row": "EB",
+    "lane": 907,
+    "cx": 307.6722222222222,
+    "h": 299,
+    "headY": 618.7972222222222,
+    "alphaH": 288.2027777777778,
+    "alphaW": 191.85833333333335,
+    "tex": "enemy:sin_rostro:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 307.6722222222222,
+    "depth": 907,
+    "muerto": false,
+    "pie": {
+     "pl": 243.14008417237892,
+     "pr": 402.4020915389794
+    },
+    "silueta": {
+     "lo": 212.11501780226192,
+     "hi": 403.2294266421825
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "sin_rostro",
+    "row": "EB",
+    "lane": 907,
+    "cx": 516.3277777777778,
+    "h": 299,
+    "headY": 618.7972222222222,
+    "alphaH": 288.2027777777778,
+    "alphaW": 191.85833333333335,
+    "tex": "enemy:sin_rostro:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 516.3277777777778,
+    "depth": 907,
+    "muerto": false,
+    "pie": {
+     "pl": 451.79248626482,
+     "pr": 611.062276216671
+    },
+    "silueta": {
+     "lo": 420.7659038066672,
+     "hi": 611.8896517488884
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "sin_rostro",
+    "row": "EF",
+    "lane": 933,
+    "cx": 109.32777777777778,
+    "h": 299,
+    "headY": 644.7972222222222,
+    "alphaH": 288.2027777777778,
+    "alphaW": 191.85833333333335,
+    "tex": "enemy:sin_rostro:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 109.32777777777778,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 44.7997727373799,
+     "pr": 204.0515800486183
+    },
+    "silueta": {
+     "lo": 13.776693391034755,
+     "hi": 204.8788621645208
+    }
+   },
+   {
+    "id": "e3",
+    "kind": "enemy",
+    "art": "sin_rostro",
+    "row": "EF",
+    "lane": 933,
+    "cx": 714.6722222222222,
+    "h": 299,
+    "headY": 644.7972222222222,
+    "alphaH": 288.2027777777778,
+    "alphaW": 191.85833333333335,
+    "tex": "enemy:sin_rostro:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 714.6722222222222,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 650.146786340945,
+     "pr": 809.3922530992254
+    },
+    "silueta": {
+     "lo": 619.124942167254,
+     "hi": 810.2195022771905
+    }
+   }
+  ]
+ },
+ "fondo_a2n4_1en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "veil_marsh",
+  "ground": 879,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 933
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 202,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.3969929726111,
+     "pr": 208.7126320878172
+    },
+    "silueta": {
+     "lo": 31.314670384739927,
+     "hi": 236.52096121965093
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.1777428517545,
+     "pr": 471.9317438186072
+    },
+    "silueta": {
+     "lo": 312.7530322363865,
+     "hi": 511.2469677636135
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.9380158764801,
+     "pr": 738.7467601785136
+    },
+    "silueta": {
+     "lo": 598.7462066182472,
+     "hi": 789.5688789366925
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.42273731570475,
+     "pr": 340.3307496309006
+    },
+    "silueta": {
+     "lo": 189.09727494348954,
+     "hi": 354.90272505651046
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.7120982975603,
+     "pr": 637.856503858999
+    },
+    "silueta": {
+     "lo": 465.35582179367077,
+     "hi": 638.6441782063292
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EF",
+    "lane": 933,
+    "cx": 412,
+    "h": 499,
+    "headY": 451.3263888888889,
+    "alphaH": 481.6736111111111,
+    "alphaW": 411.675,
+    "tex": "enemy:bruto:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 336.73887496593676,
+     "pr": 578.4030379193508
+    },
+    "silueta": {
+     "lo": 206.93069600810296,
+     "hi": 617.0693039918971
+    }
+   }
+  ]
+ },
+ "fondo_a2n4_3en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "veil_marsh",
+  "ground": 879,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 933,
+   "EB": 907
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 276,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.3801261303328,
+     "pr": 208.73177176699824
+    },
+    "silueta": {
+     "lo": 31.289549555814816,
+     "hi": 236.5470390325351
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.15633033567076,
+     "pr": 471.94669669296735
+    },
+    "silueta": {
+     "lo": 312.72827027644604,
+     "hi": 511.27172972355396
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.9165435488989,
+     "pr": 738.7584234205145
+    },
+    "silueta": {
+     "lo": 598.7229399457427,
+     "hi": 789.5932222161509
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.40961937264106,
+     "pr": 340.3477980437961
+    },
+    "silueta": {
+     "lo": 189.07659084599956,
+     "hi": 354.9234091540004
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.6975555591826,
+     "pr": 637.8779249195824
+    },
+    "silueta": {
+     "lo": 465.3342042095957,
+     "hi": 638.6657957904042
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EB",
+    "lane": 907,
+    "cx": 136.73611111111111,
+    "h": 299,
+    "headY": 618.3819444444445,
+    "alphaH": 288.6180555555556,
+    "alphaW": 246.675,
+    "tex": "enemy:bruto:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 136.73611111111111,
+    "depth": 907,
+    "muerto": false,
+    "pie": {
+     "pl": 91.64634798654112,
+     "pr": 236.42999104708701
+    },
+    "silueta": {
+     "lo": 13.876848285447878,
+     "hi": 259.59537393677437
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EB",
+    "lane": 907,
+    "cx": 687.2638888888889,
+    "h": 299,
+    "headY": 618.3819444444445,
+    "alphaH": 288.6180555555556,
+    "alphaW": 246.675,
+    "tex": "enemy:bruto:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 687.2638888888889,
+    "depth": 907,
+    "muerto": false,
+    "pie": {
+     "pl": 642.1777331395913,
+     "pr": 786.9497928850423
+    },
+    "silueta": {
+     "lo": 564.4144553334634,
+     "hi": 810.1133224443145
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EF",
+    "lane": 933,
+    "cx": 412,
+    "h": 299,
+    "headY": 644.3819444444445,
+    "alphaH": 288.6180555555556,
+    "alphaW": 246.675,
+    "tex": "enemy:bruto:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 933,
+    "muerto": false,
+    "pie": {
+     "pl": 366.8924030725426,
+     "pr": 511.73331063777283
+    },
+    "silueta": {
+     "lo": 289.0921441517903,
+     "hi": 534.9078558482097
+    }
+   }
+  ]
+ },
+ "fondo_a2n4_4en_sinheroes": {
+  "lienzo": {
+   "x": 0,
+   "y": 0,
+   "w": 412,
+   "h": 860,
+   "k": 0.5
+  },
+  "bg": "veil_marsh",
+  "ground": 879,
+  "lanes": {
+   "HF": 1320,
+   "HB": 1181,
+   "EF": 1021,
+   "EB": 887
+  },
+  "factor": 1,
+  "hud": {
+   "bottom": 1372.5,
+   "top": 276,
+   "zoneBottom": 654.8000000000001
+  },
+  "actores": [
+   {
+    "id": "h1",
+    "kind": "hero",
+    "art": "warrior",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 132,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 205.975,
+    "tex": "hero:warrior:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 132,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 64.39202621498549,
+     "pr": 208.71826812483914
+    },
+    "silueta": {
+     "lo": 31.307273086148598,
+     "hi": 236.52864032009336
+    }
+   },
+   {
+    "id": "h2",
+    "kind": "hero",
+    "art": "mage",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 412,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 199.2375,
+    "tex": "hero:mage:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 412,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 326.17143753533617,
+     "pr": 471.9361469725306
+    },
+    "silueta": {
+     "lo": 312.7457406134893,
+     "hi": 511.2542593865107
+    }
+   },
+   {
+    "id": "h3",
+    "kind": "hero",
+    "art": "ranger",
+    "row": "HF",
+    "lane": 1320,
+    "cx": 692,
+    "h": 308,
+    "headY": 1023.55,
+    "alphaH": 296.45,
+    "alphaW": 191.5375,
+    "tex": "hero:ranger:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 692,
+    "depth": 1320,
+    "muerto": false,
+    "pie": {
+     "pl": 605.9316929474461,
+     "pr": 738.7501946385738
+    },
+    "silueta": {
+     "lo": 598.7393553107424,
+     "hi": 789.5760472712798
+    }
+   },
+   {
+    "id": "h4",
+    "kind": "hero",
+    "art": "paladin",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 272,
+    "h": 253,
+    "headY": 936.6968750000001,
+    "alphaH": 244.303125,
+    "alphaW": 166.42656250000002,
+    "tex": "hero:paladin:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 272,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 219.41887449166995,
+     "pr": 340.33576985539526
+    },
+    "silueta": {
+     "lo": 189.09118412356946,
+     "hi": 354.90881587643054
+    }
+   },
+   {
+    "id": "h5",
+    "kind": "hero",
+    "art": "rogue",
+    "row": "HB",
+    "lane": 1181,
+    "cx": 552,
+    "h": 253,
+    "headY": 937.4875,
+    "alphaH": 243.51250000000002,
+    "alphaW": 173.9375,
+    "tex": "hero:rogue:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 552,
+    "depth": 1181,
+    "muerto": false,
+    "pie": {
+     "pl": 493.7078159158588,
+     "pr": 637.8628116915053
+    },
+    "silueta": {
+     "lo": 465.34945609114146,
+     "hi": 638.6505439088585
+    }
+   },
+   {
+    "id": "e0",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EB",
+    "lane": 887,
+    "cx": 280.26388888888886,
+    "h": 299,
+    "headY": 598.3819444444445,
+    "alphaH": 288.6180555555556,
+    "alphaW": 246.675,
+    "tex": "enemy:bruto:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 280.26388888888886,
+    "depth": 887,
+    "muerto": false,
+    "pie": {
+     "pl": 235.1749436673628,
+     "pr": 379.95596043373087
+    },
+    "silueta": {
+     "lo": 157.40685466142799,
+     "hi": 403.12092311634973
+    }
+   },
+   {
+    "id": "e1",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EB",
+    "lane": 887,
+    "cx": 543.7361111111111,
+    "h": 299,
+    "headY": 598.3819444444445,
+    "alphaH": 288.6180555555556,
+    "alphaW": 246.675,
+    "tex": "enemy:bruto:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 543.7361111111111,
+    "depth": 887,
+    "muerto": false,
+    "pie": {
+     "pl": 498.64406766669447,
+     "pr": 643.4350328551882
+    },
+    "silueta": {
+     "lo": 420.87063493687504,
+     "hi": 666.6015872853471
+    }
+   },
+   {
+    "id": "e2",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EF",
+    "lane": 1021,
+    "cx": 136.73611111111111,
+    "h": 299,
+    "headY": 732.3819444444445,
+    "alphaH": 288.6180555555556,
+    "alphaW": 246.675,
+    "tex": "enemy:bruto:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 136.73611111111111,
+    "depth": 1021,
+    "muerto": false,
+    "pie": {
+     "pl": 91.64995536181354,
+     "pr": 236.42201510726449
+    },
+    "silueta": {
+     "lo": 13.88667755568558,
+     "hi": 259.58554466653663
+    }
+   },
+   {
+    "id": "e3",
+    "kind": "enemy",
+    "art": "bruto",
+    "row": "EF",
+    "lane": 1021,
+    "cx": 687.2638888888889,
+    "h": 299,
+    "headY": 732.3819444444445,
+    "alphaH": 288.6180555555556,
+    "alphaW": 246.675,
+    "tex": "enemy:bruto:idle",
+    "frame": "__BASE",
+    "flip": false,
+    "ang": 0,
+    "spx": 0,
+    "cxNow": 687.2638888888889,
+    "depth": 1021,
+    "muerto": false,
+    "pie": {
+     "pl": 642.1791762863666,
+     "pr": 786.9466020742824
+    },
+    "silueta": {
+     "lo": 564.4183875774289,
+     "hi": 810.1093902003489
+    }
+   }
+  ]
+ },
+ "errores": []
+}

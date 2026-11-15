@@ -1,0 +1,52 @@
+{
+  "aviso": "Medido en escritorio (Chromium headless con GPU NVIDIA RTX 5060), NO en el emulador kh_pixel7 ni en un móvil real: el 60 fps de escritorio no demuestra el objetivo móvil de Q9 (medio ≥ 50 avg; bajo ≥ 30 p5). Queda pendiente la medición en dispositivo.",
+  "combate": "a1n3 completo (7 rondas, ~10 s, victoria)",
+  "medio": {
+    "v1": {
+      "dispositivo": "escritorio · Chromium headless (Playwright) · viewport 412x860 @2x",
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "calidad": "medium",
+      "motor": "v1",
+      "metodo": "frames de requestAnimationFrame por ventana de 500 ms (×2), solo durante el combate; Phaser avanza por rAF (equivale a game.loop.actualFps)",
+      "n": 16,
+      "avg": 60,
+      "p5": 60,
+      "min": 60
+    },
+    "v2": {
+      "dispositivo": "escritorio · Chromium headless (Playwright) · viewport 412x860 @2x",
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "calidad": "medium",
+      "motor": "v2",
+      "metodo": "frames de requestAnimationFrame por ventana de 500 ms (×2), solo durante el combate; Phaser avanza por rAF (equivale a game.loop.actualFps)",
+      "n": 16,
+      "avg": 60,
+      "p5": 58,
+      "min": 58
+    }
+  },
+  "bajo": {
+    "v1": {
+      "dispositivo": "escritorio · Chromium headless (Playwright) · viewport 412x860 @2x",
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "calidad": "low",
+      "motor": "v1",
+      "metodo": "frames de requestAnimationFrame por ventana de 500 ms (×2), solo durante el combate; Phaser avanza por rAF (equivale a game.loop.actualFps)",
+      "n": 15,
+      "avg": 60,
+      "p5": 58,
+      "min": 58
+    },
+    "v2": {
+      "dispositivo": "escritorio · Chromium headless (Playwright) · viewport 412x860 @2x",
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "calidad": "low",
+      "motor": "v2",
+      "metodo": "frames de requestAnimationFrame por ventana de 500 ms (×2), solo durante el combate; Phaser avanza por rAF (equivale a game.loop.actualFps)",
+      "n": 15,
+      "avg": 60,
+      "p5": 58,
+      "min": 58
+    }
+  }
+}

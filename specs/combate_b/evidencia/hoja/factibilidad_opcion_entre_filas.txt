@@ -1,0 +1,7 @@
+Modelo (--entre-filas: R24 solo dentro de cada fila): B (tope inferior de carriles) = 1328, T (tope de cabezas) = 227 con 1 enemigo / 312 con 2+; héroe 299.4 / trasero 239.5 / grupo 269.5 / solo 499 / jefe 619 (alto de textura).
+
+Escuadra ranger: 280/280 combinaciones factibles; 0 SIN solución:
+
+Escuadra rogue: 280/280 combinaciones factibles; 0 SIN solución:
+
+Escuadra mixto: 280/280 combinaciones factibles; 0 SIN solución:

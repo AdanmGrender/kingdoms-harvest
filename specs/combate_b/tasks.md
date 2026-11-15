@@ -1,0 +1,402 @@
+# Tasks — `combate_b` (feature 7, B2)
+
+Orden estricto. Cada etapa cabe en ~1 h de worker. Rama `feature/combate_b` @`46d156d`. NO ejecutar `npm install`/`npm ci`. Puertos :5180 y :3101 son del owner (el preview lo levanta `bash D:/Proyectos/_ops/preview/arrancar.sh`).
+Cada tarea se cierra con `Evidencia:` inline (comando + salida real, no resumen). Tests de cliente: `cd client && npx vitest run <archivo>`.
+
+## Etapa A — Escena funcional con arte existente (0 USD)
+
+- [x] T1 — Línea base y andamiaje: correr y registrar `Tests: N passed` de `cd server && npx jest --runInBand --forceExit` y `cd client && npx vitest run`; `ls client/public/assets/b/{heroes,enemies,bg,ui}`; crear `client/src/game/combat/` con `combatQuality.js` (`QUALITY`, `resolveQuality()`). Cubre: R46, R47, R53. Evidencia: Línea base medida en HEAD 46d156d (git stash de mis cambios): servidor `Tests: 545 passed, 545 total` (33 suites); cliente `Tests  459 passed (459)`, `Test Files  1 failed | 26 passed (27)` — el archivo que falla es `iconSheet.test.js` (`Cannot find module 'sharp'`, ausente en el junction de node_modules; falla igual sin mis cambios, no es de la feature). `ls client/public/assets/b/{heroes,enemies,bg,ui}` → heroes: mage/ranger/warrior _idle/_attack.webp; enemies: bruto_idle/bruto_hit.webp; bg: combat_crypt.webp; ui: bar_frame, btn_red, btn_stone, icons, panel_frame, portrait_ring. `combatQuality.js` con QUALITY{low,medium,high} y resolveQuality(); sus puntos R46/R47 se prueban en combatScene.test.js (T5).
+  - Evidencia:
+- [x] T2 — `eventPlanner.js` (`planRound`, `ROUND_BUDGET_MS`, `skip`, `lastT`, `reconcile`) + `client/src/tests/combatPlanner.test.js` con fixtures de los 8 kinds, malformados, dodge, shield, 4/12/40 eventos. Sin Phaser, sin `shared/`. Cubre: R3, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R18. Evidencia: `cd client && npx vitest run src/tests/combatPlanner.test.js` → `Tests  39 passed (39)`.
+  - Evidencia:
+- [x] T3 — `v1Adapter.js` + `eventSource.js` + `client/src/tests/combatAdapter.test.js` (estados v1 de dos rondas, `eventsVersion:2`, v2 normal, sin status/passive en v1). Cubre: R20, R21, R22, R23. Evidencia: `cd client && npx vitest run src/tests/combatAdapter.test.js` → `Tests  12 passed (12)`.
+  - Evidencia:
+- [x] T4 — `formation.js` + `artMap.js` + `client/src/tests/combatLayout.test.js` (n héroes 1–5 × m enemigos 1–4, `heroId:null`, 18 héroes, 13 nodos, ids desconocidos, `collectAssetKeys`, sin rutas `/assets/game/`, `ENEMY_HEIGHT_FRAC`). Cubre: R24, R25, R26, R27, R28, R29, R30, R32. Evidencia: `cd client && npx vitest run src/tests/combatLayout.test.js` → `Tests  36 passed (36)` (20 combinaciones 1–5 héroes × 1–4 enemigos sin solapes y dentro de 824×1720; 18 héroes y 13 nodos; fallbacks; collectAssetKeys; barrido sin `/assets/game/`; cada url existe en public/). Desvío menor: BACK_Y=990 y no ≈1010 de design §8, para que la fila trasera no pise la frontal (y 1180); comentado en formation.js.
+  - Evidencia:
+- [x] T5 — `CombatScene.js` + `createCombatGame.js` (portar del spike `spikes/001-combat-b/main.js`: fondo con deriva, respiración, hitStop, flash, embestida, partículas, vignette guardado con `if (cam.postFX)`; sin `rnd()` de daño ni `window.dispatchEvent`); placeholder de textura caída; `prefers-reduced-motion`. Test con Phaser simulado de los puntos de R31 y R47. Cubre: R3, R31, R46, R47. Evidencia: `cd client && npx vitest run src/tests/combatScene.test.js` → `Tests  11 passed (11)` (Phaser simulado: low sin luces ni postFX, medium 2 luces+viñeta, high 4 luces+bloom, `cameras.main.postFX` indefinido no lanza, textura caída → marcador `ph:` + warn y el combate sigue, skip termina ≤ 320 ms, reduced-motion sin shake ni tweens ambientales).
+  - Evidencia:
+- [x] T6 — `CombatStage.jsx` (contenedor `height: var(--kh-frame-h)`, FIT 824×1720, modo `unavailable`, `destroy(true)`, `combat:open/close/round-done`) + enganche de ≤ 15 líneas en `PhaserGame.jsx` (`game.loop.sleep()`/`wake()`). Test `client/src/tests/combatStage.test.jsx`. Cubre: R36, R37, R38, R39. Evidencia: `cd client && npx vitest run src/tests/combatStage.test.jsx` → `Tests  12 passed (12)` (alto `var(--kh-frame-h)`; destroy(true) una vez y 0 listeners de EventBridge; ≤ 1 canvas tras montar/desmontar; modo unavailable sin WebGL y con createCombatGame que lanza; sleep/wake del hub). `git diff --stat -- client/src/game/PhaserGame.jsx` → `1 file changed, 7 insertions(+)` (≤ 15).
+  - Evidencia:
+- [x] T7 — Adaptar `CombatInstancePanel.jsx`: quitar diorama/enemigo/retratos viejos y `prevEnemyHp/lunge/recoil`; montar `<CombatStage/>`; cola con `combat:round-done` (pausa 300 ms, skill diferida, fallback 4000 ms, `unavailable` inmediato); retratos con ícono de clase del kit (Q6). Sustituir solo las dos entradas `CAPS` de `pantallasB.test.jsx:81-82` por la comprobación de R27 y agregar `describe` de combate; ampliar `RE_VIEWPORT` a los archivos nuevos. Cubre: R4, R5, R17, R19, R40, R41, R42, R44, R45. Evidencia: `cd client && npx vitest run src/tests/combatPanel.test.jsx src/tests/pantallasB.test.jsx` → 15 + 48 passed. En pantallasB.test.jsx solo se quitaron las dos filas CAPS del panel (0.36/0.29; sustituidas por la comprobación de R27) y se añadió el `describe` de combate (R27, R37, R41/R28, R4, R45). Suites completas: servidor `Tests: 545 passed, 545 total` (igual que la base); cliente `Tests  587 passed (587)` (base 459 + 125 nuevos + 3 netos en pantallasB) con el mismo único archivo sin cargar (`iconSheet.test.js`, `sharp`). R4: `git diff 46d156d -- client/src/store/gameStore.js` vacío. `cd client && npm run build` → `✓ built in 8.43s`.
+  - Evidencia:
+
+## Etapa B — Arte nuevo (**solo con aprobación del owner del gasto**, Q3)
+
+> El owner decide S0/S1/S2 (design §11). Si decide S0, T8–T10 se marcan «no aplica» en `## Bloqueado` con la decisión y se pasa a T11. `GEMINI_API_KEY` la pone el owner en su entorno; nunca se escribe en el repo ni en `evidencia/`.
+
+- [x] T8 — Lote 1 de arte: ampliar `art-b/gr/manifest.json` y `art-b/gr/process.sh` con hojas de `paladin` y `rogue` (S1) o de los 18 héroes (S2); generar con `node scripts/gen_art_b.js --manifest art-b/gr/manifest.json --only <ids>`; recortar con `scripts/process_art_b.js` (héroes `--height 640`, webp); hoja de contacto en fondo oscuro. **[GATE P1: p-kh aprueba]** antes de commitear. Cubre: R33, R34, R35. Evidencia: paladin_idle/attack + rogue_idle/attack (webp, --height 640) en client/public/assets/b/heroes/; P1 y P1r2 aprobados por p-kh, registrados en evidencia/aprobacion_arte.md; commits 3ef39a0, 4bc226f, 05ade22; recortes reproducibles en art-b/gr/process.sh (commit da5063d; reproduce byte a byte los .webp).
+- [x] T9 — Lote 2: 7 enemigos × {idle, hit} (`--height 720`) con la lista de design §11; hoja de contacto. **[GATE P2: p-kh aprueba]**. Cubre: R33, R34, R35.
+  - Evidencia: 14 webp (7 enemigos × idle/hit, --height 720) en client/public/assets/b/enemies/; P2 aprobado por p-kh (devorador_hit reprocesado con --margin 8), evidencia/aprobacion_arte.md; commit 05ade22; voz_del_velo_hit r2 aprobado en P3.
+- [x] T10 — Lote 3: 5 fondos 9:16 (`--scene --width 1080`); hoja de contacto. **[GATE P3: p-kh aprueba]**. Actualizar `ART_B` y los mapas de `artMap.js` (Q4) y sus tests. Cubre: R30, R33, R34, R35.
+  - Evidencia: 5 fondos combat_{moor,cathedral,ashfield,veil_marsh,veil_gate}.webp (--scene --width 1080) en client/public/assets/b/bg/; P3 aprobado por p-kh (6/6), evidencia/aprobacion_arte.md y evidencia/contacto_T10_P3.webp; artMap.js (BG_BY_ACT_TYPE, ENEMY_BY_NODE Q4, HERO/ENEMY/BG_ART) + combatLayout.test.js; vitest 589/589 + iconSheet 15/15 (con NODE_PATH, sharp ausente en el junction); vite build OK.
+
+## Etapa C — Verificación, rendimiento y cierre
+
+- [x] T10.5 — Barra de vida por enemigo en el HUD (`CombatInstancePanel.jsx:118,134-138`): reemplazar la barra única por una lista desde `state.enemies ?? [state.enemy]`, con nombre, barra y atenuado del muerto; layout compacto que no tape héroes ni «Avanzar ronda». Tests en `combatPanel` (1/3/4 enemigos + fallback v1). Pedido del owner tras la review de la Etapa A (observación 1). Cubre: R40, R54.
+  - Evidencia: `cd client && npx vitest run src/tests/combatPanel.test.jsx src/tests/pantallasB.test.jsx` → `Test Files  2 passed (2)`, `Tests  69 passed (69)` (combatPanel 15→21: +6 de R54 con 1/3/4 enemigos, muerto atenuado/en 0, fallback v1 y `enemies: []`; en el test de R40 solo cambió la etiqueta a «Vida de Enemigo 1»). `CombatInstancePanel.jsx`: `enemyBars(state)` toma `state.enemies ?? [state.enemy]`; filas nombre + `Bar` (`aria-label` «Vida de <nombre>»), 2 columnas si hay 3+ para no crecer. El no-tapar héroes/«Avanzar ronda» se mide en la captura de T11.
+- [x] T10.6 — Fix visual según `specs/combate_b/hoja_visual.md` (V1–V9, con V4 según la enmienda Last Asylum) y las decisiones del owner del 2026-11-07 (carriles de suelo por profundidad) y del 2026-11-08 (R24 por fila, tope real de los botones). Cubre: R24 (enmendado), R25, R27, R54 y V1–V9.
+  - Evidencia (2026-11-08). Commits: 04692a1 (carriles, piso, contenedores y tests), 7e96559 (HUD V5/V6/V8/V9), 8e994aa (arreglos tras mirar las capturas), be4e216 (escuadras con huecos) y el de esta evidencia.
+    - **Qué hace el código.**
+      - `formation.js`: cuatro carriles, EB/EF/HB/HF. Un enemigo solo o un jefe usa EF.
+      - Los carriles van sobre el piso de cada fondo (groundY + 8) y por debajo del borde real de los botones: `HUD_TOP = 1328`, el peor caso de `hud_medidas.json`; el carril delantero queda en 1320.
+      - Las cabezas de los enemigos quedan por debajo de las barras: 236 con 1 enemigo, 320 con 2 o más.
+      - Cero intersección de cajas dentro de cada fila. Entre filas hay solape y `depth` = carril, así que la fila de abajo se dibuja delante.
+      - Los héroes traseros van en ladrillo, entre los delanteros, con la cara siempre libre. Para los enemigos se busca el carril que menos cara tapa.
+      - V1: héroe 308, fila trasera ×0,82, común 499, jefe 619, grupos de 3–4 a 299.
+      - `artMap.js`: `BG_GROUND_Y_FRAC` sale de la fila de piso de cada imagen, pasada al mundo con la transformación de la escena (cover ×1,04 y deriva ×1,025). Coincide con `calibracion_suelo.json`.
+      - `SPRITE_GEOM` guarda la caja alfa de cada textura y el origen de cada pose (`medir_poses.cjs` → `poses_origen.json`, `poses/alineacion.webp`), para que el pie no salte al cambiar de pose.
+      - `CombatScene.js`: un `Container` por personaje con sombra, sprite y marcadores. Toda animación toca solo su contenedor.
+      - V4: números sobre la cabeza. V6: el caído queda tendido sobre su carril, aplanado al 55 %, a alfa 0,85 y desaturado. V7: flipX hacia el objetivo; el tirador inclina el arma hasta 15°.
+      - Panel: V5 (nombre de pila a 11 px), V6 (barras atenuadas), V8 (cartel en el tercio medio), V9 (nombre de barra = arte dibujado). La columna del HUD tiene el ancho de la escena.
+    - **Tests.** `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run src/tests/combatLayout.test.js src/tests/combatScene.test.js src/tests/combatPanel.test.jsx src/tests/pantallasB.test.jsx </dev/null` → `Test Files  4 passed (4)`, `Tests  410 passed (410)`. Por archivo: combatLayout 311, combatScene 26, combatPanel 25, pantallasB 48.
+      - combatLayout:
+        - Matriz R24 enmendada de **280 combinaciones** (los 13 nodos reales + «sin nodo» × n = 1…5 × m = 1…4, un `it` por combinación).
+        - Comprueba: cajas dentro de 824×1720 y sin intersección en la fila; un carril por fila, en orden y con ≥ 24 de separación; pie sobre su carril; `depth` = carril.
+        - Comprueba también: cada carril ≥ el piso de **su** fondo (leído de `calibracion_suelo.json`) y ≤ `LANE_MAX`; cabezas bajo las barras medidas; caras de héroes libres.
+        - Lo mismo con las escuadras toda rogue (la más ancha) y toda ranger, y con escuadras con huecos.
+        - V1; piso por fondo (los 6 distintos, transformación = calibración); topes del HUD = `hud_medidas.json`; `SPRITE_GEOM` contra la cabecera de cada webp.
+      - combatScene:
+        - Contenedor en (cx, carril), `depth` = carril, origen del sprite en el pie.
+        - El fondo usa la misma transformación que la calibración. Al cambiar de pose o voltear, el pie no se mueve.
+        - **«Compañeros 0 px»**: en idle, attack, hit, skill y KO ningún tween toca a otro personaje y los compañeros conservan x, y y ángulo. El contenedor del que actúa vuelve a su sitio.
+        - V4, V6 y V7. Los 11 tests anteriores siguen con sus asserts (corregido por el leader según H5 de la review ronda 2).
+      - combatPanel: V5, V6, V8 y V9.
+    - **Vistas** (preview aislado: server del worktree en :3003 con `BOT_TOKEN` ficticio, `BOT_POLLING=false` y su `server/data/kingdoms.db`; vite en :5175 `--strictPort`; los dos detenidos y los puertos comprobados libres al terminar).
+      - Comando: `KH_PREVIEW_URL=http://localhost:5175 node specs/combate_b/evidencia/hoja/generar_evidencia_hoja.mjs`.
+      - Salida: 18 capturas `evidencia/hoja/{412x860,360x800,1280x800}_{1enemigo,3enemigos,4enemigos_veil,jefe,victoria,derrota}.webp`, `hoja_contacto.webp` y `hoja_medidas.json`.
+      - Una línea por vista, p. ej. `360x800_4enemigos_veil pie± 0.00 carriles {"HF":1320,"HB":1181,"EF":1109,"EB":1006} piso 998 botones 1328.1 hud>silueta 0 cara tapada máx 0%`, y al final `errores de consola/página: ninguno`.
+      - Escuadra real: aria, lyra, elena, viktor, shadow. Nodos: a1n3, a1n7, a2n10 (veil_gate con 4 Voz del Velo), a1n9 (catedral, Devorador).
+      - Estados sintéticos (R26). `stepInstance` se sustituye en la página y el auto-avance de 2 s queda en pausa mientras se captura.
+      - La cara tapada (35 % superior de la silueta, tapada por personajes de otras filas) se mide píxel a píxel con el alfa real de cada textura: **0 % en las 18 vistas**.
+    - **Tabla V1–V9.** `node specs/combate_b/evidencia/hoja/resumen_hoja.mjs` (lee `hoja_medidas.json`), salida tal cual; código de salida 0:
+      | V | Resultado | Valor medido |
+      |---|---|---|
+      | V1 | OK | héroe/común 0.62 · jefe/héroe 2 · común en grupo/héroe 0.97 · trasera/delantera 0.82 |
+      | V2 | OK | pie vs. su carril, peor 0.00 px (18 vistas) · carriles ≥ piso del fondo + 8 · carril delantero 8.1 sobre el borde real de los botones (peor vista) |
+      | V3 | OK | solape dentro de una fila 0 % · HUD/botones/barras sobre siluetas: 0 casos · cabezas bajo las barras · cara tapada por otras filas: máx. 0 % |
+      | V4 | OK | 40/60 px · base del número 12 px sobre la cabeza · pop 1.4→1 a 140 ms · sube 60 px y desaparece antes de 840 ms · apilado 28 px |
+      | V5 | OK | 90 nombres de botón a 11 px sin recorte ni «…» · 33 nombres de barra sin recorte |
+      | V6 | OK | 18 caídos a ±90°, alfa 0.85, desaturados · barras atenuadas a 0,45 |
+      | V7 | OK | tirador hacia la izquierda: flipX true, 15° · al terminar flipX false, 0°, hero:ranger:idle · guerrero hacia la derecha sin voltear |
+      | V8 | OK | alto 16.9 % máx. · centro a 0.5–0.5 del alto · no tapa la fila de héroes · «Volver» ≥ 44 px |
+      | V9 | OK | veil_gate: 12 barras «Vida de Voz del Velo» (4 por vista × 3 vistas) |
+      `errores de consola/página durante las capturas: 0`.
+    - **Revisión a ojo** (abrí con Read las 18 capturas y la hoja de contacto).
+      - Bien: el bruto pisa la calle; los 3 carroñeros y las 4 Voz del Velo están sobre el piso, al pie de la escalera del portal; el Devorador está en la nave delante del altar; las caras de los héroes traseros asoman entre los delanteros; botones, barras y título no tapan a nadie.
+      - Corregido 1 (8e994aa): los caídos se veían de canto. Un enemigo ancho girado 90° quedaba 430 px por encima del piso, como flotando. Ahora se aplanan sobre su carril.
+      - Corregido 2 (8e994aa): en 1280×800 el HUD se estiraba por toda la ventana, lejos del lienzo. Ahora va en la columna del juego.
+      - Queda a la vista del visual_reviewer: en la vista de victoria el cartel tapa al bruto caído, porque V8 pone el cartel en el tercio medio y ahí está el carril del enemigo. El caído sí se midió (±90°, alfa 0,85, desaturado, barra atenuada) y en derrota se ven los cinco héroes tendidos.
+    - **Suites completas y build** (una vez, al final):
+      - `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null` → `Test Files  33 passed (33)`, `Tests  902 passed (902)`.
+      - `cd server && npx jest --runInBand --forceExit` → `Test Suites: 33 passed, 33 total`, `Tests: 545 passed, 545 total`.
+      - `cd client && npm run build` → `✓ built in 10.59s`.
+    - **Fuera de alcance, sin tocar:** R48/fps, el movimiento global M1–M9 (el shake de cámara sigue siendo global), arte nuevo y `engineVersion`.
+    - **Nota de entorno:** `npx vite-node` (una sola vez, para una prueba suelta de la formación) bajó vite-node a la caché de npm. No se instaló nada en el proyecto.
+  - Evidencia del bloqueo previo (2026-11-08, antes de la decisión del owner del mismo día): T10.6 NO se cierra; vuelve a `## Bloqueado` (§ «Bloqueado de nuevo (2026-11-08)»). Con la V2 enmendada no existe formación con cero intersección (R24) + escalas V1 + R27 + V3 en los combates de jefe con escuadra completa, ni siquiera con los topes más permisivos: `node specs/combate_b/evidencia/hoja/carriles_factibilidad.mjs --B 1440 --T 0` → `Escuadra mixto: 264/280 combinaciones factibles; 16 SIN solución` (a1n9 jefe con 5 héroes: carril de los héroes delanteros ≥ 1581 > 1440; a2n10 con 4 Voz del Velo y 5 héroes ≥ 1546). Con el HUD medido (`--B 1328 --T 227,312`): `Escuadra mixto: 228/280 combinaciones factibles; 52 SIN solución`, incluida la vista «3 comunes» (a1n7, 5 héroes: 1344 > 1328) y el caso genérico del test R24 (crypt + bruto, n=5 × m=3/4). Esta ronda no tocó código de aplicación; el WIP anterior sigue sin commitear.
+  - Evidencia de la ronda anterior (antes de la decisión del owner del 2026-11-07): T10.6 no se cierra. Reproducción estricta de R24 (`cd client && npx vitest run src/tests/combatLayout.test.js`) → `Tests 20 failed | 24 passed`: 20 combinaciones intersectan cajas, incluidas `h1×e0` y héroes entre filas. La causa no es solo V3: en el caso requerido de 5 héroes + 1 enemigo, V2 obliga pies a ±12 px de la misma línea; con alturas V1/R27, las cajas se solapan verticalmente. Medición de alpha real (`warrior_idle.webp` 444×640, bbox x=12..439; `bruto_idle.webp` 620×720, bbox x=13..606) confirma que las siluetas tampoco caben sin solape horizontal en 824 px. Ver `## Bloqueado`; no se relaja R24 ni se inventa excepción.
+  - Evidencia histórica de iteración previa (no valida el T10.6 actual ni compensa las intersecciones R24): `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null` → `Test Files  33 passed (33)`, `Tests  615 passed (615)` (+5 de T10.6 en `combatLayout.test.js`: pies del enemigo sobre la línea de suelo con 1 y 2-4 enemigos y en jefe, cabezas ≥ ENEMY_TOP, filas de héroes sin solape). **Medición geométrica en navegador** (`node evidencia/visual/medir_visual_r2.mjs`, salida `evidencia/visual/medidas_r2.json`; lienzo real + cajas de la formación + `getBoundingClientRect` del DOM; 4 viewports 412×860, 360×740, 360×800, 412×915 × 1/2/3/4 enemigos = 16 casos): % de cada caja de héroe tapado por botones DOM = 0 en los 16 casos (antes de este fix: hasta 11 % en 360×740 y 6 % en 360×800); % de cada caja de enemigo tapado por la fila de barras R54 = 0 en los 16 casos. Capturas de la misma vista que la ronda 1: `node evidencia/visual/capturar_visual_r2.mjs real` → `evidencia/visual/run2/real_f00..f07.webp` + `real_fin.webp` (a1n3, 412×860@2x, combate real). NOTA: este entorno no tiene visión, así que NO afirmo haber mirado las imágenes; el bruto «sobre el suelo» está garantizado por los tests (pie = 0.53×1720 sobre el fondo `crypt`, con la fracción estimada del perfil de luma del fondo); el visual-reviewer ronda 2 debe confirmar a ojo. **FPS reales en emulador `kh_pixel7`** (AVD Android 15 x86_64, Chrome 124 Android, `adb reverse tcp:5173/3001`, CDP por `adb forward tcp:9222 localabstract:chrome_devtools_remote`, GPU del host vía ANGLE/«Android Emulator OpenGL ES Translator», viewport 412×783 dpr 2.625): `node evidencia/fps_emulador.mjs medium|low`, combate a1n3 entero → victoria. calidad medium: n=19 muestras de 500 ms, **media 55,1 fps, p5 20, mín 20** (la ventana mala es la primera, de carga de texturas); calidad low: n=17, **media 58,2 fps, p5 52, mín 52**. Datos en `evidencia/despues/fps_emulador_{medium,low}.json`. Matiz: es un emulador con GPU del host (no un teléfono físico) y combates cortos (8–9 s), medido por frames de `requestAnimationFrame`.
+- [x] T10.7 — Fix visual ronda 2 (revisión visual ronda 2, `visual_review.md`, y decisión del owner del 2026-11-09 en `hoja_visual.md`). (a) B1: cartel de victoria compacto, ≤ 70 px CSS, centro ≈ 34 %, sin tapar ninguna silueta; (b) B2: cartel de derrota según la decisión (puede tapar enemigos vivos, sin cortar caras cuando haya sitio); (c) B3: héroes tendidos de derrota sin solaparse más del 10 % dentro de la fila (largo ×0,9, todos hacia el mismo lado), ni cabeza sobre cabeza; (d) B4: pies de cada fila de enemigos dentro del piso real (franja calibrada o piso por columna donde hay obstáculos: altar de crypt, x > 75 %), con 2, 3 y 4 enemigos; (e) B5: el tirador apunta y dispara al enemigo (estela o proyectil de la boca del arma al objetivo y/o tope de inclinación ≈ 30°), sin fogonazo sobre compañeros; (f) bug grave de la ronda 2: el héroe golpeado no se vuelve el marcador de R31 (`setPose`: para un héroe, `hit` → `idle`), con un test que falle si una textura de pose cae al marcador en combate; (g) V4 en px CSS y apilado por alto real + 4; (h) carriles con el tope inferior medido en tiempo de ejecución (H2), con la matriz R24 corrida también con los topes de 360×740 y 375×667; (i) H1 de la review ronda 2: los tests atan los márgenes al borde medido de los botones y a `calibracion_suelo.json` (márgenes ≥ 0), y `SPRITE_GEOM` (l, r, t, b) a `hoja_alfa.json`; (j) H6: repetir `capturar_combate.mjs` (combate a1n3 entero, red y consola) sobre el código final. Evidencia: las 18 vistas + 360×740 y 375×667 regeneradas, victoria y derrota con las 4 formaciones, secuencias de animación (golpe a héroe, números, tirador), tabla V1–V9 actualizada, suites completas y build. Cubre: R11, R24 (enmendado), R54 y V1–V9 con las decisiones del 2026-11-09.
+  - Evidencia (2026-11-09). Commits, uno o dos por ítem: fce00a8 (f), 60e539a (c), 591855b y 971f5fd (g), 685807c, 4f82c39 y e517bb9 (e; 4f82c39 también g), 944083d (d), f391c00 (h)(i), 39a8f1a (a)(b), d35071e y 127c10b (a)(b)(h), 5a912c1 (g), d3d8d6a (evidencia de la hoja) y el de esta evidencia.
+    - **Qué hace el código.**
+      - (a) B1. `ResultBanner compact`: «¡Victoria!» y «Volver» en una fila, 68 px CSS de alto (≤ 70). `resultLayout.placeResultBanner` (puro) busca el centro dentro del tercio medio, lo más cerca del 34 %, sin tocar ninguna silueta (de pie o tendida) ni el HUD. La formación reserva esa franja: ningún enemigo queda tendido dentro (`BANNER_ZONE`, `BANNER_ZONE_BOTTOM = 664`).
+        - Todo se mide en el MARCO del panel. Con el tope de aspecto 2,1 (`--kh-frame-h`), en 360×800 el marco mide 756 y arranca en y 22.
+        - El alto del cartel sale de su caja de maquetación (`offsetHeight`), porque la entrada `animate-grow` (escala 0,8 → 1) achicaba `getBoundingClientRect` al montar. Cuenta también su sombra de 4 px.
+        - Quien sigue de pie respira (`BREATH`, compartido con la escena): su silueta y su cara se miden con lo que crecen.
+      - (b) B2. En derrota el cartel puede tapar a los enemigos vivos. No toca a los héroes tendidos ni el HUD y, entre las posiciones posibles, elige una que no corte caras (35 % superior, con la respiración).
+      - (c) B3. Tendidos al 90 % del largo y al 55 % del grosor, todos los de una fila hacia el mismo lado (héroes con la cabeza a la izquierda, enemigos a la derecha). Si dos de la misma fila se pisan, `lyingBoxes` los separa lo justo.
+      - (d) B4. `BG_FLOOR_OBSTACLES` de crypt (carro a la izquierda, altar a la derecha, medidos sobre la imagen), con `enemyFootBand` y `fitFeet`: los pies de cada fila de enemigos caen sobre piso real. Los pies salen de `SPRITE_GEOM` (`pl`, `pr`, medidos en `hoja_alfa.json`).
+      - (e) B5. El tirador gira hacia su objetivo y se inclina hasta 30°. La escena dibuja el disparo: estela de la boca al pecho del objetivo (220 ms), proyectil (110 ms) y un fogonazo quieto en la boca.
+        - Sin el fogonazo pintado: la pose usa un cuadro de la textura que termina en la boca (`ATTACK_FX_FRAME`, columnas 0–532), con el origen contado sobre su ancho. No es un `setCrop`, porque Phaser espeja el recorte al voltear: el tirador mirando a la izquierda mostraba el fogonazo y no el cuerpo (lo vi en la secuencia y lo corregí en 4f82c39).
+        - Si la boca cae sobre un compañero, se inclina más, de 3 en 3°, hasta 30°.
+        - Inclinado, la silueta no sale del lienzo: el sprite se corre dentro de su contenedor según la envolvente medida de la pose (`ATTACK_FX.ranger.hull` = `casco` de `hoja_alfa.json`).
+        - La boca nunca se corre sobre un compañero (B5 manda), así que la silueta puede quedar un poco fuera (ver V7).
+        - El tirador ya no embiste: la embestida corría la boca sobre la fila de atrás.
+      - (f) `poseFor`: el héroe golpeado se queda en `idle` (los héroes no tienen `hit`). Una pose que el arte no tiene cae a `idle`, nunca al marcador de R31.
+      - (g) V4 en px CSS: normal 40, crítico 60. Sube 60 px CSS en 800 ms, con pop 1,4 → 1 en 120 ms, y arranca 6 px CSS sobre la cabeza.
+        - Apilado: el texto se crea, se mide con el pop y recién entonces se coloca, 4 px CSS sobre el borde superior REAL de todo lo que tiene debajo. El más nuevo va arriba y, con la subida que frena, es el más rápido: se aleja.
+        - Si apilado quedaría bajo las barras de vida (borde medido, `hud.top`), va en una columna al lado, desde la cabeza y sin cruzarse con ninguna otra. Si tampoco cabe al lado, se apila igual: nunca encima de otro.
+        - «¡Crítico!» sale sobre el héroe que lo hace y sobre el objetivo quedan los números (5a912c1). Apilado sobre el cartel, el «96!» de un crítico real nacía en el bruto bajo el título y la barra. **Cambio de presentación: lo dejo a la vista del visual_reviewer.**
+      - (h) H2. El panel mide el borde real de la fila de botones (con «¡TAP!», 8 px) y el de las barras: al montar, con `ResizeObserver` y con `resize`. La escena recoloca los carriles con `setHud`.
+        - Tope inferior = mín(1328, borde medido) − 8, redondeado al px de mundo. La medida de 360×800 tiene ruido de subpíxel: 1327,5 con DPR 2 y 1328,1 con DPR 3; los dos dan 1320.
+        - Las 5 pantallas tienen solución con R24 por fila + V1 + piso; no se relajó nada.
+          - HF por pantalla: 1320 (412×860, 360×800 y 1280×800, igual que sin medida), 1308 (360×740) y 1264 (375×667).
+          - El bruto solo va a EF 921 en 360×740 y en 375×667. El mensaje de 39a8f1a dice 919: el valor bueno es 921.
+      - (i) H1. Los tests miden los márgenes contra `calibracion_suelo.json` y contra los bordes de cada pantalla en `hud_medidas.json` (márgenes ≥ 0). Atan `SPRITE_GEOM` (W, H, l, r, t, b, pl, pr) y `ATTACK_FX` (cuadro y envolvente) a `hoja_alfa.json`.
+    - **Tests** (`cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run src/tests/combatLayout.test.js src/tests/combatScene.test.js src/tests/combatPanel.test.jsx src/tests/combatResult.test.js </dev/null` → `Test Files  4 passed (4)`, `Tests  437 passed (437)`). Por archivo: combatLayout 326, combatScene 40, combatPanel 27, combatResult 44.
+      - combatLayout:
+        - matriz R24 de 280 × 3 escuadras en las 5 pantallas con sus bordes medidos;
+        - identidad con la medida en 412×860, 360×800 y 1280×800, también con la franja del cartel medida en el marco;
+        - carril redondeado (1327,5 y 1328,1 → 1320);
+        - B3: tendidos ≤ 10 % dentro de la fila, un solo lado y largo ×0,9;
+        - B4: ningún pie sobre un obstáculo; crypt con 2, 3 y 4 enemigos;
+        - H1: `SPRITE_GEOM` y `ATTACK_FX` contra `hoja_alfa.json`.
+      - combatScene:
+        - R31: ninguna pose cae al marcador y una ronda con golpes a los 5 héroes no lo muestra nunca;
+        - B5: el cuadro sin fogonazo (no un recorte) en 4 formaciones, el pie en su columna con y sin volteo, la boca fuera de toda silueta de su bando, la estela hasta el objetivo, la silueta dentro del lienzo salvo lo que frena la boca y sin embestida;
+        - V4 en 5 anchos:
+          - ráfagas de 3 y 5 simultáneos y golpes escalonados cada 250 y 120 ms sobre el bruto, el jefe y un carroñero, simulados cuadro a cuadro con la curva de la escena: nunca se pisan;
+          - con las barras medidas, el apilado no sube bajo ellas;
+          - el crítico sale sobre quien lo hace.
+      - combatPanel:
+        - V5, V6 y V8;
+        - H2: la medición del panel;
+        - con los rectángulos de 360×800, el cartel de derrota sale en el marco y con su caja de maquetación aunque la entrada lo achique, y sin cortar la cara.
+      - combatResult:
+        - victoria y derrota con las 4 formaciones × 5 pantallas, en el marco y con el alto medido (68);
+        - los 13 nodos reales × m 1–4 × 5 pantallas;
+        - la envolvente de la respiración.
+    - **Vistas** (preview aislado: server del worktree en :3003 con `BOT_TOKEN` ficticio, `BOT_POLLING=false` y su `server/data/kingdoms.db`; vite en :5175 `--strictPort` con `VITE_API_URL=http://localhost:3003`; los dos detenidos al final y los puertos comprobados libres).
+      - Comando: `KH_PREVIEW_URL=http://localhost:5175 node specs/combate_b/evidencia/hoja/generar_evidencia_hoja.mjs`, sobre el código final (5a912c1).
+      - Salida: 60 capturas `evidencia/hoja/{412x860,360x800,1280x800,360x740,375x667}_{1enemigo,3enemigos,4enemigos_veil,jefe,victoria,derrota,victoria_3enemigos,derrota_3enemigos,victoria_4enemigos_veil,derrota_4enemigos_veil,victoria_jefe,derrota_jefe}.webp`, más `hoja_contacto.webp` y `hoja_medidas.json`.
+        - Las 18 de la hoja conservan su nombre.
+        - Las bajas 360×740 y 375×667 suman 24 vistas.
+        - Victoria y derrota van con las 4 formaciones.
+      - Una línea por vista, p. ej. `375x667_derrota_3enemigos pie± 0.00 carriles {"HF":1264,"HB":1125,"EF":965,"EB":833} piso 825 botones 1292.6 hud>silueta 0 cara tapada máx 0% cartel 50.4% alto 68 sobre {"e0":2185,"e1":2183,"e2":7060} caras {} ok true`. Al final: `errores de consola/página: ninguno`.
+        - En la corrida anterior hubo 429 del hub: el server local limita `/api` a 100 por minuto.
+        - Ahora el script espera a que la ventana de 60 s tenga sitio antes de cada escena: 108 peticiones por pantalla, 48 en el último minuto.
+      - Secuencias a 412×860, con la hora real de cada cuadro:
+        - `secuencia_golpe_heroe.webp`: el bruto golpea a Elena. Destello blanco de su propia silueta, retroceso, vuelve a idle y el «23» sube sobre su cabeza. Ningún cuadro con el marcador.
+        - `secuencia_numeros.webp`: una ronda con crítico. 37 (Lyra); Aria anuncia «¡Crítico!» sobre ella misma y a +300 ms pega «96!»; a +550 ms, 52 (Viktor). Los tres números, uno al lado del otro sobre la cabeza del bruto y bajo la barra de vida, sin pisarse.
+        - `secuencia_tirador.webp`: Elena arrodillada, volteada hacia el bruto e inclinada 30°. Estela de la boca al pecho del bruto. Cuerpo entero a la vista y vuelta a idle a +576 ms.
+    - **Tabla V1–V9** (`node specs/combate_b/evidencia/hoja/resumen_hoja.mjs`, lee `hoja_medidas.json`). Salida tal cual, código de salida 0:
+      | V | Resultado | Valor medido |
+      |---|---|---|
+      | V1 | OK | héroe/común 0.62 · jefe/héroe 2.01 · común en grupo/héroe 0.97 · trasera/delantera 0.82 |
+      | V2 | OK | pie vs. su carril, peor 0.00 px (60 vistas) · carriles ≥ piso del fondo + 8 · el carril más bajo queda 8.0 sobre el borde real de los botones de su pantalla (peor vista) · HF por pantalla {"412x860":1320,"360x800":1320,"1280x800":1320,"360x740":1308,"375x667":1264} |
+      | V3 | OK | solape dentro de una fila 0 % (de pie) y 0 % (tendidos, B3), sin cabeza sobre cabeza · HUD/botones/barras sobre siluetas: 0 casos · cabezas bajo las barras · cara tapada por otras filas: máx. 2.9 % |
+      | V4 | OK | 40.0/60.0, 40.2/59.9, 40.0/60.0, 40.0/59.8, 39.9/60.1 px CSS (normal/crítico, 5 pantallas) · base del número sobre la cabeza · pop 1,4→1 a 140 ms · sube 60 px CSS y desaparece antes de 840 ms · ráfaga 37 / 96! / 52, hueco en px CSS (↑ apilado sobre el alto real del anterior, → columna al lado): 412x860: →4 →61.9 · 360x800: →4 →62.4 · 1280x800: →4 →62 · 360x740: →4 →62.2 · 375x667: →4 →61.7 · sin pisarse al nacer ni a 140 ms · golpes escalonados (+0, +250 ×2, +500 ms): 425 cuadros, 0 con números pisados · nacen fuera del lienzo: 0/0/0/0/0, bajo las barras de vida: 0/1/1/1/3 |
+      | V5 | OK | 300 nombres de botón a 11 px sin recorte ni «…» · 135 nombres de barra sin recorte |
+      | V6 | OK | 145 caídos a ±90°, alfa 0.85, desaturados · barras atenuadas a 0,45 |
+      | V7 | OK | tirador hacia la izquierda: flipX, 30/30/30/30/30° (tope 30), cuadro «sin_fogonazo» de 533 px (sin el fogonazo pintado, cuerpo a la vista), estela de la boca al objetivo, boca fuera de toda silueta de su bando · silueta inclinada fuera del lienzo: 32/32/32/32/32 px de mundo (corrida 44/44/44/44/44 px hacia adentro, hasta pegar la boca a Sombra) · al terminar vuelve a idle, 0°, cuadro entero · guerrero hacia la derecha sin voltear |
+      | V8 | OK | 40 carteles compactos de 68–68 px CSS (≤ 70) · centro de victoria 33.6–34.1 %, de derrota 34.0–53.0 % (tercio medio) · no tapa la fila de botones ni las barras · «Volver» ≥ 44 px |
+      | V9 | OK | veil_gate: 60 barras «Vida de Voz del Velo» |
+      | B1 | OK | victoria (4 formaciones × 5 pantallas): el cartel no toca ninguna silueta, ni héroes ni enemigos caídos · centro 33.6–34.1 % del marco del panel |
+      | B2 | OK | derrota (4 formaciones × 5 pantallas): el cartel no toca a los héroes tendidos, ni los botones, y no corta ninguna cara (tapa enemigos vivos en 15 de 20, permitido) · centro 34.0–53.0 % |
+      | B4 | OK | crypt: 40 pies de enemigos entre el carro (77.5) y el altar (618.9); el más a la derecha llega a 614.9 |
+      | R31 | OK | 185 cuadros con los 5 héroes golpeados (5 pantallas): 0 con marcador |
+      `errores de consola/página durante las capturas: 0`.
+    - **Revisión a ojo** (abrí con Read la hoja de contacto, las vistas de victoria y derrota de las 5 pantallas, las bajas y las tres secuencias, con zoom donde hizo falta). Lo que se veía mal y corregí antes de cerrar:
+      1. El cartel de derrota cortaba 5–6 px de cara (bruto, carroñero de adelante y jefe). Se medía durante la entrada a escala 0,8 (d35071e).
+      2. En 360×800 el centro de victoria salía al 36,9 %. El marco del panel empieza en y 22 y la medida se tomaba en la ventana. Ahora mide 33,6–34,1 % del marco (d35071e).
+      3. 360×800 daba HF 1319 por ruido de subpíxel. Ahora da 1320, como sin medida (d35071e).
+      4. En 375×667 los números de una ráfaga se pisaban: la columna de reserva se recortaba contra el borde (971f5fd).
+      5. El tirador volteado mostraba el fogonazo pintado sin el cuerpo, por el recorte espejado (4f82c39). Después, su silueta inclinada salía 76 px de mundo por la derecha (e517bb9: ahora 32).
+      6. El «96!» de un crítico nacía bajo el título y la barra de vida, apilado sobre «¡Crítico!» (4f82c39 y 5a912c1).
+      7. En la secuencia del golpe, el «23» se apilaba sobre números de una prueba anterior y salía del recorte. Ahora el script espera a que terminen.
+    - **Queda a la vista del visual_reviewer** (medido, sin relajar nada):
+      - V7: durante el disparo, la silueta inclinada del tirador asoma 32 px de mundo (16 px CSS a 412) por el borde derecho. Correrla más llevaría la boca sobre Sombra, y B5 manda.
+      - V4: en la ráfaga de prueba (37/96!/52 en el mismo cuadro sobre el bruto), en las pantallas más bajas que 412×860 el primer número nace en parte bajo la barra de vida (1, 1, 1 y 3 de 3). La cabeza del bruto queda a 68–124 px CSS de las barras (375×667 y 412×860).
+      - V3: en 375×667 con 4 Voz del Velo, la cara de e3 queda tapada un 2,9 % por otra fila (la colocación ya es la que menos tapa).
+      - V4/presentación: «¡Crítico!» sale ahora sobre quien lo hace.
+    - **(j) H6, combate a1n3 entero sobre el código final.**
+      - Preparación: server :3003 detenido, `node specs/combate_b/evidencia/sembrar_a1n3.cjs` (→ `sembrado { deviceId: 'captura-combate-b-0001', playerId: 2599028592 }`) y server levantado de nuevo.
+      - Comando: `node specs/combate_b/evidencia/capturar_combate.mjs --engine v1 --url http://localhost:5175 --out despues_t107`. Solo v1: `engineVersion` sigue en 1 y no se toca.
+      - Resultado: `"fin": "victoria"`, `"rondas": 7`, `"duracionS": 10.2`, `"assetsGame": 0`, fps avg 60 / p5 58 (escritorio, Chromium headless; no es Q9).
+      - Red (`despues_t107/red_v1.json`): 6 peticiones a `/assets/`, `bajoAssetsGame: 0`.
+      - Consola (`reporte_v1.json`): solo los 4 avisos de `[Telegram.WebApp] … not supported in version 6.0` (SDK de Telegram en navegador, igual que en T11). Ningún `error` ni `pageerror`.
+      - Capturas `despues_t107/v1_r00_inicio.webp` … `v1_r07.webp` y `v1_resultado_victoria.webp`. Las miré: el cartel queda al 34 % sobre el bruto caído y no toca a Guarnición.
+    - **Suites completas y build** (una vez, al final):
+      - `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null` → `Test Files  34 passed (34)`, `Tests  977 passed (977)`.
+      - `cd server && npx jest --runInBand --forceExit` → `Test Suites: 33 passed, 33 total`, `Tests: 545 passed, 545 total`.
+      - `cd client && npm run build` → `✓ built in 12.89s` (con el aviso de siempre de chunks > 500 kB).
+    - **Fuera de alcance, sin tocar:**
+      - R48/fps (feature #27), arte nuevo, merge y push, `engineVersion` (sigue en 1) y CHANGELOG.
+      - `git diff 708db78..HEAD -- shared server` está vacío.
+      - Los 3 restos viejos de fps (`evidencia/fps_emulador.mjs`, `evidencia/visual/medidas_r2.json` y `medir_visual_r2.mjs`) siguen sin commitear.
+      - La sonda `client/src/tests/zz_probe.test.js` se borró y nunca se commiteó.
+- [x] T10.8 — Cambios de la review ronda 3 (`review.md`, sección «ronda 3», d1fe278). (a) B-1: la matriz H2 de `combatLayout.test.js:352` no depende de la carga de la máquina (partida por configuración/pantalla como la matriz de la ronda 2, o con límite explícito con margen); la suite completa pasa también con carga; (b) B-2: test del stage con Phaser simulado que falle si la medida del HUD no llega a la escena (al crear el juego, en `onReady` y al cambiar el prop); (c) B-3: `laneLimits`/`hudToWorld` descartan medidas 0, negativas o fuera de rango (sin sitio para la formación o fuera del lienzo) y vuelven a las constantes, con tests; (d) H-a: `relayout` mueve solo `y` del contenedor del actor que cambia de carril y no corta su tween de `x` (test); (e) H-b: el test de caras en derrota mide la intersección con la cara por su cuenta, no con `faceCut`; (f) B5, preventivo del leader: la estela y el proyectil del tirador no pasan por delante de ningún compañero (se dibujan con profundidad por detrás de la fila trasera de héroes, o se evita su silueta), y la secuencia del tirador lo muestra. (g) H-c, decisión del owner del 2026-11-09: en marcos muy bajos la formación se achica en proporción (factor < 1 solo cuando no entra), con la matriz corrida también con marcos de 657, 625 y 611 px CSS; Evidencia: suite completa con carga (y en reposo), tests nuevos, secuencia del tirador regenerada; si cambia algo visible, regenerar las vistas afectadas. Cubre: R53 y V7/B5.
+  - Evidencia (2026-11-09). Commits por ítem: ff2ceb3 (a), f91451d (b), c733104 (a y b: `flush` del stage), 5fdcbc9 (c), 9aee99b (d), 2835324 (e), 98bedc4 (f), beeef7c y 38720e6 (decisión H-c y línea de la task), 30ef21b y 64834a0 (g), 835d76c (evidencia de la hoja) y el de esta evidencia.
+    - **Qué cambió.**
+      - (a) B-1. Las matrices pesadas se parten en `it` chicos, con las mismas comprobaciones y el mismo recorrido:
+        - H2: un `it` por pantalla × configuración (70, de 60 formaciones cada uno);
+        - R24 con escuadras rogue y ranger: uno por escuadra × configuración (28 de 20);
+        - B3 y B4: uno por configuración (14 de 60), con el conteo de obstáculos en un `it` aparte;
+        - combatResult (13 nodos): uno por pantalla;
+        - combatScene (ráfagas y golpes escalonados): uno por ancho.
+        - En reposo, el `it` de combate más lento pasó de 2728 ms a ~250 ms.
+        - `flush` de `combatStage.test.jsx` espera al mismo import dinámico que hace el stage, en vez de 5 ms fijos. Con carga, un test de B-2 falló así una vez.
+      - (b) B-2. `combatStage.test.jsx` (juego simulado cuya escena registra `setHud`):
+        - `hud` va en las opciones al crear el juego, llega en onReady y llega otra vez cuando cambia el prop (el mismo objeto no se vuelve a mandar);
+        - si la medida cambia antes de que la escena esté lista, onReady le pasa la última;
+        - sin medida no se llama a `setHud`.
+        - Mutaciones de `CombatStage.jsx` comprobadas: sin `hud` al crear → 1 fallo; sin `setHud` en onReady → 2; sin el efecto de cambio → 1.
+      - (c) B-3.
+        - `laneLimits` ignora bordes no finitos, 0, negativos o ≥ 1720 y usa la constante.
+        - `hudToWorld` no devuelve bordes fuera del lienzo.
+        - `computeFormation` descarta la medida (vuelven las constantes) si con ella la formación no cabe ni achicada a `SHRINK_MIN` (0,5). Ejemplos: botones en 600, barras en 1500, franja en 1700. `formationFits` = carriles en orden con ≥ 24 y cajas dentro del lienzo.
+        - Tests:
+          - 0, −10, ±∞, NaN, 1720 y 1e6 en cada borde;
+          - los tres casos absurdos dan la formación de siempre en las 14 configuraciones;
+          - barrido por configuración de 7 × 4 × 3 medidas extremas: la formación siempre cabe.
+      - (d) H-a. `relayout` ya no mata tweens.
+        - El carril (y) va a su sitio nuevo.
+        - Una embestida o un retroceso en curso siguen, y al terminar (`onComplete`) quedan en la x de su sitio.
+        - Una caída en curso sigue, relativa a su contenedor.
+        - Test con tweens que quedan en curso; con el `relayout` anterior falla.
+      - (e) H-b. Cada caso de derrota de `combatResult` mide por su cuenta la intersección del cartel (con su sombra) con la cara de cada enemigo de pie: 35 % superior de su caja alfa, más lo que crece al respirar. Con la regla de caras anulada en `resultLayout`, fallan 15 de los 20 casos (antes, 0).
+      - (f) B5.
+        - La estela y el proyectil se dibujan con profundidad justo por detrás del carril más alto de los héroes, así cualquier compañero que quede en medio los tapa. Siguen por delante de los enemigos.
+        - El fogonazo queda delante del propio tirador.
+        - Medido en 412×860: estela y proyectil en 1180, la fila trasera en 1181, el enemigo más adelantado en 933, el tirador en 1320 y el fogonazo en 1321.
+        - Test en las 4 formaciones.
+      - (g) H-c, decisión del owner (`hoja_visual.md`, beeef7c).
+        - Si con el borde medido la formación no cabe con su tamaño de siempre, toda la formación se achica con el mismo factor para héroes y enemigos (`factor`, búsqueda binaria al 0,5 %), hasta que vuelve a caber con R24 por fila, el piso, las cabezas bajo las barras y los pies sobre los botones.
+        - Donde entra, factor 1. La escena ajusta escala, sombra y respiración si el factor cambia en vivo (`resize`), y vuelve a tender a los caídos.
+        - Números (marco de 375 de ancho, con la pila de abajo de 174 px CSS y barras en 102/139):
+          - factor 1 en las 840 combinaciones desde 658 px CSS;
+          - con 657, se achican 30 de 840 (catedral) a 0,996;
+          - con 640, 36 a 0,911;
+          - con 625, 36 a 0,829;
+          - con 611, 48 a 0,75.
+          - Medido en la página a 375×611: el jefe de la catedral queda en 0,931; 3 carroñeros y 4 Voz del Velo entran con factor 1.
+        - Tests:
+          - matriz R24 por fila (14 configuraciones × n 1–5 × m 1–4 × 3 escuadras) con marcos de 657, 625 y 611 px CSS, con `checkFormation` (separación ≥ 24, piso, cabezas bajo las barras, pies sobre los botones, caras de héroes libres) y el mismo factor para todos;
+          - factor 1 en las 5 pantallas de la hoja (matriz H2);
+          - las 20 vistas de pie de `hoja_medidas.json` dan los mismos carriles, altos y x;
+          - en la escena, de 412×860 a un marco de 611 y de vuelta, con alto dibujado = el de la formación.
+    - **Tests** (`cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run src/tests/combatLayout.test.js src/tests/combatScene.test.js src/tests/combatPanel.test.jsx src/tests/combatResult.test.js src/tests/combatStage.test.jsx </dev/null` → `Tests  645 passed (645)`). Por archivo: combatLayout 505, combatScene 50, combatPanel 27, combatResult 48, combatStage 15.
+    - **Suite completa con carga y en reposo.**
+      - Carga: 9 hilos en bucle (`carga.mjs` de mi scratch), con la CPU al 90–100 % medido, y jest del server corriendo en bucle en paralelo.
+        - `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null`, dos veces → `Test Files  34 passed (34)`, `Tests  1173 passed (1173)`, en 43,8 y 44,6 s.
+        - El `it` más lento con carga tardó 757 ms (la prueba de B-3); ningún `it` de combate pasó de 1 s.
+        - Jest del server con la misma carga → `Tests: 545 passed, 545 total` en las 6 vueltas.
+      - Reposo (CPU al 13 %): la misma suite, dos veces → `Test Files  34 passed (34)`, `Tests  1173 passed (1173)`, en 24,4 y 24,5 s.
+      - El total pasa de 977 a 1173: +196 tests, de las matrices partidas y los tests nuevos. Las comprobaciones de las matrices son las mismas.
+    - **Vistas** (preview aislado: server del worktree en :3003 con `BOT_TOKEN` ficticio y `BOT_POLLING=false`; vite en :5175 `--strictPort`; los dos detenidos al final y los puertos comprobados libres).
+      - Comando: `KH_PREVIEW_URL=http://localhost:5175 node specs/combate_b/evidencia/hoja/generar_evidencia_hoja.mjs`, sobre el código final.
+      - Salida: las 60 vistas de las 5 pantallas, más 3 de 375×611 (H-c: de pie con 3 carroñeros, 4 Voz del Velo y el jefe de la catedral), `hoja_contacto.webp`, `hoja_medidas.json` y las 3 secuencias. `errores de consola/página: ninguno`.
+      - Las 60 vistas no cambian. Comparación de `hoja_medidas.json` contra la corrida de T10.7: `vistas comparadas: 60 · iguales (carriles, factor 1, alto/x/carril de cada personaje, centro del cartel): 60`.
+      - Las nuevas:
+        - `375x611_3enemigos`: factor 1 · `{"HF":1223,"HB":1084,"EF":940,"EB":838}`.
+        - `375x611_4enemigos_veil`: factor 1 · `{"HF":1223,"HB":1084,"EF":1060,"EB":1006}`.
+        - `375x611_jefe`: factor 0.931 · `{"HF":1223,"HB":1094,"EF":1070}`, con altos 286,7 (delanteros), 235,5 (traseros) y 576,3 (jefe).
+    - **Tabla V1–V9** (`node specs/combate_b/evidencia/hoja/resumen_hoja.mjs`). Salida tal cual, código de salida 0:
+      | V | Resultado | Valor medido |
+      |---|---|---|
+      | V1 | OK | héroe/común 0.62 · jefe/héroe 2.01 · común en grupo/héroe 0.97 · trasera/delantera 0.82 |
+      | V2 | OK | pie vs. su carril, peor 0.00 px (63 vistas) · carriles ≥ piso del fondo + 8 · el carril más bajo queda 7.9 sobre el borde real de los botones de su pantalla (peor vista) · HF por pantalla {"412x860":1320,"360x800":1320,"1280x800":1320,"360x740":1308,"375x667":1264} |
+      | V3 | OK | solape dentro de una fila 0 % (de pie) y 0 % (tendidos, B3), sin cabeza sobre cabeza · HUD/botones/barras sobre siluetas: 0 casos · cabezas bajo las barras · cara tapada por otras filas: máx. 2.9 % |
+      | V4 | OK | 40.0/60.0, 40.2/59.9, 40.0/60.0, 40.0/59.8, 39.9/60.1 px CSS (normal/crítico, 5 pantallas) · base del número sobre la cabeza · pop 1,4→1 a 140 ms · sube 60 px CSS y desaparece antes de 840 ms · ráfaga 37 / 96! / 52, hueco en px CSS (↑ apilado sobre el alto real del anterior, → columna al lado): 412x860: →4 →61.9 · 360x800: →4 →62.4 · 1280x800: →4 →62 · 360x740: →4 →62.2 · 375x667: →4 →61.7 · sin pisarse al nacer ni a 140 ms · golpes escalonados (+0, +250 ×2, +500 ms): 425 cuadros, 0 con números pisados · nacen fuera del lienzo: 0/0/0/0/0, bajo las barras de vida: 0/1/1/1/3 |
+      | V5 | OK | 315 nombres de botón a 11 px sin recorte ni «…» · 143 nombres de barra sin recorte |
+      | V6 | OK | 145 caídos a ±90°, alfa 0.85, desaturados · barras atenuadas a 0,45 |
+      | V7 | OK | tirador hacia la izquierda: flipX, 30/30/30/30/30° (tope 30), cuadro «sin_fogonazo» de 533 px (sin el fogonazo pintado, cuerpo a la vista), estela de la boca al objetivo, boca fuera de toda silueta de su bando · estela y proyectil por detrás de toda la fila de héroes (profundidad 1180 < 1181) y por delante de los enemigos (> 933), fogonazo delante del tirador · silueta inclinada fuera del lienzo: 32/32/32/32/32 px de mundo (corrida 44/44/44/44/44 px hacia adentro, hasta pegar la boca a Sombra) · al terminar vuelve a idle, 0°, cuadro entero · guerrero hacia la derecha sin voltear |
+      | V8 | OK | 40 carteles compactos de 68–68 px CSS (≤ 70) · centro de victoria 33.6–34.1 %, de derrota 34.0–53.0 % (tercio medio) · no tapa la fila de botones ni las barras · «Volver» ≥ 44 px |
+      | V9 | OK | veil_gate: 64 barras «Vida de Voz del Velo» |
+      | B1 | OK | victoria (4 formaciones × 5 pantallas): el cartel no toca ninguna silueta, ni héroes ni enemigos caídos · centro 33.6–34.1 % del marco del panel |
+      | B2 | OK | derrota (4 formaciones × 5 pantallas): el cartel no toca a los héroes tendidos, ni los botones, y no corta ninguna cara (tapa enemigos vivos en 15 de 20, permitido) · centro 34.0–53.0 % |
+      | B4 | OK | crypt: 43 pies de enemigos entre el carro (77.5) y el altar (618.9); el más a la derecha llega a 614.9 |
+      | H-c | OK | factor 1 en las 60 vistas de las 5 pantallas · marco de 611 (375×611): 3enemigos 1 (HF 1223, HB 1084, EF 940, EB 838) · 4enemigos_veil 1 (HF 1223, HB 1084, EF 1060, EB 1006) · jefe 0.931 (HF 1223, HB 1094, EF 1070), sin pies bajo los botones, sobre el piso, cabezas bajo las barras y sin solape en la fila |
+      | R31 | OK | 184 cuadros con los 5 héroes golpeados (5 pantallas): 0 con marcador |
+      `errores de consola/página durante las capturas: 0`.
+    - **Revisión a ojo** (Read):
+      - `secuencia_tirador.webp`, con zoom en los cuadros de +141 y +299 ms: la estela sale de la boca, pasa por detrás de la capucha de Sombra (Sombra la tapa) y llega al pecho del bruto. El fogonazo queda delante de Elena. Ya no se lee como un tiro a la compañera.
+      - Las 3 vistas de 375×611:
+        - jefe: héroes y Devorador algo más chicos, en proporción; pies sobre los botones; la cabeza del jefe bajo su barra; las caras de los héroes a la vista;
+        - 4 Voz del Velo y 3 carroñeros: igual que en 375×667, con los carriles corridos hacia arriba.
+      - La hoja de contacto (63 vistas).
+    - **Suites y build** (al final, en reposo):
+      - `cd server && npx jest --runInBand --forceExit` → `Test Suites: 33 passed, 33 total`, `Tests: 545 passed, 545 total`.
+      - `cd client && npm run build` → `✓ built in 7.67s` (con el aviso de siempre de chunks > 500 kB). `window.__combatGame` no aparece en `client/dist`.
+    - **Fuera de alcance, sin tocar:**
+      - fps (feature #27), arte, merge y push, `engineVersion`, server, shared, `done` y CHANGELOG.
+      - `git diff 2baed75..HEAD -- shared server` está vacío.
+      - Los 3 restos viejos de fps siguen sin commitear.
+      - Las sondas que usé (`zz_probe.test.js`) se borraron y nunca se commitearon.
+- [x] T11 — Medición y capturas: levantar el preview del owner (`bash D:/Proyectos/_ops/preview/arrancar.sh`), jugar un combate `a1n3` entero con v1 (valor actual) y con v2 (solo en entorno local, sin commitear `engineVersion`); capturas con `node D:/Proyectos/_ops/capturas/capturar.mjs --tag combate_b --pantallas hub` (línea base del hub, que debe verse igual) y, como `PANTALLAS_DEF` (`capturar.mjs:26`) no incluye el combate, un script Playwright propio en `specs/combate_b/evidencia/` que entra a `a1n3` y captura cada ronda (412×860 @2x, webp en `evidencia/despues/`) o, si el owner lo prefiere, una pantalla `combat` agregada a `capturar.mjs` (fuera del repo); captura de red (0 peticiones a `/assets/game/`), consola limpia, `botonesBajo44: []`, fps medio y p5 en `evidencia/fps.json` (medio y bajo; emulador `kh_pixel7` si hay GPU, Q9). Cubre: R28, R43, R48, R49, R50.
+  - Evidencia: DESVÍOS: (a) no usé `arrancar.sh` para no tocar :5180/:3101 del owner: server del worktree en :3001 (`NODE_APP_INSTANCE=1 BOT_TOKEN=dummy BOT_POLLING=false`) + vite del worktree en :5173, ambos detenidos al terminar; db local (ignorada por git) sembrada con `evidencia/sembrar_a1n3.cjs`; (b) v2 corrido con `engineVersion: 2` SOLO local y revertido a 1 antes de commitear (`git diff 46d156d..HEAD -- shared server` vacío); (c) fps medido en ESCRITORIO, no en `kh_pixel7` (ver abajo). Scripts en `evidencia/`: `capturar_combate.mjs` (Playwright: entra a a1n3, captura cada ronda 412×860@2x en `evidencia/despues/{v1,v2}_rNN.webp`, red, consola, fps, botones), `resumen.mjs`, `unir_fps.mjs`, `comparar_hub.mjs`, `veil_stats.mjs`. **Combate a1n3 entero**: v1 y v2 → `victoria`, 7 rondas cada uno (~10 s); `entrada.engine` undefined (v1) / 2 (v2); a1n3 tiene 1 enemigo, así que 3 y 4 enemigos se capturan como estado sintético (ver veil). **R28 red** (`despues/red_v1.json`, `red_v2.json`): 6 peticiones a `/assets/`, `bajoAssetsGame: 0` (solo `/assets/b/{bg/combat_crypt,enemies/bruto_idle,enemies/bruto_hit,heroes/warrior_idle,heroes/warrior_attack,ui/btn_red}.webp`). **Consola** (`reporte_v{1,2}.json`.erroresCombate): solo 4 `warning: [Telegram.WebApp] ... not supported in version 6.0` (ruido del SDK de Telegram en navegador); 0 `error`/`pageerror`/HTTP ≥ 400 en el combate real. **Botones**: `botonesBajo44: []` en 412×860 y en 360×740, 360×800, 412×915 (v1 y v2). **Barra por enemigo (T10.5/R54)**: con 1 (a1n3), 3 y 4 enemigos (sintético, `v2_veil_gate_a2n10_{3,4}enemigos.webp`): `barrasTapanAvanzar=false`, `barrasTapanBotonesHud=false`, `barrasTapanHeroesSprites=false` (borde inferior de las barras 101–138 px < inicio de la zona de héroes 426–522 px en los 4 viewports). Matiz: `barrasSolapanZonaEnemigos=true` — la fila de barras (HUD superior, hasta y≈101–138 px) se superpone con la parte alta de la caja del enemigo (ENEMY_TOP=100 lógico → y≈50 px). NO pude mirar las imágenes (sin visión en este entorno): no afirmo que el borde de la caja tenga sprite o sea margen transparente; el reviewer debe abrir `v2_r00_inicio.webp` y `v2_veil_gate_a2n10_4enemigos.webp`. **`combat_veil_gate` (review Etapa B)**: capturas `v1_veil_gate_a2n10_1enemigo.webp`, `v2_veil_gate_a2n10_3enemigos.webp`, `v2_veil_gate_a2n10_4enemigos.webp` (a2n10 boss, estado sintético; su /step da 400 esperado, aislado en `erroresVeilSintetico`). Luma media/desvío por tercio (`veil_stats.mjs`): veil_gate 56.7/40.4 · 76.5/58.0 · 60.1/36.3 vs. crypt 63.6/52.4 · 66.1/44.8 · 55.3/39.0 y ashfield 72.6/42.9 · 66.9/40.7 · 54.7/37.6: el tercio medio del veil_gate es el más claro y de más contraste justo donde van los enemigos → riesgo de confusión con los sprites; sin poder verlo, queda como observación abierta para el reviewer (arte nuevo prohibido en esta etapa). **Hub**: `capturar.mjs --tag combate_b --pantallas hub` → `D:/Proyectos/_ops/capturas/2026-10-31-20-56_combate_b/*__hub.png` (5 viewports ✓). Comparado contra la última base con hub disponible (`2026-10-29-02-16_fix24_despues`; no existe una de HEAD previo) con `comparar_hub.mjs`: 4,1–10,3 % de píxeles distintos y solo 0,17–2,08 % con diferencia fuerte (hub animado; la rama solo toca `PhaserGame.jsx` para dormir el loop en combate, R39) → NO es igualdad pixel-exacta demostrada. **fps** (`evidencia/fps.json`): medio v1 avg 60 / p5 60, v2 avg 60 / p5 58; bajo v1 avg 60 / p5 58, v2 avg 60 / p5 58 (15–16 ventanas de 500 ms, Chromium headless con RTX 5060). **PENDIENTE**: medición en `kh_pixel7`/móvil real; 60 fps de escritorio NO demuestra Q9 (medio ≥ 50 avg, bajo ≥ 30 p5). No corrí el emulador. Verificación abierta para el owner.
+- [x] T12 — Cierre: suites completas `cd server && npx jest --runInBand --forceExit` y `cd client && npx vitest run` (citar `Tests: N passed`, comparar con T1), `cd client && npm run build`; verificar R1, R2, R51, R52 con los `git diff` del requirements; `CHANGELOG.md` bajo `## [Unreleased]` solo cuando el reviewer apruebe. Cubre: R1, R2, R51, R52, R53.
+  - Evidencia: `cd server && npx jest --runInBand --forceExit </dev/null` → `Test Suites: 33 passed, 33 total`, `Tests: 545 passed, 545 total` (T1: 545 → sin cambio). `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null` → `Test Files  33 passed (33)`, `Tests  610 passed (610)` (T1: 459; +151 de la feature, incl. +6 de T10.5; `iconSheet.test.js` pasa con NODE_PATH, sin `known_failures`). `cd client && npm run build` → `✓ built in 8.13s` (solo el aviso preexistente de chunks > 500 kB). **R1** (sin cambios de servidor): `git diff --name-only 46d156d..HEAD -- server shared` → vacío. **R2** (`engineVersion` sigue en 1): `shared/gameConfig.js` sin diff contra la base (`git diff 46d156d..HEAD -- shared/gameConfig.js | wc -l` → 0). **R51** (sin dependencias nuevas): `git diff --name-only 46d156d..HEAD -- '*package.json' '*package-lock.json'` → vacío. **R52** (sin borrar assets existentes): `git diff --diff-filter=D --name-only 46d156d..HEAD | grep -E "assets/(game|sprites)/"` → vacío. **R53**: CHANGELOG y `feature_list.json` sin tocar (los cierra el reviewer al aprobar). Server :3001 y vite :5173 detenidos.
+
+## Bloqueado
+
+Bloqueado tras medir la geometría y reproducir el test: `cd client && npx vitest run src/tests/combatLayout.test.js src/tests/combatScene.test.js src/tests/combatPanel.test.jsx` → `Test Files 1 failed | 2 passed (3)`, `Tests 20 failed | 57 passed (77)`; las 20 intersecciones cubren cada combinación de 1–5 héroes × 1–4 enemigos. Segunda medición reproducible (`node C:/Users/manes/AppData/Local/hermes/profiles/implementer/cache/scratch/formation-math.js`): a escala V1 baja (héroe delantero 0,60× enemigo común solo = 299,28 unidades; traseros 0,80×) y alfa medido (`warrior_idle` 428/444 px; `bruto_idle` 594/720 px), la anchura de silueta de 3+2 héroes suma ≈928,7 unidades, ya supera 824. Para 4 comunes, V1 permite bajar a 0,9× héroe: sus siluetas suman ≈889,2 unidades; ambos grupos requieren ≈1817,9. El preset alternativo de cinco héroes en una fila (no autorizado por el owner) necesita ≈1000,2 solo para héroes y ≈1889,4 junto con 4 enemigos. Estas cuentas son cotas horizontales: V2 fija los pies dentro de ±12 px, por lo que las cajas de sprite se intersectan verticalmente y para cero intersección deben tener intervalos X disjuntos. Incluso llevando escala delantera a V1 mínimo, cinco héroes exceden el ancho. Los 20 casos R24 fallan en el WIP; tampoco existe prueba de independencia de tweens. Reconciliación mínima necesaria: autorizar carriles de suelo distintos por profundidad (para separar cajas también en Y, manteniendo 3+2, escalas V1/R27 y cero intersección), o definir otra excepción/contrato compatible; no se modifica ningún umbral aquí. WIP preservado; sin capturas presentadas como válidas, sin tocar movimiento global, sin commit/push.
+
+**Resuelto por el owner (2026-11-07):** carriles de suelo por profundidad. Ver `hoja_visual.md` § «Decisión del owner (2026-11-07)». T10.6 se reanuda con V2 enmendada; R24, V1, R27 y 3+2 no cambian.
+
+### Bloqueado de nuevo (2026-11-08): con carriles por profundidad tampoco hay solución
+
+Tal como pide `hoja_visual.md` («si con carriles por profundidad y escalas V1 sigue sin existir solución con cero intersección, el implementer NO relaja nada»), no se implementó una formación que incumpla: se dejan las cuentas reproducibles. Todo está en `specs/combate_b/evidencia/hoja/`.
+
+**1. Piso por fondo (`calibrar_suelo.cjs` → `calibracion_suelo.json`, `suelo/suelo_<fondo>.webp` y `suelo/suelo_regla_<fondo>.webp`).** Las heurísticas no coinciden entre sí ni con la imagen. En crypt, la de bordes del WIP da 0,567 y la de luma de la review da 0,674, pero la calle ya es piso desde 0,48. Por eso medí a ojo, como admite el hallazgo 2 de la review. Sobre cada `combat_*.webp` (1080×1935) puse una regla cada 1 % y tomé la primera fila desde la que la franja central (x 20–80 %) es piso transitable. No conté agua, techos, cielo, paredes, el estrado del altar ni los escalones del portal. Luego llevé esa fila al mundo con la misma transformación de `CombatScene`: cover × 1,04, más la deriva × 1,025 en el peor caso, que es la línea más baja. `node calibrar_suelo.cjs` →
+
+| fondo | fila de piso (imagen) | groundY (mundo) | `BG_GROUND_Y_FRAC` |
+|---|---|---|---|
+| crypt | 0,48 | 825 | 0,4797 |
+| moor | 0,50 | 860 | 0,5 |
+| cathedral | 0,61 | 1062 | 0,6174 |
+| ashfield | 0,42 | 717 | 0,4169 |
+| veil_marsh | 0,51 | 879 | 0,511 |
+| veil_gate | 0,575 | 998 | 0,5802 |
+
+**2. HUD real en coordenadas del mundo (`medir_hud.mjs` → `hud_medidas.json`).** Preview aislado: server del worktree en :3003 (`BOT_TOKEN` ficticio, `BOT_POLLING=false`, DB `server/data/kingdoms.db` del worktree) y vite en :5175 `--strictPort`, los dos detenidos al terminar. Estado sintético: 5 héroes con energía llena y 1–4 enemigos. T = borde inferior de las barras de vida; B = borde superior de los botones de héroe, contando «¡TAP!».
+
+| viewport | lienzo (x,y · w×h · escala) | T con 1 enemigo | T con 2+ | B |
+|---|---|---|---|---|
+| 412×860 | 0,0 · 412×860 · 0,5 | 202 | 276 | 1372,5 |
+| 360×800 | 0,24 · 360×751 · 0,4369 | 226,6 | 311,3 | 1328,1 |
+| 1280×800 | 448,0 · 383×800 · 0,4651 | 217,2 | 296,7 | 1346,5 |
+
+Hallazgo aparte: `HUD_TOP = 1440` (`formation.js`) queda POR DEBAJO de los botones reales en los tres viewports. Un pie entre 1328 y 1440 queda tapado por los botones, lo que incumple V3.
+
+**3. Modelo y búsqueda exacta (`carriles_factibilidad.mjs`, cabecera con el modelo completo).**
+- Filas de arriba a abajo: EB, EF, HB (slots 4–5), HF (slots 1–3). Cada una tiene su carril, en orden L_EB ≤ L_EF ≤ L_HB ≤ L_HF.
+- Cajas = bbox alfa>0 real de cada sprite idle (`medir_alfa.cjs` → `hoja_alfa.json`, regenerado e idéntico). Cualquier caja más angosta dejaría el sprite visible fuera de la caja.
+- Escalas V1 en su mínimo (lo más favorable): héroe delantero 0,60 × 499 = 299,4; trasero 0,80 × 299,4 = 239,5; comunes en grupo 0,90 × 299,4 = 269,5. Común solo 499 y jefe 619 por R27.
+- Todos los carriles ≥ groundY del fondo, L_HF ≤ B y cabezas ≥ T.
+- Para cada reparto de enemigos entre EB y EF y cada conjunto de pares de filas «lado a lado» (disjuntas en X), la colocación en X se decide de forma exacta. Si un par de filas no va lado a lado, se exige L_j − h_j ≥ L_i.
+- Se prueban 14 configuraciones (los 13 nodos reales, más «sin nodo» = crypt + bruto, como en el test R24) × n = 1…5 × m = 1…4.
+- Escuadras: «ranger» (la silueta más angosta), «rogue» (la más ancha) y «mixto» (la de las capturas: warrior, mage, ranger, paladin, rogue).
+
+**Tabla A, topes más permisivos posibles:** B = `HUD_TOP` 1440 y T = 0 (sin barras). `node carriles_factibilidad.mjs --B 1440 --T 0 --json factibilidad_laxa.json` → `factibilidad_laxa.txt`: ranger 266/280 (14 sin solución), rogue 261/280 (19), mixto 264/280 (16). Casos sin solución con la escuadra mixta, con el carril mínimo de HF entre paréntesis (> 1440):
+- a1n5 (cathedral, boss_heraldo): n4×m4 (1553), **jefe n5×m1 (1581)**, n5×m3 (1581), n5×m4 (1610).
+- a1n9 (cathedral, boss_devorador): n3×m4 (1609), n4×m4 (1609), **jefe n5×m1 (1581)**, n5×m3 (1581), n5×m4 (1609).
+- a2n5 (veil_gate, coloso): n4×m4 (1488), n5×m3 (1517), n5×m4 (1545).
+- a2n10 (veil_gate, voz_del_velo): n4×m4 (1489), **jefe n5×m1 (1517)**, n5×m3 (1517), **n5×m4 (1546)** (la vista obligatoria «4 veil_gate»).
+
+Ranger y rogue fallan en los mismos cuatro nodos; las listas exactas están en `factibilidad_laxa.txt`. Ningún caso con m = 2.
+
+Cuenta a mano del caso decisivo, a1n9 con jefe Devorador y 5 héroes (mixto):
+- Siluetas: jefe 567,4 × 594,9; traseros paladin 157,5 y rogue 164,7 de ancho (alto 231,3); delanteros warrior 200,2, mage 193,7 y ranger 186,2 de ancho (alto 288,2).
+- Jefe + 2 traseros = 889,6 > 824. Al menos un trasero se cruza en X con el jefe, así que L_HB ≥ 1062 + 231,3 = 1293,3.
+- 3 delanteros + 2 traseros = 902,3 > 824, así que L_HF ≥ L_HB + 288,2 = **1581,5 > 1440**.
+- Para que entrara haría falta groundY ≤ 920 (fila 0,533 de la imagen, el cuerpo del altar). Con el HUD real haría falta groundY ≤ 809 (fila 0,471).
+
+**Tabla B, HUD real (peor viewport, 360×800):** B = 1328, T = 227 con 1 enemigo y 312 con 2 o más. `node carriles_factibilidad.mjs --B 1328 --T 227,312 --json factibilidad_hud_real.json` → `factibilidad_hud_real.txt`: ranger 231/280 (49 sin solución), rogue 217/280 (63), mixto 228/280 (52). Escuadra mixta:
+- sin nodo / a1n3 (crypt, bruto): n5×m3 (1344), n5×m4 (1373). Es el caso del test R24.
+- a1n7 (crypt, carroneros): **n5×m3 (1344)** (la vista obligatoria «3 comunes»), n5×m4 (1374).
+- a1n4 / a1n8 (moor, aullador): n5×m3 (1379), n5×m4 (1379).
+- a1n5 (cathedral, boss_heraldo): jefe n2…n4×m1 (1350), n2×m3, n2×m4, n3×m3, n3×m4 (1350), n4×m2, n4×m3, n5×m2 (1350), n4×m4 (1553), jefe n5×m1 (1581), n5×m3 (1581), n5×m4 (1610).
+- a1n9 (cathedral, boss_devorador): jefe n2…n4×m1 (1350), n2×m3, n2×m4, n3×m2, n3×m3 (1350), n4×m2, n4×m3, n5×m2 (1350), n3×m4, n4×m4, n5×m4 (1609), jefe n5×m1 (1581), n5×m3 (1581).
+- a2n4 / a2n8 (veil_marsh, bruto): n4×m4 (1370), n5×m3 (1398), n5×m4 (1427).
+- a2n5 (veil_gate, coloso): n4×m4 (1488), n5×m3 (1517), n5×m4 (1545).
+- a2n10 (veil_gate, voz_del_velo): n4×m4 (1489), jefe n5×m1 (1517), n5×m3 (1517), n5×m4 (1546).
+
+Los casos con m = 2 (solo en la catedral) suponen comunes de 0,9 × héroe, pero V1 fija ese piso solo para 3–4 enemigos. Esos casos no son una cota estricta; los demás sí. En la catedral, con el HUD real, basta que un delantero se cruce en X con cualquier enemigo para no caber: 1062 + 288,2 = 1350 > 1328.
+
+**4. Robustez (las conclusiones no dependen de un detalle).**
+- (a) Héroe más chico en escenas de jefe, 281,4 = 619 / 2,2, por debajo del 0,60 de V1: `--hf 281.4` → `factibilidad_laxa_heroe281.txt`. Escuadra mixta: 13 sin solución, entre ellas a1n9 jefe n5×m1 (1550) y a2n10 jefe n5×m1 (1486).
+- (b) HUD comprimido a una sola fila (botones de héroe y «Avanzar» en una fila de unos 102 px CSS a 412, B = 1516): `--B 1516 --T 0` → `factibilidad_hud_una_fila.txt`. Escuadra mixta: 14 sin solución.
+- (c) Si los escalones de veil_gate contaran como piso (fila 0,51 → groundY 879), a2n10 con jefe y 5 héroes entraría con B = 1440 (879 + 231,3 + 288,2 = 1398,5). Con el HUD real no entra (> 1328), y la catedral sigue imposible.
+
+**5. Decisiones posibles del owner (no tomé ninguna).**
+- (i) R24 solo DENTRO de cada fila: filas distintas pueden cruzarse y el carril más bajo se dibuja delante, como en cualquier 2,5D. `node carriles_factibilidad.mjs --B 1328 --T 227,312 --entre-filas` → `factibilidad_opcion_entre_filas.txt`: **280/280 en las tres escuadras con el HUD real**.
+- (ii) Para a1n9 con 5 héroes y el HUD real hacen falta dos cosas a la vez:
+  - un jefe que deje a los dos traseros a su lado: Devorador ≤ 547 de alto (0,318) en vez de 619, lo que relaja R27; V1 pide ≥ 1,8 × 299,4 = 539;
+  - groundY de la catedral ≤ 1039 (1328 − 288,2), es decir la fila 0,598, sobre el escalón del estrado (hoy 0,61 → 1062).
+
+  No recalculé el resto de la matriz con esta variante.
+- (iii) Otra combinación que el owner prefiera. Las tablas se recalculan con los flags de arriba.
+
+**6. Estado del worktree.**
+- Sin commit de código. El WIP de rondas anteriores sigue sin commitear: `CombatInstancePanel.jsx`, `CombatStage.jsx`, `CombatScene.js`, `artMap.js`, `formation.js` y los tests. Ese WIP todavía usa una sola línea de suelo y la calibración anterior en `artMap.js` (heurística de bordes acotada a [0,56, 0,62]); la calibración válida es `calibracion_suelo.json`.
+- Suites sobre ese WIP:
+  - `cd client && NODE_PATH=D:/Proyectos/kingdoms-harvest/node_modules npx vitest run </dev/null` → `Test Files  1 failed | 32 passed (33)`, `Tests  20 failed | 597 passed (617)`. Los 20 son R24 de `combatLayout.test.js`.
+  - `cd server && npx jest --runInBand --forceExit` → `Tests: 545 passed, 545 total`.
+  - `cd client && npm run build` → `✓ built in 11.13s`.
+- Las capturas `{412x860,360x800,1280x800}_*.webp`, `hoja_contacto.webp`, `hoja_medidas.json` y `generar_evidencia_hoja.mjs` de `evidencia/hoja/` son de una iteración anterior (2026-11-02, línea de suelo única). No son evidencia de este estado; quedan sin commitear.
+- `test_phaser.js` (scratch) borrado.
+- Pendiente cuando se desbloquee: carriles en `formation.js`, `BG_GROUND_Y_FRAC` calibrado, el test de «compañeros 0 px», las vistas, la hoja de contacto, el script V1–V4 y la tabla V1–V9.
+
+**Resuelto por el owner (2026-11-08):** opción (i), solape permitido ENTRE filas y cero intersección dentro de cada fila, más el tope inferior real de los botones. Ver `hoja_visual.md` § «Decisión del owner (2026-11-08)» y la enmienda de R24 en `requirements.md`. T10.6 se reanuda.
+
+**Cerrado (2026-11-08):** T10.6 queda `[x]` con la opción (i) del owner. La evidencia y la tabla V1–V9 están en la línea de T10.6.

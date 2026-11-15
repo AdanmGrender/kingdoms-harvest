@@ -22,7 +22,7 @@ const fs = require('fs');
 const path = require('path');
 
 function parseArgs(argv) {
-  const a = { tol: 38, height: 0, width: 0, flip: false, scene: false, keepRatio: 0.12, minHole: 0.0004, crop: null, erase: [], fadeRight: 0, pad: 0.02, clean: 0, margin: 0 };
+  const a = { tol: 38, height: 0, width: 0, flip: false, scene: false, keepRatio: 0.12, minHole: 0.0004, crop: null, erase: [], fadeRight: 0, pad: 0.02, clean: 0, margin: 0, quality: 88 };
   const pos = [];
   for (let i = 2; i < argv.length; i++) {
     const t = argv[i];
@@ -38,6 +38,7 @@ function parseArgs(argv) {
     else if (t === '--pad') a.pad = Number(argv[++i]);
     else if (t === '--clean') a.clean = Number(argv[++i]); // alfa mínimo (0-255) que sobrevive tras el recorte: limpia el halo semitransparente del fondo
     else if (t === '--margin') a.margin = Number(argv[++i]); // px transparentes (lados y arriba; 1 px abajo) añadidos tras escalar, dentro de --height
+    else if (t === '--quality') a.quality = Number(argv[++i]); // calidad webp (88 por defecto; bajar para entrar en el tope de peso)
     else if (t === '--min-hole') a.minHole = Number(argv[++i]); // fracción del área: huecos de fondo cerrados más chicos sobreviven
     else pos.push(t);
   }
@@ -211,7 +212,7 @@ async function main() {
   }
   fs.mkdirSync(path.dirname(a.out), { recursive: true });
   const s = sharp(img.data, { raw: { width: img.width, height: img.height, channels: 4 } });
-  await (a.out.endsWith('.webp') ? s.webp({ quality: 88, alphaQuality: 95 }) : a.out.endsWith('.jpg') ? s.flatten().jpeg({ quality: 88, mozjpeg: true }) : s.png({ compressionLevel: 9 })).toFile(a.out);
+  await (a.out.endsWith('.webp') ? s.webp({ quality: a.quality, alphaQuality: 95 }) : a.out.endsWith('.jpg') ? s.flatten().jpeg({ quality: 88, mozjpeg: true }) : s.png({ compressionLevel: 9 })).toFile(a.out);
   console.log(`✓ ${path.basename(a.out)} ${nw}x${nh}`
     + (a.scene ? '' : ` bg=rgb(${info.bg}) holes=${info.holes} comps=${info.components} kept=${info.kept} dropped=${info.droppedPx}px`));
 }

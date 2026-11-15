@@ -1,0 +1,107 @@
+{
+ "e0>h3": {
+  "antes": {
+   "tex": "enemy:bruto:idle",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 412
+  },
+  "durante": {
+   "t": 56,
+   "tex": "enemy:bruto:hit",
+   "frame": "__BASE",
+   "flip": true,
+   "ang": 0,
+   "x": 440
+  },
+  "fin": {
+   "t": 907,
+   "tex": "enemy:bruto:idle",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 412
+  },
+  "vuelveA": 423
+ },
+ "e0>h1": {
+  "antes": {
+   "tex": "enemy:bruto:idle",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 412
+  },
+  "durante": {
+   "t": 60,
+   "tex": "enemy:bruto:hit",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 384
+  },
+  "fin": {
+   "t": 910,
+   "tex": "enemy:bruto:idle",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 412
+  },
+  "vuelveA": 427
+ },
+ "h1>e0": {
+  "antes": {
+   "tex": "hero:warrior:idle",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 132
+  },
+  "durante": {
+   "t": 56,
+   "tex": "hero:warrior:attack",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 160
+  },
+  "fin": {
+   "t": 906,
+   "tex": "hero:warrior:idle",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 132
+  },
+  "vuelveA": 424
+ },
+ "h3>e0": {
+  "antes": {
+   "tex": "hero:ranger:idle",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 692
+  },
+  "durante": {
+   "t": 55,
+   "tex": "hero:ranger:attack",
+   "frame": "sin_fogonazo",
+   "flip": true,
+   "ang": 30,
+   "x": 692
+  },
+  "fin": {
+   "t": 906,
+   "tex": "hero:ranger:idle",
+   "frame": "__BASE",
+   "flip": false,
+   "ang": 0,
+   "x": 692
+  },
+  "vuelveA": 422
+ },
+ "errores": []
+}
